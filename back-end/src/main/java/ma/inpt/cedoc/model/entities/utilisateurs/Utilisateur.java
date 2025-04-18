@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.model.entities;
+package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
