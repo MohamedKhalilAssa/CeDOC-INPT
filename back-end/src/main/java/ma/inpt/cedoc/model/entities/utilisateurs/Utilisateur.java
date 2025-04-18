@@ -4,11 +4,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor
 @Data
