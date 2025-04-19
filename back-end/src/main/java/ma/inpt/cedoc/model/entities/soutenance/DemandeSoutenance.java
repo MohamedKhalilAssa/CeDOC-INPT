@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 import ma.inpt.cedoc.model.enums.doctorant_enums.DemandeSoutenanceEnum;
 
 @Entity
@@ -30,10 +31,14 @@ public class DemandeSoutenance {
     private DemandeSoutenanceEnum statutDemande;
 
     @ManyToOne
-    @JoinColumn(name = "directeur_de_these_id", nullable = false)
+    @JoinColumn(name = "directeur_de_these_id")
     private DirecteurDeThese directeurDeThese;
 
     @OneToOne
     @JoinColumn(name = "soutenance_id")
     private Soutenance soutenance;
+
+    @ManyToOne 
+    @JoinColumn(name = "direction_cedoc_id")
+    private DirectionCedoc directionCedoc;
 }

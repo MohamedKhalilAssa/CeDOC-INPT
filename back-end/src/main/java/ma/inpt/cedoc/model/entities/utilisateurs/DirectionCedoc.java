@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.entities.soutenance.Jury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.CEDocEnum;
 
@@ -26,4 +27,7 @@ public class DirectionCedoc extends Utilisateur {
 
     @OneToMany(mappedBy = "directionCedoc")
     private List<Jury> jurys;
+
+    @OneToMany(mappedBy = "directionCedoc")
+    private List<DemandeSoutenance> demandeSoutenances;
 }
