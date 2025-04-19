@@ -1,6 +1,11 @@
 package ma.inpt.cedoc.model.entities.soutenance;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -16,6 +21,7 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.StatutSoutenanceEnum;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "Soutenance")
 public class Soutenance {
 
@@ -36,8 +42,15 @@ public class Soutenance {
     @Column(name = "statut_soutenance")
     private StatutSoutenanceEnum statutSoutenance;
 
-    @ManyToOne
-    @JoinColumn(name = "directeur_de_these_id", nullable = false)
-    private DirecteurDeThese directeurDeThese;
+    //    for logging and administration purposes it will be filled by the system
+    @Column(name="created_at", updatable = false)
+    @CreatedDate
+    private ZonedDateTime createdAt;
 
+    @Column(name="updated_at")
+    @LastModifiedDate
+    private ZonedDateTime updatedAt;
+
+    @OneToOne(mappedBy = "soutenance")
+    private DemandeSoutenance demandeSoutenance;
 }

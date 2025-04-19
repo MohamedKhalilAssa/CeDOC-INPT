@@ -2,6 +2,8 @@ package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,10 +26,15 @@ public class DirectionCedoc extends Utilisateur {
     @NotNull(message = "Veuillez précisez le rôle administrative.")
     @Enumerated(EnumType.STRING)
     private CEDocEnum roleAdministrative;
+    
+    // ---------------------- Relations ----------------------------
 
     @OneToMany(mappedBy = "directionCedoc")
+    @JsonIgnore
     private List<Jury> jurys;
 
     @OneToMany(mappedBy = "directionCedoc")
-    private List<DemandeSoutenance> demandeSoutenances;
+    @JsonIgnore
+    private List<DemandeSoutenance> demandesSoutenance;
+    
 }

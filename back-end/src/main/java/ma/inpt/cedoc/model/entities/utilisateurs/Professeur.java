@@ -2,12 +2,15 @@ package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 
@@ -33,4 +36,8 @@ public class Professeur extends Utilisateur {
 
     @OneToMany(mappedBy = "professeur")
     private List<ProfesseurJury> participationsEnJury;
+
+    @ManyToMany(mappedBy = "professeurs")
+    @JsonIgnore
+    private List<Sujet> sujetsProposes;
 }

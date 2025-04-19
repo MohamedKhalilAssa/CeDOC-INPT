@@ -7,12 +7,14 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.enums.candidature_enums.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -76,16 +78,20 @@ public class Candidature {
     @LastModifiedDate
     private ZonedDateTime updatedAt;
 
+    // ---------------------- Relations ----------------------------
+
+    @ManyToMany
+    @JoinTable(
+        name = "candidature_sujets",
+        joinColumns = @JoinColumn(name = "candidature_id"),
+        inverseJoinColumns = @JoinColumn(name = "sujet_id")
+    )
+    private List<Sujet> sujets;
 
 
+    @OneToOne
+    @JoinColumn(name = "candidat_id", unique = true, nullable = false)
+    @NotNull(message = "Le candidat est obligatoire")
+    private Candidat candidat;
 
-
-
-    // ----------------- Relations à activer et modifier plus tard ---------------------------------------
-
-    
-    // private Sujet sujet;
-
-    
-    // private Candidat candidat;
 }

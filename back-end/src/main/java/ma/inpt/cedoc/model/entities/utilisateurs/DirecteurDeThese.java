@@ -2,6 +2,8 @@ package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -9,6 +11,8 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.entities.soutenance.Jury;
 import ma.inpt.cedoc.model.entities.soutenance.Soutenance;
 
@@ -21,9 +25,19 @@ import ma.inpt.cedoc.model.entities.soutenance.Soutenance;
 public class DirecteurDeThese extends Professeur {
 
     @OneToMany(mappedBy = "directeurDeThese")
-    private List<Soutenance> soutenances;
+    @JsonIgnore
+    private List<DemandeSoutenance> demandesSoutenance;
 
     @OneToMany(mappedBy = "directeurDeThese")
+    @JsonIgnore
     private List<Jury> jurys;
+
+    @OneToMany(mappedBy = "directeurDeThese")
+    @JsonIgnore
+    private List<Doctorant> doctorants;
+
+    @OneToMany(mappedBy = "directeurDeThese")
+    @JsonIgnore
+    private List<Sujet> sujets;
 
 }

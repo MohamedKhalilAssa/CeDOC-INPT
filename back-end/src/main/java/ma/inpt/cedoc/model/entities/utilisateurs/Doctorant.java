@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 
 import java.time.LocalDate;
@@ -44,4 +45,12 @@ public class Doctorant extends Utilisateur {
     @ManyToOne
     @JoinColumn(name="equipe_de_recherche_id")
     private EquipeDeRecherche equipeDeRecherche;
+
+    @ManyToOne
+    @JoinColumn(name = "directeur_id")
+    private DirecteurDeThese directeurDeThese;
+
+    @ManyToOne
+    @JoinColumn(name="equipe_de_recherche_id")
+    private Sujet sujet;
 }

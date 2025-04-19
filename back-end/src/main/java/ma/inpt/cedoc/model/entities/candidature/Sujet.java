@@ -7,11 +7,20 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.EquipeDeRecherche;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -34,7 +43,7 @@ public class Sujet {
     @Size(min = 10, message = "La description doit contenir au moins 10 caractères")
     private String description;
 
-    //    for logging and administration purposes it will be filled by the system
+    // for logging and administration purposes it will be filled by the system
     @Column(name="created_at", updatable = false)
     @CreatedDate
     private ZonedDateTime createdAt;
@@ -43,11 +52,34 @@ public class Sujet {
     @LastModifiedDate
     private ZonedDateTime updatedAt;
 
-    // Relations à activer plus tard :
+    // -------------------------------------------- Relations ----------------------------------------------------------
     
-    // private List<Candidature> candidatures;
+    @ManyToMany(mappedBy = "sujets")
+    @JsonIgnore
+    private List<Candidature> candidatures;
 
-    // private EquipeDeRecherche equipeDeRecherche;
+    @ManyToMany
+    @JoinTable(
+        name = "sujets_professeurs",
+        joinColumns = @JoinColumn(name = "sujet_id"),
+        inverseJoinColumns = @JoinColumn(name = "professeur_id")
+    )
+    private List<Professeur> professeurs;
 
-    // private Professeur professeurValidateur;
+    @OneToMany(mappedBy = "sujet")
+    @JsonIgnore
+    private List<Doctorant> doctorants;
+
+    @ManyToOne
+    @JoinColumn(name = "chef_equipe_id", nullable = false)
+    private ChefEquipe chefEquipe;
+
+    @ManyToOne
+    @JoinColumn(name = "directeur_these_id")
+    private DirecteurDeThese directeurDeThese;
+
+    // @OneToMany(mappedBy = "sujet")
+    // @JsonIgnore
+    // private List<DemandeDeReinscription> demandesDeReinscription;
+
 }

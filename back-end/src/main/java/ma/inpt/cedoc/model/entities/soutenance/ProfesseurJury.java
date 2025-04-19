@@ -1,5 +1,11 @@
 package ma.inpt.cedoc.model.entities.soutenance;
 
+import java.time.ZonedDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,6 +20,7 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.RoleJuryEnum;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "role_jury")
 public class ProfesseurJury {
 
@@ -24,6 +31,15 @@ public class ProfesseurJury {
     @NotNull(message = "Le rôle du membre du jury est obligatoire")
     @Enumerated(EnumType.STRING)
     private RoleJuryEnum role;
+
+    //    for logging and administration purposes it will be filled by the system
+    @Column(name="created_at", updatable = false)
+    @CreatedDate
+    private ZonedDateTime createdAt;
+
+    @Column(name="updated_at")
+    @LastModifiedDate
+    private ZonedDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "professeur_id", nullable = false)

@@ -1,6 +1,11 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name="equipe_de_recherche")
 public class EquipeDeRecherche  {
     @Id
@@ -19,6 +25,15 @@ public class EquipeDeRecherche  {
 
     @Column(name="nom_de_equipe")
     private String nomDeLequipe;
+
+    //    for logging and administration purposes it will be filled by the system
+    @Column(name="created_at", updatable = false)
+    @CreatedDate
+    private ZonedDateTime createdAt;
+
+    @Column(name="updated_at")
+    @LastModifiedDate
+    private ZonedDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "chef_equipe_id")
