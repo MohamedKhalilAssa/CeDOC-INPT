@@ -1,5 +1,7 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -8,10 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.soutenance.Jury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.CEDocEnum;
-
-import java.util.List;
-
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Data

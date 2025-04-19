@@ -21,7 +21,7 @@ public class Jury {
     private Long id;
 
     @OneToMany(mappedBy = "jury")
-    private List<Composer> membres;
+    private List<ProfesseurJury> membres;
 
     @ManyToOne
     @JoinColumn(name = "directeur_de_these_id", nullable = false)

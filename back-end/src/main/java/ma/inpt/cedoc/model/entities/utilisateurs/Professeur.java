@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.model.entities.soutenance.Composer;
+import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 
 @Entity
@@ -32,5 +32,5 @@ public class Professeur extends Utilisateur {
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
 
     @OneToMany(mappedBy = "professeur")
-    private List<Composer> participationsEnJury;
+    private List<ProfesseurJury> participationsEnJury;
 }

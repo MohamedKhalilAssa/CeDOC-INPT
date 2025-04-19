@@ -14,8 +14,8 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.RoleJuryEnum;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(name = "composers")
-public class Composer {
+@Table(name = "role_jury")
+public class ProfesseurJury {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,7 @@
 package ma.inpt.cedoc.model.entities.soutenance;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -9,8 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.enums.doctorant_enums.StatutSoutenanceEnum;
-
-import java.time.LocalDate;
 
 @Entity
 @Data
