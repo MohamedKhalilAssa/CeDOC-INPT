@@ -14,7 +14,6 @@ import lombok.EqualsAndHashCode;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.entities.soutenance.Jury;
-import ma.inpt.cedoc.model.entities.soutenance.Soutenance;
 
 @Entity
 @Data

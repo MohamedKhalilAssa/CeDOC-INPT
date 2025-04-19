@@ -14,7 +14,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.enums.doctorant_enums.StatutSoutenanceEnum;
 
 @Entity

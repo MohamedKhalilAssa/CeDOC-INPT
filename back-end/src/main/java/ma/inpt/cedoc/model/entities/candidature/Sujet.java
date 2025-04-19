@@ -1,5 +1,14 @@
 package ma.inpt.cedoc.model.entities.candidature;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -10,17 +19,7 @@ import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import ma.inpt.cedoc.model.entities.utilisateurs.EquipeDeRecherche;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
