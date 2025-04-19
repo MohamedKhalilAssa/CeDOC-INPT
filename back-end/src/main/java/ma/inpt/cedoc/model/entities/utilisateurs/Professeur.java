@@ -1,11 +1,14 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.soutenance.Composer;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 
 @Entity
@@ -27,4 +30,7 @@ public class Professeur extends Utilisateur {
     @ManyToOne
     @JoinColumn(name="equipe_de_recherche_id")
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
+
+    @OneToMany(mappedBy = "professeur")
+    private List<Composer> participationsEnJury;
 }

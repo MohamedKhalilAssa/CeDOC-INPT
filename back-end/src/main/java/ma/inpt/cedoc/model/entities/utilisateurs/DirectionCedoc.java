@@ -6,7 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.soutenance.Jury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.CEDocEnum;
+
+import java.util.List;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -21,4 +25,7 @@ public class DirectionCedoc extends Utilisateur {
     @NotNull(message = "Veuillez précisez le rôle administrative.")
     @Enumerated(EnumType.STRING)
     private CEDocEnum roleAdministrative;
+
+    @OneToMany(mappedBy = "directionCedoc")
+    private List<Jury> jurys;
 }
