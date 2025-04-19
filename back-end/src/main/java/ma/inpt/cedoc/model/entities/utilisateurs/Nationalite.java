@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.model.entities.candidature;
+package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,27 +12,24 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Table(name = "sujets")
 @EntityListeners(AuditingEntityListener.class)
-public class Sujet {
+@Table(name="nationalites")
+public class Nationalite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "L'intitulé du sujet est obligatoire")
-    @Size(min = 3, max = 100, message = "L'intitulé doit contenir entre 3 et 100 caractères")
-    @Pattern(regexp = "^[\\p{L}0-9,.'\"()&-]+(?:\\s[\\p{L}0-9,.'\"()&-]+)*$", message = "L'intitule contient des caracteres invalides.")
+    @NotBlank(message = "L'intitule de la nationalite est obligatoire")
+    @Size(min = 2, max = 50, message = "L'intitule doit contenir entre 2 et 50 caractères")
+    @Pattern(regexp = "^[\\p{L} '-]+$", message = "L'Intitule ne doit contenir que des lettres, des espaces ou des tirets")
     private String intitule;
-
-    @NotBlank(message = "La description du sujet est obligatoire")
-    @Size(min = 10, message = "La description doit contenir au moins 10 caractères")
-    private String description;
 
     //    for logging and administration purposes it will be filled by the system
     @Column(name="created_at", updatable = false)
@@ -43,11 +40,8 @@ public class Sujet {
     @LastModifiedDate
     private ZonedDateTime updatedAt;
 
-    // Relations à activer plus tard :
-    
-    // private List<Candidature> candidatures;
+//    Relations
 
-    // private EquipeDeRecherche equipeDeRecherche;
-
-    // private Professeur professeurValidateur;
+    @OneToMany(mappedBy = "nationalite")
+    private List<Utilisateur> utilisateurs;
 }

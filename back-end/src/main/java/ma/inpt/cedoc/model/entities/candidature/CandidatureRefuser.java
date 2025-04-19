@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue("REFUSEE")
+@Table(name="candidature_refuser")
 public class CandidatureRefuser extends Candidature {
 
     @NotBlank(message = "Le motif de refus est obligatoire")

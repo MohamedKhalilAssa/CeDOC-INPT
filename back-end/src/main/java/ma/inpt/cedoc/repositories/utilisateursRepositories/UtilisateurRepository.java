@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.repositories;
+package ma.inpt.cedoc.repositories.utilisateursRepositories;
 
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;

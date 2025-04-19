@@ -1,5 +1,6 @@
-package ma.inpt.cedoc.model.entities.candidature;
+package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -10,29 +11,29 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.web.bind.annotation.Mapping;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Table(name = "sujets")
 @EntityListeners(AuditingEntityListener.class)
-public class Sujet {
+@Table(name="roles")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "L'intitulé du sujet est obligatoire")
-    @Size(min = 3, max = 100, message = "L'intitulé doit contenir entre 3 et 100 caractères")
-    @Pattern(regexp = "^[\\p{L}0-9,.'\"()&-]+(?:\\s[\\p{L}0-9,.'\"()&-]+)*$", message = "L'intitule contient des caracteres invalides.")
+    @NotBlank(message = "Le nom est obligatoire")
+    @Size(min = 2, max = 50, message = "Le nom doit contenir entre 2 et 50 caractères")
+    @Pattern(regexp = "^[A-Z_]+$", message = "L'Intitule ne doit contenir que des lettres, des underscores (exp. PROFESSEUR_VACATAIRE)")
     private String intitule;
-
-    @NotBlank(message = "La description du sujet est obligatoire")
-    @Size(min = 10, message = "La description doit contenir au moins 10 caractères")
-    private String description;
 
     //    for logging and administration purposes it will be filled by the system
     @Column(name="created_at", updatable = false)
@@ -43,11 +44,8 @@ public class Sujet {
     @LastModifiedDate
     private ZonedDateTime updatedAt;
 
-    // Relations à activer plus tard :
-    
-    // private List<Candidature> candidatures;
+    @ManyToMany(mappedBy = "roles")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Set<Utilisateur> utilisateurs = new HashSet<>();
 
-    // private EquipeDeRecherche equipeDeRecherche;
-
-    // private Professeur professeurValidateur;
 }
