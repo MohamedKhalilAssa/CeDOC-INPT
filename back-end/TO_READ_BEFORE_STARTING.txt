@@ -1,0 +1,6 @@
+If this is your first time importing the code, execute the setup script or copy application-secrets.properties.example into --> application-secrets.properties
+and make sure to enter your valid information in it, as it was made to be sure no sensitive data gets pushed.
+
+if you are to add in functionality do so in a separate branch (the one for your team). and inform the team of your progress afterwards before merging to main.
+
+respect the packaging from class diagram and layers of the project.

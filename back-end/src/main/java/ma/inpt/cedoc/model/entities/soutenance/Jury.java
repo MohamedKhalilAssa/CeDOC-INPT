@@ -29,5 +29,5 @@ public class Jury {
 
     @ManyToOne
     @JoinColumn(name = "direction_cedoc_id", nullable = false)
-    private DirectionCedoc direction_cedoc;
+    private DirectionCedoc directionCedoc;
 }
