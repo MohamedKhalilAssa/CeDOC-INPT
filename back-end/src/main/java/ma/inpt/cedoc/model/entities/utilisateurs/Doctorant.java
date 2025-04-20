@@ -1,5 +1,7 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.time.LocalDate;
+
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -11,39 +13,36 @@ import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 
-import java.time.LocalDate;
-
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="doctorants")
+@Table(name = "doctorants")
 public class Doctorant extends Utilisateur {
 
-    @Column(name="date_inscription")
+    @Column(name = "date_inscription")
     @NotNull(message = "La date d'inscription est obligatoire.")
     @PastOrPresent(message = "La date de d'inscription doit être dans le passé ou aujourd'hui.")
     private LocalDate dateInscription;
 
-    @Column(name="statut_doctorant")
+    @Column(name = "statut_doctorant")
     @NotNull(message = "Le statut du doctorant est obligatoire.")
     @Enumerated(EnumType.STRING)
     private DoctorantEnum statutDoctorant;
 
-    @Column(name="nombre_heures_labo")
+    @Column(name = "nombre_heures_labo")
     @NotNull(message = "Le nombre d'heures de laboratoire est obligatoire.")
     private int NombreHeuresLabo;
 
-    @Column(name="draft_diplome_url")
+    @Column(name = "draft_diplome_url")
     @Nullable
     private String draftDiplomeUrl;
 
-    
     private boolean archiver = false;
 
     @ManyToOne
-    @JoinColumn(name="equipe_de_recherche_id")
+    @JoinColumn(name = "equipe_de_recherche_id")
     private EquipeDeRecherche equipeDeRecherche;
 
     @ManyToOne
@@ -51,6 +50,6 @@ public class Doctorant extends Utilisateur {
     private DirecteurDeThese directeurDeThese;
 
     @ManyToOne
-    @JoinColumn(name="equipe_de_recherche_id")
+    @JoinColumn(name = "sujet_id")
     private Sujet sujet;
 }
