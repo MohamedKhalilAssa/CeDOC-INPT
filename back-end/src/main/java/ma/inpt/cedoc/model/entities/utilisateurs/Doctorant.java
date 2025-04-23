@@ -1,6 +1,7 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -11,6 +12,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
+import ma.inpt.cedoc.model.entities.formation.Vacation;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 
 @Entity
@@ -52,4 +55,16 @@ public class Doctorant extends Utilisateur {
     @ManyToOne
     @JoinColumn(name = "sujet_id")
     private Sujet sujet;
+
+    /*------------------- Relation -----------------*/
+    //Relation avec SeanceFormation
+    @OneToMany(mappedBy = "declarant")
+    private List<SeanceFormation> seancesDeclarees;
+
+    //Relation avec Vacation
+    @OneToMany(mappedBy = "doctorant",
+            //Persister/supprimer un Doctorant entraîne la même action sur ses vacations.Retirer une vacation de la liste vacationsAssurees la supprime en base.
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Vacation> vacationsAssurees;
 }

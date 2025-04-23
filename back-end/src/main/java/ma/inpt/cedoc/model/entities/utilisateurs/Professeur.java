@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.formation.Propose;
 import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 
@@ -40,4 +41,10 @@ public class Professeur extends Utilisateur {
     @ManyToMany(mappedBy = "professeurs")
     @JsonIgnore
     private List<Sujet> sujetsProposes;
+
+    //Relation avec Propose qui est classe association avec formations
+    @OneToMany(mappedBy = "professeur")
+    private List<Propose> formationsProposees;
+
+
 }
