@@ -23,14 +23,16 @@ import lombok.Getter;
 @Getter
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private final String secret = "supersecretkey";
-    private final long accessTokenExpiration;
+    public final static String AUTH_PREFIX = "Bearer ";
+    private final String JWT_SECRET;
     @Value("${jwt.refreshTokenExpiration}")
     private long refreshTokenExpiration;
+    private final long accessTokenExpiration;
 
-    JwtUtil(@Value("${jwt.accessTokenExpiration}") long accessTokenExpiration) {
+    JwtUtil(@Value("${jwt.secret}") String JWT_SECRET,
+            @Value("${jwt.accessTokenExpiration}") long accessTokenExpiration) {
         this.accessTokenExpiration = accessTokenExpiration; // 15 minutes
+        this.JWT_SECRET = JWT_SECRET;
     }
 
     // Generating the jwt token
@@ -69,22 +71,21 @@ public class JwtUtil {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims cl = extractAllClaims(token);
-        return claimsResolver.apply(cl);
+        Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
     public String extractSubject(String token) {
-        return extractClaim(secret, Claims::getSubject);
+        return extractClaim(token, Claims::getSubject);
     }
 
     private Date extractExpiration(String token) {
-        // TODO Auto-generated method stub
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Getting the secret key
+    // Getting the JWT_SECRET key
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
