@@ -23,14 +23,17 @@ import lombok.Getter;
 @Getter
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private final String secret = "supersecretkey";
+    private final String JWT_SECRET;
     private final long accessTokenExpiration;
+    private final String AUTH_PREFIX;
     @Value("${jwt.refreshTokenExpiration}")
     private long refreshTokenExpiration;
 
-    JwtUtil(@Value("${jwt.accessTokenExpiration}") long accessTokenExpiration) {
+    JwtUtil(@Value("${jwt.accessTokenExpiration}") long accessTokenExpiration,
+            @Value("${jwt.secret}") String JWT_SECRET) {
         this.accessTokenExpiration = accessTokenExpiration; // 15 minutes
+        this.JWT_SECRET = JWT_SECRET;
+        this.AUTH_PREFIX = "Bearer ";
     }
 
     // Generating the jwt token
