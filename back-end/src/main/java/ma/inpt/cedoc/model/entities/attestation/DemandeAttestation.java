@@ -1,5 +1,11 @@
 package ma.inpt.cedoc.model.entities.attestation;
 
+import java.sql.Date;
+import java.time.ZonedDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,18 +13,13 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.sql.Date;
-import java.time.ZonedDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "att_demande")
+@Table(name = "demande_attestion")
 public class DemandeAttestation {
 
     @Id
@@ -29,10 +30,11 @@ public class DemandeAttestation {
     @NonNull
     private Date dateDemande;
 
-    @Column(name = "statut_demande-att")
+    @Column(name = "statut_demande_att")
     @Enumerated(EnumType.STRING)
     private StatutAttestationEnum statutDemandeAttestation;
 
+    /* Relations start here */
     @ManyToOne
     @JoinColumn(name = "attestation_id")
     private Attestation attestation;
@@ -41,6 +43,9 @@ public class DemandeAttestation {
     @JoinColumn(name = "doctorant_id")
     private Doctorant doctorant;
 
+    /* Relations end here */
+
+    /* Auditing */
     @Column(name = "created_at", updatable = false)
     @CreatedDate
     private ZonedDateTime createdAt;
