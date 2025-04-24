@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.Reinscription.AvisReinscription;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.entities.soutenance.Jury;
@@ -19,6 +21,7 @@ import ma.inpt.cedoc.model.entities.soutenance.Jury;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name="directeur_de_these")
 @DiscriminatorValue("DIRECTEUR_DE_THESE")
 public class DirecteurDeThese extends Professeur {
@@ -38,5 +41,9 @@ public class DirecteurDeThese extends Professeur {
     @OneToMany(mappedBy = "directeurDeThese")
     @JsonIgnore
     private List<Sujet> sujets;
+
+    @OneToMany(mappedBy = "directeurDeThese")
+    @JsonIgnore
+    private List<AvisReinscription> avisReinscriptionList;
 
 }

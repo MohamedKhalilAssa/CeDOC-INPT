@@ -1,13 +1,12 @@
 package ma.inpt.cedoc.model.entities.Reinscription;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 
 @Entity
 @Data
@@ -38,7 +37,19 @@ public class DemandeReinscription {
     @NotBlank(message = "Demande de derogation est obligatoire")
     private String demandeDerogation;
 
+    //----------- Relation ----------------
 
+    @ManyToOne
+    @JoinColumn(name = "doctorant_id")
+    private Doctorant demandeur;
+
+    @ManyToOne
+    @JoinColumn(name = "sujet_id")
+    private Sujet sujet;
+
+    @OneToOne
+    @JoinColumn(name = "avis_reinscription_id")
+    private AvisReinscription avisReinscription;
 
 
 }

@@ -3,6 +3,7 @@ package ma.inpt.cedoc.model.entities.candidature;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -77,8 +78,8 @@ public class Sujet {
     @JoinColumn(name = "directeur_these_id")
     private DirecteurDeThese directeurDeThese;
 
-    // @OneToMany(mappedBy = "sujet")
-    // @JsonIgnore
-    // private List<DemandeDeReinscription> demandesDeReinscription;
+     @OneToMany(mappedBy = "sujet")
+     @JsonIgnore
+     private List<DemandeReinscription> demandesReinscription;
 
 }
