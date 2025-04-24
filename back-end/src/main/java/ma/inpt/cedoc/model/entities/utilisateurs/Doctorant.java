@@ -1,7 +1,9 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.attestation.Attestation;
+import ma.inpt.cedoc.model.entities.attestation.DemandeAttestation;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 
@@ -52,4 +56,9 @@ public class Doctorant extends Utilisateur {
     @ManyToOne
     @JoinColumn(name = "sujet_id")
     private Sujet sujet;
+
+    @OneToMany(
+            mappedBy = "doctorant"
+    )
+    private List<DemandeAttestation> demandeAttestations;
 }
