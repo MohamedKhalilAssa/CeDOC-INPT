@@ -14,5 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Prix {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String justificatif;
 }
