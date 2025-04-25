@@ -1,6 +1,6 @@
 package ma.inpt.cedoc.model.entities.candidature;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -43,26 +43,23 @@ public class Sujet {
     private String description;
 
     // for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    // -------------------------------------------- Relations ----------------------------------------------------------
-    
+    // -------------------------------------------- Relations
+    // ----------------------------------------------------------
+
     @ManyToMany(mappedBy = "sujets")
     @JsonIgnore
     private List<Candidature> candidatures;
 
     @ManyToMany
-    @JoinTable(
-        name = "sujets_professeurs",
-        joinColumns = @JoinColumn(name = "sujet_id"),
-        inverseJoinColumns = @JoinColumn(name = "professeur_id")
-    )
+    @JoinTable(name = "sujets_professeurs", joinColumns = @JoinColumn(name = "sujet_id"), inverseJoinColumns = @JoinColumn(name = "professeur_id"))
     private List<Professeur> professeurs;
 
     @OneToMany(mappedBy = "sujet")

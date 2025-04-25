@@ -2,6 +2,8 @@ package ma.inpt.cedoc.Configuration.Security.JWT;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.repositories.authRepositories.TokenRepository;
 
 @Component
 @RequiredArgsConstructor
@@ -22,29 +25,43 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        // GET necessary data from the header
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        // GET the user email
-        final String userSubject;
-        // Check if the header exists
-        if (authHeader == null || !authHeader.startsWith(JwtUtil.AUTH_PREFIX)) {
+        // Log the incoming request path
+        System.out.println("Request path: " + request.getServletPath());
+        // not execute it when the path is guest
+        if (request.getServletPath().contains("/api/auth") || request.getServletPath().contains("/api/guest")) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(JwtUtil.AUTH_PREFIX.length());
+        // GET necessary data from the header
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String jwt;
+        // GET the user email
+        final String userSubject;
+        System.out.println("authHeader: " + authHeader);
+        // Check if the header exists
+        if (authHeader == null || !authHeader.startsWith(JwtUtil.AUTHORIZATION_PREFIX)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        jwt = authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length());
         userSubject = jwtUtil.extractSubject(jwt);
         // Check if the subject is there and if the user is already authenticated
         if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userSubject);
+            var isTokenValid = tokenRepository.findByToken(jwt)
+                    .map(t -> !t.isExpired() && !t.isRevoked())
+                    .orElse(false);
             // Check if the token is valid
-            if (jwtUtil.isTokenValid(jwt, userDetails)) {
+            if (jwtUtil.isTokenValid(jwt, userDetails) || isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userSubject,
+                        userDetails,
                         null,
                         userDetails.getAuthorities());
                 authToken.setDetails(

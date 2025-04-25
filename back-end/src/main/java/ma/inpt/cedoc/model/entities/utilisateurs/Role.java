@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,11 +39,11 @@ public class Role {
     //    for logging and administration purposes it will be filled by the system
     @Column(name="created_at", updatable = false)
     @CreatedDate
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name="updated_at")
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "roles")
     // @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.model.entities.soutenance;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -35,11 +36,11 @@ public class ProfesseurJury {
     //    for logging and administration purposes it will be filled by the system
     @Column(name="created_at", updatable = false)
     @CreatedDate
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name="updated_at")
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "professeur_id", nullable = false)

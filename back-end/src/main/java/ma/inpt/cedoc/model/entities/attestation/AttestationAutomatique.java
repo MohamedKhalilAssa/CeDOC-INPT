@@ -12,7 +12,6 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "attestation_auto")
 @DiscriminatorValue("AUTOMATIQUE")
 public class AttestationAutomatique extends Attestation {
 

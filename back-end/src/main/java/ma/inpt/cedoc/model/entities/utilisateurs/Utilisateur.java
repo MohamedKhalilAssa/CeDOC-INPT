@@ -1,6 +1,7 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,19 +17,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
-
 
 @Entity
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
-@Table(name="utilisateurs")
+@Table(name = "utilisateurs")
 @Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
+@Builder
 public class Utilisateur implements UserDetails {
 
     @Id
@@ -58,17 +61,16 @@ public class Utilisateur implements UserDetails {
 
     @NotBlank(message = "Le mot de passe est obligatoire.")
     @Size(min = 8, message = "Le mot de passe doit comporter au moins 8 caractères.")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
-            message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.")
+    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.")
     private String password;
 
     @Column(name = "date_naissance")
     @Past(message = "La date de naissance doit être dans le passé.")
     @NotNull(message = "La date de naissance est obligatoire.")
-    private LocalDate  dateNaissance;
+    private LocalDate dateNaissance;
 
-//    To Review if is required or not
-    @Column(name= "etat_civil")
+    // To Review if is required or not
+    @Column(name = "etat_civil")
     @Enumerated(EnumType.STRING)
     private EtatCivilEnum etatCivilEnum;
 
@@ -76,24 +78,22 @@ public class Utilisateur implements UserDetails {
     @NotNull(message = "Veuillez precisez votre genre.")
     private GenreEnum genre;
 
-    @Column(name="email_valider")
+    @Column(name = "email_valider")
+    @Builder.Default
     private boolean emailValider = false;
 
-//    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
+    // for logging and administration purposes it will be filled by the system
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name="utilisateur_roles"
-            ,joinColumns = @JoinColumn(name = "utilisateur_id")
-            ,inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
     @ManyToOne
@@ -104,11 +104,13 @@ public class Utilisateur implements UserDetails {
     @JoinColumn(name = "lieu_naissance_id")
     private LieuDeNaissance lieuDeNaissance;
 
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
+    private Set<Token> tokens;
 
-//    JWT CONFIGURATION
+    // JWT CONFIGURATION
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getIntitule()) ).toList();
+        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getIntitule())).toList();
     }
 
     @Override

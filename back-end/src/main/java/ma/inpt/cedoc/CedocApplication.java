@@ -19,7 +19,7 @@ public class CedocApplication {
 	@Bean
 	CommandLineRunner init(JwtUtil jwtUtil) {
 		return args -> {
-			System.out.println(jwtUtil.getRefreshTokenExpiration());
+			System.out.println("");
 			;
 		};
 	}

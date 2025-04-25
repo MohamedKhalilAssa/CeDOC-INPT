@@ -16,35 +16,59 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
+import ma.inpt.cedoc.model.entities.auth.Token;
+import ma.inpt.cedoc.repositories.authRepositories.TokenRepository;
 
 /*This class contains all the basic and utility JWT functions that will be used multiple times throughout the application  */
 @Component
-@Getter
 public class JwtUtil {
 
-    public final static String AUTH_PREFIX = "Bearer ";
+    public final static String AUTHORIZATION_PREFIX = "Bearer ";
     private final String JWT_SECRET;
     @Value("${jwt.refreshTokenExpiration}")
     private long refreshTokenExpiration;
     private final long accessTokenExpiration;
+    private final TokenRepository tokenRepository;
 
     JwtUtil(@Value("${jwt.secret}") String JWT_SECRET,
-            @Value("${jwt.accessTokenExpiration}") long accessTokenExpiration) {
+            @Value("${jwt.accessTokenExpiration}") long accessTokenExpiration, TokenRepository tokenRepository) {
         this.accessTokenExpiration = accessTokenExpiration; // 15 minutes
         this.JWT_SECRET = JWT_SECRET;
+        this.tokenRepository = tokenRepository;
     }
 
     // Generating the jwt token
+    /* ACCESS TOKEN */
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateAccessToken(new HashMap<>(), userDetails);
+    }
 
+    public String generateAccessToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails) {
+        return buildToken(extraClaims, userDetails, accessTokenExpiration);
+    }
+
+    /* REFRESH TOKEN */
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, refreshTokenExpiration);
+    }
+
+    public String generateRefreshToken(Map<String, Object> extraClaims,
+            UserDetails userDetails) {
+        return buildToken(extraClaims, userDetails, refreshTokenExpiration);
+    }
+
+    /* BUILD TOKEN */
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
         Map<String, Object> claims = new HashMap<String, Object>(extraClaims);
         claims.put("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         return Jwts.builder()
+                .setHeaderParam("typ", "JWT") // Manually setting the 'typ' claim
                 .setSubject(userDetails.getUsername())
-                .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .addClaims(claims)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -53,7 +77,8 @@ public class JwtUtil {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractSubject(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final Token userToken = tokenRepository.findByToken(token).orElse(null);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && !userToken.isRevoked());
     }
 
     private boolean isTokenExpired(String token) {

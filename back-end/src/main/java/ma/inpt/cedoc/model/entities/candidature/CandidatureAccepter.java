@@ -25,12 +25,5 @@ public class CandidatureAccepter extends Candidature {
     @Column(name = "date_entretien")
     private int dateEntretien; // selon le diagramme de classes...
 
-    //    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
-    @CreatedDate
-    private ZonedDateTime createdAt;
-
-    @Column(name="updated_at")
-    @LastModifiedDate
-    private ZonedDateTime updatedAt;
+  
 }

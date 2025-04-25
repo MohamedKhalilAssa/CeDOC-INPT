@@ -19,22 +19,24 @@ import ma.inpt.cedoc.Configuration.Security.JWT.JwtFilter;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private final JwtFilter jwtFilter;
-    private final AuthenticationProvider authenticationProvider;
+        private final JwtFilter jwtFilter;
+        private final AuthenticationProvider authenticationProvider;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/guest/**").permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(
-                        jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                return http
+                                .csrf(csrf -> csrf.disable())
+                                .addFilterBefore(
+                                                jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/api/auth/**", "/api/guest/**").permitAll()
+                                                .anyRequest().authenticated())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authenticationProvider(authenticationProvider)
+                                .build();
 
-    }
+        }
+
 }

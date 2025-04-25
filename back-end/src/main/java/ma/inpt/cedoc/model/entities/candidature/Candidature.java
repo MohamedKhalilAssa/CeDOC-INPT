@@ -1,5 +1,12 @@
 package ma.inpt.cedoc.model.entities.candidature;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,13 +15,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
-import ma.inpt.cedoc.model.enums.candidature_enums.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.ZonedDateTime;
-import java.util.List;
+import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.EtablissementEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.MentionEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
 
 @Entity
 @NoArgsConstructor
@@ -69,25 +73,20 @@ public class Candidature {
     @Column(name = "statut_professionnel")
     private StatutProfessionnelEnum statutProfessionnel;
 
-    //    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
+    // for logging and administration purposes it will be filled by the system
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     // ---------------------- Relations ----------------------------
 
     @ManyToMany
-    @JoinTable(
-        name = "candidature_sujets",
-        joinColumns = @JoinColumn(name = "candidature_id"),
-        inverseJoinColumns = @JoinColumn(name = "sujet_id")
-    )
+    @JoinTable(name = "candidature_sujets", joinColumns = @JoinColumn(name = "candidature_id"), inverseJoinColumns = @JoinColumn(name = "sujet_id"))
     private List<Sujet> sujets;
-
 
     @OneToOne
     @JoinColumn(name = "candidat_id", unique = true, nullable = false)

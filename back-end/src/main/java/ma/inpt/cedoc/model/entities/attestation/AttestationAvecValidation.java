@@ -13,8 +13,7 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "attestation_avec_validation")
-@DiscriminatorValue("AVEC_VALIDATIOM")
+@DiscriminatorValue("AVEC_VALIDATION")
 public class AttestationAvecValidation extends Attestation {
 
     @Column(name = "type_attestation_validation")

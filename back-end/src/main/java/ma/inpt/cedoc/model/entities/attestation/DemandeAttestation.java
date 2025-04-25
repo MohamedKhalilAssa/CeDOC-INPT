@@ -1,9 +1,10 @@
 package ma.inpt.cedoc.model.entities.attestation;
 
 import java.sql.Date;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
@@ -45,13 +46,13 @@ public class DemandeAttestation {
 
     /* Relations end here */
 
-    /* Auditing */
+    // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)
     @CreatedDate
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", updatable = false)
-    @CreatedDate
-    private ZonedDateTime updatedAt;
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
 }
