@@ -23,7 +23,7 @@ public class DemandeAttestation {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
 
     @Column(name = "date_demande")
     @NonNull

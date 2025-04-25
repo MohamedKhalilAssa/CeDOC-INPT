@@ -20,7 +20,7 @@ public class Attestation {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
 
     @Column(name = "url", nullable = false)
     private String url;
