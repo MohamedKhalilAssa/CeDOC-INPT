@@ -17,6 +17,8 @@ import ma.inpt.cedoc.model.entities.Doctorant_Actions.Publication;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.attestation.DemandeAttestation;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
+import ma.inpt.cedoc.model.entities.formation.Vacation;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 
@@ -60,6 +62,18 @@ public class Doctorant extends Utilisateur {
     @ManyToOne
     @JoinColumn(name = "sujet_id")
     private Sujet sujet;
+
+    /*------------------- Relation -----------------*/
+    //Relation avec SeanceFormation
+    @OneToMany(mappedBy = "declarant")
+    private List<SeanceFormation> seancesDeclarees;
+
+    //Relation avec Vacation
+    @OneToMany(mappedBy = "doctorant",
+            //Persister/supprimer un Doctorant entraîne la même action sur ses vacations.Retirer une vacation de la liste vacationsAssurees la supprime en base.
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Vacation> vacationsAssurees;
 
     @OneToMany(mappedBy = "doctorant")
     private List<DemandeAttestation> demandeAttestations;
