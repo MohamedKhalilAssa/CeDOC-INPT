@@ -25,11 +25,7 @@ public class Attestation {
 
     @Id
     @GeneratedValue
-<<<<<<< HEAD
-    private Long id;
-=======
     private long id;
->>>>>>> 594332442f0ab8c62878fd12f9e1d5ca2e87dc37
 
     @Column(name = "url", nullable = false)
     private String url;
