@@ -1,7 +1,6 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name="roles")
+@Table(name = "roles")
 public class Role {
 
     @Id
@@ -36,12 +35,12 @@ public class Role {
     @Pattern(regexp = "^[A-Z_]+$", message = "L'Intitule ne doit contenir que des lettres, des underscores (exp. PROFESSEUR_VACATAIRE)")
     private String intitule;
 
-    //    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
+    // for logging and administration purposes it will be filled by the system
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

@@ -2,7 +2,6 @@ package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

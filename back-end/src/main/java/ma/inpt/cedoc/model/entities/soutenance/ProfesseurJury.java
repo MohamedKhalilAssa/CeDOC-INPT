@@ -1,7 +1,6 @@
 package ma.inpt.cedoc.model.entities.soutenance;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,12 +32,12 @@ public class ProfesseurJury {
     @Enumerated(EnumType.STRING)
     private RoleJuryEnum role;
 
-    //    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
+    // for logging and administration purposes it will be filled by the system
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

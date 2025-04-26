@@ -1,7 +1,6 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -18,21 +17,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name="equipe_de_recherche")
-public class EquipeDeRecherche  {
+@Table(name = "equipe_de_recherche")
+public class EquipeDeRecherche {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="nom_de_equipe")
+    @Column(name = "nom_de_equipe")
     private String nomDeLequipe;
 
-    //    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
+    // for logging and administration purposes it will be filled by the system
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

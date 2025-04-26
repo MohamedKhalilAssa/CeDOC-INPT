@@ -1,7 +1,6 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -21,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name="lieu_de_naissance")
+@Table(name = "lieu_de_naissance")
 public class LieuDeNaissance {
 
     @Id
@@ -37,17 +36,16 @@ public class LieuDeNaissance {
     @Pattern(regexp = "^[\\p{L} '-]+$", message = "La ville ne doit contenir que des lettres, des espaces ou des tirets")
     private String ville;
 
-
-    //    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
+    // for logging and administration purposes it will be filled by the system
+    @Column(name = "created_at", updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-//    Relations
+    // Relations
 
     @OneToMany(mappedBy = "lieuDeNaissance")
     private List<Utilisateur> utilisateurs;
