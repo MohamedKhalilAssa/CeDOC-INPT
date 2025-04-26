@@ -11,9 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import ma.inpt.cedoc.model.entities.auth.Token;
@@ -87,12 +85,24 @@ public class JwtUtil {
 
     // Extracting DATA from the jwt token
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new IllegalArgumentException("Token has expired" + e.getMessage(), e);
+        } catch (UnsupportedJwtException e) {
+            throw new IllegalArgumentException("Unsupported JWT token." + e.getMessage(), e);
+        } catch (MalformedJwtException e) {
+            throw new IllegalArgumentException("Malformed JWT token." + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Token is null or empty." + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to extract claims from token." + e.getMessage(), e);
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
