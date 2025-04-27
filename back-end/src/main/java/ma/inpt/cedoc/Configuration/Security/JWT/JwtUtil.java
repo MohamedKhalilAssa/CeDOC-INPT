@@ -59,6 +59,7 @@ public class JwtUtil {
 
     /* BUILD TOKEN */
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+       
         Map<String, Object> claims = new HashMap<String, Object>(extraClaims);
         claims.put("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         return Jwts.builder()

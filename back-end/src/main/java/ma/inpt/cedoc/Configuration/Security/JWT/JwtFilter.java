@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         // Log the incoming request path
-        System.out.println("Request path: " + request.getServletPath());
+        System.out.println("Request path FROM JWT FILTER: " + request.getServletPath());
         // not execute it when the path is guest
         if (request.getServletPath().contains("/api/auth") || request.getServletPath().contains("/api/guest")) {
             filterChain.doFilter(request, response);
@@ -44,7 +44,6 @@ public class JwtFilter extends OncePerRequestFilter {
         final String jwt;
         // GET the user email
         final String userSubject;
-        System.out.println("authHeader: " + authHeader);
         // Check if the header exists
         if (authHeader == null || !authHeader.startsWith(JwtUtil.AUTHORIZATION_PREFIX)) {
             filterChain.doFilter(request, response);

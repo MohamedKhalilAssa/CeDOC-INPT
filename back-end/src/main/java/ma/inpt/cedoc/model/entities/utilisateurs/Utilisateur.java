@@ -2,9 +2,11 @@ package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,10 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
@@ -90,10 +89,10 @@ public class Utilisateur implements UserDetails {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "nationalite_id")
@@ -104,12 +103,15 @@ public class Utilisateur implements UserDetails {
     private LieuDeNaissance lieuDeNaissance;
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<Token> tokens;
 
     // JWT CONFIGURATION
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getIntitule())).toList();
+        return this.roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getIntitule()))
+                .collect(Collectors.toList());
     }
 
     @Override

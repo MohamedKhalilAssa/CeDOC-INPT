@@ -1,8 +1,8 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,6 +17,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -44,9 +45,10 @@ public class Role {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     // @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonIgnore
-    private Set<Utilisateur> utilisateurs = new HashSet<>();
+    @ToString.Exclude
+    private List<Utilisateur> utilisateurs = new ArrayList<>();
 
 }

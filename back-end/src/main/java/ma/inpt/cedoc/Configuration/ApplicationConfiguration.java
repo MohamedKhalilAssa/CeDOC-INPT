@@ -1,11 +1,18 @@
 package ma.inpt.cedoc.Configuration;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,14 +26,29 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository
 @Configuration
 public class ApplicationConfiguration {
     private final UtilisateurRepository utilisateurRepository;
+    @Value("${email-verification.required}")
+    private boolean emailVerificationRequired;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-                return utilisateurRepository.findByEmail(email)
-                        .orElseThrow(() -> new UsernameNotFoundException("Utillisateur introuvable"));
+                return utilisateurRepository.findByEmail(email).map(utilisateur -> {
+                    // if (emailVerificationRequired && !utilisateur.isEmailValider()) {
+                    // throw new UsernameNotFoundException("Your email is not verified");
+                    // }
+
+                    List<GrantedAuthority> authorities = utilisateur.getRoles().stream()
+                            .map(role -> new SimpleGrantedAuthority(role.getIntitule()))
+                            .collect(Collectors.toList());
+
+                    return new User(
+                            utilisateur.getUsername(),
+                            utilisateur.getPassword(),
+                            authorities);
+                    // if necessary
+                }).orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable"));
             }
         };
     }
@@ -34,8 +56,8 @@ public class ApplicationConfiguration {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(this.userDetailsService());
+        authProvider.setPasswordEncoder(this.passwordEncoder());
         return authProvider;
     }
 

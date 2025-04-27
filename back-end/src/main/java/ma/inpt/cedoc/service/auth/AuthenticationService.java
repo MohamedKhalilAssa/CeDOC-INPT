@@ -1,7 +1,9 @@
 package ma.inpt.cedoc.service.auth;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
@@ -26,6 +29,7 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthenticationService {
 
     private final UtilisateurRepository utilisateurRepository;
@@ -35,6 +39,7 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     @Value("domain")
     private String cookieDomain;
+    private final PasswordEncoder passwordEncoder1;
 
     @Value("${jwt.refreshTokenExpiration}")
     private int refreshTokenExpiration;
@@ -45,7 +50,7 @@ public class AuthenticationService {
         // create new utilisateur object
 
         if (utilisateurRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalStateException("Utilisateur est déja inscrit");
+            throw new RuntimeException("Utilisateur est déja inscrit");
         }
 
         var utilisateur = Utilisateur.builder()
@@ -60,18 +65,15 @@ public class AuthenticationService {
                 .build();
         // save in db and return
         var savedUtilisateur = utilisateurRepository.save(utilisateur);
-        // generate tokens
-        String accessToken = jwtUtil.generateAccessToken(utilisateur);
-        String refreshToken = jwtUtil.generateRefreshToken(utilisateur);
-        // save tokens in db
-        saveUserToken(savedUtilisateur, accessToken, TokenEnum.BEARER);
-        saveUserToken(savedUtilisateur, refreshToken, TokenEnum.REFRESH);
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()));
+        // AUTHENTICATION PROCESS
+        Map<String, String> tokens = authenticate(
+                LoginRequest.builder().email(request.getEmail()).password(request.getPassword()).build(),
+                utilisateur);
+
+        // SENDING TOKENS BACK
         // ADD REFRESH TOKEN AS HTTP ONLY COOKIE
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken).httpOnly(true)
+        ResponseCookie cookie = ResponseCookie.from("refresh_token",
+                tokens.get("refresh_token")).httpOnly(true)
                 // .secure(true) // Ensure cookie is only sent over HTTPS
                 .path("/api/auth/refresh-token") // Set the path for the cookie (adjust to your needs)
                 .maxAge(refreshTokenExpiration) // Set expiration (1 week in this example)
@@ -81,7 +83,8 @@ public class AuthenticationService {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return AuthenticationResponse.builder()
-                .accessToken(accessToken)
+                .accessToken(
+                        tokens.get("access_token"))
                 .statusCode(200)
                 .message("Utilisateur inscrit et authentifier avec success")
                 .build();
@@ -89,8 +92,29 @@ public class AuthenticationService {
 
     public AuthenticationResponse login(LoginRequest request, HttpServletResponse response) {
 
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail()).orElseThrow();
+        Utilisateur utilisateur = utilisateurRepository.findByEmail((String) request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        // AUTHENTICATION PROCESS
+        Map<String, String> tokens = authenticate(request, utilisateur);
 
+        // SENDING TOKENS BACK
+        ResponseCookie cookie = ResponseCookie.from("refresh_token",
+                tokens.get("refresh_token")).httpOnly(true)
+                // .secure(true) // Ensure cookie is only sent over HTTPS
+                .path("/api/auth/refresh-token") // Set the path for the cookie (adjust to your needs)
+                .maxAge(refreshTokenExpiration) // Set expiration (1 week in this example)
+                .sameSite("Lax")
+                .domain(cookieDomain)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return AuthenticationResponse.builder()
+                .accessToken(tokens.get("access_token"))
+                .statusCode(HttpServletResponse.SC_OK)
+                .message("Utilisateur inscrit et authentifier avec success")
+                .build();
+    }
+
+    public Map<String, String> authenticate(LoginRequest request, Utilisateur utilisateur) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -103,20 +127,11 @@ public class AuthenticationService {
         revokeAllUserTokens(utilisateur);
         saveUserToken(utilisateur, accessToken, TokenEnum.BEARER);
         saveUserToken(utilisateur, refreshToken, TokenEnum.REFRESH);
-        // ADD REFRESH TOKEN AS HTTP ONLY COOKIE
-        ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken).httpOnly(true)
-                // .secure(true) // Ensure cookie is only sent over HTTPS
-                .path("/api/auth/refresh-token") // Set the path for the cookie (adjust to your needs)
-                .maxAge(refreshTokenExpiration) // Set expiration (1 week in this example)
-                .sameSite("Lax")
-                .domain(cookieDomain)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .statusCode(200)
-                .message("Utilisateur inscrit et authentifier avec success")
-                .build();
+        // return tokens
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("access_token", accessToken);
+        tokens.put("refresh_token", refreshToken);
+        return tokens;
     }
 
     public AuthenticationResponse refreshToken(TokenRefreshRequest request, HttpServletResponse response)

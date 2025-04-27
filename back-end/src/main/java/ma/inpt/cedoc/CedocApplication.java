@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
+import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -17,10 +17,9 @@ public class CedocApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(JwtUtil jwtUtil) {
+	CommandLineRunner init(UtilisateurService user) {
 		return args -> {
-			System.out.println("");
-			;
+
 		};
 	}
 

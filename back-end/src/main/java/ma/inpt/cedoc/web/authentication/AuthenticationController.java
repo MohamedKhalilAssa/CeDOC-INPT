@@ -2,7 +2,9 @@ package ma.inpt.cedoc.web.authentication;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,10 +38,25 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request,
             HttpServletResponse response) {
-        System.out.println(request.getEmail());
-
-        return ResponseEntity.ok(authenticationService.login(request, response));
-
+        System.out.println(request);
+        try {
+            AuthenticationResponse authResponse = authenticationService.login(request, response);
+            return ResponseEntity.ok(authResponse);
+        }
+        // CATCHING ERRORS
+        catch (BadCredentialsException e) {
+            AuthenticationResponse authResponse = AuthenticationResponse.builder()
+                    .statusCode(HttpServletResponse.SC_UNAUTHORIZED)
+                    .message("Email ou mot de passe incorrect")
+                    .build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse);
+        } catch (Exception e) {
+            AuthenticationResponse authResponse = AuthenticationResponse.builder()
+                    .statusCode(HttpServletResponse.SC_BAD_REQUEST)
+                    .message("Probleme de connexion: " + e.getMessage())
+                    .build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse);
+        }
     }
 
     @PostMapping("/refresh-token")
