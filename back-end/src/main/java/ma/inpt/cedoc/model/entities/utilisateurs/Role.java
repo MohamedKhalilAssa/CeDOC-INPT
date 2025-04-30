@@ -14,10 +14,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Data
@@ -25,6 +22,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "roles")
+@Builder
 public class Role {
 
     @Id

@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import ma.inpt.cedoc.model.entities.utilisateurs.Role;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.RoleRepository;
 import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @SpringBootApplication
@@ -17,9 +19,10 @@ public class CedocApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(UtilisateurService user) {
+	CommandLineRunner init(UtilisateurService user, RoleRepository role) {
 		return args -> {
-
+			// role.save(Role.builder().intitule("ADMIN").build());
+			// user.assignRoleToUtilisateur("ali.bensalah@example.com", "ADMIN");
 		};
 	}
 
