@@ -39,7 +39,6 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     @Value("domain")
     private String cookieDomain;
-    private final PasswordEncoder passwordEncoder1;
 
     @Value("${jwt.refreshTokenExpiration}")
     private int refreshTokenExpiration;

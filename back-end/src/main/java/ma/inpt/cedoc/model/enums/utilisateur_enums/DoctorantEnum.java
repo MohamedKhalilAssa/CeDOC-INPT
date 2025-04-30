@@ -1,9 +1,9 @@
 package ma.inpt.cedoc.model.enums.utilisateur_enums;
 
 public enum DoctorantEnum {
-    Preinscrit,
-    EnCours,
-    SoutenanceProgrammee,
-    Soutenu,
-    Laureat
+    PREINSCRIT,
+    EN_COURS,
+    SOUTENANCE_PROGRAMMER,
+    SOUTENU,
+    LAUREAT
 }
