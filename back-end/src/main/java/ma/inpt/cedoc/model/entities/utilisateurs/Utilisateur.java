@@ -15,6 +15,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -104,6 +106,7 @@ public class Utilisateur implements UserDetails {
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @JsonIgnore
     private Set<Token> tokens;
 
     // JWT CONFIGURATION

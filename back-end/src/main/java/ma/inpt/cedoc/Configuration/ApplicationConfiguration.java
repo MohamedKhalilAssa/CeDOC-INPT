@@ -36,7 +36,7 @@ public class ApplicationConfiguration {
             public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
                 return utilisateurRepository.findByEmail(email).map(utilisateur -> {
                     // if (emailVerificationRequired && !utilisateur.isEmailValider()) {
-                    // throw new UsernameNotFoundException("Your email is not verified");
+                    //     throw new UsernameNotFoundException("Your email is not verified");
                     // }
 
                     List<GrantedAuthority> authorities = utilisateur.getRoles().stream()

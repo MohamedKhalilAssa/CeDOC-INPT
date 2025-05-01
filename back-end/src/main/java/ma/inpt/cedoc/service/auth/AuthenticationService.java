@@ -37,7 +37,7 @@ public class AuthenticationService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
-    @Value("domain")
+    @Value("${app.domain}")
     private String cookieDomain;
 
     @Value("${jwt.refreshTokenExpiration}")
