@@ -32,7 +32,10 @@ public class SecurityConfiguration {
                                 .addFilterBefore(
                                                 jwtFilter, UsernamePasswordAuthenticationFilter.class)
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/api/guest/**").permitAll()
+                                                .requestMatchers("/api/auth/logout").authenticated()
+
+                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**")
+                                                .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
