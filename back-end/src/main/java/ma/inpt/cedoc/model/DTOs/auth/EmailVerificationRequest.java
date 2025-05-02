@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmailVerificationRequest {
-    private long id;
+
+    private String email;
     private String token;
 
 }

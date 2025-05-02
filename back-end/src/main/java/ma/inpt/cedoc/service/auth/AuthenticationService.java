@@ -64,7 +64,7 @@ public class AuthenticationService {
                 // save in db and return
                 var savedUtilisateur = utilisateurRepository.save(utilisateur);
                 // Send verification mail
-                emailVerificationService.sendVerificationToken(savedUtilisateur.getId(), savedUtilisateur.getEmail());
+                emailVerificationService.sendVerificationToken(savedUtilisateur.getEmail());
                 return AuthenticationResponse.builder()
                                 .statusCode(200)
                                 .message("Utilisateur inscrit. Merci de verifier votre compte avant de proceder (Voir Mail)")
@@ -78,7 +78,7 @@ public class AuthenticationService {
                                                 "Utilisateur introuvable"));
 
                 if (emailVerificationRequired && !utilisateur.isEmailValider()) {
-                        emailVerificationService.sendVerificationToken(utilisateur.getId(), utilisateur.getEmail());
+                        emailVerificationService.sendVerificationToken(utilisateur.getEmail());
                         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                                         "Veuillez verifier votre compte. Voir Mail.");
                 }

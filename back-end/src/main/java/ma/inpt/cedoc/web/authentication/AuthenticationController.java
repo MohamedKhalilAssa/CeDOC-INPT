@@ -1,6 +1,8 @@
 package ma.inpt.cedoc.web.authentication;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,15 +116,24 @@ public class AuthenticationController {
 
     @PostMapping("/email/send-verification")
     public ResponseEntity<AuthenticationResponse> sendVerificationMail(@RequestParam String email) {
+        CompletableFuture<Void> future = emailVerificationService.sendVerificationToken(email);
+
+        // ERROR HANDLING
         try {
-            emailVerificationService.resendVerificationToken(email);
+            future.get();
             return ResponseEntity.ok(
                     AuthenticationResponse.builder()
                             .statusCode(HttpStatus.OK.value())
                             .message("Email de vérification envoyé avec succès")
                             .build());
-        } catch (ResponseStatusException e) {
-            return handleResponseStatusException(e);
+        } catch (ExecutionException | InterruptedException | ResponseStatusException e) {
+            // Here you can handle the exception as needed
+            if (e.getCause() instanceof ResponseStatusException) {
+                ResponseStatusException exception = (ResponseStatusException) e.getCause();
+                // Handle the ResponseStatusException here
+                return handleResponseStatusException(exception);
+            }
+            return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'envoi de l'email");
         } catch (Exception e) {
             return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'envoi de l'email");
         }
@@ -131,7 +142,7 @@ public class AuthenticationController {
     @PostMapping("/email/verify")
     public ResponseEntity<?> verifyEmail(@RequestBody EmailVerificationRequest request) {
         try {
-            Utilisateur verifiedUser = emailVerificationService.verifyEmail(request.getId(), request.getToken());
+            Utilisateur verifiedUser = emailVerificationService.verifyEmail(request.getEmail(), request.getToken());
             return ResponseEntity.ok(verifiedUser);
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);
