@@ -22,7 +22,7 @@ import ma.inpt.cedoc.model.entities.soutenance.Jury;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="directeur_de_these")
+@Table(name="directeurs_de_theses")
 @DiscriminatorValue("DIRECTEUR_DE_THESE")
 public class DirecteurDeThese extends Professeur {
 

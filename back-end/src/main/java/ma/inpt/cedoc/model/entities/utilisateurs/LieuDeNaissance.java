@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "lieu_de_naissance")
+@Table(name = "lieux_de_naissances")
 public class LieuDeNaissance {
 
     @Id

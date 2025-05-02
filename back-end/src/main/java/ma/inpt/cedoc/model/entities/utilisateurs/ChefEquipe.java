@@ -19,7 +19,7 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="chef_equipe")
+@Table(name="chefs_equipes")
 @DiscriminatorValue("CHEF_EQUIPE")
 public class ChefEquipe extends Professeur {
 

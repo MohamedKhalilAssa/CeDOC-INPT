@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "equipe_de_recherche")
+@Table(name = "equipes_de_recherches")
 public class EquipeDeRecherche {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

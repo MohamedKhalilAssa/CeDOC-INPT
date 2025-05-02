@@ -17,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="responsable_de_formation")
+@Table(name="responsables_de_formations")
 @DiscriminatorValue("RESPONSABLE_DE_FORMATION")
 public class ResponsableDeFormation extends Professeur {
 
