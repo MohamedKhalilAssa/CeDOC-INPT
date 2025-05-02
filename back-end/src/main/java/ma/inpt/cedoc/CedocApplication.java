@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import ma.inpt.cedoc.model.entities.utilisateurs.Role;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.RoleRepository;
 import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 

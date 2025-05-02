@@ -26,8 +26,7 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository
 @Configuration
 public class ApplicationConfiguration {
     private final UtilisateurRepository utilisateurRepository;
-    @Value("${email-verification.required}")
-    private boolean emailVerificationRequired;
+ 
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -35,9 +34,6 @@ public class ApplicationConfiguration {
             @Override
             public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
                 return utilisateurRepository.findByEmail(email).map(utilisateur -> {
-                    // if (emailVerificationRequired && !utilisateur.isEmailValider()) {
-                    // throw new UsernameNotFoundException("Your email is not verified");
-                    // }
 
                     List<GrantedAuthority> authorities = utilisateur.getRoles().stream()
                             .map(role -> new SimpleGrantedAuthority(role.getIntitule()))
