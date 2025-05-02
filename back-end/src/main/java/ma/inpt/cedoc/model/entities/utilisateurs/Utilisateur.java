@@ -18,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
@@ -38,35 +37,19 @@ public class Utilisateur implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Le nom est obligatoire")
-    @Size(min = 2, max = 50, message = "Le nom doit contenir entre 2 et 50 caractères")
-    @Pattern(regexp = "^[\\p{L} '-]+$", message = "Le nom ne doit contenir que des lettres, des espaces ou des tirets")
     private String nom;
 
-    @NotBlank(message = "Le prénom est obligatoire")
-    @Size(min = 2, max = 50, message = "Le prénom doit contenir entre 2 et 50 caractères")
-    @Pattern(regexp = "^[\\p{L} '-]+$", message = "Le prénom ne doit contenir que des lettres, des espaces ou des tirets")
     private String prenom;
 
     @Column(unique = true)
-    @Email(message = "L'email doit être valide")
-    @NotBlank(message = "L'email est obligatoire")
     private String email;
 
     @Column(unique = true)
-    @NotBlank(message = "Le numéro de téléphone est obligatoire.")
-    @Size(min = 10, max = 15, message = "Le numéro de téléphone doit comporter entre 10 et 15 chiffres.")
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Le numéro de téléphone doit être valide (format international optionnel, exemple : +212600000000)")
     private String telephone;
 
-    @NotBlank(message = "Le mot de passe est obligatoire.")
-    @Size(min = 8, message = "Le mot de passe doit comporter au moins 8 caractères.")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.")
     private String password;
 
     @Column(name = "date_naissance")
-    @Past(message = "La date de naissance doit être dans le passé.")
-    @NotNull(message = "La date de naissance est obligatoire.")
     private LocalDate dateNaissance;
 
     // To Review if is required or not
@@ -75,7 +58,6 @@ public class Utilisateur implements UserDetails {
     private EtatCivilEnum etatCivilEnum;
 
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "Veuillez precisez votre genre.")
     private GenreEnum genre;
 
     @Column(name = "email_valider")

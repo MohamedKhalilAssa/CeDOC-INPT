@@ -20,10 +20,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurDTO;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
-import ma.inpt.cedoc.model.DTOs.auth.RegisterRequest;
 import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.auth.TokenEnum;
@@ -37,16 +38,18 @@ public class AuthenticationService {
 
         private final UtilisateurRepository utilisateurRepository;
         private final PasswordEncoder passwordEncoder;
+        private final EmailVerificationService emailVerificationService;
         private final JwtUtil jwtUtil;
         private final AuthenticationManager authenticationManager;
         private final TokenRepository tokenRepository;
-        @Value("${app.domain}")
-        private String cookieDomain;
-
         @Value("${jwt.refreshTokenExpiration}")
         private int refreshTokenExpiration;
+        @Value("${app.domain}")
+        private String cookieDomain;
+        @Value("${email-verification.required}")
+        private boolean emailVerificationRequired;
 
-        public AuthenticationResponse register(RegisterRequest request, HttpServletResponse response)
+        public AuthenticationResponse register(UtilisateurDTO request, HttpServletResponse response)
                         throws IllegalStateException {
 
                 // create new utilisateur object
@@ -55,21 +58,16 @@ public class AuthenticationService {
                         new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utilisateur deja inscrit");
                 }
 
-                var utilisateur = Utilisateur.builder()
-                                .prenom(request.getPrenom())
-                                .nom(request.getNom())
-                                .email(request.getEmail())
-                                .password(passwordEncoder.encode(request.getPassword()))
-                                .telephone(request.getTelephone())
-                                .dateNaissance(request.getDateNaissance())
-                                .etatCivilEnum(request.getEtatCivilEnum())
-                                .genre(request.getGenre())
-                                .build();
-                // Send verification mail
+                request.setPassword(passwordEncoder.encode(request.getPassword()));
+                Utilisateur utilisateur = UtilisateurMapper.INSTANCE.utilisateurDTOToUtilisateur(request);
 
+                // save in db and return
+                var savedUtilisateur = utilisateurRepository.save(utilisateur);
+                // Send verification mail
+                emailVerificationService.sendVerificationToken(savedUtilisateur.getId(), savedUtilisateur.getEmail());
                 return AuthenticationResponse.builder()
                                 .statusCode(200)
-                                .message("Utilisateur inscrit. Merci de verifier votre compte avant de proceder")
+                                .message("Utilisateur inscrit. Merci de verifier votre compte avant de proceder (Voir Mail)")
                                 .build();
         }
 
@@ -78,6 +76,12 @@ public class AuthenticationService {
                 Utilisateur utilisateur = utilisateurRepository.findByEmail((String) request.getEmail())
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Utilisateur introuvable"));
+
+                if (emailVerificationRequired && !utilisateur.isEmailValider()) {
+                        emailVerificationService.sendVerificationToken(utilisateur.getId(), utilisateur.getEmail());
+                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                                        "Veuillez verifier votre compte. Voir Mail.");
+                }
                 // AUTHENTICATION PROCESS
                 Map<String, String> tokens = authenticate(request, utilisateur);
 

@@ -26,8 +26,7 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository
 @Configuration
 public class ApplicationConfiguration {
     private final UtilisateurRepository utilisateurRepository;
-    @Value("${email-verification.required}")
-    private boolean emailVerificationRequired;
+ 
 
     @Bean
     public UserDetailsService userDetailsService() {
