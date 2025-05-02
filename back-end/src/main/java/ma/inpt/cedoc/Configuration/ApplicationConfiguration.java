@@ -3,7 +3,6 @@ package ma.inpt.cedoc.Configuration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +25,6 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository
 @Configuration
 public class ApplicationConfiguration {
     private final UtilisateurRepository utilisateurRepository;
- 
 
     @Bean
     public UserDetailsService userDetailsService() {

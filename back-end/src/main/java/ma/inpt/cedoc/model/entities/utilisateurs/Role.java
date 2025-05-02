@@ -47,6 +47,7 @@ public class Role {
     // @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonIgnore
     @ToString.Exclude
+    @Builder.Default
     private List<Utilisateur> utilisateurs = new ArrayList<>();
 
 }
