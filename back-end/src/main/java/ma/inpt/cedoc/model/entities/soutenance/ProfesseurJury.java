@@ -21,7 +21,7 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.RoleJuryEnum;
 @AllArgsConstructor
 @EqualsAndHashCode
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "role_jury")
+@Table(name = "roles_jury")
 public class ProfesseurJury {
 
     @Id

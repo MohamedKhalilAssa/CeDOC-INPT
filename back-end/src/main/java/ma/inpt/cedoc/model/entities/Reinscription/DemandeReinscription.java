@@ -12,6 +12,7 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "demandes_reinscriptions")
 public class DemandeReinscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

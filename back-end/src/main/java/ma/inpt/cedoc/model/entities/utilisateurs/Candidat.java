@@ -14,12 +14,12 @@ import ma.inpt.cedoc.model.entities.candidature.Candidature;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="candidats")
+@Table(name = "candidats")
 public class Candidat extends Utilisateur {
     private boolean archiver = false;
 
     // ---------------------- Relations ----------------------------
-    
+
     @OneToOne(mappedBy = "candidat")
     private Candidature candidature;
 

@@ -23,20 +23,69 @@ INSERT INTO nationalites (intitule) VALUES
 
 -- UTILISATEURS (base table for joined inheritance)
 -- bcrypt hash of 'password' is: $2a$10$E6R/NMoyKoD1HimOFR8n7OanS9rROvbyHOXg1oE8gfEBylL5TNN.q
-INSERT INTO utilisateurs (
-    nom, prenom, genre, telephone, email, date_de_naissance, mot_de_passe,
-    etat_civil, email_valide, role_id, lieu_de_naissance_id, nationalite_id
+INSERT INTO `utilisateurs`(
+    `created_at`,
+    `date_naissance`,
+    `email`,
+    `email_valider`,
+    `etat_civil`,
+    `genre`,
+    `nom`,
+    `password`,
+    `prenom`,
+    `telephone`,
+    `updated_at`,
+    `lieu_naissance_id`,
+    `nationalite_id`
 ) VALUES 
 -- Candidat
-('ElMansouri', 'Khadija', 'FEMME', '+212612345678', 'khadija@example.com', '1998-03-12','$2a$10$E6R/NMoyKoD1HimOFR8n7OanS9rROvbyHOXg1oE8gfEBylL5TNN.q', 'CELIBATAIRE', TRUE, 1, 1, 1),
-
+(
+    NOW(),
+    '1998-04-15',
+    'ali.bensalah@example.com',
+    1,  -- TRUE for email validated
+    'CELIBATAIRE',
+    'HOMME',
+    'Ben Salah',
+    '$2a$10$A7TNL7Vwz5Y.i6M6ZFlrhOvX/xMF0FnzNdzTiLMbm5ro3ibu65Zam',
+    'Ali',
+    '+212612345678',
+    NOW(),
+    1,
+    1
+),
 -- Professeur
-('Bennani', 'Youssef', 'M', '0611122233', 'youssef@example.com', '1975-11-23',
- '$2a$10$E6R/NMoyKoD1HimOFR8n7OanS9rROvbyHOXg1oE8gfEBylL5TNN.q', 'MARIE', TRUE, 2, 2, 1),
-
+(
+    NOW(),
+    '1992-11-03',
+    'fatima.ouahbi@example.com',
+    0,  -- FALSE for email not validated
+    'MARIER',
+    'FEMME',
+    'Ouahbi',
+    '$2a$10$A7TNL7Vwz5Y.i6M6ZFlrhOvX/xMF0FnzNdzTiLMbm5ro3ibu65Zam',
+    'Fatima',
+    '+212698745632',
+    NOW(),
+    2,
+    2
+),
 -- Doctorant
-('Alaoui', 'Salma', 'F', '0677889900', 'salma@example.com', '1995-06-15',
- '$2a$10$E6R/NMoyKoD1HimOFR8n7OanS9rROvbyHOXg1oE8gfEBylL5TNN.q', 'CELIBATAIRE', TRUE, 3, 3, 3);
+(
+    NOW(),
+    '1985-06-27',
+    'yacine.elhassani@example.com',
+    1,  -- TRUE for email validated
+    'CELIBATAIRE',
+    'HOMME',
+    'El Hassani',
+    '$2a$10$A7TNL7Vwz5Y.i6M6ZFlrhOvX/xMF0FnzNdzTiLMbm5ro3ibu65Zam',
+    'Yacine',
+    '+212677889900',
+    NOW(),
+    3,
+    3
+);
 
 -- CANDIDAT
 INSERT INTO candidats (id, archiver) VALUES 
@@ -47,7 +96,7 @@ INSERT INTO professeurs (id, grade) VALUES
 (2, 'PES');
 
 -- DOCTORANT
-INSERT INTO doctorants (id, date_inscription, statut_doctorant, nbr_heures_labo, draft_diplome_url, archiver) VALUES 
+INSERT INTO doctorants (id, date_inscription, statut_doctorant, nombre_heures_labo, draft_diplome_url, archiver) VALUES 
 (3, '2023-09-01', 'EN_COURS', 100, 'http://example.com/draft.pdf', FALSE);
 
 -- CHEF EQUIPE (as specialization of PROFESSEUR)

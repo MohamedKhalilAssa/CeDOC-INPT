@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "attestation")
+@Table(name = "attestations")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type_attestation", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("DEFAULT")

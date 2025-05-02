@@ -20,7 +20,7 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "demande_attestion")
+@Table(name = "demandes_attestions")
 public class DemandeAttestation {
 
     @Id

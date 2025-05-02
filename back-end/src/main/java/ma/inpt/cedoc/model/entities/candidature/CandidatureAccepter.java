@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "candidature_accepter")
+@Table(name = "candidatures_accepter")
 public class CandidatureAccepter extends Candidature {
 
     @Min(value = 1, message = "La date d'entretien (en jours depuis epoch) doit être positive")

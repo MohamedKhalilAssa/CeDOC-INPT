@@ -1,6 +1,10 @@
 package ma.inpt.cedoc.model.entities.Doctorant_Actions;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,13 +14,11 @@ import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 
-import java.time.ZonedDateTime;
-import java.util.List;
-
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "publications")
 public class Publication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +36,7 @@ public class Publication {
     @NotNull(message = "L'état de publication est obligatoire")
     private EtatEnum status;
 
-    //----------------- Relations -----------------
+    // ----------------- Relations -----------------
 
     @ManyToMany(mappedBy = "publications")
     @JsonIgnore

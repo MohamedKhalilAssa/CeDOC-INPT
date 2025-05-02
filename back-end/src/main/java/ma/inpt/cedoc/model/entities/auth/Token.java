@@ -21,6 +21,7 @@ import ma.inpt.cedoc.model.enums.auth.TokenEnum;
 @Data
 /* AuditingEntityListener */
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "tokens")
 public class Token {
 
     @Id

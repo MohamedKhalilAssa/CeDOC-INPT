@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "candidature_refuser")
+@Table(name = "candidatures_refuser")
 public class CandidatureRefuser extends Candidature {
 
     @NotBlank(message = "Le motif de refus est obligatoire")

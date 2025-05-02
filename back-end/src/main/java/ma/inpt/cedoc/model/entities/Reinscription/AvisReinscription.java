@@ -15,6 +15,7 @@ import ma.inpt.cedoc.model.enums.reinscription_enums.AvisEnum;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "avis_reinscriptions")
 public class AvisReinscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

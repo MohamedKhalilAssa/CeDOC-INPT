@@ -21,7 +21,7 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.StatutSoutenanceEnum;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "Soutenance")
+@Table(name = "soutenances")
 public class Soutenance {
 
     @Id

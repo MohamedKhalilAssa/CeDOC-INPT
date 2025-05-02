@@ -20,7 +20,7 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.DemandeSoutenanceEnum;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "demande_soutenance")
+@Table(name = "demandes_soutenances")
 @EntityListeners(AuditingEntityListener.class)
 public class DemandeSoutenance {
 

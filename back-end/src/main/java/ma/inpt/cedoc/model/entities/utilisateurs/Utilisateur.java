@@ -37,19 +37,22 @@ public class Utilisateur implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String nom;
 
+    @Column(nullable = false)
     private String prenom;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String telephone;
 
+    @Column(nullable = false)
     private String password;
 
-    @Column(name = "date_naissance")
+    @Column(name = "date_naissance", nullable = false)
     private LocalDate dateNaissance;
 
     // To Review if is required or not
@@ -58,9 +61,10 @@ public class Utilisateur implements UserDetails {
     private EtatCivilEnum etatCivilEnum;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "genre", nullable = false)
     private GenreEnum genre;
 
-    @Column(name = "email_valider")
+    @Column(name = "email_valider", nullable = false)
     @Builder.Default
     private boolean emailValider = false;
 
@@ -79,14 +83,14 @@ public class Utilisateur implements UserDetails {
     private List<Role> roles = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "nationalite_id")
+    @JoinColumn(name = "nationalite_id", nullable = false)
     private Nationalite nationalite;
 
     @ManyToOne
-    @JoinColumn(name = "lieu_naissance_id")
+    @JoinColumn(name = "lieu_naissance_id", nullable = false)
     private LieuDeNaissance lieuDeNaissance;
 
-    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @JsonIgnore
     private Set<Token> tokens;
