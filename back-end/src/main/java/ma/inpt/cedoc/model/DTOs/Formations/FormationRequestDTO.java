@@ -1,5 +1,7 @@
 package ma.inpt.cedoc.model.DTOs.Formations;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -26,9 +28,9 @@ public class FormationRequestDTO {
         private String nomFormateur;
 
         @NotBlank(message = "La date de début est obligatoire.")
-        private String dateDebut;  // (ideally LocalDate, but I respect your original string choice)
+        private LocalDate dateDebut; // (ideally LocalDate, but I respect your original string choice)
 
-        private Integer duree;     // durée en heures
+        private Integer duree; // durée en heures
 
-        private String lieu;       // peut être distanciel ou physique
+        private String lieu; // peut être distanciel ou physique
 }

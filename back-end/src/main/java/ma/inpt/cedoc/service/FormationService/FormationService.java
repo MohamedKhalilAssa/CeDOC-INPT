@@ -1,14 +1,15 @@
 package ma.inpt.cedoc.service.FormationService;
 
-import ma.inpt.cedoc.model.DTOs.FormationDtos.FormationResponseDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.FormationMapper;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.repositories.formationRepositories.FormationRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FormationService {
