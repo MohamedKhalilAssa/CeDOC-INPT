@@ -66,6 +66,6 @@ public class Formation {
 
         @ManyToMany
         @JoinTable(name = "Doctorant_formation", joinColumns = @JoinColumn(name = "formation_id"), inverseJoinColumns = @JoinColumn(name = "doctorant_id"))
-        private List<Doctorant> Doctorants_cibles;
+        private List<Doctorant> doctorantsCibles;
 
 }

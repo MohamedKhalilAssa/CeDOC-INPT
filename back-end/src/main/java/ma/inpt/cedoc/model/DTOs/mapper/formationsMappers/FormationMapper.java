@@ -20,7 +20,7 @@ public interface FormationMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "seanceFormationList", ignore = true)
     @Mapping(target = "professeur", ignore = true)
-    @Mapping(target = "Doctorants_cibles", ignore = true)
+    @Mapping(target = "doctorantsCibles", ignore = true)
     Formation formationRequestDTOToFormation(FormationRequestDTO formationRequestDTO);
 
     // Mapping from Formation to FormationResponseDTO
@@ -32,10 +32,10 @@ public interface FormationMapper {
     /*--------------------------------------------------------------------------HELPERS---------------------------------------------------------------------------------*/
 
     default java.util.List<Long> mapDoctorantIds(Formation formation) {
-        if (formation.getDoctorants_cibles() == null) {
+        if (formation.getDoctorantsCibles() == null) {
             return java.util.Collections.emptyList();
         }
-        return formation.getDoctorants_cibles()
+        return formation.getDoctorantsCibles()
                 .stream()
                 .map(doctorant -> doctorant.getId())
                 .collect(Collectors.toList());
