@@ -15,6 +15,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -41,7 +42,7 @@ public class Formation {
     private String nomFormateur;
 
     @NotBlank
-    private String dateDebut;          // ISO‑8601 preferred; change to LocalDate if you can
+    private Date dateDebut;          // ISO‑8601 preferred; change to LocalDate if you can
 
     private Integer duree;             // en heures
 
