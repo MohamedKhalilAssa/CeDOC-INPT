@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,7 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
 import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
@@ -42,6 +45,8 @@ public class AuthenticationService {
         private final JwtUtil jwtUtil;
         private final AuthenticationManager authenticationManager;
         private final TokenRepository tokenRepository;
+        private final UtilisateurMapper utilisateurMapper;
+
         @Value("${jwt.refreshTokenExpiration}")
         private int refreshTokenExpiration;
         @Value("${app.domain}")
@@ -49,26 +54,36 @@ public class AuthenticationService {
         @Value("${email-verification.required}")
         private boolean emailVerificationRequired;
 
-        public AuthenticationResponse register(UtilisateurDTO request, HttpServletResponse response)
-                        throws IllegalStateException {
+        public AuthenticationResponse register(UtilisateurRequestDTO request, HttpServletResponse response)
+                        throws InterruptedException, ExecutionException {
 
                 // create new utilisateur object
 
-                if (utilisateurRepository.existsByEmail(request.getEmail())) {
-                        new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utilisateur deja inscrit");
+                if (utilisateurRepository.existsByEmail(request.getEmail())
+                                || utilisateurRepository.existsByTelephone(request.getTelephone())) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utilisateur deja inscrit");
                 }
 
                 request.setPassword(passwordEncoder.encode(request.getPassword()));
-                Utilisateur utilisateur = UtilisateurMapper.INSTANCE.utilisateurDTOToUtilisateur(request);
+                Utilisateur utilisateur = utilisateurMapper.utilisateurRequestDTOToUtilisateur(request);
 
                 // save in db and return
-                var savedUtilisateur = utilisateurRepository.save(utilisateur);
+                var savedUtilisateur = utilisateurRepository.saveAndFlush(utilisateur);
                 // Send verification mail
-                emailVerificationService.sendVerificationToken(savedUtilisateur.getEmail());
-                return AuthenticationResponse.builder()
-                                .statusCode(200)
-                                .message("Utilisateur inscrit. Merci de verifier votre compte avant de proceder (Voir Mail)")
-                                .build();
+
+                CompletableFuture<Void> future = emailVerificationService
+                                .sendMailToUtilisateur(savedUtilisateur);
+
+                // ERROR HANDLINGs
+                try {
+                        future.get();
+                        return AuthenticationResponse.builder()
+                                        .statusCode(HttpStatus.OK.value())
+                                        .message("Utilisateur inscrit. Merci de verifier votre compte avant de proceder (Voir Mail)")
+                                        .build();
+                } catch (Exception e) {
+                        throw e;
+                }
         }
 
         public AuthenticationResponse login(LoginRequest request, HttpServletResponse response) {
@@ -125,9 +140,11 @@ public class AuthenticationService {
 
         public AuthenticationResponse logout(HttpServletResponse response) {
 
-                Utilisateur utilisateur = (Utilisateur) SecurityContextHolder.getContext().getAuthentication()
+                User user = (User) SecurityContextHolder.getContext().getAuthentication()
                                 .getPrincipal();
                 // revoking all tokens
+
+                Utilisateur utilisateur = utilisateurRepository.findByEmail(user.getUsername()).orElseThrow();
                 revokeAllUserTokens(utilisateur);
                 // DELETING TOKEN FROM COOKIes
                 ResponseCookie cookie = ResponseCookie.from("refresh_token", "")

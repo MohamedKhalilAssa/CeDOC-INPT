@@ -33,7 +33,6 @@ public class SecurityConfiguration {
                                                 jwtFilter, UsernamePasswordAuthenticationFilter.class)
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout").authenticated()
-
                                                 .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())

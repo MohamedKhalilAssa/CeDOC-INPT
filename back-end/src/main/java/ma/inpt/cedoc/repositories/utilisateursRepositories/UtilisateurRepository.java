@@ -8,5 +8,8 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
     Optional<Utilisateur> findByEmail(String email);
+
     boolean existsByEmail(String email);
+
+    boolean existsByTelephone(String telephone);
 }

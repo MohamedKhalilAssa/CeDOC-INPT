@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.Annotations.FieldMatcher.FieldMatch;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 
@@ -16,7 +17,8 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UtilisateurDTO {
+@FieldMatch(first = "password", second = "passwordConfirmation", message = "Les mots de passe ne se correspondent pas")
+public class UtilisateurRequestDTO {
 
     @NotBlank(message = "Le nom est obligatoire")
     @Size(min = 2, max = 50, message = "Le nom doit contenir entre 2 et 50 caractères")
@@ -42,6 +44,9 @@ public class UtilisateurDTO {
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.")
     private String password;
 
+    @NotBlank(message = "La confirmation du mot de passe est obligatoire.")
+    private String passwordConfirmation;
+
     @Past(message = "La date de naissance doit être dans le passé.")
     @NotNull(message = "La date de naissance est obligatoire.")
     private LocalDate dateNaissance;
@@ -51,6 +56,12 @@ public class UtilisateurDTO {
 
     @NotNull(message = "Veuillez préciser votre genre.")
     private GenreEnum genre;
+
+    @NotNull(message = "Veuillez preciser votre nationalité.")
+    private long nationaliteId;
+
+    @NotNull(message = "Veuillez preciser votre lieu de naissance.")
+    private long lieuDeNaissanceId;
 
     @Builder.Default
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

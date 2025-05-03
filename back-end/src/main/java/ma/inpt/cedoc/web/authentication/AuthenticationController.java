@@ -15,12 +15,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Helpers.UtilFunctions;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.EmailVerificationRequest;
 import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
 import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
 import ma.inpt.cedoc.service.auth.EmailVerificationService;
 
@@ -34,7 +34,7 @@ public class AuthenticationController {
 
     // for registering new User
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid UtilisateurDTO request,
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid UtilisateurRequestDTO request,
             HttpServletResponse response) {
         try {
             AuthenticationResponse authResponse = authenticationService.register(request, response);
@@ -139,7 +139,8 @@ public class AuthenticationController {
     @PostMapping("/email/verify")
     public ResponseEntity<?> verifyEmail(@RequestBody EmailVerificationRequest request) {
         try {
-            Utilisateur verifiedUser = emailVerificationService.verifyEmail(request.getEmail(), request.getToken());
+            UtilisateurResponseDTO verifiedUser = emailVerificationService.verifyEmail(request.getEmail(),
+                    request.getToken());
             return ResponseEntity.ok(verifiedUser);
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);

@@ -48,9 +48,11 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         // Log the incoming request path
-        System.out.println("Request path FROM JWT FILTER: " + request.getServletPath());
+        System.out.println("Authenticated Request path : " + request.getServletPath() + " Request method : "
+                + request.getMethod());
         // not execute it when the path is guest
-        if (request.getServletPath().contains("/api/auth") || request.getServletPath().contains("/api/guest")) {
+        if ((request.getServletPath().contains("/api/auth") && !request.getServletPath().contains("/api/auth/logout"))
+                || request.getServletPath().contains("/api/guest")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,6 +68,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         jwt = authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length());
         userSubject = jwtUtil.extractSubject(jwt);
+
         boolean isAccessTokenValid = false;
         // Check if the subject is there and if the user is already authenticated
         if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
