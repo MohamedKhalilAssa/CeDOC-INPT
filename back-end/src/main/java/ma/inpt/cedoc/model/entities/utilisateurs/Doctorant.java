@@ -18,6 +18,7 @@ import ma.inpt.cedoc.model.entities.Doctorant_Actions.Publication;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.attestation.DemandeAttestation;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
 import ma.inpt.cedoc.model.entities.formation.Vacation;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
@@ -64,6 +65,10 @@ public class Doctorant extends Utilisateur {
         private Sujet sujet;
 
         /*------------------- Relation -----------------*/
+        //Relation avec Formation
+        @ManyToMany(mappedBy = "Doctorants_cibles")
+        private List<Formation> formations_proposees;
+
         // Relation avec SeanceFormation
         @OneToMany(mappedBy = "declarant")
         private List<SeanceFormation> seancesDeclarees;

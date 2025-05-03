@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.model.enums.formation_enums.ModuleEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -24,14 +26,15 @@ import java.util.List;
 public class Formation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
+    @NotBlank
+    private String formationName;
     /* diagram: Module (enum) */
     @Enumerated(EnumType.STRING)
     @NotNull
     private ModuleEnum module;
 
-    @NotBlank
     private String intitule;
 
     @NotBlank
@@ -42,20 +45,19 @@ public class Formation {
 
     private Integer duree;             // en heures
 
-    private String lieu;               // nullable si distance
-
-    private Boolean distanciel;        // true = distanciel
-
-
+    private String lieu;               // peut etre distanciel
 
     //    for logging and administration purposes it will be filled by the system
     @Column(name="created_at", updatable = false)
     @CreatedDate
     private ZonedDateTime createdAt;
 
+
     @Column(name="updated_at")
     @LastModifiedDate
     private ZonedDateTime updatedAt;
+
+
 
     // ---------------------- Relations ----------------------------
     @OneToMany(mappedBy = "formation",
@@ -63,7 +65,15 @@ public class Formation {
             orphanRemoval = true)
     private List<SeanceFormation> seanceFormationList;
 
-    @OneToMany(mappedBy = "formation")
-    private List<Propose> propositions;
+    @ManyToOne
+    private Professeur professeur;
+
+    @ManyToMany
+    @JoinTable(
+            name = "Doctorant_formation",
+            joinColumns = @JoinColumn(name = "formation_id"),
+            inverseJoinColumns = @JoinColumn(name = "doctorant_id")
+    )
+    private List<Doctorant> Doctorants_cibles;
 
 }
