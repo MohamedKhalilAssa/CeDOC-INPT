@@ -22,7 +22,7 @@ INSERT INTO nationalites (intitule) VALUES
 ('Française');
 
 -- UTILISATEURS (base table for joined inheritance)
--- bcrypt hash of 'password' is: $2a$10$E6R/NMoyKoD1HimOFR8n7OanS9rROvbyHOXg1oE8gfEBylL5TNN.q
+-- bcrypt hash of 'Password' 
 INSERT INTO `utilisateurs`(
     `created_at`,
     `date_naissance`,
@@ -47,7 +47,7 @@ INSERT INTO `utilisateurs`(
     'CELIBATAIRE',
     'HOMME',
     'Ben Salah',
-    '$2a$10$A7TNL7Vwz5Y.i6M6ZFlrhOvX/xMF0FnzNdzTiLMbm5ro3ibu65Zam',
+    '$2a$04$5y7HHz04OMpFAukUrfRWl.pXzj4GmaOJ9PqLkktT3TgjSR9Py/VCK',
     'Ali',
     '+212612345678',
     NOW(),
@@ -63,7 +63,7 @@ INSERT INTO `utilisateurs`(
     'MARIER',
     'FEMME',
     'Ouahbi',
-    '$2a$10$A7TNL7Vwz5Y.i6M6ZFlrhOvX/xMF0FnzNdzTiLMbm5ro3ibu65Zam',
+    '$2a$04$5y7HHz04OMpFAukUrfRWl.pXzj4GmaOJ9PqLkktT3TgjSR9Py/VCK',
     'Fatima',
     '+212698745632',
     NOW(),
@@ -79,7 +79,7 @@ INSERT INTO `utilisateurs`(
     'CELIBATAIRE',
     'HOMME',
     'El Hassani',
-    '$2a$10$A7TNL7Vwz5Y.i6M6ZFlrhOvX/xMF0FnzNdzTiLMbm5ro3ibu65Zam',
+    '$2a$04$5y7HHz04OMpFAukUrfRWl.pXzj4GmaOJ9PqLkktT3TgjSR9Py/VCK',
     'Yacine',
     '+212677889900',
     NOW(),
@@ -94,7 +94,8 @@ INSERT INTO candidats (id, archiver) VALUES
 -- PROFESSEUR
 INSERT INTO professeurs (id, grade) VALUES 
 (2, 'PES');
-
+INSERT INTO utilisateur_roles (utilisateur_id, role_id) VALUES 
+(2, 2);
 -- DOCTORANT
 INSERT INTO doctorants (id, date_inscription, statut_doctorant, nombre_heures_labo, draft_diplome_url, archiver) VALUES 
 (3, '2023-09-01', 'EN_COURS', 100, 'http://example.com/draft.pdf', FALSE);

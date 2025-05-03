@@ -43,7 +43,7 @@ public class EmailVerificationService {
 
     final var userId = user.getId();
     final var token = otpService.generateAndStoreOtp(userId);
-    final var verificationUrl = frontendUrl + "/auth/verify-email?id=" + userId + "&t=" + token + "&auto=1";
+    final var verificationUrl = frontendUrl + "/auth/verify-email?email=" + email + "&t=" + token + "&auto=1";
 
     try {
       MimeMessage mimeMessage = mailSender.createMimeMessage();

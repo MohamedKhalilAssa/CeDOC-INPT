@@ -77,6 +77,7 @@ public class AuthenticationService {
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Utilisateur introuvable"));
 
+                System.out.println(emailVerificationRequired);
                 if (emailVerificationRequired && !utilisateur.isEmailValider()) {
                         emailVerificationService.sendVerificationToken(utilisateur.getEmail());
                         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
@@ -89,7 +90,7 @@ public class AuthenticationService {
                 ResponseCookie cookie = ResponseCookie.from("refresh_token",
                                 tokens.get("refresh_token")).httpOnly(true)
                                 // .secure(true) // Ensure cookie is only sent over HTTPS
-                                .path("/api/auth/refresh-token")
+                                .path("/api/")
                                 .maxAge(refreshTokenExpiration)
                                 .sameSite("Lax")
                                 .domain(cookieDomain)
@@ -131,7 +132,7 @@ public class AuthenticationService {
                 // DELETING TOKEN FROM COOKIes
                 ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
                                 .httpOnly(true)
-                                .path("/api/auth/refresh-token")
+                                .path("/api/")
                                 .maxAge(0)
                                 .sameSite("Lax")
                                 .domain(cookieDomain)

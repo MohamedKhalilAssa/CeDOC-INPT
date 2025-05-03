@@ -2,6 +2,8 @@ package ma.inpt.cedoc.Configuration.Security.JWT;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,10 +16,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.Helpers.UtilFunctions;
+import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
+import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
 import ma.inpt.cedoc.repositories.authRepositories.TokenRepository;
+import ma.inpt.cedoc.service.auth.AuthenticationService;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +33,14 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     private final TokenRepository tokenRepository;
+
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    @Lazy
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -51,26 +66,64 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         jwt = authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length());
         userSubject = jwtUtil.extractSubject(jwt);
+        boolean isAccessTokenValid = false;
         // Check if the subject is there and if the user is already authenticated
         if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userSubject);
-            var isTokenValid = tokenRepository.findByToken(jwt)
+            isAccessTokenValid = useAccessToken(jwt, userSubject, request);
+        }
+        if (!isAccessTokenValid) {
+            // Check for cookie of refresh_token
+            String refreshToken = null;
+            Cookie extractedCookie = UtilFunctions.extractCookie(request, "refresh_token");
+            if (extractedCookie != null) {
+                refreshToken = extractedCookie.getValue();
+            }
+
+            var isRefreshTokenValid = tokenRepository.findByToken(
+                    refreshToken)
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);
-            // Check if the token is valid
-            if (jwtUtil.isTokenValid(jwt, userDetails) || isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
-                // authenticate the user
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (isRefreshTokenValid) {
+                setAuthenticationService(authenticationService);
+                AuthenticationResponse authResponse = authenticationService
+                        .refreshToken(new TokenRefreshRequest(refreshToken), response);
+                if (authResponse.getAccessToken() != null) {
+                    response.addHeader(HttpHeaders.AUTHORIZATION,
+                            JwtUtil.AUTHORIZATION_PREFIX + authResponse.getAccessToken());
 
+                    String newUserSubject = jwtUtil.extractSubject(authResponse.getAccessToken());
+                    useAccessToken(authResponse.getAccessToken(), newUserSubject, request);
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                        "Refresh token introuvable");
             }
         }
         filterChain.doFilter(request, response);
+
+    }
+
+    // helper
+
+    private boolean useAccessToken(String jwt, String userSubject, HttpServletRequest request) {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(userSubject);
+        var isTokenValid = tokenRepository.findByToken(jwt)
+                .map(t -> !t.isExpired() && !t.isRevoked())
+                .orElse(false);
+        // Check if the token is valid
+        if (jwtUtil.isTokenValid(jwt, userDetails) || isTokenValid) {
+
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities());
+            authToken.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request));
+            // authenticate the user
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            return true;
+        }
+        return false;
     }
 
 }

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.Helpers.UtilFunctions;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurDTO;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.EmailVerificationRequest;
@@ -86,19 +87,15 @@ public class AuthenticationController {
         // System.out.println("refresh");
         try {
             String refreshToken = null;
-            Cookie[] cookies = request.getCookies();
-            if (cookies == null) {
+            Cookie extractedCookie = UtilFunctions.extractCookie(request, "refresh_token");
+
+            if (extractedCookie == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                         AuthenticationResponse.builder().statusCode(HttpStatus.UNAUTHORIZED.value())
                                 .message("Refresh token introuvable").build());
             }
-            for (Cookie cookie : cookies) {
-                if ("refresh_token".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                    break;
-                }
-            }
 
+            refreshToken = extractedCookie.getValue();
             if (refreshToken == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(AuthenticationResponse.builder().statusCode(
