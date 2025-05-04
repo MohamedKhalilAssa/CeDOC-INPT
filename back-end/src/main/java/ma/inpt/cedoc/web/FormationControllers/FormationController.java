@@ -2,17 +2,13 @@ package ma.inpt.cedoc.web.FormationControllers;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
-import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
-import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.service.FormationService.FormationService;
 
 @RestController
@@ -23,97 +19,35 @@ public class FormationController {
     private final FormationService formationService;
 
     @PostMapping
-    public ResponseEntity<?> createFormation(@RequestBody @Valid FormationRequestDTO formationRequestDTO) {
-        try {
-            FormationResponseDTO savedFormation = formationService.saveFormation(formationRequestDTO);
-            return ResponseEntity.ok(savedFormation);
-        } catch (ResponseStatusException e) {
-            return handleResponseStatusException(e);
-        } catch (Exception e) {
-            return handleException(e, HttpStatus.BAD_REQUEST, "Erreur lors de la création de la formation");
-        }
-    }
-
-    @PostMapping("/raw")
-    public ResponseEntity<?> createFormationWithoutDto(@RequestBody Formation formation) {
-        try {
-            FormationResponseDTO savedFormation = formationService.saveFormationWithoutDto(formation);
-            return ResponseEntity.ok(savedFormation);
-        } catch (ResponseStatusException e) {
-            return handleResponseStatusException(e);
-        } catch (Exception e) {
-            return handleException(e, HttpStatus.BAD_REQUEST, "Erreur lors de la création brute de la formation");
-        }
+    public ResponseEntity<FormationResponseDTO> createFormation(
+            @RequestBody @Valid FormationRequestDTO formationRequestDTO) {
+        FormationResponseDTO savedFormation = formationService.saveFormation(formationRequestDTO);
+        return ResponseEntity.ok(savedFormation);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchByName(@RequestParam String name) {
-        try {
-            List<FormationResponseDTO> formations = formationService.findByName(name);
-            return ResponseEntity.ok(formations);
-        } catch (ResponseStatusException e) {
-            return handleResponseStatusException(e);
-        } catch (Exception e) {
-            return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de la recherche de formation");
-        }
+    public ResponseEntity<List<FormationResponseDTO>> searchByName(@RequestParam String name) {
+        List<FormationResponseDTO> formations = formationService.findByName(name);
+        return ResponseEntity.ok(formations);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateFormation(@PathVariable Long id,
+    public ResponseEntity<FormationResponseDTO> updateFormation(@PathVariable Long id,
             @RequestBody @Valid FormationRequestDTO formationRequestDTO) {
-        try {
-            FormationResponseDTO updatedFormation = formationService.updateFormation(id, formationRequestDTO);
-            return ResponseEntity.ok(updatedFormation);
-        } catch (ResponseStatusException e) {
-            return handleResponseStatusException(e);
-        } catch (Exception e) {
-            return handleException(e, HttpStatus.BAD_REQUEST, "Erreur lors de la mise à jour de la formation");
-        }
+        FormationResponseDTO updatedFormation = formationService.updateFormation(id, formationRequestDTO);
+        return ResponseEntity.ok(updatedFormation);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFormation(@PathVariable Long id) {
-        try {
-            formationService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResponseStatusException e) {
-            return handleResponseStatusException(e);
-        } catch (Exception e) {
-            return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Erreur lors de la suppression de la formation");
-        }
+    public ResponseEntity<String> deleteFormation(@PathVariable Long id) {
+        formationService.deleteById(id);
+        return ResponseEntity.ok("Formation supprimée avec succès");
     }
 
     @GetMapping("/by-doctorant")
-    public ResponseEntity<?> getFormationsByDoctorant(@RequestParam Long doctorantId) {
-        try {
-            List<FormationResponseDTO> formations = formationService.findFormationsByDoctorantId(doctorantId);
-            return ResponseEntity.ok(formations);
-        } catch (ResponseStatusException e) {
-            return handleResponseStatusException(e);
-        } catch (Exception e) {
-            return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Erreur lors de la récupération des formations du doctorant");
-        }
-    }
-
-    // --- Helper methods ---
-
-    private ResponseEntity<AuthenticationResponse> handleException(Exception e, HttpStatus status,
-            String defaultMessage) {
-        return ResponseEntity.status(status).body(
-                AuthenticationResponse.builder()
-                        .statusCode(status.value())
-                        .message(defaultMessage + ": " + e.getMessage())
-                        .build());
-    }
-
-    private ResponseEntity<AuthenticationResponse> handleResponseStatusException(ResponseStatusException e) {
-        return ResponseEntity.status(e.getStatusCode()).body(
-                AuthenticationResponse.builder()
-                        .statusCode(e.getStatusCode().value())
-                        .message(e.getReason())
-                        .build());
+    public ResponseEntity<List<FormationResponseDTO>> getFormationsByDoctorantId(@RequestParam Long doctorantId) {
+        List<FormationResponseDTO> formations = formationService.findFormationsByDoctorantId(doctorantId);
+        return ResponseEntity.ok(formations);
     }
 
 }
