@@ -27,8 +27,12 @@ public interface FormationMapper {
     FormationResponseDTO formationToFormationResponseDTO(Formation formation);
 
     @Mapping(target = "id", ignore = true) // don't override the ID
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "doctorantsCibles", ignore = true)
+    @Mapping(target = "professeur", ignore = true)
+    @Mapping(target = "seanceFormationList", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     void updateFormationFromDTO(FormationRequestDTO dto, @MappingTarget Formation entity);
-
 
     /*--------------------------------------------------------------------------HELPERS---------------------------------------------------------------------------------*/
 
