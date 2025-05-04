@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.service.formations.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SeanceFormationServiceImpl implements SeanceFormationService {
 
     private final SeanceFormationRepository seanceFormationRepository;

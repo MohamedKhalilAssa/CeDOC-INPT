@@ -41,7 +41,7 @@ public class Professeur extends Utilisateur {
     @JsonIgnore
     private List<Sujet> sujetsProposes;
 
-    //Relation avec Propose qui est classe association avec formations
+    //Relation avec formations
     @OneToMany(mappedBy = "professeur")
     private List<Formation> formationsProposees;
 
