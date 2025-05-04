@@ -1,16 +1,17 @@
 package ma.inpt.cedoc.service.FormationService;
 
-import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.FormationMapper;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.repositories.formationRepositories.FormationRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FormationServiceImpl implements FormationService {
@@ -43,7 +44,7 @@ public class FormationServiceImpl implements FormationService {
     @Override
     public void deleteById(Long id) {
         if (!formationRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Formation not found for deletion");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Formation introuvable pour suppression");
         }
         formationRepository.deleteById(id);
     }
@@ -68,7 +69,7 @@ public class FormationServiceImpl implements FormationService {
     @Override
     public FormationResponseDTO updateFormation(Long id, FormationRequestDTO dto) {
         var existingFormation = formationRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Formation not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Formation introuvable"));
 
         existingFormation.setFormationName(dto.getFormationName());
         existingFormation.setModule(dto.getModule());
