@@ -1,7 +1,7 @@
 package ma.inpt.cedoc.web.FormationControllers;
 
 import jakarta.validation.Valid;
-import ma.inpt.cedoc.model.DTOs.FormationDtos.FormationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
