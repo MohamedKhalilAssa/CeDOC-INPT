@@ -21,4 +21,8 @@ public interface FormationService {
     FormationResponseDTO updateFormation(Long id, FormationRequestDTO dto);
 
     List<FormationResponseDTO> findFormationsByDoctorantId(Long doctorantId);
-}
+
+    List<FormationResponseDTO> getAllFormations();
+
+    FormationResponseDTO getById(Long id);
+ }
