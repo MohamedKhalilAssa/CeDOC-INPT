@@ -1,6 +1,5 @@
 package ma.inpt.cedoc.model.entities.formation;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,56 +24,51 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "formations")
 public class Formation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @NotBlank
-    private String formationName;
-    /* diagram: Module (enum) */
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private ModuleEnum module;
+        @NotBlank
+        private String formationName;
+        /* diagram: Module (enum) */
+        @Enumerated(EnumType.STRING)
+        @NotNull
+        private ModuleEnum module;
 
-    private String intitule;
+        private String intitule;
 
-    @NotBlank
-    private String nomFormateur;
+        @NotBlank
+        private String nomFormateur;
 
-    @NotBlank
-    private Date dateDebut;          // ISO‑8601 preferred; change to LocalDate if you can
+        @NotBlank
+        private Date dateDebut;          // ISO‑8601 preferred; change to LocalDate if you can
 
-    private Integer duree;             // en heures
+        private Integer duree; // en heures
 
-    private String lieu;               // peut etre distanciel
+        private String lieu; // peut etre distanciel
 
-    //    for logging and administration purposes it will be filled by the system
-    @Column(name="created_at", updatable = false)
-    @CreatedDate
-    private ZonedDateTime createdAt;
+        // for logging and administration purposes it will be filled by the system
+        @Column(name = "created_at", updatable = false)
+        @CreatedDate
+        private ZonedDateTime createdAt;
 
+        @Column(name = "updated_at")
+        @LastModifiedDate
+        private ZonedDateTime updatedAt;
 
-    @Column(name="updated_at")
-    @LastModifiedDate
-    private ZonedDateTime updatedAt;
+        // ---------------------- Relations ----------------------------
+        @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<SeanceFormation> seanceFormationList;
 
+        @ManyToOne
+        private Professeur professeur;
 
-
-    // ---------------------- Relations ----------------------------
-    @OneToMany(mappedBy = "formation",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<SeanceFormation> seanceFormationList;
-
-    @ManyToOne
-    private Professeur professeur;
-
-    @ManyToMany
-    @JoinTable(
-            name = "Doctorant_formation",
-            joinColumns = @JoinColumn(name = "formation_id"),
-            inverseJoinColumns = @JoinColumn(name = "doctorant_id")
-    )
-    private List<Doctorant> Doctorants_cibles;
+        @ManyToMany
+        @JoinTable(
+                name = "Doctorant_formation",
+                joinColumns = @JoinColumn(name = "formation_id"),
+                inverseJoinColumns = @JoinColumn(name = "doctorant_id")
+        )
+        private List<Doctorant> doctorantsCibles;
 
 }

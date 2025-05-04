@@ -5,7 +5,7 @@ import ma.inpt.cedoc.model.DTOs.FormationDtos.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
-import ma.inpt.cedoc.service.FormationService.FormationService;
+import ma.inpt.cedoc.service.FormationService.FormationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FormationController {
 
-    private final FormationService formationService;
+    private final FormationServiceImpl formationServiceImpl;
 
     @PostMapping
     public ResponseEntity<?> createFormation(@RequestBody @Valid FormationRequestDTO formationRequestDTO) {
         try {
-            FormationResponseDTO savedFormation = formationService.saveFormation(formationRequestDTO);
+            FormationResponseDTO savedFormation = formationServiceImpl.saveFormation(formationRequestDTO);
             return ResponseEntity.ok(savedFormation);
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);
@@ -36,7 +36,7 @@ public class FormationController {
     @PostMapping("/raw")
     public ResponseEntity<?> createFormationWithoutDto(@RequestBody Formation formation) {
         try {
-            FormationResponseDTO savedFormation = formationService.saveFormationWithoutDto(formation);
+            FormationResponseDTO savedFormation = formationServiceImpl.saveFormationWithoutDto(formation);
             return ResponseEntity.ok(savedFormation);
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);
@@ -48,7 +48,7 @@ public class FormationController {
     @GetMapping("/search")
     public ResponseEntity<?> searchByName(@RequestParam String name) {
         try {
-            List<FormationResponseDTO> formations = formationService.findByName(name);
+            List<FormationResponseDTO> formations = formationServiceImpl.findByName(name);
             return ResponseEntity.ok(formations);
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);
@@ -60,7 +60,7 @@ public class FormationController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateFormation(@PathVariable Long id, @RequestBody @Valid FormationRequestDTO formationRequestDTO) {
         try {
-            FormationResponseDTO updatedFormation = formationService.updateFormation(id, formationRequestDTO);
+            FormationResponseDTO updatedFormation = formationServiceImpl.updateFormation(id, formationRequestDTO);
             return ResponseEntity.ok(updatedFormation);
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);
@@ -72,7 +72,7 @@ public class FormationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFormation(@PathVariable Long id) {
         try {
-            formationService.deleteById(id);
+            formationServiceImpl.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);
@@ -84,7 +84,7 @@ public class FormationController {
     @GetMapping("/by-doctorant")
     public ResponseEntity<?> getFormationsByDoctorant(@RequestParam Long doctorantId) {
         try {
-            List<FormationResponseDTO> formations = formationService.findFormationsByDoctorantId(doctorantId);
+            List<FormationResponseDTO> formations = formationServiceImpl.findFormationsByDoctorantId(doctorantId);
             return ResponseEntity.ok(formations);
         } catch (ResponseStatusException e) {
             return handleResponseStatusException(e);
