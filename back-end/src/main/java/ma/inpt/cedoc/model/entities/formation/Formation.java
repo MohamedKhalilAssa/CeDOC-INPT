@@ -65,11 +65,11 @@ public class Formation {
 
         @ManyToMany
         @JoinTable(
-                name = "Doctorant_formation",
+                name = "doctorant_formation",
                 joinColumns = @JoinColumn(name = "formation_id"),
                 inverseJoinColumns = @JoinColumn(name = "doctorant_id")
         )
-        @Column(name = "Doctorants-cibles")
+        @Column(name = "doctorants_cibles")
         private List<Doctorant> doctorantsCibles;
 
 }
