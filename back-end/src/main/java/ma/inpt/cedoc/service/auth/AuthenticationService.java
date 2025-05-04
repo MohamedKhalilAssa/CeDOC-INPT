@@ -114,7 +114,7 @@ public class AuthenticationService {
                 return AuthenticationResponse.builder()
                                 .accessToken(tokens.get("access_token"))
                                 .statusCode(HttpServletResponse.SC_OK)
-                                .message("Utilisateur inscrit et authentifier avec success")
+                                .message("Utilisateur authentifie avec success")
                                 .build();
         }
 
