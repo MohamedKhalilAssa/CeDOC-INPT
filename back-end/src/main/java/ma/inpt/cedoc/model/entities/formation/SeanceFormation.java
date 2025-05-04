@@ -31,7 +31,7 @@ public class SeanceFormation {
 
     private Integer duree; // durée en minutes ou heures ? (INT in diagram)
 
-    /**  lien du justificatif PDF  */
+    /*lien du justificatif PDF */
     @NotBlank
     @Pattern(regexp = "^.+\\.pdf$", message = "Le justificatif doit être un fichier PDF")
     private String justificatifPdf;

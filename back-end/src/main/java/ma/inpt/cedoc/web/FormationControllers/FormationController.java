@@ -15,7 +15,7 @@ import ma.inpt.cedoc.service.FormationService.FormationService;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/formations")
+@RequestMapping("/api/formations")
 @RequiredArgsConstructor
 public class FormationController {
 

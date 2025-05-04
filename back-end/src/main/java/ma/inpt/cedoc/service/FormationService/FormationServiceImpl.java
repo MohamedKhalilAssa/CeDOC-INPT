@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class FormationServiceImpl implements FormationService {
 
+
     private final FormationMapper formationMapper;
     private final FormationRepository formationRepository;
 
@@ -94,5 +95,18 @@ public class FormationServiceImpl implements FormationService {
         return formations.stream()
                 .map(formationMapper::formationToFormationResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FormationResponseDTO> getAllFormations() {
+        List<Formation> formations = formationRepository.findAll();
+        return formations.stream()
+                .map(formationMapper::formationToFormationResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public FormationResponseDTO getById(Long id) {
+        return formationMapper.formationToFormationResponseDTO(formationRepository.getById(id));
     }
 }
