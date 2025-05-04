@@ -1,14 +1,15 @@
 package ma.inpt.cedoc.model.DTOs.mapper.formationsMappers;
 
-import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.FormationDtos.FormationResponseDTO;
-import ma.inpt.cedoc.model.entities.formation.Formation;
+import java.util.stream.Collectors;
+
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-import java.util.stream.Collectors;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface FormationMapper {
@@ -19,7 +20,7 @@ public interface FormationMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "seanceFormationList", ignore = true)
     @Mapping(target = "professeur", ignore = true)
-    @Mapping(target = "Doctorants_cibles", ignore = true)
+    @Mapping(target = "doctorantsCibles", ignore = true)
     Formation formationRequestDTOToFormation(FormationRequestDTO formationRequestDTO);
 
     // Mapping from Formation to FormationResponseDTO
@@ -31,10 +32,10 @@ public interface FormationMapper {
     /*--------------------------------------------------------------------------HELPERS---------------------------------------------------------------------------------*/
 
     default java.util.List<Long> mapDoctorantIds(Formation formation) {
-        if (formation.getDoctorants_cibles() == null) {
+        if (formation.getDoctorantsCibles() == null) {
             return java.util.Collections.emptyList();
         }
-        return formation.getDoctorants_cibles()
+        return formation.getDoctorantsCibles()
                 .stream()
                 .map(doctorant -> doctorant.getId())
                 .collect(Collectors.toList());

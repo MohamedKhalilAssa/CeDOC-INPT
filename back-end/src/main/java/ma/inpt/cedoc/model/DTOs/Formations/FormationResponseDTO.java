@@ -1,13 +1,13 @@
-package ma.inpt.cedoc.model.DTOs.FormationDtos;
+package ma.inpt.cedoc.model.DTOs.Formations;
+
+import java.time.ZonedDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.enums.formation_enums.ModuleEnum;
-
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Data
 @Builder
@@ -35,5 +35,5 @@ public class FormationResponseDTO {
 
     private ZonedDateTime updatedAt;
 
-    private List<Long> doctorantIds;   // IDs of Doctorants (to avoid circular fetching)
+    private List<Long> doctorantIds; // IDs of Doctorants (to avoid circular fetching)
 }
