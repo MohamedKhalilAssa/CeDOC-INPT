@@ -2,10 +2,7 @@ package ma.inpt.cedoc.model.DTOs.mapper.formationsMappers;
 
 import java.util.stream.Collectors;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.mapstruct.*;
 
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
@@ -28,6 +25,10 @@ public interface FormationMapper {
             @Mapping(target = "doctorantIds", expression = "java(mapDoctorantIds(formation))")
     })
     FormationResponseDTO formationToFormationResponseDTO(Formation formation);
+
+    @Mapping(target = "id", ignore = true) // don't override the ID
+    void updateFormationFromDTO(FormationRequestDTO dto, @MappingTarget Formation entity);
+
 
     /*--------------------------------------------------------------------------HELPERS---------------------------------------------------------------------------------*/
 

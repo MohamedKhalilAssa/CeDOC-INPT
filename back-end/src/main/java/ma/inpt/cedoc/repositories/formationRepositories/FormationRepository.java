@@ -10,6 +10,6 @@ import java.util.List;
 public interface FormationRepository extends JpaRepository<Formation, Long> {
     List<Formation> findAllByFormationNameContaining(String formationName);
     // Custom query for Doctorant formations
-    @Query("SELECT f FROM Formation f JOIN f.Doctorants_cibles d WHERE d.id = :doctorantId")
+    @Query("SELECT f FROM Formation f JOIN f.doctorantsCibles d WHERE d.id = :doctorantId")
     List<Formation> findFormationsByDoctorantId(@Param("doctorantId") Long doctorantId);
 }

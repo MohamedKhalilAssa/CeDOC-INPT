@@ -66,7 +66,7 @@ public class Doctorant extends Utilisateur {
 
         /*------------------- Relation -----------------*/
         //Relation avec Formation
-        @ManyToMany(mappedBy = "Doctorants_cibles")
+        @ManyToMany(mappedBy = "doctorantsCibles")
         private List<Formation> formations_proposees;
 
         // Relation avec SeanceFormation

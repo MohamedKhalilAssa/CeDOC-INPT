@@ -69,6 +69,7 @@ public class Formation {
                 joinColumns = @JoinColumn(name = "formation_id"),
                 inverseJoinColumns = @JoinColumn(name = "doctorant_id")
         )
+        @Column(name = "Doctorants-cibles")
         private List<Doctorant> doctorantsCibles;
 
 }
