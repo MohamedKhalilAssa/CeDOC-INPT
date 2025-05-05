@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.model.entities.Doctorant_Actions;
+package ma.inpt.cedoc.model.entities.DoctorantActions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "communications_conferences")
-public class CommunicationConference {
+public class ConfParticipation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,6 +32,9 @@ public class CommunicationConference {
     @NotNull(message = "la date de CommunicationConference et obligatoire")
     private ZonedDateTime date;
 
+    @NotNull(message = "le lieu de CommunicationConference et obligatoire")
+    private String lieu;
+
     @NotBlank(message = "le justificatif de CommunicationConference et obligatoire")
     private String justificatif;
 
@@ -42,5 +45,4 @@ public class CommunicationConference {
     @ManyToMany(mappedBy = "communications")
     @JsonIgnore
     private List<Doctorant> participatants;
-
 }

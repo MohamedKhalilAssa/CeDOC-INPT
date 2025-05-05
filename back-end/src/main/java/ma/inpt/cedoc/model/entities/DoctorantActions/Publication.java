@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.model.entities.Doctorant_Actions;
+package ma.inpt.cedoc.model.entities.DoctorantActions;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -38,7 +38,6 @@ public class Publication {
 
     // ----------------- Relations -----------------
 
-    @ManyToMany(mappedBy = "publications")
-    @JsonIgnore
-    private List<Doctorant> auteurs;
+    @OneToMany(mappedBy = "publication")
+    private List<Authorship> authorships;
 }
