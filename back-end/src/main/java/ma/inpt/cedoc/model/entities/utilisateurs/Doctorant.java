@@ -103,7 +103,4 @@ public class Doctorant extends Utilisateur {
         @JsonIgnore
         private List<DemandeReinscription> demandesReinscription;
 
-        @OneToMany(mappedBy = "vacataire")
-        private List<Vacation> vacations;
-
 }
