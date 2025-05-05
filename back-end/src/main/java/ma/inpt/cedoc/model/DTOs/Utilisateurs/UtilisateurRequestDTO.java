@@ -9,12 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.Annotations.FieldMatcher.FieldMatch;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldMatch(first = "password", second = "passwordConfirmation", message = "Les mots de passe ne se correspondent pas")

@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
@@ -30,7 +31,7 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 @Table(name = "utilisateurs")
 @Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
-@Builder
+@SuperBuilder
 public class Utilisateur implements UserDetails {
 
     @Id
