@@ -12,26 +12,26 @@ import ma.inpt.cedoc.model.entities.formation.Formation;
 public interface FormationMapper {
 
     // Mapping from FormationRequestDTO to Formation
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "seanceFormationList", ignore = true)
-    @Mapping(target = "professeur", ignore = true)
-    @Mapping(target = "doctorantsCibles", ignore = true)
+//    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "createdAt", ignore = true)
+//    @Mapping(target = "updatedAt", ignore = true)
+//    @Mapping(target = "seanceFormationList", ignore = true)
+//    @Mapping(target = "professeur", ignore = true)
+//    @Mapping(target = "doctorantsCibles", ignore = true)
     Formation formationRequestDTOToFormation(FormationRequestDTO formationRequestDTO);
 
     // Mapping from Formation to FormationResponseDTO
-    @Mappings({
-            @Mapping(target = "doctorantIds", expression = "java(mapDoctorantIds(formation))")
-    })
+//    @Mappings({
+//            @Mapping(target = "doctorantIds", expression = "java(mapDoctorantIds(formation))")
+//    })
     FormationResponseDTO formationToFormationResponseDTO(Formation formation);
 
-    @Mapping(target = "id", ignore = true) // don't override the ID
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "doctorantsCibles", ignore = true)
-    @Mapping(target = "professeur", ignore = true)
-    @Mapping(target = "seanceFormationList", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
+//    @Mapping(target = "id", ignore = true) // don't override the ID
+//    @Mapping(target = "createdAt", ignore = true)
+//    @Mapping(target = "doctorantsCibles", ignore = true)
+//    @Mapping(target = "professeur", ignore = true)
+//    @Mapping(target = "seanceFormationList", ignore = true)
+//    @Mapping(target = "updatedAt", ignore = true)
     void updateFormationFromDTO(FormationRequestDTO dto, @MappingTarget Formation entity);
 
     /*--------------------------------------------------------------------------HELPERS---------------------------------------------------------------------------------*/

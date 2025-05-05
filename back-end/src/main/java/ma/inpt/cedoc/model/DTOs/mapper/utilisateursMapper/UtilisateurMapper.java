@@ -22,31 +22,31 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 public interface UtilisateurMapper {
 
     // Mapping method for converting DTO to Entity
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "tokens", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "nationalite", source = "nationaliteId", qualifiedByName = "mapNationalite")
-    @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissanceId", qualifiedByName = "mapLieuDeNaissance")
+//    @Mapping(target = "createdAt", ignore = true)
+//    @Mapping(target = "id", ignore = true)
+//    @Mapping(target = "roles", ignore = true)
+//    @Mapping(target = "tokens", ignore = true)
+//    @Mapping(target = "updatedAt", ignore = true)
+//    @Mapping(target = "nationalite", source = "nationaliteId", qualifiedByName = "mapNationalite")
+//    @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissanceId", qualifiedByName = "mapLieuDeNaissance")
     Utilisateur utilisateurRequestDTOToUtilisateur(UtilisateurRequestDTO utilisateurDTO);
 
-    @Mappings({
-            @Mapping(target = "roles", ignore = true),
-            @Mapping(target = "roleNames", expression = "java(mapRoleNames(utilisateur.getRoles()))"),
-            @Mapping(target = "nationalite", source = "nationalite"),
-            @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissance")
-    })
+//    @Mappings({
+//            @Mapping(target = "roles", ignore = true),
+//            @Mapping(target = "roleNames", expression = "java(mapRoleNames(utilisateur.getRoles()))"),
+//            @Mapping(target = "nationalite", source = "nationalite"),
+//            @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissance")
+//    })
     // Mapping method for converting Entity to DTO
     UtilisateurResponseDTO utilisateurToUtilisateurResponseDTO(Utilisateur utilisateur);
 
     // Mapping from Utilisateur to UtilisateurResponseDTO with roles fully included
-    @Mappings({
-            @Mapping(target = "roleNames", ignore = true),
-            @Mapping(target = "roles", expression = "java(mapRolesToDTOs(utilisateur.getRoles()))"),
-            @Mapping(target = "nationalite", source = "nationalite"),
-            @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissance")
-    })
+//    @Mappings({
+//            @Mapping(target = "roleNames", ignore = true),
+//            @Mapping(target = "roles", expression = "java(mapRolesToDTOs(utilisateur.getRoles()))"),
+//            @Mapping(target = "nationalite", source = "nationalite"),
+//            @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissance")
+//    })
     UtilisateurResponseDTO utilisateurToUtilisateurResponseDTOFullRoles(Utilisateur utilisateur);
 
     /*--------------------------------------------------------------HELPERS -------------------------------------------------------------------------------------------*/
