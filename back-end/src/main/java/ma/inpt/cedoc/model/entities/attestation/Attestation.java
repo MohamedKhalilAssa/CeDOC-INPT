@@ -30,8 +30,8 @@ public class Attestation {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @OneToMany(mappedBy = "attestation")
-    private List<DemandeAttestation> demandeAttestations;
+    @OneToOne
+    private DemandeAttestation demandeAttestation;
 
     // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)

@@ -1,23 +1,16 @@
 package ma.inpt.cedoc.model.DTOs.Utilisateurs;
 
-import java.time.LocalDateTime;
-
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class RoleResponseDTO {
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
+public class RoleResponseDTO extends BaseResponseDTO {
 
     private String intitule;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 
 }

@@ -3,11 +3,6 @@ package ma.inpt.cedoc.service.AttestationService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationRequestDTO;
-import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
-import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
-import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAutomatiqueRepository;
-import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAvecValidationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,10 +11,15 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers.AttestationMapper;
 import ma.inpt.cedoc.model.entities.attestation.Attestation;
-
+import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
+import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
+import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAutomatiqueRepository;
+import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAvecValidationRepository;
+import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -28,20 +28,23 @@ public class AttestationServiceImpl implements AttestationService {
 
     private final AttestationAutomatiqueRepository attestationAutomatiqueRepository;
     private final AttestationAvecValidationRepository attestationAvecValidationRepository;
+    private final AttestationRepository attestationRepository;
     private final AttestationMapper attestationMapper;
 
     /* ------------------ Save methods ------------------ */
 
     @Override
     public AttestationAutomatiqueResponseDTO saveAttestationAutomatique(AttestationAutomatiqueRequestDTO dto) {
-        AttestationAutomatique attestation = attestationMapper.attestationAutomatiqueRequestDTOToAttestationAutomatique(dto);
+        AttestationAutomatique attestation = attestationMapper
+                .attestationAutomatiqueRequestDTOToAttestationAutomatique(dto);
         AttestationAutomatique saved = attestationAutomatiqueRepository.save(attestation);
         return attestationMapper.attestationAutomatiqueToAttestationAutomatiqueResponseDTO(saved);
     }
 
     @Override
     public AttestationAvecValidationResponseDTO saveAttestationAvecValidation(AttestationAvecValidationRequestDTO dto) {
-        AttestationAvecValidation attestation = attestationMapper.attestationAvecValidationRequestDTOToAttestationAvecValidation(dto);
+        AttestationAvecValidation attestation = attestationMapper
+                .attestationAvecValidationRequestDTOToAttestationAvecValidation(dto);
         AttestationAvecValidation saved = attestationAvecValidationRepository.save(attestation);
         return attestationMapper.attestationAvecValidationToAttestationAvecValidationResponseDTO(saved);
     }
@@ -53,6 +56,13 @@ public class AttestationServiceImpl implements AttestationService {
         return attestationAutomatiqueRepository.findAll().stream()
                 .map(attestationMapper::attestationAutomatiqueToAttestationAutomatiqueResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Attestation> getAllAttestations() {
+        return attestationRepository.findAll().stream().map(attestationMapper::attestationToAttestationResponseDTO)
+                .collect(Collectors.toList());
+        ;
     }
 
     @Override

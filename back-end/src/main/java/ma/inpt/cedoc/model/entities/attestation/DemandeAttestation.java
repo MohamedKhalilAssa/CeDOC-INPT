@@ -36,8 +36,7 @@ public class DemandeAttestation {
     private StatutAttestationEnum statutDemandeAttestation;
 
     /* Relations start here */
-    @ManyToOne
-    @JoinColumn(name = "attestation_id")
+    @OneToOne(mappedBy = "demandeAttestation")
     private Attestation attestation;
 
     @ManyToOne

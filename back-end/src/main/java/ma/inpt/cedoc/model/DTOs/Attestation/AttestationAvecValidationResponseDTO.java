@@ -1,22 +1,24 @@
 package ma.inpt.cedoc.model.DTOs.Attestation;
 
+import java.time.ZonedDateTime;
+
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatAttestationEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
-import java.time.ZonedDateTime;
-
 
 @Data
-@Builder
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class AttestationAvecValidationResponseDTO {
+public class AttestationAvecValidationResponseDTO extends BaseResponseDTO {
 
-    private Long id;
 
     private ZonedDateTime dateDemande;
 
@@ -25,10 +27,6 @@ public class AttestationAvecValidationResponseDTO {
     private TypeAttestationValidationEnum typeAttestation;
 
     private EtatAttestationEnum etatAttestation;
-
-    private ZonedDateTime createdAt;
-
-    private ZonedDateTime updatedAt;
 
     private Long doctorantId;
 }
