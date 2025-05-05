@@ -27,11 +27,14 @@ public class Attestation {
     @GeneratedValue
     private long id;
 
+    private String titre;
+    
+
     @Column(name = "url", nullable = false)
     private String url;
 
-    @OneToOne
-    private DemandeAttestation demandeAttestation;
+    @OneToMany(mappedBy = "attestation")
+    private List<DemandeAttestation> demandeAttestations;
 
     // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)

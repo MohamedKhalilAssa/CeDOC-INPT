@@ -19,7 +19,6 @@ import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAutomatiqueRepository;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAvecValidationRepository;
-import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class AttestationServiceImpl implements AttestationService {
 
     private final AttestationAutomatiqueRepository attestationAutomatiqueRepository;
     private final AttestationAvecValidationRepository attestationAvecValidationRepository;
-    private final AttestationRepository attestationRepository;
+    // private final AttestationRepository attestationRepository;
     private final AttestationMapper attestationMapper;
 
     /* ------------------ Save methods ------------------ */
@@ -58,11 +57,13 @@ public class AttestationServiceImpl implements AttestationService {
                 .collect(Collectors.toList());
     }
 
-    @Override
+    // @Override
     public List<Attestation> getAllAttestations() {
-        return attestationRepository.findAll().stream().map(attestationMapper::attestationToAttestationResponseDTO)
-                .collect(Collectors.toList());
-        ;
+        return List.of();
+        // return
+        // attestationRepository.findAll().stream().map(attestationMapper::attestationToAttestationResponseDTO)
+        // .collect(Collectors.toList());
+        // ;
     }
 
     @Override

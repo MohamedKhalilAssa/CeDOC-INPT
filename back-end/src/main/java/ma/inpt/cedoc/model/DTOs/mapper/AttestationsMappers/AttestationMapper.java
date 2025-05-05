@@ -17,8 +17,11 @@ public interface AttestationMapper {
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "createdAt", ignore = true)
         @Mapping(target = "updatedAt", ignore = true)
-        @Mapping(target = "validated", ignore = true) // set manually in service
-        @Mapping(target = "demandeAttestation", ignore = true) // assuming user is resolved separately
+        @Mapping(target = "demandeAttestations", ignore = true)
+        @Mapping(target = "titre", ignore = true)
+        @Mapping(target = "url", ignore = true)
+        @Mapping(target = "typeAttestationAuto", ignore = true)
+
         AttestationAutomatique attestationAutomatiqueRequestDTOToAttestationAutomatique(
                         AttestationAutomatiqueRequestDTO dto);
 
@@ -26,12 +29,17 @@ public interface AttestationMapper {
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "createdAt", ignore = true)
         @Mapping(target = "updatedAt", ignore = true)
-        @Mapping(target = "validated", ignore = true) // set manually in service
-        @Mapping(target = "demandeAttestation", ignore = true) // assuming user is resolved separately
+        @Mapping(target = "demandeAttestations", ignore = true)
+        @Mapping(target = "titre", ignore = true)
+        @Mapping(target = "url", ignore = true)
+        @Mapping(target = "typeAttestationValidation", ignore = true)
+        @Mapping(target = "etatAttestation", ignore = true)
         AttestationAvecValidation attestationAvecValidationRequestDTOToAttestationAvecValidation(
                         AttestationAvecValidationRequestDTO dto);
 
         // Mapping for automatic response
+
+        
         AttestationAutomatiqueResponseDTO attestationAutomatiqueToAttestationAutomatiqueResponseDTO(
                         AttestationAutomatique attestation);
 
@@ -39,24 +47,21 @@ public interface AttestationMapper {
         AttestationAvecValidationResponseDTO attestationAvecValidationToAttestationAvecValidationResponseDTO(
                         AttestationAvecValidation attestation);
 
-                        
+        // Mapping from Attestation to AttestationResponseDTO
+
         AttestationResponseDTO attestationToAttestationResponseDTO(Attestation attestation);
 
         // Update an existing AttestationAutomatique (used for PATCH/PUT)
-        @Mapping(target = "id", ignore = true)
-        @Mapping(target = "createdAt", ignore = true)
-        @Mapping(target = "updatedAt", ignore = true)
-        @Mapping(target = "validated", ignore = true)
-        @Mapping(target = "utilisateur", ignore = true)
+        // @Mapping(target = "id", ignore = true)
+        // @Mapping(target = "createdAt", ignore = true)
+        // @Mapping(target = "updatedAt", ignore = true)
         void updateAttestationAutomatiqueFromDTO(AttestationAutomatiqueRequestDTO dto,
                         @MappingTarget AttestationAutomatique entity);
 
         // Update an existing AttestationAvecValidation (used for PATCH/PUT)
-        @Mapping(target = "id", ignore = true)
-        @Mapping(target = "createdAt", ignore = true)
-        @Mapping(target = "updatedAt", ignore = true)
-        @Mapping(target = "validated", ignore = true)
-        @Mapping(target = "utilisateur", ignore = true)
+        // @Mapping(target = "id", ignore = true)
+        // @Mapping(target = "createdAt", ignore = true)
+        // @Mapping(target = "updatedAt", ignore = true)
         void updateAttestationAvecValidationFromDTO(AttestationAutomatiqueRequestDTO dto,
                         @MappingTarget AttestationAvecValidation entity);
 
