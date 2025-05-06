@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 
 @Entity
@@ -18,7 +19,7 @@ public class DemandeReinscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int année;
+    private int annee;
 
     @NotBlank(message = "Le rapport d'avancement est obligatoire")
     private String rapportAvancement;
@@ -51,6 +52,5 @@ public class DemandeReinscription {
     @OneToOne
     @JoinColumn(name = "avis_reinscription_id")
     private AvisReinscription avisReinscription;
-
 
 }

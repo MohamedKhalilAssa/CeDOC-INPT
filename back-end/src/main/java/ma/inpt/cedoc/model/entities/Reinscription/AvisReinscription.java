@@ -21,7 +21,7 @@ public class AvisReinscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "L'observation de AvisReinscription")
+    @NotBlank(message = "L'observation de AvisReinscription est obligatoire")
     private String observation;
 
     @NotNull(message = "L'état d'avancement est obligatoire")
