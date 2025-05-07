@@ -15,12 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Helpers.UtilFunctions;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
-import ma.inpt.cedoc.model.DTOs.auth.EmailVerificationRequest;
-import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
-import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
+import ma.inpt.cedoc.model.DTOs.auth.*;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
 import ma.inpt.cedoc.service.auth.EmailVerificationService;
 
@@ -34,7 +30,7 @@ public class AuthenticationController {
 
     // for registering new User
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid UtilisateurRequestDTO request,
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequestDTO request,
             HttpServletResponse response) {
         try {
             AuthenticationResponse authResponse = authenticationService.register(request, response);

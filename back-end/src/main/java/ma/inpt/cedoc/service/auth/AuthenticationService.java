@@ -5,24 +5,24 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import jakarta.servlet.http.HttpServletResponse;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
+import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
 import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
 public interface AuthenticationService {
 
-    AuthenticationResponse register(UtilisateurRequestDTO request, HttpServletResponse response)
-            throws InterruptedException, ExecutionException;
+        AuthenticationResponse register(RegisterRequestDTO request, HttpServletResponse response)
+                        throws InterruptedException, ExecutionException;
 
-    AuthenticationResponse login(LoginRequest request, HttpServletResponse response);
+        AuthenticationResponse login(LoginRequest request, HttpServletResponse response);
 
-    Map<String, String> authenticate(LoginRequest request, Utilisateur utilisateur);
+        Map<String, String> authenticate(LoginRequest request, Utilisateur utilisateur);
 
-    AuthenticationResponse logout(HttpServletResponse response);
+        AuthenticationResponse logout(HttpServletResponse response);
 
-    AuthenticationResponse refreshToken(TokenRefreshRequest request, HttpServletResponse response)
-            throws IOException;
+        AuthenticationResponse refreshToken(TokenRefreshRequest request, HttpServletResponse response)
+                        throws IOException;
 
 }

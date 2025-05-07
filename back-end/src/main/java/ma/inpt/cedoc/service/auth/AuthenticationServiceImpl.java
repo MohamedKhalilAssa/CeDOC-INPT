@@ -23,9 +23,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
+import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
 import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
 import ma.inpt.cedoc.model.entities.auth.Token;
@@ -55,18 +55,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         private boolean emailVerificationRequired;
 
         @Override
-        public AuthenticationResponse register(UtilisateurRequestDTO request, HttpServletResponse response)
+        public AuthenticationResponse register(RegisterRequestDTO request, HttpServletResponse response)
                         throws InterruptedException, ExecutionException {
 
                 // create new utilisateur object
 
-                if (utilisateurRepository.existsByEmail(request.getEmail())
-                                || utilisateurRepository.existsByTelephone(request.getTelephone())) {
+                if (utilisateurRepository.existsByEmail(request.getEmail())) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utilisateur deja inscrit");
                 }
 
                 request.setPassword(passwordEncoder.encode(request.getPassword()));
-                Utilisateur utilisateur = utilisateurMapper.utilisateurRequestDTOToUtilisateur(request);
+                Utilisateur utilisateur = utilisateurMapper.RegisterRequestDTOToUtilisateur(request);
 
                 // save in db and return
                 var savedUtilisateur = utilisateurRepository.saveAndFlush(utilisateur);
