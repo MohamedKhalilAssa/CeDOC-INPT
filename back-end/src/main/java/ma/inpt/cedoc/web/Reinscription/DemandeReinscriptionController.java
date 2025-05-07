@@ -19,12 +19,12 @@ public class DemandeReinscriptionController {
 
     @GetMapping("/")
     public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getAllDemandes() {
-        return demandeResincriptionService.getAllDemandes();
+        return ResponseEntity.ok(demandeResincriptionService.getAllDemandes());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DemandeReinscriptionResponseDTO> getDemandeById(@PathVariable Long id) {
-        return demandeResincriptionService.getDemande(id);
+        return ResponseEntity.ok(demandeResincriptionService.getDemande(id));
     }
 
     @PostMapping("/")

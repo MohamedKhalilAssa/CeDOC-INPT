@@ -75,7 +75,7 @@ public class Sujet {
     @JoinColumn(name = "directeur_these_id")
     private DirecteurDeThese directeurDeThese;
 
-     @OneToMany(mappedBy = "sujet")
+     @OneToMany(mappedBy = "sujet", cascade = CascadeType.ALL)
      @JsonIgnore
      private List<DemandeReinscription> demandesReinscription;
 

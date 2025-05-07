@@ -30,8 +30,8 @@ public class AvisReinscription {
     @NotNull(message = "L'avis final est obligatoire")
     private AvisEnum avisFinal;
 
-    @OneToOne(mappedBy = "avisReinscription")
-    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "demandeReinscription_id")
     private DemandeReinscription demandeReinscription;
 
     @ManyToOne

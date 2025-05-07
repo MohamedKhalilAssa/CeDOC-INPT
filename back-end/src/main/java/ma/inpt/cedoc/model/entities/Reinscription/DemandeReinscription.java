@@ -49,8 +49,7 @@ public class DemandeReinscription {
     @JoinColumn(name = "sujet_id")
     private Sujet sujet;
 
-    @OneToOne
-    @JoinColumn(name = "avis_reinscription_id")
+    @OneToOne(mappedBy = "demandeReinscription", cascade = CascadeType.ALL, orphanRemoval = true)
     private AvisReinscription avisReinscription;
 
 }
