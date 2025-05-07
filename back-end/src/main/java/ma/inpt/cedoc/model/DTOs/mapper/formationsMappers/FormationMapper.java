@@ -20,7 +20,7 @@ public interface FormationMapper {
     @Mapping(target = "doctorantsCibles", ignore = true)
     Formation formationRequestDTOToFormation(FormationRequestDTO formationRequestDTO);
 
-    // Mapping from Formation to FormationResponseDTO
+    // Mapping fromFormation to FormationResponseDTO
     @Mappings({
             @Mapping(target = "doctorantIds", expression = "java(mapDoctorantIds(formation))")
     })

@@ -1,21 +1,21 @@
 package ma.inpt.cedoc.model.DTOs.Formations;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 import ma.inpt.cedoc.model.enums.formation_enums.ModuleEnum;
 
 @Data
-@Builder
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class FormationResponseDTO {
-
-    private Long id;
+public class FormationResponseDTO extends BaseResponseDTO {
 
     private String formationName;
 
@@ -30,10 +30,6 @@ public class FormationResponseDTO {
     private Integer duree;
 
     private String lieu;
-
-    private ZonedDateTime createdAt;
-
-    private ZonedDateTime updatedAt;
 
     private List<Long> doctorantIds; // IDs of Doctorants (to avoid circular fetching)
 }

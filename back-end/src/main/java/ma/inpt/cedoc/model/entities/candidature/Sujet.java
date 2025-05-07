@@ -3,7 +3,6 @@ package ma.inpt.cedoc.model.entities.candidature;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,6 +16,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
@@ -75,8 +75,8 @@ public class Sujet {
     @JoinColumn(name = "directeur_these_id")
     private DirecteurDeThese directeurDeThese;
 
-     @OneToMany(mappedBy = "sujet", cascade = CascadeType.ALL)
-     @JsonIgnore
-     private List<DemandeReinscription> demandesReinscription;
+    @OneToMany(mappedBy = "sujet")
+    @JsonIgnore
+    private List<DemandeReinscription> demandesReinscription;
 
 }
