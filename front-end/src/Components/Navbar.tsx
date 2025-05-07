@@ -1,5 +1,7 @@
 import appConfig from "@/public/config.ts";
 import { useEffect, useState, type JSX } from "react";
+import { Link } from "react-router-dom";
+
 const Navbar = (): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -49,13 +51,13 @@ const Navbar = (): JSX.Element => {
             )}
           </div>
           <div className="hidden lg:block">
-            <a
-              href="#candidature"
+            <Link
+              to="/register"
               className="relative inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full text-sm shadow-lg hover:shadow-xl transition duration-300 group"
             >
               <span className="relative z-10">Postuler</span>
               <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-900 rounded-full opacity-0 group-hover:opacity-100 transition duration-300" />
-            </a>
+            </Link>
           </div>
           <div className="lg:hidden">
             <button

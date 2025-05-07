@@ -9,7 +9,7 @@ enum GenreEnum {
   FEMME = "Femme",
 }
 
-type RegisterFormValues = {
+type UtilisateurValues = {
   nom: string;
   prenom: string;
   email: string;
@@ -22,6 +22,10 @@ type RegisterFormValues = {
   nationaliteId: number;
   lieuDeNaissanceId: number;
 };
-
+type RegisterFormValues = {
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+};
 export { EtatCivilEnum, GenreEnum };
-export type { RegisterFormValues };
+export type { RegisterFormValues, UtilisateurValues };
