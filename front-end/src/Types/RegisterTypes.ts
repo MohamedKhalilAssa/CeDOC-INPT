@@ -27,5 +27,21 @@ type RegisterFormValues = {
   password: string;
   passwordConfirmation: string;
 };
+
+type AuthenticationFormValues = {
+  email: string;
+  password: string;
+};
+type AuthenticationResponseValues = {
+  access_token: string;
+  status: number;
+  message: string;
+};
+
 export { EtatCivilEnum, GenreEnum };
-export type { RegisterFormValues, UtilisateurValues };
+export type {
+  AuthenticationFormValues,
+  AuthenticationResponseValues,
+  RegisterFormValues,
+  UtilisateurValues,
+};

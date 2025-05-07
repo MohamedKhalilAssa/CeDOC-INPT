@@ -25,17 +25,19 @@ const Navbar = (): JSX.Element => {
     <nav className="bg-white/90 backdrop-blur-md shadow-sm fixed w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          <div className="flex h-10 w-40 items-center justify-between">
-            <img
-              className="h-8 w-auto"
-              src={`${appConfig.BACKEND_URL}/images/Logo_inpt.png`}
-              alt="Logo INPT"
-            />
-            <span className="hidden md:block h-full w-[1px] bg-black"></span>
-            <span className=" text-xl font-bold hidden md:block bg-gradient-to-r from-blue-800 via-blue-600 to-blue-500 bg-clip-text text-transparent">
-              CEDoc
-            </span>
-          </div>
+          <Link to={`${appConfig.FRONTEND_PATHS.landingPage.path}`}>
+            <div className="flex h-10 w-40 items-center justify-between">
+              <img
+                className="h-8 w-auto"
+                src={`${appConfig.BACKEND_URL}/images/Logo_inpt.png`}
+                alt="Logo INPT"
+              />
+              <span className="hidden md:block h-full w-[1px] bg-black"></span>
+              <span className=" text-xl font-bold hidden md:block bg-gradient-to-r from-blue-800 via-blue-600 to-blue-500 bg-clip-text text-transparent">
+                CEDoc
+              </span>
+            </div>
+          </Link>
           <div className="hidden lg:flex space-x-6 ml-12">
             {["accueil", "programmes", "recherche", "admission", "contact"].map(
               (section) => (
@@ -52,7 +54,7 @@ const Navbar = (): JSX.Element => {
           </div>
           <div className="hidden lg:block">
             <Link
-              to="/register"
+              to={`${appConfig.FRONTEND_PATHS.register.path}`}
               className="relative inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full text-sm shadow-lg hover:shadow-xl transition duration-300 group"
             >
               <span className="relative z-10">Postuler</span>

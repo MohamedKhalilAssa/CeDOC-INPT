@@ -8,6 +8,7 @@ interface InputFieldProps {
   errors: any;
   validation?: any;
   classes?: string;
+  isPassword?: boolean;
 }
 interface SelectFieldProps {
   label: string;
