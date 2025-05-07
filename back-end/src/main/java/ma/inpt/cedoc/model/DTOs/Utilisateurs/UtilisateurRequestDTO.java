@@ -2,11 +2,8 @@ package ma.inpt.cedoc.model.DTOs.Utilisateurs;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -64,7 +61,4 @@ public class UtilisateurRequestDTO {
     @NotNull(message = "Veuillez preciser votre lieu de naissance.")
     private long lieuDeNaissanceId;
 
-    @Builder.Default
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private boolean emailValider = false;
 }
