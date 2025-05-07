@@ -23,10 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
-import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
-import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
-import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
-import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
+import ma.inpt.cedoc.model.DTOs.auth.*;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
@@ -78,7 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 try {
                         future.get();
                         return AuthenticationResponse.builder()
-                                        .statusCode(HttpStatus.OK.value())
+                                        .status(HttpStatus.OK.value())
                                         .message("Utilisateur inscrit. Merci de verifier votre compte avant de proceder (Voir Mail)")
                                         .build();
                 } catch (Exception e) {
@@ -95,7 +92,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
                 System.out.println(emailVerificationRequired);
                 if (emailVerificationRequired && !utilisateur.isEmailValider()) {
-                        emailVerificationService.sendVerificationToken(utilisateur.getEmail());
+                        emailVerificationService.sendVerificationToken(
+                                        new SendMailVerificationRequest(utilisateur.getEmail()));
                         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                                         "Veuillez verifier votre compte. Voir Mail.");
                 }
@@ -114,7 +112,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
                 return AuthenticationResponse.builder()
                                 .accessToken(tokens.get("access_token"))
-                                .statusCode(HttpServletResponse.SC_OK)
+                                .status(HttpServletResponse.SC_OK)
                                 .message("Utilisateur authentifier avec success")
                                 .build();
         }
@@ -160,7 +158,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
                 return AuthenticationResponse.builder()
-                                .statusCode(HttpServletResponse.SC_OK)
+                                .status(HttpServletResponse.SC_OK)
                                 .message("Utilisateur deconnecté avec success")
                                 .build();
         }
@@ -171,7 +169,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 final String userEmail;
                 final String refreshToken = request.getRefreshToken();
                 if (refreshToken == null) {
-                        return AuthenticationResponse.builder().statusCode(401).message("Refresh token introuvable")
+                        return AuthenticationResponse.builder().status(401).message("Refresh token introuvable")
                                         .build();
                 }
 
@@ -185,13 +183,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 saveUserToken(user, accessToken, TokenEnum.BEARER);
                                 AuthenticationResponse authResponse = AuthenticationResponse.builder()
                                                 .accessToken(accessToken)
-                                                .statusCode(200)
+                                                .status(200)
                                                 .message("Utilisateur Authentifier avec success")
                                                 .build();
                                 return authResponse;
                         }
                 }
-                return AuthenticationResponse.builder().statusCode(401).message("Refresh token process failed").build();
+                return AuthenticationResponse.builder().status(401).message("Refresh token process failed").build();
 
         }
 

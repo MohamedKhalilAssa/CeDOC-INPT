@@ -11,13 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmailVerificationRequest {
+public class SendMailVerificationRequest {
 
     @NotBlank(message = "Email est obligatoire")
     @Email
     private String email;
-
-    @NotBlank(message = "Token est obligatoire")
-    private String token;
 
 }

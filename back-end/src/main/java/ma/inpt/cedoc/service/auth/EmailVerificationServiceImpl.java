@@ -3,6 +3,7 @@ package ma.inpt.cedoc.service.auth;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +14,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.auth.SendMailVerificationRequest;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository;
@@ -40,7 +42,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
   @Override
   @Async
-  public CompletableFuture<Void> sendVerificationToken(String email) {
+  public CompletableFuture<Void> sendVerificationToken(SendMailVerificationRequest request) {
+    String email = request.getEmail().trim();
     try {
       final Utilisateur user = utilisateurRepository.findByEmail(email.trim()).filter(u -> !u.isEmailValider())
           .orElseThrow(
@@ -50,7 +53,6 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
       return sendMailToUtilisateur(user);
     } catch (Exception e) {
-      e.printStackTrace();
       return CompletableFuture.failedFuture(e);
     }
   }
@@ -59,6 +61,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
   public CompletableFuture<Void> sendMailToUtilisateur(Utilisateur utilisateur) {
     final var userId = utilisateur.getId();
     final String email = utilisateur.getEmail();
+
+    final boolean canResend = otpService.canResendOtp(userId);
+    if (!canResend) {
+      System.out.println("Attente de 1 minute avant la prochaine tentative");
+      return CompletableFuture.failedFuture(
+          new ResponseStatusException(HttpStatus.BAD_REQUEST, "Attente de 1 minute avant la prochaine tentative"));
+    }
     final var token = otpService.generateAndStoreOtp(userId);
     final var verificationUrl = frontendUrl + "/auth/verify-email?email=" + email
         + "&t=" + token + "&auto=1";
@@ -121,8 +130,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
           </html>
           """;
 
-      String fullName = utilisateur.getNom() + " " + utilisateur.getPrenom();
-      String content = String.format(template, logoUrl, fullName, verificationUrl,
+      String content = String.format(template, logoUrl, utilisateur.getEmail(), verificationUrl,
           token);
 
       helper.setText(content, true);
@@ -130,7 +138,9 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
       mailSender.send(mimeMessage);
 
       return CompletableFuture.completedFuture(null);
-    } catch (Exception e) {
+    }
+
+    catch (Exception e) {
       return CompletableFuture.failedFuture(e);
 
     }

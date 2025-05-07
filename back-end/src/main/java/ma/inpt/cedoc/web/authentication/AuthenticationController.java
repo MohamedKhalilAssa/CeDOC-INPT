@@ -6,7 +6,10 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.Cookie;
@@ -87,14 +90,14 @@ public class AuthenticationController {
 
             if (extractedCookie == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                        AuthenticationResponse.builder().statusCode(HttpStatus.UNAUTHORIZED.value())
+                        AuthenticationResponse.builder().status(HttpStatus.UNAUTHORIZED.value())
                                 .message("Refresh token introuvable").build());
             }
 
             refreshToken = extractedCookie.getValue();
             if (refreshToken == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(AuthenticationResponse.builder().statusCode(
+                        .body(AuthenticationResponse.builder().status(
                                 HttpStatus.UNAUTHORIZED.value())
                                 .message("Refresh token introuvable").build());
             }
@@ -108,15 +111,16 @@ public class AuthenticationController {
     }
 
     @PostMapping("/email/send-verification")
-    public ResponseEntity<AuthenticationResponse> sendVerificationMail(@RequestParam String email) {
-        CompletableFuture<Void> future = emailVerificationService.sendVerificationToken(email);
+    public ResponseEntity<AuthenticationResponse> sendVerificationMail(
+            @RequestBody @Valid SendMailVerificationRequest request) {
+        CompletableFuture<Void> future = emailVerificationService.sendVerificationToken(request);
 
         // ERROR HANDLING
         try {
             future.get();
             return ResponseEntity.ok(
                     AuthenticationResponse.builder()
-                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.value())
                             .message("Email de vérification envoyé avec succès")
                             .build());
         } catch (ExecutionException | InterruptedException | ResponseStatusException e) {
@@ -133,7 +137,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/email/verify")
-    public ResponseEntity<?> verifyEmail(@RequestBody EmailVerificationRequest request) {
+    public ResponseEntity<?> verifyEmail(@RequestBody @Valid EmailVerificationRequest request) {
         try {
             UtilisateurResponseDTO verifiedUser = emailVerificationService.verifyEmail(request.getEmail(),
                     request.getToken());
@@ -151,7 +155,7 @@ public class AuthenticationController {
             String defaultMessage) {
         return ResponseEntity.status(status).body(
                 AuthenticationResponse.builder()
-                        .statusCode(status.value())
+                        .status(status.value())
                         .message(defaultMessage + ": " + e.getMessage())
                         .build());
     }
@@ -159,7 +163,7 @@ public class AuthenticationController {
     private ResponseEntity<AuthenticationResponse> handleResponseStatusException(ResponseStatusException e) {
         return ResponseEntity.status(e.getStatusCode()).body(
                 AuthenticationResponse.builder()
-                        .statusCode(e.getStatusCode().value())
+                        .status(e.getStatusCode().value())
                         .message(e.getReason())
                         .build());
     }
