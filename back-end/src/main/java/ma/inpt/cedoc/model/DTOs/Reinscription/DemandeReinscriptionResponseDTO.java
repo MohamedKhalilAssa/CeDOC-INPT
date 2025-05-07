@@ -6,6 +6,7 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 import ma.inpt.cedoc.model.entities.Reinscription.AvisReinscription;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
@@ -13,9 +14,7 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
-public class DemandeReinscriptionResponseDTO {
-
-    private Long id;
+public class DemandeReinscriptionResponseDTO extends BaseResponseDTO {
 
     private int annee;
 

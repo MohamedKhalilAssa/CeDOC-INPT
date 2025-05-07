@@ -36,6 +36,8 @@ public class AvisResinscriptionMapper {
         dto.setAvisFinal(entity.getAvisFinal());
         dto.setDirecteurDeTheseId(entity.getDirecteurDeThese().getId());
         dto.setDemandeReinscriptionId(entity.getDemandeReinscription().getId());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
         return dto;
     }
 }
