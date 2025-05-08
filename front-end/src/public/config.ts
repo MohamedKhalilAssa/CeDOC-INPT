@@ -43,12 +43,22 @@ const appConfig: AppConfig = {
     },
     sendVerificationEmail: {
       name: "Send Verification Email",
-      path: "/auth/email/send-verification",
+      path: "/auth/send-verification",
       method: "POST",
     },
     verifyEmail: {
       name: "Verify Email",
-      path: "/auth/email/verify",
+      path: "/auth/verify-email",
+      method: "POST",
+    },
+    forgotPassword: {
+      name: "Forgot Password",
+      path: "/auth/forgot-password",
+      method: "POST",
+    },
+    resetPassword: {
+      name: "Reset Password",
+      path: "/auth/reset-password",
       method: "POST",
     },
     authCheck: {

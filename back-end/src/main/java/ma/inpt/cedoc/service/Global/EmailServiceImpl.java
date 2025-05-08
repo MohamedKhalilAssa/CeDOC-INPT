@@ -5,16 +5,17 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
+@Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
-
 
     @Value("${app.base-url}")
     private String baseUrl;

@@ -2,9 +2,8 @@ package ma.inpt.cedoc.service.auth;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletResponse;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
@@ -24,9 +23,9 @@ public interface AuthenticationService {
 
         AuthenticationResponse logout(HttpServletResponse response);
 
-        ResponseEntity<?> forgotPassword(String email);
+        CompletableFuture<Void> forgotPassword(String email);
 
-        ResponseEntity<?> resetPassword();
+        AuthenticationResponse resetPassword(String token, String password);
 
         AuthenticationResponse refreshToken(TokenRefreshRequest request, HttpServletResponse response)
                         throws IOException;

@@ -58,8 +58,19 @@ public class JwtUtil {
     }
 
     /* BUILD TOKEN */
+    public String generateAccessTokenWithOnlyEmail(UserDetails userDetails) {
+        final long expiration = 300; // 5 minutes
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT") // Manually setting the 'typ' claim
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
-       
+
         Map<String, Object> claims = new HashMap<String, Object>(extraClaims);
         claims.put("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         return Jwts.builder()
