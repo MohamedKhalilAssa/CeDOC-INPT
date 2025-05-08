@@ -18,7 +18,7 @@ import ma.inpt.cedoc.Helpers.UtilFunctions;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.auth.*;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
-import ma.inpt.cedoc.service.auth.EmailService;
+import ma.inpt.cedoc.service.auth.EmailVerificationService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,7 +26,7 @@ import ma.inpt.cedoc.service.auth.EmailService;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final EmailService emailVerificationService;
+    private final EmailVerificationService emailVerificationService;
 
     // for registering new User
     @PostMapping("/register")
