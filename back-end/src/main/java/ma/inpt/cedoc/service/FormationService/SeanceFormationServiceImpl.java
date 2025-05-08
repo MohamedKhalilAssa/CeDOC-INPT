@@ -1,4 +1,9 @@
-package ma.inpt.cedoc.service.formations.impl;
+package ma.inpt.cedoc.service.FormationService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -7,11 +12,6 @@ import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.SeanceFormationMapper;
 import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
 import ma.inpt.cedoc.repositories.formationRepositories.SeanceFormationRepository;
-import ma.inpt.cedoc.service.FormationService.SeanceFormationService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

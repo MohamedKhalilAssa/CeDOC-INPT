@@ -1,24 +1,24 @@
 package ma.inpt.cedoc.service.FormationService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.FormationMapper;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.repositories.formationRepositories.FormationRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class FormationServiceImpl implements FormationService {
-
 
     private final FormationMapper formationMapper;
     private final FormationRepository formationRepository;
@@ -65,16 +65,18 @@ public class FormationServiceImpl implements FormationService {
 
     /* ------------------ Update method ------------------ */
 
-//    @Override
-//    public FormationResponseDTO updateFormation(Long id, FormationRequestDTO dto) {
-//        var existingFormation = formationRepository.findById(id)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Formation non trouvée"));
-//
-//        existingFormation = formationMapper.formationRequestDTOToFormation(dto);
-//
-//        var updatedFormation = formationRepository.save(existingFormation);
-//        return formationMapper.formationToFormationResponseDTO(updatedFormation);
-//    }
+    // @Override
+    // public FormationResponseDTO updateFormation(Long id, FormationRequestDTO dto)
+    // {
+    // var existingFormation = formationRepository.findById(id)
+    // .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+    // "Formation non trouvée"));
+    //
+    // existingFormation = formationMapper.formationRequestDTOToFormation(dto);
+    //
+    // var updatedFormation = formationRepository.save(existingFormation);
+    // return formationMapper.formationToFormationResponseDTO(updatedFormation);
+    // }
 
     @Override
     public FormationResponseDTO updateFormation(Long id, FormationRequestDTO dto) {
