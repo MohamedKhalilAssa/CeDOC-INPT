@@ -1,13 +1,11 @@
 package ma.inpt.cedoc.model.DTOs.DoctorantActions;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.Annotations.FieldMatcher.FieldMatch;
-import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
-
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

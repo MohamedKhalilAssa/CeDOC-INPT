@@ -1,6 +1,15 @@
 package ma.inpt.cedoc.model.entities.DoctorantActions;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,13 +18,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -54,8 +56,8 @@ public class ConfParticipation {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    //----------- Relation --------------
-    @ManyToMany(mappedBy = "communications")
+    // ----------- Relation --------------
+    @ManyToMany(mappedBy = "confParticipations")
     @JsonIgnore
     private List<Doctorant> participatants;
 }

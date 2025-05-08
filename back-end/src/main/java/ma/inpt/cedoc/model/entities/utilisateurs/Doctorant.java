@@ -90,7 +90,7 @@ public class Doctorant extends Utilisateur {
 //                inverseJoinColumns = @JoinColumn(name = "publication_id"))
 //        private List<Publication> publications;
 
-        @OneToMany(mappedBy = "doctorant")
+        @OneToMany(mappedBy = "auteur")
         private List<Authorship> authorships;
 
         @ManyToMany

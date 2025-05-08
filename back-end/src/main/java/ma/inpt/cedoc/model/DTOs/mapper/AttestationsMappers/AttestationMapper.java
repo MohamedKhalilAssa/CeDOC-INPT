@@ -39,7 +39,6 @@ public interface AttestationMapper {
 
         // Mapping for automatic response
 
-        
         AttestationAutomatiqueResponseDTO attestationAutomatiqueToAttestationAutomatiqueResponseDTO(
                         AttestationAutomatique attestation);
 
