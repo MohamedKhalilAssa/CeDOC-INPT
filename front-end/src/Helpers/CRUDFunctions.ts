@@ -12,6 +12,22 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+API.interceptors.response.use(
+  (response) => {
+    const newAccessToken = response.headers["authorization"];
+    if (newAccessToken && newAccessToken.startsWith("Bearer ")) {
+      const token = newAccessToken.replace("Bearer ", "");
+      localStorage.setItem("token", token);
+      localStorage.setItem("isAuthenticated", "true");
+    }
+    return response;
+  },
+  // (error) => {
+  //   // Handle 401 here too if refresh logic is needed
+  //   return Promise.reject(error);
+  // }
+);
+
 interface FieldError {
   field: string;
   message: string;

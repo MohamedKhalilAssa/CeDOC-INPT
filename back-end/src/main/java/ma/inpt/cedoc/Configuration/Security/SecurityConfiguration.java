@@ -40,7 +40,7 @@ public class SecurityConfiguration {
                                 .addFilterBefore(
                                                 jwtFilter, UsernamePasswordAuthenticationFilter.class)
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/logout").authenticated()
+                                                .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
                                                 .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
@@ -61,6 +61,7 @@ public class SecurityConfiguration {
                 config.setAllowedOrigins(List.of(frontEndURL));
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
+                config.setExposedHeaders(List.of("Authorization"));
                 config.setAllowCredentials(true);
 
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

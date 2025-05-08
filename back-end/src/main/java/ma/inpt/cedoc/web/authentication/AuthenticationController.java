@@ -6,10 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.Cookie;
@@ -149,6 +146,10 @@ public class AuthenticationController {
         }
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<?> checkAuth() {
+        return ResponseEntity.ok("Token valide.");
+    }
     // helper
 
     private ResponseEntity<AuthenticationResponse> handleException(Exception e, HttpStatus status,

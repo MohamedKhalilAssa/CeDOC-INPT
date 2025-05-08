@@ -1,11 +1,16 @@
+import { checkAuth } from "@/Helpers/checkAuth";
 import appConfig from "@/public/config.ts";
-import { useEffect, useState, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = (): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const hasRunRef = useRef(false);
   useEffect(() => {
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
     const handleScroll = () => {
       const backToTop = document.getElementById("back-to-top");
       if (!backToTop) return;
@@ -17,6 +22,8 @@ const Navbar = (): JSX.Element => {
         backToTop.classList.remove("opacity-100", "visible");
       }
     };
+
+    checkAuth(setIsAuthenticated);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -53,13 +60,17 @@ const Navbar = (): JSX.Element => {
             )}
           </div>
           <div className="hidden lg:block">
-            <Link
-              to={`${appConfig.FRONTEND_PATHS.register.path}`}
-              className="relative inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full text-sm shadow-lg hover:shadow-xl transition duration-300 group"
-            >
-              <span className="relative z-10">Postuler</span>
-              <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-900 rounded-full opacity-0 group-hover:opacity-100 transition duration-300" />
-            </Link>
+            {!isAuthenticated ? (
+              <Link
+                to={`${appConfig.FRONTEND_PATHS.register.path}`}
+                className="relative inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full text-sm shadow-lg hover:shadow-xl transition duration-300 group"
+              >
+                <span className="relative z-10">Postuler</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-900 rounded-full opacity-0 group-hover:opacity-100 transition duration-300" />
+              </Link>
+            ) : (
+              "DropDown"
+            )}
           </div>
           <div className="lg:hidden">
             <button

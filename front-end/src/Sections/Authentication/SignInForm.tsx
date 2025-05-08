@@ -21,6 +21,7 @@ const SignInForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | undefined>(undefined);
+
   const navigate = useNavigate();
   const onSubmit = async (data: AuthenticationFormValues) => {
     setLoading(true);
@@ -30,7 +31,7 @@ const SignInForm = () => {
         data
       );
 
-      localStorage.setItem("token", "Bearer " + res?.access_token || "");
+      localStorage.setItem("token", res?.access_token || "");
       Swal.fire({
         icon: "success",
         title: "Authentication réussie",

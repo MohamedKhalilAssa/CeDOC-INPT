@@ -51,6 +51,11 @@ const appConfig: AppConfig = {
       path: "/auth/email/verify",
       method: "POST",
     },
+    authCheck: {
+      name: "Auth Check",
+      path: "/auth/check",
+      method: "GET",
+    },
   },
   FRONTEND_PATHS: {
     landingPage: {

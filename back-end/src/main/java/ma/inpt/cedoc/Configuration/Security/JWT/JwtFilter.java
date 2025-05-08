@@ -51,7 +51,8 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("Authenticated Request path : " + request.getServletPath() + " Request method : "
                 + request.getMethod());
         // not execute it when the path is guest
-        if ((request.getServletPath().contains("/api/auth") && !request.getServletPath().contains("/api/auth/logout"))
+        if ((request.getServletPath().contains("/api/auth") && !(request.getServletPath().contains("/api/auth/logout")
+                || request.getServletPath().contains("/api/auth/check")))
                 || request.getServletPath().contains("/api/guest")) {
             filterChain.doFilter(request, response);
             return;
@@ -60,6 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String jwt;
         // GET the user email
+        boolean isAccessTokenValid = false;
         final String userSubject;
         // Check if the header exists
         if (authHeader == null || !authHeader.startsWith(JwtUtil.AUTHORIZATION_PREFIX)) {
@@ -67,12 +69,14 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length());
-        userSubject = jwtUtil.extractSubject(jwt);
-
-        boolean isAccessTokenValid = false;
-        // Check if the subject is there and if the user is already authenticated
-        if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            isAccessTokenValid = useAccessToken(jwt, userSubject, request);
+        try {
+            userSubject = jwtUtil.extractSubject(jwt);
+            // Check if the subject is there and if the user is already authenticated
+            if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                isAccessTokenValid = useAccessToken(jwt, userSubject, request);
+            }
+        } catch (Exception e) {
+            isAccessTokenValid = false;
         }
         if (!isAccessTokenValid) {
             // Check for cookie of refresh_token
@@ -100,6 +104,7 @@ public class JwtFilter extends OncePerRequestFilter {
             } else {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
                         "Refresh token introuvable");
+                return;
             }
         }
         filterChain.doFilter(request, response);
@@ -114,7 +119,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 .map(t -> !t.isExpired() && !t.isRevoked())
                 .orElse(false);
         // Check if the token is valid
-        if (jwtUtil.isTokenValid(jwt, userDetails) || isTokenValid) {
+        if (jwtUtil.isTokenValid(jwt, userDetails) && isTokenValid) {
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,
