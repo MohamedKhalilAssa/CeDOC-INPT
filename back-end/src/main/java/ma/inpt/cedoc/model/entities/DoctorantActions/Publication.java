@@ -1,5 +1,6 @@
-package ma.inpt.cedoc.model.entities.Doctorant_Actions;
+package ma.inpt.cedoc.model.entities.DoctorantActions;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -13,12 +14,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "publications")
+@EntityListeners(AuditingEntityListener.class)
 public class Publication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +41,16 @@ public class Publication {
     @NotNull(message = "L'état de publication est obligatoire")
     private EtatEnum status;
 
+    @Column(name = "created_at", updatable = false)
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     // ----------------- Relations -----------------
 
-    @ManyToMany(mappedBy = "publications")
-    @JsonIgnore
-    private List<Doctorant> auteurs;
+    @OneToMany(mappedBy = "publication")
+    private List<Authorship> authorships;
 }

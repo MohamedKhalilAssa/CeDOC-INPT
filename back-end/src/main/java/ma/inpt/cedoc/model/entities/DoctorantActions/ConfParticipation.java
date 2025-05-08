@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.model.entities.Doctorant_Actions;
+package ma.inpt.cedoc.model.entities.DoctorantActions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -9,7 +9,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -18,7 +22,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "communications_conferences")
-public class CommunicationConference {
+@EntityListeners(AuditingEntityListener.class)
+public class ConfParticipation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,15 +37,25 @@ public class CommunicationConference {
     @NotNull(message = "la date de CommunicationConference et obligatoire")
     private ZonedDateTime date;
 
+    @NotNull(message = "le lieu de CommunicationConference et obligatoire")
+    private String lieu;
+
     @NotBlank(message = "le justificatif de CommunicationConference et obligatoire")
     private String justificatif;
 
     @NotNull(message = "l'état de CommunicationConference et obligatoire")
     private EtatEnum status;
 
+    @Column(name = "created_at", updatable = false)
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     //----------- Relation --------------
     @ManyToMany(mappedBy = "communications")
     @JsonIgnore
     private List<Doctorant> participatants;
-
 }
