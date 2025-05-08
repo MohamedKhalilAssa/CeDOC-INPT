@@ -1,11 +1,10 @@
 package ma.inpt.cedoc.model.DTOs.Formations;
 
+import java.util.Date;
+
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import ma.inpt.cedoc.model.enums.formation_enums.ModuleEnum;
-
-import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 public class FormationRequestDTO {

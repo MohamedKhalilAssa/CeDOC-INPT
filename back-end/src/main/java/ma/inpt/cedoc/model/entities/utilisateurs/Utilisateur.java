@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
@@ -30,38 +31,38 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 @Table(name = "utilisateurs")
 @Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
-@Builder
+@SuperBuilder
 public class Utilisateur implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String nom;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String prenom;
 
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true)
     private String telephone;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "date_naissance", nullable = false)
+    @Column(name = "date_naissance", nullable = true)
     private LocalDate dateNaissance;
 
     // To Review if is required or not
-    @Column(name = "etat_civil")
+    @Column(name = "etat_civil", nullable = true)
     @Enumerated(EnumType.STRING)
     private EtatCivilEnum etatCivilEnum;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "genre", nullable = false)
+    @Column(name = "genre", nullable = true)
     private GenreEnum genre;
 
     @Column(name = "email_valider", nullable = false)
@@ -83,11 +84,11 @@ public class Utilisateur implements UserDetails {
     private List<Role> roles = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "nationalite_id", nullable = false)
+    @JoinColumn(name = "nationalite_id", nullable = true)
     private Nationalite nationalite;
 
     @ManyToOne
-    @JoinColumn(name = "lieu_naissance_id", nullable = false)
+    @JoinColumn(name = "lieu_naissance_id", nullable = true)
     private LieuDeNaissance lieuDeNaissance;
 
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)

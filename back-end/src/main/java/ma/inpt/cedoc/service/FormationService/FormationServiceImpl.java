@@ -109,6 +109,6 @@ public class FormationServiceImpl implements FormationService {
 
     @Override
     public FormationResponseDTO getById(Long id) {
-        return formationMapper.formationToFormationResponseDTO(formationRepository.getById(id));
+        return formationMapper.formationToFormationResponseDTO(formationRepository.findById(id).orElse(null));
     }
 }

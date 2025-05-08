@@ -1,9 +1,10 @@
 package ma.inpt.cedoc.model.DTOs.mapper.formationsMappers;
 
+import org.mapstruct.*;
+
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
-import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface SeanceFormationMapper {
@@ -23,8 +24,14 @@ public interface SeanceFormationMapper {
     })
     SeanceFormationResponseDTO seanceFormationToSeanceFormationResponseDTO(SeanceFormation seanceFormation);
 
-
-    @Mapping(target = "id", ignore = true)
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "declarant", ignore = true),
+            @Mapping(target = "formation", ignore = true),
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(target = "validePar", ignore = true)
+    })
     void updateSeanceFormationFromDTO(SeanceFormationRequestDTO dto, @MappingTarget SeanceFormation entity);
 
     /*------------------------------------- HELPERS (if needed manually) ----------------------------------------*/
