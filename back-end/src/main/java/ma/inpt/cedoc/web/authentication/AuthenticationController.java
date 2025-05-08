@@ -18,7 +18,7 @@ import ma.inpt.cedoc.Helpers.UtilFunctions;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.auth.*;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
-import ma.inpt.cedoc.service.auth.EmailVerificationService;
+import ma.inpt.cedoc.service.auth.EmailService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,7 +26,7 @@ import ma.inpt.cedoc.service.auth.EmailVerificationService;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final EmailVerificationService emailVerificationService;
+    private final EmailService emailVerificationService;
 
     // for registering new User
     @PostMapping("/register")
@@ -109,8 +109,9 @@ public class AuthenticationController {
 
     @PostMapping("/email/send-verification")
     public ResponseEntity<AuthenticationResponse> sendVerificationMail(
-            @RequestBody @Valid SendMailVerificationRequest request) {
-        CompletableFuture<Void> future = emailVerificationService.sendVerificationToken(request);
+            @RequestBody @Valid EmailRequest request) {
+
+        CompletableFuture<Void> future = emailVerificationService.sendVerificationToken(request.getEmail());
 
         // ERROR HANDLING
         try {

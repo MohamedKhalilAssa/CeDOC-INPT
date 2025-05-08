@@ -7,14 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendMailVerificationRequest {
 
-    @NotBlank(message = "Email est obligatoire")
+public class EmailRequest {
+
     @Email
+    @NotBlank(message = "Email est obligatoire")
     private String email;
-
 }

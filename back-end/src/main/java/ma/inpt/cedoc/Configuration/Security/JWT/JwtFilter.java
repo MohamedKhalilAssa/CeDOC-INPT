@@ -1,6 +1,7 @@
 package ma.inpt.cedoc.Configuration.Security.JWT;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -57,34 +58,35 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        // GET necessary data from the header
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String jwt;
-        // GET the user email
         boolean isAccessTokenValid = false;
+        // GET the user email
         final String userSubject;
-        // Check if the header exists
-        if (authHeader == null || !authHeader.startsWith(JwtUtil.AUTHORIZATION_PREFIX)) {
+        // GET THE TOKENS
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String accessToken = (authHeader != null && authHeader.startsWith(JwtUtil.AUTHORIZATION_PREFIX))
+                ? authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length())
+                : null;
+
+        String refreshToken = Optional.ofNullable(UtilFunctions.extractCookie(request, "refresh_token"))
+                .map(Cookie::getValue)
+                .orElse(null);
+
+        if (accessToken == null && refreshToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length());
+
         try {
-            userSubject = jwtUtil.extractSubject(jwt);
+            userSubject = jwtUtil.extractSubject(accessToken);
             // Check if the subject is there and if the user is already authenticated
             if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                isAccessTokenValid = useAccessToken(jwt, userSubject, request);
+                isAccessTokenValid = useAccessToken(accessToken, userSubject, request);
             }
         } catch (Exception e) {
             isAccessTokenValid = false;
         }
         if (!isAccessTokenValid) {
             // Check for cookie of refresh_token
-            String refreshToken = null;
-            Cookie extractedCookie = UtilFunctions.extractCookie(request, "refresh_token");
-            if (extractedCookie != null) {
-                refreshToken = extractedCookie.getValue();
-            }
 
             var isRefreshTokenValid = tokenRepository.findByToken(
                     refreshToken)

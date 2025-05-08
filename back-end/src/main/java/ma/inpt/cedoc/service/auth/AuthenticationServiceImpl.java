@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +24,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
-import ma.inpt.cedoc.model.DTOs.auth.*;
+import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
+import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
+import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
+import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
@@ -69,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 // Send verification mail
 
                 CompletableFuture<Void> future = emailVerificationService
-                                .sendMailToUtilisateur(savedUtilisateur);
+                                .sendVerificationToken(savedUtilisateur.getEmail());
 
                 // ERROR HANDLINGs
                 try {
@@ -93,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 System.out.println(emailVerificationRequired);
                 if (emailVerificationRequired && !utilisateur.isEmailValider()) {
                         emailVerificationService.sendVerificationToken(
-                                        new SendMailVerificationRequest(utilisateur.getEmail()));
+                                        utilisateur.getEmail());
                         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                                         "Veuillez verifier votre compte. Voir Mail.");
                 }
@@ -194,6 +198,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         }
 
+        @Override
+        public ResponseEntity<?> forgotPassword(String email) {
+                // TODO Auto-generated method stub
+                return null;
+        }
+
+        @Override
+        public ResponseEntity<?> resetPassword() {
+                // TODO Auto-generated method stub
+                return null;
+        }
+
+        /* HELPERS ----------------------------------------------- */
         private void saveUserToken(Utilisateur utilisateur, String jwtToken, TokenEnum type) {
                 Token token = Token.builder()
                                 .utilisateur(utilisateur)

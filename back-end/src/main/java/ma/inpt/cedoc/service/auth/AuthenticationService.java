@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.http.ResponseEntity;
+
 import jakarta.servlet.http.HttpServletResponse;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
@@ -21,6 +23,10 @@ public interface AuthenticationService {
         Map<String, String> authenticate(LoginRequest request, Utilisateur utilisateur);
 
         AuthenticationResponse logout(HttpServletResponse response);
+
+        ResponseEntity<?> forgotPassword(String email);
+
+        ResponseEntity<?> resetPassword();
 
         AuthenticationResponse refreshToken(TokenRefreshRequest request, HttpServletResponse response)
                         throws IOException;
