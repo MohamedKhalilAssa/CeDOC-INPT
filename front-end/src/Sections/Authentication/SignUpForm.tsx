@@ -139,6 +139,15 @@ const SignUpForm = () => {
                 Connectez-vous
               </Link>
             </p>
+            <p className="text-sm text-center mt-4 text-gray-600">
+              Vous avez besoin de verifier votre compte?{" "}
+              <Link
+                to={`${appConfig.FRONTEND_PATHS.verifyEmail.path}`}
+                className="text-blue-600 hover:underline"
+              >
+                Demander une verification
+              </Link>
+            </p>
           </form>
         </div>
       </div>

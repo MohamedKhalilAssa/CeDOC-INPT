@@ -31,7 +31,6 @@ const SignInForm = () => {
         data
       );
 
-      localStorage.setItem("token", res?.access_token || "");
       Swal.fire({
         icon: "success",
         title: "Authentication réussie",
@@ -132,6 +131,15 @@ const SignInForm = () => {
                 className="text-blue-600 hover:underline"
               >
                 Creer un compte
+              </Link>
+            </p>
+            <p className="text-sm text-center mt-4 text-gray-600">
+              Vous avez besoin de verifier votre compte?{" "}
+              <Link
+                to={`${appConfig.FRONTEND_PATHS.verifyEmail.path}`}
+                className="text-blue-600 hover:underline"
+              >
+                Demander une verification
               </Link>
             </p>
           </form>

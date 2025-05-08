@@ -110,8 +110,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                 .domain(cookieDomain)
                                 .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+                response.addHeader(HttpHeaders.AUTHORIZATION,
+                                JwtUtil.AUTHORIZATION_PREFIX + tokens.get("access_token"));
                 return AuthenticationResponse.builder()
-                                .accessToken(tokens.get("access_token"))
                                 .status(HttpServletResponse.SC_OK)
                                 .message("Utilisateur authentifier avec success")
                                 .build();

@@ -21,7 +21,7 @@ API.interceptors.response.use(
       localStorage.setItem("isAuthenticated", "true");
     }
     return response;
-  },
+  }
   // (error) => {
   //   // Handle 401 here too if refresh logic is needed
   //   return Promise.reject(error);

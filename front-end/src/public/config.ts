@@ -70,7 +70,7 @@ const appConfig: AppConfig = {
       name: "Login",
       path: "/auth/login",
     },
-    emailVerification: {
+    verifyEmail: {
       name: "Email Verification",
       path: "/auth/verify-email",
     },

@@ -147,8 +147,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<?> checkAuth() {
-        return ResponseEntity.ok("Token valide.");
+    public boolean checkAuth() {
+        return true;
     }
     // helper
 
