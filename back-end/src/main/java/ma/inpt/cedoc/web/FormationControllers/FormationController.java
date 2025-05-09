@@ -2,8 +2,6 @@ package ma.inpt.cedoc.web.FormationControllers;
 
 import java.util.List;
 
-import ma.inpt.cedoc.model.entities.formation.Formation;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,8 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.service.FormationService.FormationService;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/formations")
@@ -36,15 +34,15 @@ public class FormationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<FormationResponseDTO> updateFormation(@PathVariable Long id,
-                                                                @RequestBody @Valid FormationRequestDTO formationRequestDTO) {
+            @RequestBody @Valid FormationRequestDTO formationRequestDTO) {
         FormationResponseDTO updatedFormation = formationService.updateFormation(id, formationRequestDTO);
         return ResponseEntity.ok(updatedFormation);
     }
 
     @PostMapping("/raw")
     public ResponseEntity<?> createFormationWithoutDto(@RequestBody Formation formation) {
-            FormationResponseDTO savedFormation = formationService.saveFormationWithoutDto(formation);
-            return ResponseEntity.ok(savedFormation);
+        FormationResponseDTO savedFormation = formationService.saveFormationWithoutDto(formation);
+        return ResponseEntity.ok(savedFormation);
 
     }
 

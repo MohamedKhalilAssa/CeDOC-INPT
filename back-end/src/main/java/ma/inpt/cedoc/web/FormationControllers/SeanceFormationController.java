@@ -1,14 +1,15 @@
-package ma.inpt.cedoc.controller.formations;
+package ma.inpt.cedoc.web.FormationControllers;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 import ma.inpt.cedoc.service.FormationService.SeanceFormationService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/formations/seances-formations")
@@ -18,13 +19,15 @@ public class SeanceFormationController {
     private final SeanceFormationService seanceFormationService;
 
     @PostMapping
-    public ResponseEntity<SeanceFormationResponseDTO> createSeanceFormation(@RequestBody SeanceFormationRequestDTO dto) {
+    public ResponseEntity<SeanceFormationResponseDTO> createSeanceFormation(
+            @RequestBody SeanceFormationRequestDTO dto) {
         SeanceFormationResponseDTO created = seanceFormationService.createSeanceFormation(dto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SeanceFormationResponseDTO> updateSeanceFormation(@PathVariable Long id, @RequestBody SeanceFormationRequestDTO dto) {
+    public ResponseEntity<SeanceFormationResponseDTO> updateSeanceFormation(@PathVariable Long id,
+            @RequestBody SeanceFormationRequestDTO dto) {
         SeanceFormationResponseDTO updated = seanceFormationService.updateSeanceFormation(id, dto);
         return ResponseEntity.ok(updated);
     }
@@ -50,19 +53,16 @@ public class SeanceFormationController {
     @GetMapping("/sum-duree/by-formation-and-declarant")
     public ResponseEntity<Long> getSumDureeByFormationAndDeclarant(
             @RequestParam Long formationId,
-            @RequestParam Long declarantId
-    ) {
+            @RequestParam Long declarantId) {
         Long sum = seanceFormationService.getSumDureeByFormationAndDeclarant(formationId, declarantId);
         return ResponseEntity.ok(sum);
     }
 
     @GetMapping("/sum-duree/by-declarant")
     public ResponseEntity<Long> getSumDureeByDeclarant(
-            @RequestParam Long declarantId
-    ) {
+            @RequestParam Long declarantId) {
         Long sum = seanceFormationService.getSumDureeByDeclarant(declarantId);
         return ResponseEntity.ok(sum);
     }
-
 
 }

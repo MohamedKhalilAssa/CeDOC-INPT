@@ -13,8 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.model.entities.Doctorant_Actions.CommunicationConference;
-import ma.inpt.cedoc.model.entities.Doctorant_Actions.Publication;
+import ma.inpt.cedoc.model.entities.DoctorantActions.Authorship;
+import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.attestation.DemandeAttestation;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
@@ -84,13 +84,20 @@ public class Doctorant extends Utilisateur {
         @OneToMany(mappedBy = "doctorant")
         private List<DemandeAttestation> demandeAttestations;
 
-        @ManyToMany
-        @JoinTable(name = "Doctorant_Publication", joinColumns = @JoinColumn(name = "doctorant_id"), inverseJoinColumns = @JoinColumn(name = "publication_id"))
-        private List<Publication> publications;
+//        @ManyToMany
+//        @JoinTable(name = "Doctorant_Publication",
+//                joinColumns = @JoinColumn(name = "doctorant_id"),
+//                inverseJoinColumns = @JoinColumn(name = "publication_id"))
+//        private List<Publication> publications;
+
+        @OneToMany(mappedBy = "auteur")
+        private List<Authorship> authorships;
 
         @ManyToMany
-        @JoinTable(name = "Doctorant_Communication", joinColumns = @JoinColumn(name = "doctorant_id"), inverseJoinColumns = @JoinColumn(name = "communication_id"))
-        private List<CommunicationConference> communications;
+        @JoinTable(name = "Doctorant_Conference",
+                joinColumns = @JoinColumn(name = "doctorant_id"),
+                inverseJoinColumns = @JoinColumn(name = "conference_id"))
+        private List<ConfParticipation> confParticipations;
 
         @OneToMany(mappedBy = "demandeur")
         @JsonIgnore

@@ -27,6 +27,9 @@ public class Attestation {
     @GeneratedValue
     private long id;
 
+    private String titre;
+    
+
     @Column(name = "url", nullable = false)
     private String url;
 

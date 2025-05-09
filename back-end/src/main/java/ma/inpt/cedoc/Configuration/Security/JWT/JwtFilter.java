@@ -1,6 +1,7 @@
 package ma.inpt.cedoc.Configuration.Security.JWT;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -23,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Helpers.UtilFunctions;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
-import ma.inpt.cedoc.repositories.authRepositories.TokenRepository;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
+import ma.inpt.cedoc.service.auth.TokenService;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
+    private final TokenService tokenService;
 
     private AuthenticationService authenticationService;
 
@@ -51,42 +53,48 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("Authenticated Request path : " + request.getServletPath() + " Request method : "
                 + request.getMethod());
         // not execute it when the path is guest
-        if ((request.getServletPath().contains("/api/auth") && !request.getServletPath().contains("/api/auth/logout"))
+        if ((request.getServletPath().contains("/api/auth") && !(request.getServletPath().contains("/api/auth/logout")
+                || request.getServletPath().contains("/api/auth/check")))
                 || request.getServletPath().contains("/api/guest")) {
             filterChain.doFilter(request, response);
             return;
         }
-        // GET necessary data from the header
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String jwt;
+        boolean isAccessTokenValid = false;
         // GET the user email
         final String userSubject;
-        // Check if the header exists
-        if (authHeader == null || !authHeader.startsWith(JwtUtil.AUTHORIZATION_PREFIX)) {
+        // GET THE TOKENS
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String accessToken = (authHeader != null && authHeader.startsWith(JwtUtil.AUTHORIZATION_PREFIX))
+                ? authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length())
+                : null;
+
+        String refreshToken = Optional.ofNullable(UtilFunctions.extractCookie(request, "refresh_token"))
+                .map(Cookie::getValue)
+                .orElse(null);
+
+        if (accessToken == null && refreshToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(JwtUtil.AUTHORIZATION_PREFIX.length());
-        userSubject = jwtUtil.extractSubject(jwt);
 
-        boolean isAccessTokenValid = false;
-        // Check if the subject is there and if the user is already authenticated
-        if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            isAccessTokenValid = useAccessToken(jwt, userSubject, request);
+        try {
+            userSubject = jwtUtil.extractSubject(accessToken);
+            // Check if the subject is there and if the user is already authenticated
+            if (userSubject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                isAccessTokenValid = useAccessToken(accessToken, userSubject, request);
+            }
+        } catch (JwtException e) {
+            System.out.println("Invalid JWT: " + e.getMessage());
+            isAccessTokenValid = false;
+            if (accessToken != null)
+                tokenService.findAndRevokeToken(accessToken);
+        } catch (Exception e) {
+            isAccessTokenValid = false;
         }
         if (!isAccessTokenValid) {
             // Check for cookie of refresh_token
-            String refreshToken = null;
-            Cookie extractedCookie = UtilFunctions.extractCookie(request, "refresh_token");
-            if (extractedCookie != null) {
-                refreshToken = extractedCookie.getValue();
-            }
-
-            var isRefreshTokenValid = tokenRepository.findByToken(
-                    refreshToken)
-                    .map(t -> !t.isExpired() && !t.isRevoked())
-                    .orElse(false);
-            if (isRefreshTokenValid) {
+            var refreshTokenFromDB = tokenService.findByToken(refreshToken);
+            if (refreshTokenFromDB != null && !refreshTokenFromDB.isExpired() && !refreshTokenFromDB.isRevoked()) {
                 setAuthenticationService(authenticationService);
                 AuthenticationResponse authResponse = authenticationService
                         .refreshToken(new TokenRefreshRequest(refreshToken), response);
@@ -99,8 +107,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             } else {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-                        "Refresh token introuvable");
+                        "Refresh token non valide ou introuvable");
+                return;
             }
+
         }
         filterChain.doFilter(request, response);
 
@@ -110,11 +120,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean useAccessToken(String jwt, String userSubject, HttpServletRequest request) {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(userSubject);
-        var isTokenValid = tokenRepository.findByToken(jwt)
-                .map(t -> !t.isExpired() && !t.isRevoked())
-                .orElse(false);
+        var isTokenValid = tokenService.findByTokenAndNonExpiredOrRevoked(jwt) != null;
         // Check if the token is valid
-        if (jwtUtil.isTokenValid(jwt, userDetails) || isTokenValid) {
+        if (jwtUtil.isTokenValid(jwt, userDetails) && isTokenValid) {
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,

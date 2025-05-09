@@ -16,6 +16,5 @@ public class AuthenticationResponse {
     private String accessToken;
 
     private String message;
-    @JsonProperty("status_code")
-    private int statusCode;
+    private int status;
 }
