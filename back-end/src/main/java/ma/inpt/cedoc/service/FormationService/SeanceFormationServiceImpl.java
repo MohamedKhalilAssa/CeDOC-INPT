@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.service.formations.impl;
+package ma.inpt.cedoc.service.FormationService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
