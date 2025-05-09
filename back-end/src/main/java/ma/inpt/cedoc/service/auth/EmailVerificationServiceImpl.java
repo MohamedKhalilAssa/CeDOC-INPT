@@ -26,6 +26,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
   private final UtilisateurRepository utilisateurRepository;
 
   private final JavaMailSender mailSender;
+
   private final UtilisateurMapper utilisateurMapper;
 
   @Value("${app.front-end-url}")

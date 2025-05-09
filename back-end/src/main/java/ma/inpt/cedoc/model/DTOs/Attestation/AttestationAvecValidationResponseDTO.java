@@ -16,9 +16,7 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 @NoArgsConstructor
 public class AttestationAvecValidationResponseDTO extends AttestationResponseDTO {
 
-    private StatutAttestationEnum statutAttestation;
-
-    private TypeAttestationValidationEnum typeAttestation;
+    private TypeAttestationValidationEnum typeAttestationValidation;
 
     private EtatAttestationEnum etatAttestation;
 

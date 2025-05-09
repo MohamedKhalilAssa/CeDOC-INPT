@@ -22,6 +22,6 @@ public class AttestationAvecValidation extends Attestation {
 
     @Column(name = "etat_attestation_validation")
     @Enumerated(EnumType.STRING)
-    private EtatAttestationEnum etatAttestation;
+    private EtatAttestationEnum etatAttestation = EtatAttestationEnum.EN_ATTENTE;
 
 }

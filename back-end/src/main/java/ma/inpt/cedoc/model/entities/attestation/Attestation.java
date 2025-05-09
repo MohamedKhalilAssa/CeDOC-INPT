@@ -1,16 +1,16 @@
 package ma.inpt.cedoc.model.entities.attestation;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import lombok.*;
+import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -21,17 +21,25 @@ import lombok.NoArgsConstructor;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type_attestation", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("DEFAULT")
-public class Attestation {
+public abstract class Attestation {
 
     @Id
     @GeneratedValue
     private long id;
 
-    private String titre;
-    
-
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = true)
     private String url;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statut_attestation")
+    private StatutAttestationEnum statutAttestation;
+
+    @Column(name = "doctorant_id")
+    private Long doctorantId;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime dateDemande;
 
     @OneToMany(mappedBy = "attestation")
     private List<DemandeAttestation> demandeAttestations;

@@ -15,8 +15,6 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 @NoArgsConstructor
 public class AttestationAutomatiqueResponseDTO extends AttestationResponseDTO {
 
-    private StatutAttestationEnum statutAttestation;
-
-    private TypeAttestationAutoEnum typeAttestation;
+    private TypeAttestationAutoEnum typeAttestationAutomatique;
 
 }
