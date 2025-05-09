@@ -2,11 +2,13 @@ import { checkAuth } from "@/Helpers/checkAuth";
 import appConfig from "@/public/config.ts";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = (): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const hasRunRef = useRef(false);
+
   useEffect(() => {
     if (hasRunRef.current) return;
     hasRunRef.current = true;
@@ -40,11 +42,12 @@ const Navbar = (): JSX.Element => {
                 alt="Logo INPT"
               />
               <span className="hidden md:block h-full w-[1px] bg-black"></span>
-              <span className=" text-xl font-bold hidden md:block bg-gradient-to-r from-blue-800 via-blue-600 to-blue-500 bg-clip-text text-transparent">
+              <span className="text-xl font-bold hidden md:block bg-gradient-to-r from-blue-800 via-blue-600 to-blue-500 bg-clip-text text-transparent">
                 CEDoc
               </span>
             </div>
           </Link>
+          
           <div className="hidden lg:flex space-x-6 ml-12">
             {["accueil", "programmes", "recherche", "admission", "contact"].map(
               (section) => (
@@ -59,6 +62,7 @@ const Navbar = (): JSX.Element => {
               )
             )}
           </div>
+          
           <div className="hidden lg:block">
             {!isAuthenticated ? (
               <Link
@@ -72,10 +76,12 @@ const Navbar = (): JSX.Element => {
               "DropDown"
             )}
           </div>
+          
           <div className="lg:hidden">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="text-gray-700 hover:text-blue-600 focus:outline-none cursor-pointer transition-transform duration-300"
+              aria-label="Toggle menu"
             >
               <svg
                 className={`h-8 w-8 transform transition duration-300 ${
@@ -106,32 +112,45 @@ const Navbar = (): JSX.Element => {
         </div>
       </div>
 
-      {menuOpen && (
-        <div className="lg:hidden bg-white shadow-lg">
-          <div className="px-2 pt-2 pb-3 space-y-2 sm:px-3">
-            {[
-              "accueil",
-              "programmes",
-              "recherche",
-              "admission",
-              "contact",
-              "candidature",
-            ].map((section) => (
-              <a
-                key={section}
-                href={`#${section}`}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
-                  section === "candidature"
-                    ? "text-white bg-gradient-to-r from-blue-600 to-blue-800"
-                    : "text-gray-700 hover:text-blue-600"
-                }`}
-              >
-                {section.charAt(0).toUpperCase() + section.slice(1)}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Enhanced Mobile Menu with Animations */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            className="lg:hidden bg-white shadow-lg absolute w-full"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <div className="px-4 pt-2 pb-4 space-y-2">
+              {[
+                "Accueil",
+                "Programmes",
+                "Recherche",
+                "Admission",
+                "Contact",
+                "Postuler",
+              ].map((section, index) => (
+                <motion.a
+                  key={section}
+                  href={`#${section}`}
+                  className={`block px-4 py-3 rounded-md text-base font-medium ${
+                    section === "candidature"
+                      ? "text-white bg-gradient-to-r from-blue-600 to-blue-800"
+                      : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {section.charAt(0).toUpperCase() + section.slice(1)}
+                </motion.a>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

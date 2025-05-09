@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 
 const Hero = () => {
-  // Predefined circle positions (a better way of distributing them evenly)
   const circlePositions = [
     { top: '20%', left: '10%' },
     { top: '30%', left: '60%' },
@@ -14,11 +13,25 @@ const Hero = () => {
   return (
     <section
       id="accueil"
-      className="relative bg-gradient-to-r from-blue-900 to-blue-600 text-white pt-20 pb-32 md:pb-40 overflow-hidden"
+      className="relative text-white pt-20 pb-32 md:pb-40 overflow-hidden"
     >
-      {/* Noise texture overlay */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+      {/* Modern background pattern */}
+      <div className="absolute inset-0 bg-blue-900 overflow-hidden">
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:20px_20px]"></div>
+        </div>
+        
+        {/* Animated gradient overlay */}
+        <motion.div 
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(10, 78, 195, 0.81)_0%,rgba(0,8,20,1)_100%)]"
+          initial={{ opacity: 0.8 }}
+          animate={{ opacity: [0.8, 0.9, 0.8] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
+        
+        {/* Subtle diagonal stripes */}
+        <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.1)_10px,rgba(255,255,255,0.1)_20px)]"></div>
       </div>
 
       {/* Interactive floating shapes */}
@@ -36,7 +49,7 @@ const Hero = () => {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute w-16 h-16 bg-white/10 rounded-full"
+            className="absolute w-16 h-16 bg-white/10 rounded-full backdrop-blur-sm"
             style={{
               top: position.top,
               left: position.left,
@@ -50,39 +63,61 @@ const Hero = () => {
         <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-12">
           {/* Left content */}
           <div className="md:w-1/2 mb-12 md:mb-0">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
               L'Avenir de la Recherche <span className="text-yellow-300">Technologique</span>
-            </h1>
-            <p className="text-lg md:text-xl lg:text-2xl text-blue-100 mb-8 max-w-lg">
+            </motion.h1>
+            <motion.p 
+              className="text-lg md:text-xl lg:text-2xl text-blue-100 mb-8 max-w-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
               Rejoignez une communauté dynamique de chercheurs et d'innovateurs à l'avant-garde de la technologie.
-            </p>
+            </motion.p>
             
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
               <a 
                 href="#programmes" 
-                className="relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium rounded-full group bg-white text-blue-900 hover:bg-gray-100 transition duration-300"
+                className="relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium rounded-full group bg-white text-blue-900 hover:bg-gray-100 transition duration-300 hover:shadow-lg"
               >
                 <span className="relative z-10 font-semibold">Découvrir</span>
               </a>
               <a 
                 href="#candidature" 
-                className="relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium rounded-full group border-2 border-white text-white hover:bg-white/10 transition duration-300"
+                className="relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium rounded-full border-2 border-white text-white hover:bg-white/10 transition duration-300 hover:shadow-lg"
               >
                 <span className="relative z-10 font-semibold">Postuler</span>
               </a>
-            </div>
+            </motion.div>
 
             {/* Student avatars */}
-            <div className="flex items-center gap-6">
+            <motion.div 
+              className="flex items-center gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
               <div className="flex -space-x-3">
                 {[1, 2, 3].map((item) => (
-                  <img 
+                  <motion.img 
                     key={item}
                     src={`https://randomuser.me/api/portraits/${item % 2 === 0 ? 'women' : 'men'}/${item + 20}.jpg`}
                     alt="Étudiant"
                     className="w-10 h-10 rounded-full border-2 border-white object-cover"
                     loading="lazy"
+                    whileHover={{ scale: 1.1, zIndex: 10 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   />
                 ))}
                 <div className="w-10 h-10 rounded-full bg-blue-800 border-2 border-white flex items-center justify-center text-xs font-bold">50+</div>
@@ -90,12 +125,17 @@ const Hero = () => {
               <div>
                 <p className="text-sm text-blue-100">Rejoignez nos <span className="font-bold">150 doctorants</span> en formation</p>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Right image with badges */}
           <div className="md:w-1/2 flex justify-center">
-            <div className="relative">
+            <motion.div 
+              className="relative"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
               <img
                 src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
                 alt="Doctoral Research"
@@ -104,7 +144,19 @@ const Hero = () => {
               />
 
               {/* Ranking badge */}
-              <div className="absolute -bottom-5 -left-5 bg-blue-700 p-3 rounded-2xl shadow-lg z-20 animate-pulse hover:animate-none transition duration-300">
+              <motion.div 
+                className="absolute -bottom-5 -left-5 bg-blue-700 p-3 rounded-2xl shadow-lg z-20 animate:pulse hover:animate-none transition duration-300"
+                whileHover={{ scale: 1.05 }}
+                animate={{
+                  scale: [1, 1.03, 1],
+                  boxShadow: ["0 10px 15px -3px rgba(0, 0, 0, 0.3)", "0 20px 25px -5px rgba(0, 0, 0, 0.4)", "0 10px 15px -3px rgba(0, 0, 0, 0.3)"]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="bg-white p-2 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
@@ -116,14 +168,27 @@ const Hero = () => {
                     <p className="text-white font-bold">Top 1% en Afrique</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Success rate badge */}
-              <div className="absolute -top-5 -right-5 bg-white p-3 rounded-2xl shadow-lg z-20 animate-pulse hover:scale-105 transition duration-300">
+              <motion.div 
+                className="absolute -top-5 -right-5 bg-white p-3 rounded-2xl shadow-lg z-20 transition duration-300"
+                whileHover={{ scale: 1.05 }}
+                animate={{
+                  scale: [1, 1.03, 1],
+                  boxShadow: ["0 10px 15px -3px rgba(0, 0, 0, 0.1)", "0 20px 25px -5px rgba(0, 0, 0, 0.2)", "0 10px 15px -3px rgba(0, 0, 0, 0.1)"]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="bg-blue-100 p-2 rounded-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div>
@@ -131,8 +196,8 @@ const Hero = () => {
                     <p className="text-blue-900 font-bold">98%</p>
                   </div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
