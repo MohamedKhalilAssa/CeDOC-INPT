@@ -1,11 +1,10 @@
 package ma.inpt.cedoc.model.DTOs.DoctorantActions;
 
-import jakarta.validation.constraints.NotBlank;
+import java.time.ZonedDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor

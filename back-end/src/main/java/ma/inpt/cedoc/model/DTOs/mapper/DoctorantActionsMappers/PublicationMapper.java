@@ -1,15 +1,16 @@
 package ma.inpt.cedoc.model.DTOs.mapper.DoctorantActionsMappers;
 
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationResponseDTO;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class PublicationMapper {
-    public Publication toEntity(PublicationRequestDTO requestDTO){
+    public Publication toEntity(PublicationRequestDTO requestDTO) {
         Publication entity = new Publication();
         entity.setTitre(requestDTO.getTitre());
         entity.setJournal(requestDTO.getJournal());
@@ -20,7 +21,7 @@ public class PublicationMapper {
         return entity;
     }
 
-    public void updateFromRequest(PublicationRequestDTO requestDTO, Publication entity){
+    public void updateFromRequest(PublicationRequestDTO requestDTO, Publication entity) {
         entity.setTitre(requestDTO.getTitre());
         entity.setJournal(requestDTO.getJournal());
         entity.setDatePublication(requestDTO.getDatePublication());
@@ -28,7 +29,7 @@ public class PublicationMapper {
         entity.setPrixIntitule(requestDTO.getPrixIntitule());
     }
 
-    public PublicationResponseDTO toResponseDTO(Publication entity){
+    public PublicationResponseDTO toResponseDTO(Publication entity) {
         PublicationResponseDTO dto = new PublicationResponseDTO();
         dto.setId(entity.getId());
         dto.setTitre(entity.getTitre());
