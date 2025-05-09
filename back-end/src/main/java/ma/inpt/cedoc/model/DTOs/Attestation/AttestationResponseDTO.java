@@ -1,7 +1,6 @@
 package ma.inpt.cedoc.model.DTOs.Attestation;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;

@@ -1,11 +1,7 @@
 package ma.inpt.cedoc.model.DTOs.Attestation;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 
 @Data

@@ -1,16 +1,17 @@
 package ma.inpt.cedoc.model.entities.attestation;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
-import lombok.*;
-import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 
 @Entity
 @Data
