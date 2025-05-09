@@ -6,7 +6,7 @@ import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AttestationMapper {
 
         // Mapping from AttestationAutomatiqueRequestDTO to AttestationAutomatique

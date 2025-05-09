@@ -1,22 +1,21 @@
 package ma.inpt.cedoc.service.AttestationService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ma.inpt.cedoc.model.DTOs.Attestation.*;
-import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
-import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers.AttestationMapper;
 import ma.inpt.cedoc.model.entities.attestation.Attestation;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAutomatiqueRepository;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAvecValidationRepository;
 
@@ -75,14 +74,16 @@ public class AttestationServiceImpl implements AttestationService {
     /* ------------------ Find by type methods ------------------ */
 
     @Override
-    public List<AttestationAutomatiqueResponseDTO> findAutomatiqueByType(TypeAttestationAutoEnum typeAttestationAutomatique) {
+    public List<AttestationAutomatiqueResponseDTO> findAutomatiqueByType(
+            TypeAttestationAutoEnum typeAttestationAutomatique) {
         return attestationAutomatiqueRepository.findByTypeAttestationAutomatique(typeAttestationAutomatique).stream()
                 .map(attestationMapper::attestationAutomatiqueToAttestationAutomatiqueResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AttestationAvecValidationResponseDTO> findAvecValidationByType(TypeAttestationValidationEnum typeAttestationValidation) {
+    public List<AttestationAvecValidationResponseDTO> findAvecValidationByType(
+            TypeAttestationValidationEnum typeAttestationValidation) {
         return attestationAvecValidationRepository.findByTypeAttestationValidation(typeAttestationValidation).stream()
                 .map(attestationMapper::attestationAvecValidationToAttestationAvecValidationResponseDTO)
                 .collect(Collectors.toList());
@@ -107,14 +108,14 @@ public class AttestationServiceImpl implements AttestationService {
     /* ------------------ Update ------------------ */
 
     @Override
-    public AttestationAvecValidationResponseDTO updateEtatAttestationAvecValidation(Long id, AttestationAvecValidationUpdateDTO dto) {
+    public AttestationAvecValidationResponseDTO updateEtatAttestationAvecValidation(Long id,
+            AttestationAvecValidationUpdateDTO dto) {
         AttestationAvecValidation entity = attestationAvecValidationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attestation not found"));
         attestationMapper.updateEtatAttestationAvecValidationFromDTO(dto, entity);
         AttestationAvecValidation updated = attestationAvecValidationRepository.save(entity);
         return attestationMapper.attestationAvecValidationToAttestationAvecValidationResponseDTO(updated);
     }
-
 
     /* ------------------ Delete ------------------ */
 

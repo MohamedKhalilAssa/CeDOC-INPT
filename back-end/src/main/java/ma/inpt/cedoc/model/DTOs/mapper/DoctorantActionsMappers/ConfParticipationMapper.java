@@ -1,15 +1,12 @@
 package ma.inpt.cedoc.model.DTOs.mapper.DoctorantActionsMappers;
 
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ConfParticipationMapper {
     public ConfParticipation toEntity(ConfParticipationRequestDTO confParticipationRequestDTO);
 
