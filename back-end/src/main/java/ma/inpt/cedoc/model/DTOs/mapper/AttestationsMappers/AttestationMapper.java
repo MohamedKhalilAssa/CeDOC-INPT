@@ -1,9 +1,6 @@
 package ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.entities.attestation.Attestation;
