@@ -1,11 +1,7 @@
 package ma.inpt.cedoc.model.DTOs.Attestation;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
-import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 
 @Data
@@ -15,8 +11,6 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 @NoArgsConstructor
 public class AttestationAutomatiqueResponseDTO extends AttestationResponseDTO {
 
-    private StatutAttestationEnum statutAttestation;
-
-    private TypeAttestationAutoEnum typeAttestation;
+    private TypeAttestationAutoEnum typeAttestationAutomatique;
 
 }

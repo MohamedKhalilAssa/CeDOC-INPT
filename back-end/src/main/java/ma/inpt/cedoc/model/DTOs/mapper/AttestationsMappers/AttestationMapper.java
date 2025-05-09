@@ -3,7 +3,6 @@ package ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers;
 import org.mapstruct.*;
 
 import ma.inpt.cedoc.model.DTOs.Attestation.*;
-import ma.inpt.cedoc.model.entities.attestation.Attestation;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
 
@@ -15,22 +14,21 @@ public interface AttestationMapper {
         @Mapping(target = "createdAt", ignore = true)
         @Mapping(target = "updatedAt", ignore = true)
         @Mapping(target = "demandeAttestations", ignore = true)
-        @Mapping(target = "titre", ignore = true)
-        @Mapping(target = "url", ignore = true)
-        @Mapping(target = "typeAttestationAuto", ignore = true)
-
+        @Mapping(source = "url", target = "url")
+        @Mapping(source = "typeAttestationAutomatique", target = "typeAttestationAutomatique")
+        @Mapping(source = "doctorantId", target = "doctorantId")
         AttestationAutomatique attestationAutomatiqueRequestDTOToAttestationAutomatique(
                         AttestationAutomatiqueRequestDTO dto);
 
-        // Mapping from AttestationAvecValidationRequestDTO to AttestationAvecValidation
+        // Mapping from AttestationAvecValidationRequestDTO to Attestation
         @Mapping(target = "id", ignore = true)
         @Mapping(target = "createdAt", ignore = true)
         @Mapping(target = "updatedAt", ignore = true)
         @Mapping(target = "demandeAttestations", ignore = true)
-        @Mapping(target = "titre", ignore = true)
-        @Mapping(target = "url", ignore = true)
-        @Mapping(target = "typeAttestationValidation", ignore = true)
+        @Mapping(source = "url", target = "url")
+        @Mapping(source = "typeAttestationValidation", target = "typeAttestationValidation")
         @Mapping(target = "etatAttestation", ignore = true)
+        @Mapping(source = "doctorantId", target = "doctorantId")
         AttestationAvecValidation attestationAvecValidationRequestDTOToAttestationAvecValidation(
                         AttestationAvecValidationRequestDTO dto);
 
@@ -43,22 +41,14 @@ public interface AttestationMapper {
         AttestationAvecValidationResponseDTO attestationAvecValidationToAttestationAvecValidationResponseDTO(
                         AttestationAvecValidation attestation);
 
-        // Mapping from Attestation to AttestationResponseDTO
-
-        AttestationResponseDTO attestationToAttestationResponseDTO(Attestation attestation);
-
-        // Update an existing AttestationAutomatique (used for PATCH/PUT)
-        // @Mapping(target = "id", ignore = true)
-        // @Mapping(target = "createdAt", ignore = true)
-        // @Mapping(target = "updatedAt", ignore = true)
-        void updateAttestationAutomatiqueFromDTO(AttestationAutomatiqueRequestDTO dto,
-                        @MappingTarget AttestationAutomatique entity);
-
         // Update an existing AttestationAvecValidation (used for PATCH/PUT)
-        // @Mapping(target = "id", ignore = true)
-        // @Mapping(target = "createdAt", ignore = true)
-        // @Mapping(target = "updatedAt", ignore = true)
-        void updateAttestationAvecValidationFromDTO(AttestationAutomatiqueRequestDTO dto,
+        @Mapping(target = "id", ignore = true)
+        @Mapping(target = "createdAt", ignore = true)
+        @Mapping(target = "updatedAt", ignore = true)
+        @Mapping(target = "demandeAttestations", ignore = true)
+        @Mapping(target = "url", ignore = true)
+        @Mapping(target = "typeAttestationValidation", ignore = true)
+        void updateEtatAttestationAvecValidationFromDTO(AttestationAvecValidationUpdateDTO dto,
                         @MappingTarget AttestationAvecValidation entity);
 
         /*--------------------------------------------------------------------------HELPERS---------------------------------------------------------------------------------*/
