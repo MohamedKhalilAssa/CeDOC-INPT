@@ -5,6 +5,7 @@ import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.ReinscriptionMappers.DemandeReinscriptionMapper;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.repositories.ResinscriptionRepositories.AvisReinscriptionRepository;
 import ma.inpt.cedoc.repositories.ResinscriptionRepositories.DemandeReinscriptionRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
@@ -39,22 +40,24 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     }
 
     @Transactional
-    public DemandeReinscriptionResponseDTO createDemande(DemandeReinscriptionRequestDTO demandeDTO, String username) {
+    public DemandeReinscriptionResponseDTO createDemande(DemandeReinscriptionRequestDTO demandeDTO, String email) {
         DemandeReinscription newDemande = demandeReinscriptionMapper.toEntity(demandeDTO);
-        newDemande.setDemandeur(doctorantRepository.findByEmail(username)); // parceque le personne qui crée cette demande là et le doctorant authentifié à la platforme
-        demandeReinscriptionRepository.save(newDemande);
-        return demandeReinscriptionMapper.toResponseDTO(newDemande);
+        Doctorant doctorant = doctorantRepository.findByEmail(email).
+                orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
+        newDemande.setDemandeur(doctorant); // parceque le personne qui crée cette demande là et le doctorant authentifié à la platforme
+        return demandeReinscriptionMapper.toResponseDTO(demandeReinscriptionRepository.save(newDemande));
     }
 
     @Transactional
-    public DemandeReinscriptionResponseDTO editDemande(Long id, DemandeReinscriptionRequestDTO demandeDTO) {
+    public DemandeReinscriptionResponseDTO editDemande(Long id, DemandeReinscriptionRequestDTO demandeDTO, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
         demandeReinscriptionMapper.updateFromRequest(demandeDTO, demande);
         return demandeReinscriptionMapper.toResponseDTO(demandeReinscriptionRepository.save(demande));
     }
 
-    public void deleteDemande(Long id) {
+    @Transactional
+    public void deleteDemande(Long id, String email) {
         demandeReinscriptionRepository.deleteById(id);
     }
 }
