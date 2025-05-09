@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 @Data
@@ -22,9 +23,9 @@ public class SeanceFormationResponseDTO {
 
     private StatutFormationEnum statut;
 
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     private Long formationId;
 

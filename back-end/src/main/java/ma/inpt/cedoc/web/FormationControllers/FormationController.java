@@ -60,4 +60,16 @@ public class FormationController {
         return ResponseEntity.ok(formations);
     }
 
+    @GetMapping
+    public ResponseEntity<List<FormationResponseDTO>> getAllFormations(){
+        List<FormationResponseDTO> formations = formationService.getAllFormations();
+        return ResponseEntity.ok(formations);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<FormationResponseDTO> getAllFormations(@PathVariable Long id){
+        FormationResponseDTO formation = formationService.getById(id);
+        return ResponseEntity.ok(formation);
+    }
+
 }

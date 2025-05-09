@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
+import ma.inpt.cedoc.model.enums.formation_enums.StatutVacationEnum;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -21,7 +24,7 @@ public class VacationResponseDTO {
 
     private String etablissement;
 
-    private Date date;
+    private LocalDate date;
 
     private String niveau;
 
@@ -29,11 +32,11 @@ public class VacationResponseDTO {
 
     private String justificatif;
 
-    private StatutFormationEnum statut;
+    private StatutVacationEnum statut;
 
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     private Long doctorantId; // to avoid circular reference
 }

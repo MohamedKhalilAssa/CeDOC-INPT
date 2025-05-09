@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.model.DTOs.Formations;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -31,9 +32,9 @@ public class FormationResponseDTO {
 
     private String lieu;
 
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     private List<Long> doctorantIds; // IDs of Doctorants (to avoid circular fetching)
 }
