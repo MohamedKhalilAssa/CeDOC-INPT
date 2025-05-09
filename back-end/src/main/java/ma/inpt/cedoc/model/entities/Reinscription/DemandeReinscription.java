@@ -1,18 +1,18 @@
 package ma.inpt.cedoc.model.entities.Reinscription;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -53,7 +53,7 @@ public class DemandeReinscription {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    //----------- Relation ----------------
+    // ----------- Relation ----------------
 
     @ManyToOne
     @JoinColumn(name = "doctorant_id")

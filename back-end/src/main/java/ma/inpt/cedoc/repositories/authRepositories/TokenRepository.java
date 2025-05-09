@@ -15,4 +15,8 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     List<Token> findAllByUtilisateurAndExpiredFalseAndRevokedFalseAndTokenType(Utilisateur utilisateur, TokenEnum type);
 
     Optional<Token> findByToken(String token);
+
+    Optional<Token> findByTokenAndTokenType(String token, TokenEnum type);
+
+    Optional<Token> findByTokenAndExpiredFalseAndRevokedFalse(String token);
 }

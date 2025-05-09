@@ -88,6 +88,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(ErrorResponse.builder()
+                        .statusCode(HttpStatus.BAD_REQUEST.value())
+                        .message(ex.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur interne est survenue", ex);

@@ -13,6 +13,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "vacations")
@@ -33,7 +34,7 @@ public class Vacation {
     private String etablissement;
 
     @NotNull
-    private java.time.LocalDate date;      // diagram: Date
+    private Date date;      // diagram: Date
 
     @NotBlank
     private String niveau;

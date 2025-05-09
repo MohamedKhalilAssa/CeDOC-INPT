@@ -17,6 +17,6 @@ public class AttestationAutomatique extends Attestation {
 
     @Column(name = "type_attestation_auto")
     @Enumerated(EnumType.STRING)
-    private TypeAttestationAutoEnum typeAttestationAuto;
+    private TypeAttestationAutoEnum typeAttestationAutomatique;
 
 }

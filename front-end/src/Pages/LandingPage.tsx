@@ -1,12 +1,12 @@
-import Navbar from '@/Components/Navbar';
-
+import Hero from "@/Components/Hero";
 
 const LandingPage = () => {
   return (
-    <div className="font-sans antialiased text-gray-800">
-      <Navbar />
 
-    </div>
+      <div>
+        <Hero/>
+      </div>
+
   );
 };
 

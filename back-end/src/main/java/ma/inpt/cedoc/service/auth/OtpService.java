@@ -8,4 +8,5 @@ public interface OtpService {
 
     void deleteOtp(long id);
 
+    public boolean canResendOtp(long id);
 }
