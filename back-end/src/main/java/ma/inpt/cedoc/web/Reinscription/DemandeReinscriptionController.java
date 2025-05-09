@@ -29,20 +29,24 @@ public class DemandeReinscriptionController {
 
     @PostMapping("/")
     public ResponseEntity<DemandeReinscriptionResponseDTO> createDemande(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody DemandeReinscriptionRequestDTO demandeDTO) {
-        String username = userDetails.getUsername();
-        return ResponseEntity.ok(demandeResincriptionService.createDemande(demandeDTO, username));
+                                                                         @RequestBody DemandeReinscriptionRequestDTO demandeDTO) {
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(demandeResincriptionService.createDemande(demandeDTO, email));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DemandeReinscriptionResponseDTO> editDemande(@PathVariable Long id,
+    public ResponseEntity<DemandeReinscriptionResponseDTO> editDemande(@AuthenticationPrincipal UserDetails userDetails,
+                                                                       @PathVariable Long id,
                                                                        @RequestBody DemandeReinscriptionRequestDTO demandeDTO) {
-        return ResponseEntity.ok(demandeResincriptionService.editDemande(id, demandeDTO));
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(demandeResincriptionService.editDemande(id, demandeDTO, email));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteDemande(@PathVariable Long id) {
-        demandeResincriptionService.deleteDemande(id);
+    public ResponseEntity<String> deleteDemande(@AuthenticationPrincipal UserDetails userDetails,
+                                                @PathVariable Long id) {
+        String email = userDetails.getUsername();
+        demandeResincriptionService.deleteDemande(id, email);
         return ResponseEntity.ok("Demande supprimé avec succès");
     }
 }

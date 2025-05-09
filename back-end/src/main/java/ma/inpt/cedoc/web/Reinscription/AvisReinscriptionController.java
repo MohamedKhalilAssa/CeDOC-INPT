@@ -31,18 +31,22 @@ public class AvisReinscriptionController {
     public ResponseEntity<AvisReinscriptionResponseDTO> createAvis(@AuthenticationPrincipal UserDetails userDetails,
                                                                    @RequestBody AvisReinscriptionRequestDTO requestDTO){
         String email = userDetails.getUsername();
-        return ResponseEntity.ok(avisReinscriptionService.createAvis(email, requestDTO));
+        return ResponseEntity.ok(avisReinscriptionService.createAvis(requestDTO, email));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AvisReinscriptionResponseDTO> editAvis(@RequestBody AvisReinscriptionRequestDTO requestDTO,
+    public ResponseEntity<AvisReinscriptionResponseDTO> editAvis(@AuthenticationPrincipal UserDetails userDetails,
+                                                                 @RequestBody AvisReinscriptionRequestDTO requestDTO,
                                                                  @PathVariable Long id){
-        return ResponseEntity.ok(avisReinscriptionService.editAvis(requestDTO, id));
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(avisReinscriptionService.editAvis(requestDTO, id, email));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAvis(@PathVariable Long id){
-        avisReinscriptionService.deleteAvis(id);
+    public ResponseEntity<String> deleteAvis(@AuthenticationPrincipal UserDetails userDetails,
+                                             @PathVariable Long id){
+        String email = userDetails.getUsername();
+        avisReinscriptionService.deleteAvis(id, email);
         return ResponseEntity.ok("L'avis de réinscription a été supprimé avec succès");
     }
 }
