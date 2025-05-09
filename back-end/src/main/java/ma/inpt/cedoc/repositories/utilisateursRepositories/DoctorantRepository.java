@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 
+import java.util.Optional;
+
 public interface DoctorantRepository extends JpaRepository<Doctorant, Long> {
-    Doctorant findByEmail(String username);
+    Optional<Doctorant> findByEmail(String username);
 }

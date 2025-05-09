@@ -31,9 +31,11 @@ public class AvisReinscription {
     private String observation;
 
     @NotNull(message = "L'état d'avancement est obligatoire")
+    @Enumerated(EnumType.STRING)
     private AvancementEnum etatAvancement;
 
     @NotNull(message = "L'avis final est obligatoire")
+    @Enumerated(EnumType.STRING)
     private AvisEnum avisFinal;
 
     @Column(name = "created_at", updatable = false)

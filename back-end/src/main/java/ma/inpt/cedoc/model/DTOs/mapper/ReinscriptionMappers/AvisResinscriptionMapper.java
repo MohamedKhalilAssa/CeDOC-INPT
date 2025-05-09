@@ -22,7 +22,7 @@ public class AvisResinscriptionMapper {
         return entity;
     }
 
-    public void updateFromDTO(AvisReinscriptionRequestDTO requestDTO, AvisReinscription entity) {
+    public void updateFromRequest(AvisReinscriptionRequestDTO requestDTO, AvisReinscription entity) {
         entity.setObservation(requestDTO.getObservation());
         entity.setEtatAvancement(requestDTO.getEtatAvancement());
         entity.setAvisFinal(requestDTO.getAvisFinal());

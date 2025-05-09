@@ -4,29 +4,30 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
+import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 
 import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfParticipationResponseDTO extends BaseResponseDTO {
-
-    private Long id;
+public class PublicationResponseDTO extends BaseResponseDTO {
 
     private String titre;
 
-    private String conference;
+    private String journal;
 
-    private ZonedDateTime date;
+    private ZonedDateTime datePublication;
 
-    private String lieu;
+    private EtatEnum status;
 
     private String justificatif;
 
-    private String autresParticipants;
+    private String autresAuteurs;
 
-    private Long participantId;
+    private String prixIntitule;
+
+    private Long auteurId;
 
     private Long validateurId;
 }
