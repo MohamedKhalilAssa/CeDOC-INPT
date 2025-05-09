@@ -1,4 +1,4 @@
-import appConfig from "@/public/config";
+// import appConfig from "@/public/config";
 import { FC } from "react";
 import FooterLink from "./FooterLink";
 import FooterLinkGroup from "./FooterLinkGroup";
@@ -14,11 +14,6 @@ const Footer: FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
           <div className="md:col-span-2">
             <div className="flex items-center mb-4">
-              <img
-                src={`${appConfig.BACKEND_URL}/images/Logo_inpt.png`}
-                alt="INPT Logo"
-                className="h-12 w-auto mr-3 bg-white p-1"
-              />
               <span className="text-xl font-bold text-white">CEDoc INPT</span>
             </div>
             <p className="text-sm mb-6">
