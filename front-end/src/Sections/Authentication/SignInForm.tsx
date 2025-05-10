@@ -1,3 +1,4 @@
+import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
 import { postData } from "@/Helpers/CRUDFunctions";
 import appConfig from "@/public/config";
@@ -72,7 +73,7 @@ const SignInForm = () => {
         {/* Left: Illustration */}
         <div className="w-1/2 hidden md:block">
           <img
-            src={`${appConfig.BACKEND_URL}/images/Inpt_Illustration_1.png`}
+            src={Inpt_Illustration_1}
             alt="Signup Illustration"
             className="w-full h-full object-cover"
           />

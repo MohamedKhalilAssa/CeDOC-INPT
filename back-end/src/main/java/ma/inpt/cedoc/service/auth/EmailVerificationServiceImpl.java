@@ -39,7 +39,19 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
               () -> new ResponseStatusException(
                   org.springframework.http.HttpStatus.GONE,
                   "Utilisateur introuvable ou deja verifié"));
+      return sendVerificationToken(user);
+    } catch (Exception e) {
+      return CompletableFuture.failedFuture(e);
+    }
+  }
+
+  @Override
+  @Async
+  public CompletableFuture<Void> sendVerificationToken(Utilisateur user) {
+    try {
+
       final long userId = user.getId();
+      final String email = user.getEmail();
       final boolean canResend = otpService.canResendOtp(userId);
       if (!canResend) {
         System.out.println("Attente de 1 minute avant la prochaine tentative");

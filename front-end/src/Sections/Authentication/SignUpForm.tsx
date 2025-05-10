@@ -1,3 +1,4 @@
+import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
 import { postData } from "@/Helpers/CRUDFunctions";
 import appConfig from "@/public/config";
@@ -9,7 +10,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-
 const SignUpForm = () => {
   const {
     register,
@@ -70,7 +70,7 @@ const SignUpForm = () => {
         {/* Left: Illustration */}
         <div className="w-1/2 hidden md:block">
           <img
-            src={`${appConfig.BACKEND_URL}/images/Inpt_Illustration_1.png`}
+            src={Inpt_Illustration_1}
             alt="Signup Illustration"
             className="w-full h-full object-cover"
           />

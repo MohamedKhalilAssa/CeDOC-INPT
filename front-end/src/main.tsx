@@ -1,5 +1,6 @@
 import App from "@/App";
 import "@/assets/index.css";
+import { AuthProvider } from "@/Context/AuthProvider";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -7,7 +8,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Router>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </Router>
   </StrictMode>
 );
