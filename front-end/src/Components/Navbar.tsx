@@ -37,6 +37,10 @@ const Navbar = (): JSX.Element => {
         <div className="flex justify-between h-20 items-center">
           <Link to={`${appConfig.FRONTEND_PATHS.landingPage.path}`}>
             <div className="flex h-10 w-40 items-center justify-between">
+<<<<<<< HEAD
+=======
+              <img className="h-8 w-auto" src={Logo_inpt} alt="Logo INPT" />
+>>>>>>> origin/main
               <span className="hidden md:block h-full w-[1px] bg-black"></span>
               <span className="text-xl font-bold hidden md:block bg-gradient-to-r from-blue-800 via-blue-600 to-blue-500 bg-clip-text text-transparent">
                 CEDoc
