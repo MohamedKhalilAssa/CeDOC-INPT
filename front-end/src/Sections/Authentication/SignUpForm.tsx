@@ -1,6 +1,7 @@
 import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
 import { postData } from "@/Helpers/CRUDFunctions";
+import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import {
   AuthenticationResponseValues,
@@ -9,7 +10,6 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
 const SignUpForm = () => {
   const {
     register,
@@ -18,7 +18,7 @@ const SignUpForm = () => {
 
     formState: { errors },
   } = useForm<RegisterFormValues>();
-
+  const swal = useAlert();
   const [loading, setLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | undefined>(undefined);
   const onSubmit = async (data: RegisterFormValues) => {
@@ -30,13 +30,11 @@ const SignUpForm = () => {
         data
       );
       console.log(res);
-      Swal.fire({
-        icon: "success",
-        title: "Inscription réussie",
-        text:
-          res?.message ||
-          "Veuillez Verifier votre boite mail, avant de vous connecter.",
-      });
+      swal.success(
+        "Inscription réussie",
+        res?.message ||
+          "Veuillez Verifier votre boite mail, avant de vous connecter."
+      );
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields
@@ -53,11 +51,10 @@ const SignUpForm = () => {
         });
       } else {
         // General API error
-        Swal.fire({
-          icon: "error",
-          title: "Erreur d'inscription: " + err.status,
-          text: err.errors || "Une erreur est survenue",
-        });
+        swal.error(
+          "Erreur d'inscription: " + err.status,
+          err.errors || "Une erreur est survenue"
+        );
       }
     } finally {
       setLoading(false);
