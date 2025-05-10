@@ -38,7 +38,7 @@ const Navbar = (): JSX.Element => {
             <div className="flex h-10 w-40 items-center justify-between">
               <img
                 className="h-8 w-auto"
-                src={`${appConfig.BACKEND_URL}/images/Logo_inpt.png`}
+                src="@/assets/Logo_inpt.png"
                 alt="Logo INPT"
               />
               <span className="hidden md:block h-full w-[1px] bg-black"></span>
@@ -124,12 +124,12 @@ const Navbar = (): JSX.Element => {
           >
             <div className="px-4 pt-2 pb-4 space-y-2">
               {[
-                "Accueil",
-                "Programmes",
-                "Recherche",
-                "Admission",
-                "Contact",
-                "Postuler",
+                "accueil",
+                "programmes",
+                "recherche",
+                "admission",
+                "contact",
+                "postuler",
               ].map((section, index) => (
                 <motion.a
                   key={section}

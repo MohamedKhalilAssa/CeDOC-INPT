@@ -1,16 +1,19 @@
 import HeroSection from "../Sections/LandingPage/HeroSection";
 import StatsSection from "../Sections/LandingPage/StatsSection";
-import NewsSection from "../Sections/LandingPage/NewsSection";
+import ProgrammesSection from "../Sections/LandingPage/ProgrammesSection";
 import ResearchSection from "../Sections/LandingPage/ResearchSection";
+import TimelineSection from "../Sections/LandingPage/TimelineSection";
+import AdmissionSection from "../Sections/LandingPage/AdmissionSection";
 
 const LandingPage = () => {
   return (
     <div>
       <HeroSection />
       <StatsSection />
-      <NewsSection />
-      <ResearchSection />
-      {/* Other sections */}
+      <ProgrammesSection />
+      <ResearchSection/>
+      <TimelineSection/>
+      <AdmissionSection/>
     </div>
   );
 };
