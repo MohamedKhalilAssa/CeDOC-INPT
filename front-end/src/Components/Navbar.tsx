@@ -38,7 +38,7 @@ const Navbar = (): JSX.Element => {
             <div className="flex h-10 w-40 items-center justify-between">
               <img
                 className="h-8 w-auto"
-                src="@/assets/Logo_inpt.png"
+                src="@/assets/images/Logo_inpt.png"
                 alt="Logo INPT"
               />
               <span className="hidden md:block h-full w-[1px] bg-black"></span>
