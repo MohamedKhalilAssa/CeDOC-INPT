@@ -3,6 +3,9 @@ package ma.inpt.cedoc.service.utilisateurServices;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -99,12 +102,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public List<UtilisateurResponseDTO> searchByNomOuPrenom(String query) {
+    public Page<UtilisateurResponseDTO> searchByNomOuPrenom(String query) {
+        Pageable pageable = PageRequest.of(0, 10);
 
-        List<UtilisateurResponseDTO> utilisateurs = utilisateurRepository.findByNomContainsOrPrenomContains(query)
-                .stream().map(utilisateurMapper::utilisateurToUtilisateurResponseDTO).collect(Collectors.toList());
+        Page<Utilisateur> utilisateursPage = utilisateurRepository
+                .findByNomContainsIgnoreCaseOrPrenomContainsIgnoreCase(query, query, pageable);
 
-        return utilisateurs;
+        return utilisateursPage.map(utilisateurMapper::utilisateurToUtilisateurResponseDTO);
     }
 
     @Override

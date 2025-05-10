@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,8 +34,13 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequestDTO request,
             HttpServletResponse response) {
-        if (checkAuth())
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
             return alreadyLoggedIn();
+        }
+        
         try {
             AuthenticationResponse authResponse = authenticationService.register(request, response);
             return ResponseEntity.ok(authResponse);
@@ -51,8 +58,12 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request,
             HttpServletResponse response) {
 
-        if (checkAuth())
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
             return alreadyLoggedIn();
+        }
 
         try {
             AuthenticationResponse authResponse = authenticationService.login(request, response);
@@ -196,11 +207,18 @@ public class AuthenticationController {
     }
 
     @GetMapping("/check")
-    public boolean checkAuth() {
-        return true;
-    }
-    // helper
+    public ResponseEntity<Object> checkAuth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.ok().body(true);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+    }
+
+    // helper
     private ResponseEntity<AuthenticationResponse> handleException(Exception e, HttpStatus status,
             String defaultMessage) {
         return ResponseEntity.status(status).body(
@@ -223,4 +241,5 @@ public class AuthenticationController {
                 .body(AuthenticationResponse.builder().status(HttpStatus.BAD_REQUEST.value())
                         .message("You are already logged in").build());
     }
+
 }

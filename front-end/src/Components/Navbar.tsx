@@ -1,8 +1,9 @@
+import Logo_inpt from "@/assets/images/Logo_inpt.png";
 import { checkAuth } from "@/Helpers/checkAuth";
 import appConfig from "@/public/config.ts";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = (): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -36,18 +37,13 @@ const Navbar = (): JSX.Element => {
         <div className="flex justify-between h-20 items-center">
           <Link to={`${appConfig.FRONTEND_PATHS.landingPage.path}`}>
             <div className="flex h-10 w-40 items-center justify-between">
-              <img
-                className="h-8 w-auto"
-                src="@/assets/images/Logo_inpt.png"
-                alt="Logo INPT"
-              />
               <span className="hidden md:block h-full w-[1px] bg-black"></span>
               <span className="text-xl font-bold hidden md:block bg-gradient-to-r from-blue-800 via-blue-600 to-blue-500 bg-clip-text text-transparent">
                 CEDoc
               </span>
             </div>
           </Link>
-          
+
           <div className="hidden lg:flex space-x-6 ml-12">
             {["accueil", "programmes", "recherche", "admission", "contact"].map(
               (section) => (
@@ -62,7 +58,7 @@ const Navbar = (): JSX.Element => {
               )
             )}
           </div>
-          
+
           <div className="hidden lg:block">
             {!isAuthenticated ? (
               <Link
@@ -76,7 +72,7 @@ const Navbar = (): JSX.Element => {
               "DropDown"
             )}
           </div>
-          
+
           <div className="lg:hidden">
             <button
               onClick={() => setMenuOpen(!menuOpen)}

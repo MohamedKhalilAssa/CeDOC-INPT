@@ -16,6 +16,7 @@ interface AppConfig {
   APP_NAME: string;
   API_URL: string;
   FRONTEND_URL: string;
+  IMAGES_RESSOURCES: string;
   BACKEND_URL: string;
   API_PATHS: ApiPathsMap;
   FRONTEND_PATHS: FrontendPathsMap;
@@ -25,6 +26,7 @@ const appConfig: AppConfig = {
   API_URL: "http://localhost:8080/api",
   BACKEND_URL: "http://localhost:8080",
   FRONTEND_URL: "http://localhost:5173",
+  IMAGES_RESSOURCES: "@/assets/images",
   API_PATHS: {
     register: {
       name: "Register",
