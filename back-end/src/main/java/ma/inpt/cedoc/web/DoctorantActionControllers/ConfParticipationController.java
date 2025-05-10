@@ -50,14 +50,14 @@ public class ConfParticipationController {
         return ResponseEntity.ok("La participation à la conférence est supprimé avec succès");
     }
 
-    @PatchMapping("/id/valider")
+    @PatchMapping("/{id}/valider")
     public ResponseEntity<ConfParticipationResponseDTO> validerConfParticipation(@AuthenticationPrincipal UserDetails userDetails,
                                                                                  @PathVariable Long id){
         String email = userDetails.getUsername();
         return ResponseEntity.ok(confParticipationService.validerConfParticipation(id, email));
     }
 
-    @PatchMapping("/id/refuser")
+    @PatchMapping("/{id}/refuser")
     public ResponseEntity<ConfParticipationResponseDTO> refuserConfParticipation(@AuthenticationPrincipal UserDetails userDetails,
                                                                                  @PathVariable Long id){
         String email = userDetails.getUsername();
