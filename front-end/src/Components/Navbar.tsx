@@ -1,15 +1,19 @@
 import Logo_inpt from "@/assets/images/Logo_inpt.png";
-import { checkAuth } from "@/Helpers/checkAuth";
+import type { AuthContextType } from "@/Context/AuthProvider";
+import { useAuth } from "@/Context/AuthProvider";
+import { checkAuth, logout } from "@/Helpers/AuthFunctions";
+import { UseAlert, useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config.ts";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
+import Dropdown from "./Ui/Dropdown";
 
 const Navbar = (): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const hasRunRef = useRef(false);
-
+  const auth: AuthContextType = useAuth();
+  const swal: UseAlert = useAlert();
   useEffect(() => {
     if (hasRunRef.current) return;
     hasRunRef.current = true;
@@ -26,7 +30,7 @@ const Navbar = (): JSX.Element => {
       }
     };
 
-    checkAuth(setIsAuthenticated);
+    checkAuth(auth);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -64,7 +68,7 @@ const Navbar = (): JSX.Element => {
 
           {/* Desktop Auth Button */}
           <div className="hidden lg:block">
-            {!isAuthenticated ? (
+            {!auth.isAuthenticated ? (
               <Link
                 to={`${appConfig.FRONTEND_PATHS.register.path}`}
                 className="relative inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full text-sm shadow-lg hover:shadow-xl transition duration-300 group"
@@ -73,7 +77,27 @@ const Navbar = (): JSX.Element => {
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-900 rounded-full opacity-0 group-hover:opacity-100 transition duration-300" />
               </Link>
             ) : (
-              "DropDown"
+              <Dropdown
+                triggerLabel={auth.utilisateur?.sub.split("@")[0]}
+                key="menu"
+                items={[
+                  {
+                    type: "link",
+                    label: "Mon compte",
+                    to: "/",
+                  },
+                  {
+                    type: "link",
+                    label: "Postuler",
+                    to: "/",
+                  },
+                  {
+                    type: "button",
+                    label: "Deconnnexion",
+                    onClick: () => logout(auth, swal),
+                  },
+                ]}
+              />
             )}
           </div>
 
