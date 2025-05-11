@@ -73,7 +73,7 @@ const Navbar = (): JSX.Element => {
                 to={`${appConfig.FRONTEND_PATHS.register.path}`}
                 className="relative inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full text-sm shadow-lg hover:shadow-xl transition duration-300 group"
               >
-                <span className="relative z-10">Postuler</span>
+                <span className="relative z-10">Se Connecter</span>
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-900 rounded-full opacity-0 group-hover:opacity-100 transition duration-300" />
               </Link>
             ) : (
@@ -155,7 +155,7 @@ const Navbar = (): JSX.Element => {
                 "Recherche",
                 "Admission",
                 "Contact",
-                "Postuler",
+                "Se Connecter",
               ].map((section, index) => (
                 <motion.a
                   key={section}
