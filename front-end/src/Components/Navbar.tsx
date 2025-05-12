@@ -161,7 +161,7 @@ const Navbar = (): JSX.Element => {
                   key={section}
                   href={`#${section.toLowerCase()}`}
                   className={`block px-4 py-3 rounded-md text-base font-medium ${
-                    section === "Postuler"
+                    section === "Se Connecter"
                       ? "text-white bg-gradient-to-r from-blue-600 to-blue-800 mx-2"
                       : "text-gray-700 hover:bg-blue-50 hover:text-blue-600 mx-2"
                   }`}
