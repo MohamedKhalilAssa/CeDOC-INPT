@@ -1,53 +1,23 @@
 package ma.inpt.cedoc.service.DoctorantActionService;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.DoctorantActionsMappers.ConfParticipationMapper;
-import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
-import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
-import ma.inpt.cedoc.repositories.DoctorantActionsRepositories.ConfParticipationRepository;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+public interface ConfParticipationService {
+    public List<ConfParticipationResponseDTO> getAllConfParticipations();
 
-@Service
-@RequiredArgsConstructor
-public class ConfParticipationService {
-    private ConfParticipationRepository confParticipationRepository;
-    private ConfParticipationMapper confParticipationMapper;
+    public ConfParticipationResponseDTO getConfParticipationBy(Long id);
 
-    public List<ConfParticipationResponseDTO> getAllConf() {
-        List<ConfParticipation> list = confParticipationRepository.findAll();
-        List<ConfParticipationResponseDTO> newlist = list.stream()
-                .map((c) -> confParticipationMapper.toResponseDTO(c))
-                .collect(Collectors.toList());
-        return newlist;
-    }
+    public ConfParticipationResponseDTO addConfParticipation(ConfParticipationRequestDTO requestDTO, String email);
 
-    public ConfParticipationResponseDTO getConf(Long id) {
-        ConfParticipation confParticipation =  confParticipationRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Participation à conférence n'est pas trouvé"));
-        return confParticipationMapper.toResponseDTO(confParticipation);
-    }
+    public ConfParticipationResponseDTO updateConfParticipation(ConfParticipationRequestDTO requestDTO, Long id,
+            String email);
 
-    public ConfParticipationResponseDTO createConf(ConfParticipationRequestDTO confParticipationRequestDTO) {
-        ConfParticipation confParticipation = confParticipationMapper.toEntity(confParticipationRequestDTO);
-        confParticipation.setStatus(EtatEnum.DECLAREE);
-        confParticipationRepository.save(confParticipation);
-        return confParticipationMapper.toResponseDTO(confParticipation);
-    }
+    public void deleteConfParticipation(Long id, String email);
 
-    public ConfParticipationResponseDTO editConf(Long id, ConfParticipationRequestDTO confParticipationRequestDTO) {
-        ConfParticipation confParticipation =  confParticipationRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Participation à conférence n'est pas trouvé"));
-        confParticipationMapper.updateFromRequest(confParticipationRequestDTO, confParticipation);
-        confParticipationRepository.save(confParticipation);
-        return confParticipationMapper.toResponseDTO(confParticipation);
-    }
+    public ConfParticipationResponseDTO validerConfParticipation(Long id, String email);
 
-    public void deleteConf(Long id) {
-        confParticipationRepository.deleteById(id);
-    }
+    public ConfParticipationResponseDTO refuserConfParticipation(Long id, String email);
 }

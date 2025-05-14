@@ -1,7 +1,6 @@
 package ma.inpt.cedoc.model.DTOs.DoctorantActions;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +16,9 @@ public class ConfParticipationRequestDTO {
 
     private ZonedDateTime date;
 
+    private String lieu;
+
     private String justificatif;
 
-    private List<String> participantsEmails;
+    private String autresParticipants;
 }

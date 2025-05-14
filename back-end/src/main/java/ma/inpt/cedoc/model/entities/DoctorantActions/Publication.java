@@ -2,7 +2,6 @@ package ma.inpt.cedoc.model.entities.DoctorantActions;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,6 +13,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 
 @Entity
@@ -37,7 +38,20 @@ public class Publication {
     private ZonedDateTime datePublication;
 
     @NotNull(message = "L'état de publication est obligatoire")
-    private EtatEnum status;
+    @Enumerated(EnumType.STRING)
+    private EtatEnum status = EtatEnum.DECLAREE;
+
+    // J'ai pas fait @NotNull, parce que le justificatif peut manque (donc le
+    // responsable ne vas pas le valider)
+    // ou bien le doctorant peut le mettre après
+    private String justificatif;
+
+    // il s'agit des noms des autres auteurs de la publication séparé par des :
+    // comme ça, ils sont stocké comme ça
+    // dans DB , et on va les traiter comme des listes.
+    private String autresAuteurs;
+
+    private String prixIntitule;
 
     @Column(name = "created_at", updatable = false)
     @CreatedDate
@@ -49,6 +63,12 @@ public class Publication {
 
     // ----------------- Relations -----------------
 
-    @OneToMany(mappedBy = "publication")
-    private List<Authorship> authorships;
+    @ManyToOne
+    @JoinColumn(name = "auteur")
+    private Doctorant auteur;
+
+    @ManyToOne
+    @JoinColumn(name = "validateur_id")
+    private DirectionCedoc validateur;
+
 }

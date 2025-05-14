@@ -2,13 +2,10 @@ package ma.inpt.cedoc.model.entities.DoctorantActions;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 
@@ -30,23 +28,31 @@ public class ConfParticipation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "le titre de CommunicationConference et obligatoire")
+    @NotBlank(message = "le titre de la communication et obligatoire")
     private String titre;
 
-    @NotBlank(message = "la conférence de CommunicationConference et obligatoire")
+    @NotBlank(message = "le titre de la conférence et obligatoire")
     private String conference;
 
     @NotNull(message = "la date de CommunicationConference et obligatoire")
     private ZonedDateTime date;
 
-    @NotNull(message = "le lieu de CommunicationConference et obligatoire")
+    @NotBlank(message = "le lieu de CommunicationConference et obligatoire")
     private String lieu;
 
-    @NotBlank(message = "le justificatif de CommunicationConference et obligatoire")
+    // J'ai pas fait @NotNull, parce que le justificatif peut manque (donc le
+    // responsable ne vas pas le valider)
+    // ou bien le doctorant peut le mettre après
     private String justificatif;
 
     @NotNull(message = "l'état de CommunicationConference et obligatoire")
-    private EtatEnum status;
+    @Enumerated(EnumType.STRING)
+    private EtatEnum status = EtatEnum.DECLAREE;
+
+    // il s'agit des noms des autres participants de la conférence séparé par des :
+    // comme ça, ils sont stocké comme ça
+    // dans DB , et on va les traiter comme des listes.
+    private String autresParticipants;
 
     @Column(name = "created_at", updatable = false)
     @CreatedDate
@@ -57,7 +63,12 @@ public class ConfParticipation {
     private LocalDateTime updatedAt;
 
     // ----------- Relation --------------
-    @ManyToMany(mappedBy = "confParticipations")
-    @JsonIgnore
-    private List<Doctorant> participatants;
+
+    @ManyToOne
+    @JoinColumn(name = "participant_id")
+    private Doctorant participant;
+
+    @ManyToOne
+    @JoinColumn(name = "validateur_id")
+    private DirectionCedoc validateur;
 }

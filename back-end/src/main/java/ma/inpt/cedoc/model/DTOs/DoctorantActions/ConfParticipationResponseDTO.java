@@ -4,13 +4,16 @@ import java.time.ZonedDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
+import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfParticipationResponseDTO {
+public class ConfParticipationResponseDTO extends BaseResponseDTO {
+
     private Long id;
 
     private String titre;
@@ -19,7 +22,13 @@ public class ConfParticipationResponseDTO {
 
     private ZonedDateTime date;
 
+    private String lieu;
+
     private String justificatif;
 
-    private EtatEnum status;
+    private String autresParticipants;
+
+    private Long participantId;
+
+    private Long validateurId;
 }

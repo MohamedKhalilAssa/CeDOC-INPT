@@ -34,24 +34,24 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
                 orElseThrow(() -> new ResourceNotFoundException("Avis with id "  + id + " not found")));
     }
     @Transactional
-    public AvisReinscriptionResponseDTO createAvis(String email, AvisReinscriptionRequestDTO requestDTO) {
-        DirecteurDeThese directeurDeThese = directeurDeTheseRepo.findByEmail(email);
+    public AvisReinscriptionResponseDTO createAvis(AvisReinscriptionRequestDTO requestDTO, String email) {
+        DirecteurDeThese directeurDeThese = directeurDeTheseRepo.findByEmail(email).
+                orElseThrow(() -> new ResourceNotFoundException("Directeur du thèse "+email+" n'est pas trouvé"));
         AvisReinscription avisReinscription = avisResinscriptionMapper.toEntity(requestDTO);
         avisReinscription.setDirecteurDeThese(directeurDeThese);
-        avisReinscriptionRepo.save(avisReinscription);
-        return avisResinscriptionMapper.toResponseDTO(avisReinscription);
+        return avisResinscriptionMapper.toResponseDTO(avisReinscriptionRepo.save(avisReinscription));
     }
 
     @Transactional
-    public AvisReinscriptionResponseDTO editAvis(AvisReinscriptionRequestDTO requestDTO, Long id) {
+    public AvisReinscriptionResponseDTO editAvis(AvisReinscriptionRequestDTO requestDTO, Long id, String email) {
         AvisReinscription avisReinscription = avisReinscriptionRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Avis with id " + id + " not found"));
-        avisResinscriptionMapper.updateFromDTO(requestDTO, avisReinscription);
-        avisReinscriptionRepo.save(avisReinscription);
-        return avisResinscriptionMapper.toResponseDTO(avisReinscription);
+        avisResinscriptionMapper.updateFromRequest(requestDTO, avisReinscription);
+        return avisResinscriptionMapper.toResponseDTO(avisReinscriptionRepo.save(avisReinscription));
     }
 
-    public void deleteAvis(Long id) {
+    @Transactional
+    public void deleteAvis(Long id, String email) {
         avisReinscriptionRepo.deleteById(id);
     }
 }

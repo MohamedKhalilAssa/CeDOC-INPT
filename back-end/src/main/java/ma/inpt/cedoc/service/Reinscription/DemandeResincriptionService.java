@@ -9,7 +9,7 @@ public interface DemandeResincriptionService {
 
     public List<DemandeReinscriptionResponseDTO> getAllDemandes();
     public DemandeReinscriptionResponseDTO getDemande(Long id);
-    public DemandeReinscriptionResponseDTO createDemande(DemandeReinscriptionRequestDTO demandeDTO, String username);
-    public DemandeReinscriptionResponseDTO editDemande(Long id, DemandeReinscriptionRequestDTO demandeDTO);
-    public void deleteDemande(Long id);
+    public DemandeReinscriptionResponseDTO createDemande(DemandeReinscriptionRequestDTO demandeDTO, String email);
+    public DemandeReinscriptionResponseDTO editDemande(Long id, DemandeReinscriptionRequestDTO demandeDTO, String email);
+    public void deleteDemande(Long id, String email);
 }

@@ -9,7 +9,7 @@ public interface AvisReinscriptionService {
 
     public List<AvisReinscriptionResponseDTO> getAllAvis();
     public AvisReinscriptionResponseDTO getAvis(Long id);
-    public AvisReinscriptionResponseDTO createAvis(String email, AvisReinscriptionRequestDTO requestDTO);
-    public AvisReinscriptionResponseDTO editAvis(AvisReinscriptionRequestDTO requestDTO, Long id);
-    public void deleteAvis(Long id);
+    public AvisReinscriptionResponseDTO createAvis(AvisReinscriptionRequestDTO requestDTO, String email);
+    public AvisReinscriptionResponseDTO editAvis(AvisReinscriptionRequestDTO requestDTO, Long id , String email);
+    public void deleteAvis(Long id, String email);
 }

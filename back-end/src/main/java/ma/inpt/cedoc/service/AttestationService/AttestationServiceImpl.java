@@ -9,14 +9,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers.AttestationMapper;
 import ma.inpt.cedoc.model.entities.attestation.Attestation;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAutomatiqueRepository;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAvecValidationRepository;
 
@@ -27,7 +26,6 @@ public class AttestationServiceImpl implements AttestationService {
 
     private final AttestationAutomatiqueRepository attestationAutomatiqueRepository;
     private final AttestationAvecValidationRepository attestationAvecValidationRepository;
-    // private final AttestationRepository attestationRepository;
     private final AttestationMapper attestationMapper;
 
     /* ------------------ Save methods ------------------ */
@@ -73,18 +71,20 @@ public class AttestationServiceImpl implements AttestationService {
                 .collect(Collectors.toList());
     }
 
-    /* ------------------ Find by name methods ------------------ */
+    /* ------------------ Find by type methods ------------------ */
 
     @Override
-    public List<AttestationAutomatiqueResponseDTO> findAutomatiqueByName(String name) {
-        return attestationAutomatiqueRepository.findByTitreContainingIgnoreCase(name).stream()
+    public List<AttestationAutomatiqueResponseDTO> findAutomatiqueByType(
+            TypeAttestationAutoEnum typeAttestationAutomatique) {
+        return attestationAutomatiqueRepository.findByTypeAttestationAutomatique(typeAttestationAutomatique).stream()
                 .map(attestationMapper::attestationAutomatiqueToAttestationAutomatiqueResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AttestationAvecValidationResponseDTO> findAvecValidationByName(String name) {
-        return attestationAvecValidationRepository.findByTitreContainingIgnoreCase(name).stream()
+    public List<AttestationAvecValidationResponseDTO> findAvecValidationByType(
+            TypeAttestationValidationEnum typeAttestationValidation) {
+        return attestationAvecValidationRepository.findByTypeAttestationValidation(typeAttestationValidation).stream()
                 .map(attestationMapper::attestationAvecValidationToAttestationAvecValidationResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -103,6 +103,18 @@ public class AttestationServiceImpl implements AttestationService {
         AttestationAvecValidation attestation = attestationAvecValidationRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attestation non trouvée"));
         return attestationMapper.attestationAvecValidationToAttestationAvecValidationResponseDTO(attestation);
+    }
+
+    /* ------------------ Update ------------------ */
+
+    @Override
+    public AttestationAvecValidationResponseDTO updateEtatAttestationAvecValidation(Long id,
+            AttestationAvecValidationUpdateDTO dto) {
+        AttestationAvecValidation entity = attestationAvecValidationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attestation not found"));
+        attestationMapper.updateEtatAttestationAvecValidationFromDTO(dto, entity);
+        AttestationAvecValidation updated = attestationAvecValidationRepository.save(entity);
+        return attestationMapper.attestationAvecValidationToAttestationAvecValidationResponseDTO(updated);
     }
 
     /* ------------------ Delete ------------------ */
