@@ -1,31 +1,26 @@
 package ma.inpt.cedoc.model.DTOs.Formations;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SeanceFormationResponseDTO {
+@EqualsAndHashCode(callSuper = true)
+public class SeanceFormationResponseDTO extends BaseResponseDTO {
 
-    private Long id;
 
     private Integer duree;
 
     private String justificatifPdf;
 
     private StatutFormationEnum statut;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 
     private Long formationId;
 
