@@ -43,7 +43,7 @@ const Navbar = (): JSX.Element => {
           <div className="flex items-center">
             <Link to={`${appConfig.FRONTEND_PATHS.landingPage.path}`} className="flex items-center">
               <img className="h-8 w-auto" src={Logo_inpt} alt="Logo INPT" />
-              <span className="hidden md:block h-6 w-px bg-gray-300 mx-3"></span>
+              <span className="block h-6 w-px bg-gray-300 mx-3"></span>
               <span className="text-lg font-bold bg-gradient-to-r from-blue-800 to-blue-600 bg-clip-text text-transparent">
                 CEDoc
               </span>

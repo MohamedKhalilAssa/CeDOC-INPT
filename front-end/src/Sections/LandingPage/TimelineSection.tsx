@@ -6,30 +6,32 @@ const TimelineSection = () => {
     {
       id: 1,
       title: "Recrutement",
-      description: "Sélection sur dossier et entretien avec un comité scientifique.",
+      description:
+        "Sélection sur dossier et entretien avec un comité scientifique.",
       content: {
         title: "Critères d'admission",
         items: [
           "Master ou diplôme équivalent",
           "Note minimale de 14/20",
-          "Projet de recherche pertinent"
-        ]
+          "Projet de recherche pertinent",
+        ],
       },
-      position: "left"
+      position: "left",
     },
     {
       id: 2,
       title: "Encadrement",
-      description: "Soutien personnalisé par un directeur de recherche et un comité de suivi.",
+      description:
+        "Soutien personnalisé par un directeur de recherche et un comité de suivi.",
       content: {
         title: "Encadrement",
         items: [
           "Directeur de recherche expérimenté",
           "Co-direction possible",
-          "Réunions de suivi mensuelles"
-        ]
+          "Réunions de suivi mensuelles",
+        ],
       },
-      position: "right"
+      position: "right",
     },
     {
       id: 3,
@@ -40,36 +42,37 @@ const TimelineSection = () => {
         items: [
           "Méthodologie de recherche",
           "Rédaction scientifique",
-          "Communication scientifique"
-        ]
+          "Communication scientifique",
+        ],
       },
-      position: "left"
+      position: "left",
     },
     {
       id: 4,
       title: "Valorisation",
-      description: "Publication, transfert technologique et perspectives de carrière.",
+      description:
+        "Publication, transfert technologique et perspectives de carrière.",
       content: {
         title: "Opportunités",
         items: [
           "Mobilité internationale",
           "Partenariats industriels",
-          "Conférences internationales"
-        ]
+          "Conférences internationales",
+        ],
       },
-      position: "right"
-    }
+      position: "right",
+    },
   ];
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
     <section className="py-20 bg-gradient-to-br from-blue-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -83,39 +86,51 @@ const TimelineSection = () => {
             Votre Doctorat à l'INPT
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Un accompagnement personnalisé tout au long de votre parcours doctoral.
+            Un accompagnement personnalisé tout au long de votre parcours
+            doctoral.
           </p>
         </motion.div>
-        
+
         <div className="relative">
-          {/* Timeline bar */}
-          <div className="hidden md:block absolute left-1/2 h-full w-1 bg-blue-200 transform -translate-x-1/2" />
-          
+          {/* Timeline bar - hidden on mobile, centered on md+ screens */}
+          <div className="hidden md:block absolute md:left-1/2 h-full w-1 bg-blue-200 transform -translate-x-1/2" />
+
           {/* Timeline items */}
           <div className="space-y-12 md:space-y-0">
             {timelineItems.map((item, index) => (
               <motion.div
                 key={item.id}
-                className="relative flex flex-col md:flex-row items-center"
+                className="relative flex flex-col md:flex-row items-start md:items-center"
                 initial="hidden"
                 whileInView="visible"
                 variants={itemVariants}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                {/* Left content */}
-                <div className={`md:w-1/2 md:pr-16 mb-8 md:mb-0 md:text-right ${item.position === 'right' ? 'order-last md:order-first' : ''}`}>
-                  {item.position === 'left' ? (
+                {/* Mobile timeline bar - only visible on mobile */}
+                <div className="absolute left-0 top-0 h-full w-1 bg-blue-200 md:hidden" />
+
+                {/* Left content for md+ screens */}
+                <div
+                  className={`md:w-1/2 md:pr-16 mb-8 md:mb-0 md:text-right pl-16 md:pl-0 ${
+                    item.position === "right" ? "order-last md:order-first" : ""
+                  }`}
+                >
+                  {item.position === "left" ? (
                     <>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        {item.title}
+                      </h3>
                       <p className="text-gray-600">{item.description}</p>
                     </>
                   ) : (
-                    <motion.div 
+                    <motion.div
                       className="p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                       whileHover={{ y: -5 }}
                     >
-                      <h4 className="font-bold text-gray-900 mb-2">{item.content.title}</h4>
+                      <h4 className="font-bold text-gray-900 mb-2">
+                        {item.content.title}
+                      </h4>
                       <ul className="text-gray-600 text-sm space-y-2">
                         {item.content.items.map((listItem, i) => (
                           <li key={i} className="flex items-start">
@@ -127,20 +142,26 @@ const TimelineSection = () => {
                     </motion.div>
                   )}
                 </div>
-                
-                {/* Timeline dot */}
-                <div className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white z-10 mx-auto shadow-lg">
+
+                {/* Timeline dot - centered on the bar for both mobile and desktop */}
+                <div className="absolute left-0.5 md:absolute md:left-1/2 top-2 md:top-1/2 flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white z-10 transform -translate-x-1/2 md:-translate-x-1/2 md:-translate-y-1/2 shadow-lg">
                   {item.id}
                 </div>
-                
-                {/* Right content */}
-                <div className={`md:w-1/2 md:pl-16 ${item.position === 'right' ? 'order-first md:order-last' : ''}`}>
-                  {item.position === 'left' ? (
-                    <motion.div 
+
+                {/* Right content for md+ screens */}
+                <div
+                  className={`md:w-1/2 md:pl-16 pl-16 ${
+                    item.position === "right" ? "order-first md:order-last" : ""
+                  }`}
+                >
+                  {item.position === "left" ? (
+                    <motion.div
                       className="p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                       whileHover={{ y: -5 }}
                     >
-                      <h4 className="font-bold text-gray-900 mb-2">{item.content.title}</h4>
+                      <h4 className="font-bold text-gray-900 mb-2">
+                        {item.content.title}
+                      </h4>
                       <ul className="text-gray-600 text-sm space-y-2">
                         {item.content.items.map((listItem, i) => (
                           <li key={i} className="flex items-start">
@@ -152,7 +173,9 @@ const TimelineSection = () => {
                     </motion.div>
                   ) : (
                     <>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        {item.title}
+                      </h3>
                       <p className="text-gray-600">{item.description}</p>
                     </>
                   )}
