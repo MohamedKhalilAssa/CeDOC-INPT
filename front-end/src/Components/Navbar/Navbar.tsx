@@ -1,184 +1,14 @@
 import Logo_inpt from "@/assets/images/Logo_inpt.png";
+import { ProfileMenu } from "@/Components/Navbar/ProfileMenu";
+import { Dropdown } from "@/Components/Ui/Dropdown";
 import type { AuthContextType } from "@/Context/Auth/index";
-import { checkAuth, logout } from "@/Helpers/AuthFunctions";
+import { checkAuth } from "@/Helpers/AuthFunctions";
 import { UseAlert, useAlert } from "@/Hooks/UseAlert";
 import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
-
-// Profile Menu component
-const ProfileMenu = ({
-  auth,
-  swal,
-}: {
-  auth: AuthContextType;
-  swal: UseAlert;
-}) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node | null)
-      ) {
-        setIsMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-  return (
-    <div className="relative" ref={menuRef}>
-      <button
-        onClick={toggleMenu}
-        className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-blue-600 font-medium text-sm"
-      >
-        <span>{auth.utilisateur?.sub.split("@")[0]}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-4 w-4 transition-transform duration-300 ${
-            isMenuOpen ? "rotate-180" : ""
-          }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-
-      {isMenuOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg py-1 z-50">
-          <Link
-            to="/"
-            className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Mon compte
-          </Link>
-          <Link
-            to="/"
-            className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Postuler
-          </Link>
-          <button
-            onClick={() => {
-              logout(auth, swal);
-              setIsMenuOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
-          >
-            Deconnexion
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Dropdown Menu component
-const Dropdown = ({
-  triggerLabel,
-  items,
-}: {
-  triggerLabel: string;
-  items: Array<{
-    type: "link" | "button";
-    label: string;
-    to?: string;
-    onClick?: () => void;
-  }>;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-blue-600 font-medium text-sm transition duration-300"
-      >
-        {triggerLabel}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-4 w-4 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-
-      {isOpen && (
-        <div className="absolute mt-2 w-48 bg-white shadow-lg py-1 z-50">
-          {items.map((item, index) =>
-            item.type === "link" ? (
-              <a
-                key={index}
-                href={item.to}
-                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </a>
-            ) : (
-              <button
-                key={index}
-                onClick={() => {
-                  if (item.onClick) item.onClick();
-                  setIsOpen(false);
-                }}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-              >
-                {item.label}
-              </button>
-            )
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
 
 const Navbar = (): JSX.Element => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -278,10 +108,10 @@ const Navbar = (): JSX.Element => {
             )}
           </div>
           {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center">
+          <div className="lg:hidden flex items-center ">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none"
+              className="text-gray-700 hover:text-blue-600 focus:outline-none cursor-pointer"
               aria-label="Toggle menu"
             >
               <svg
@@ -364,46 +194,16 @@ const Navbar = (): JSX.Element => {
               {/* Login Button */}
               {!auth.isAuthenticated ? (
                 <div className="px-3 py-2">
-                  <a
-                    href={`${appConfig.FRONTEND_PATHS.register.path}`}
+                  <Link
+                    to={`${appConfig.FRONTEND_PATHS.login.path}`}
                     className="block w-full px-4 py-2 text-center font-medium text-white bg-gradient-to-r from-blue-600 to-blue-800 rounded-full"
                     onClick={() => setMenuOpen(false)}
                   >
                     Se Connecter
-                  </a>
+                  </Link>
                 </div>
               ) : (
-                <div>
-                  <div className="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Mon compte
-                  </div>
-
-                  <a
-                    href="/"
-                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Mon compte
-                  </a>
-
-                  <a
-                    href="/"
-                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Postuler
-                  </a>
-
-                  <button
-                    className="block w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50"
-                    onClick={() => {
-                      logout(auth, swal);
-                      setMenuOpen(false);
-                    }}
-                  >
-                    Deconnexion
-                  </button>
-                </div>
+                <ProfileMenu auth={auth} swal={swal} />
               )}
             </div>
           </motion.div>

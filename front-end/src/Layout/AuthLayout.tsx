@@ -1,5 +1,5 @@
 import Footer from "@/Components/Footer/Footer";
-import Navbar from "@/Components/Navbar";
+import Navbar from "@/Components/Navbar/Navbar";
 import { AuthContextType, useAuth } from "@/Context/Auth/index";
 import { checkAuth } from "@/Helpers/AuthFunctions";
 import { useEffect } from "react";

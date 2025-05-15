@@ -1,104 +1,90 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState, type JSX } from "react";
+// components/Dropdown.tsx
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-type DropdownItem =
-  | { type: "button"; label: string; onClick: () => void }
-  | { type: "link"; label: string; to: string }
-  // | { type: "button-link"; label: string; to: string }
-  | { type: "custom"; element: JSX.Element };
+type DropdownItem = {
+  type: "link" | "button";
+  label: string;
+  to?: string;
+  onClick?: () => void;
+};
 
-interface DropdownProps {
-  items: DropdownItem[];
-  triggerLabel?: string;
-  align?: "left" | "right";
-}
-
-const Dropdown = ({
+export const Dropdown = ({
+  triggerLabel,
   items,
-  triggerLabel = "Menu",
-  align = "right",
-}: DropdownProps) => {
+}: {
+  triggerLabel: string;
+  items: DropdownItem[];
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
+        !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const dropdownPosition = align === "right" ? "right-0" : "left-0";
-
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="truncate max-w-44 px-4 py-2 cursor-pointer rounded-lg  bg-gradient-to-r from-blue-600 to-blue-800  hover:opacity-90 text-white font-semibold shadow hover:shadow-lg transition"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:text-blue-600 font-medium text-sm cursor-pointer"
       >
         {triggerLabel}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className={`h-4 w-4 transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className={`absolute ${dropdownPosition} mt-2 w-56 origin-top rounded-xl bg-white shadow-xl ring-1 ring-black/5 z-50 `}
-          >
-            <div className="py-2 space-y-1 flex flex-col items-center">
-              {items.map((item, idx) => {
-                switch (item.type) {
-                  case "link":
-                    return (
-                      <Link
-                        key={idx}
-                        to={item.to}
-                        onClick={() => setIsOpen(false)}
-                        className="block w-full text-center px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 hover:text-blue-600 rounded-lg transition"
-                      >
-                        {item.label}
-                      </Link>
-                    );
-                  case "button":
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          item.onClick();
-                          setIsOpen(false);
-                        }}
-                        className="w-[90%] cursor-pointer px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition mx-auto"
-                      >
-                        {item.label}
-                      </button>
-                    );
-
-                  case "custom":
-                    return (
-                      <div key={idx} onClick={() => setIsOpen(false)}>
-                        {item.element}
-                      </div>
-                    );
-                  default:
-                    return null;
-                }
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg py-1 z-50">
+          {items.map((item, index) =>
+            item.type === "link" ? (
+              <Link
+                key={index}
+                to={item.to || "#"}
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 "
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <button
+                key={index}
+                onClick={() => {
+                  item.onClick?.();
+                  setIsOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 "
+              >
+                {item.label}
+              </button>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 };
-
-export default Dropdown;

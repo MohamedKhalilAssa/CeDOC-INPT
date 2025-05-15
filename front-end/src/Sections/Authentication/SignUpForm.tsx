@@ -68,7 +68,7 @@ const SignUpForm = () => {
     <div className="h-screen lg:h-[80vh] flex justify-center items-center">
       <div className="flex w-full max-w-xl lg:max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden h-[80vh]">
         {/* Left: Illustration */}
-        <div className="w-1/2 hidden md:block">
+        <div className="w-1/2 hidden lg:block">
           <img
             src={Inpt_Illustration_1}
             alt="Signup Illustration"
@@ -77,7 +77,7 @@ const SignUpForm = () => {
         </div>
 
         {/* Right: Form */}
-        <div className=" w-full md:w-1/2 p-10 ">
+        <div className=" w-full lg:w-1/2 p-10 ">
           <div className="wrapper-title w-full flex justify-center md:justify-start">
             <div className="text-center md:text-left flex h-12  items-center justify-center">
               <h2 className="text-3xl font-bold text-gray-800 ">Inscription</h2>

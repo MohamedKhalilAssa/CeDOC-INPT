@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
 
 type DropdownItem =
-  | { type: "button"; label: string; onClick: () => void }
+  | { type: "button"; label: string; color: string; onClick: () => void }
   | { type: "link"; label: string; to: string }
   // | { type: "button-link"; label: string; to: string }
   | { type: "custom"; element: JSX.Element };
@@ -14,7 +14,7 @@ interface DropdownProps {
   align?: "left" | "right";
 }
 
-const Dropdown = ({
+const AvatarDropdown = ({
   items,
   triggerLabel = "Menu",
   align = "right",
@@ -77,7 +77,7 @@ const Dropdown = ({
                           item.onClick();
                           setIsOpen(false);
                         }}
-                        className="w-[90%] cursor-pointer px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition mx-auto"
+                        className={`w-[90%] cursor-pointer px-4 py-2 text-sm text-white bg-${item.color}-600 hover:bg-${item.color}-700 rounded-lg transition mx-auto`}
                       >
                         {item.label}
                       </button>
@@ -101,4 +101,4 @@ const Dropdown = ({
   );
 };
 
-export default Dropdown;
+export default AvatarDropdown;
