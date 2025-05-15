@@ -1,6 +1,6 @@
 import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
-import { AuthContextType, useAuth } from "@/Context/AuthProvider";
+import { AuthContextType, useAuth } from "@/Context/Auth/index";
 import { postData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";

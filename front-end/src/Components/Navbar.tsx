@@ -1,8 +1,8 @@
 import Logo_inpt from "@/assets/images/Logo_inpt.png";
-import type { AuthContextType } from "@/Context/AuthProvider";
-import { useAuth } from "@/Context/AuthProvider";
+import type { AuthContextType } from "@/Context/Auth/index";
 import { checkAuth, logout } from "@/Helpers/AuthFunctions";
 import { UseAlert, useAlert } from "@/Hooks/UseAlert";
+import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type JSX } from "react";

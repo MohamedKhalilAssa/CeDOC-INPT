@@ -9,7 +9,7 @@ import {
 } from "@/Types/RegisterTypes";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const SignUpForm = () => {
   const {
     register,
@@ -21,6 +21,7 @@ const SignUpForm = () => {
   const swal = useAlert();
   const [loading, setLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | undefined>(undefined);
+  const navigate = useNavigate();
   const onSubmit = async (data: RegisterFormValues) => {
     setLoading(true);
     console.log("Form Data:", data);
@@ -29,12 +30,13 @@ const SignUpForm = () => {
         appConfig.API_PATHS.register.path,
         data
       );
-      console.log(res);
       swal.success(
         "Inscription réussie",
         res?.message ||
           "Veuillez Verifier votre boite mail, avant de vous connecter."
       );
+      // Redirect to login page after successful registration
+      navigate(appConfig.FRONTEND_PATHS.login.path);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (Array.isArray(err.errors)) {

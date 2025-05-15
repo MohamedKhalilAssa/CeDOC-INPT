@@ -1,4 +1,4 @@
-import type { AuthContextType } from "@/Context/AuthProvider"; // adjust this import as needed
+import type { AuthContextType } from "@/Context/Auth/AuthProvider"; // adjust this import as needed
 import { getData, postData } from "@/Helpers/CRUDFunctions";
 import { UseAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
