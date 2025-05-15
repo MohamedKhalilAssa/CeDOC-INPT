@@ -82,7 +82,7 @@ const SignInForm = () => {
         {/* Right: Form */}
         <div className="w-full md:w-1/2 p-10 ">
           <div className="wrapper-title w-full flex justify-center md:justify-start ">
-            <div className="text-center md:text-left flex h-12  items-center justify-between mb-6">
+            <div className="text-center md:text-left flex h-12  items-center justify-between ">
               <h2 className="text-3xl font-bold text-gray-800 ">
                 Authentification
               </h2>
@@ -90,7 +90,7 @@ const SignInForm = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="second-sheet my-20">
+            <div className="second-sheet my-8">
               <InputField
                 label="Email"
                 name="email"
