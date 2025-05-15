@@ -39,6 +39,7 @@ const SignInForm = () => {
       setTimeout(() => {
         navigate(appConfig.FRONTEND_PATHS.landingPage.path);
       }, 200);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields
@@ -67,8 +68,8 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="h-full flex justify-center items-center">
-      <div className="flex w-full max-w-6xl bg-white rounded-lg shadow-lg overflow-hidden min-h-[70vh]">
+    <div className="h-screen lg:h-[80vh] flex justify-center items-center">
+      <div className="flex w-full max-w-xl lg:max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden h-[80vh]">
         {/* Left: Illustration */}
         <div className="w-1/2 hidden md:block">
           <img
@@ -81,7 +82,7 @@ const SignInForm = () => {
         {/* Right: Form */}
         <div className="w-full md:w-1/2 p-10 ">
           <div className="wrapper-title w-full flex justify-center md:justify-start ">
-            <div className="text-center md:text-left flex h-12  items-center justify-between mb-6">
+            <div className="text-center md:text-left flex h-12  items-center justify-between ">
               <h2 className="text-3xl font-bold text-gray-800 ">
                 Authentification
               </h2>
@@ -89,7 +90,7 @@ const SignInForm = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="second-sheet my-20">
+            <div className="second-sheet my-8">
               <InputField
                 label="Email"
                 name="email"

@@ -14,6 +14,8 @@ const Navbar = (): JSX.Element => {
   const hasRunRef = useRef(false);
   const auth: AuthContextType = useAuth();
   const swal: UseAlert = useAlert();
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
     if (hasRunRef.current) return;
     hasRunRef.current = true;
@@ -30,12 +32,14 @@ const Navbar = (): JSX.Element => {
       }
     };
 
-    checkAuth(auth);
+    checkAuth(auth).finally(() => setIsReady(true));
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return (
+  if(!isReady) return <></>;
+  else { 
+ return (
     <nav className="bg-white/90 backdrop-blur-md shadow-sm fixed w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
@@ -178,7 +182,7 @@ const Navbar = (): JSX.Element => {
         )}
       </AnimatePresence>
     </nav>
-  );
+  )};
 };
 
 export default Navbar;
