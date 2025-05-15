@@ -64,7 +64,7 @@ const SignUpForm = () => {
 
   return (
     <div className="h-screen lg:h-[80vh] flex justify-center items-center">
-      <div className="flex w-full max-w-xl lg:max-w-6xl bg-white rounded-lg shadow-lg overflow-hidden h-[80vh]">
+      <div className="flex w-full max-w-xl lg:max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden h-[80vh]">
         {/* Left: Illustration */}
         <div className="w-1/2 hidden md:block">
           <img
