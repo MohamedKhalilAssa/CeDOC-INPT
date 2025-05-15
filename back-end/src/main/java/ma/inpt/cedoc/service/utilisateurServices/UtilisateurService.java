@@ -2,6 +2,8 @@ package ma.inpt.cedoc.service.utilisateurServices;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
@@ -34,5 +36,5 @@ public interface UtilisateurService {
 
     public List<UtilisateurResponseDTO> findAllUtilisateurs();
 
-    public List<UtilisateurResponseDTO> searchByNomOuPrenom(String query);
+    public Page<UtilisateurResponseDTO> searchByNomOuPrenom(String query);
 }

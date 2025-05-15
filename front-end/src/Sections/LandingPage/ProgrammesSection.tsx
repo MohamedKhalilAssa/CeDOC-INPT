@@ -1,26 +1,28 @@
-const NewsSection = () => {
+import { FaBrain, FaSatelliteDish, FaShieldAlt, FaArrowRight, FaChevronRight } from 'react-icons/fa';
+
+const ProgrammesSection = () => {
   const newsItems = [
     {
       id: 1,
       title: "Intelligence Artificielle",
       description: "Recherche avancée en deep learning, vision par ordinateur et traitement automatique du langage naturel.",
-      icon: "fa-brain",
-      image: "https://source.unsplash.com/random/600x400/?ai,technology",
+      icon: <FaBrain className="text-blue-600 text-xl" />,
+      image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
       tag: "Nouveau"
     },
     {
       id: 2,
       title: "Télécommunications",
       description: "Recherche de pointe sur les réseaux 5G/6G, l'IdO et les systèmes de communication sans fil.",
-      icon: "fa-satellite-dish",
-      image: "https://source.unsplash.com/random/600x400/?5g,network"
+      icon: <FaSatelliteDish className="text-blue-600 text-xl" />,
+      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80"
     },
     {
       id: 3,
       title: "Cybersécurité",
       description: "Études avancées en cryptographie, sécurité des réseaux et forensic numérique.",
-      icon: "fa-shield-alt",
-      image: "https://source.unsplash.com/random/600x400/?cybersecurity,encryption"
+      icon: <FaShieldAlt className="text-blue-600 text-xl" />,
+      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80"
     }
   ];
 
@@ -32,7 +34,7 @@ const NewsSection = () => {
             Formations
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Actualités
+            Programmes
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Choisissez parmi nos programmes pluridisciplaires conçus pour former
@@ -42,8 +44,8 @@ const NewsSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {newsItems.map((item) => (
-            <article key={item.id} className="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <div className="relative overflow-hidden h-48">
+            <article key={item.id} className="flex flex-col h-full bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="relative overflow-hidden h-48 flex-shrink-0">
                 <img
                   src={item.image}
                   alt={item.title}
@@ -61,24 +63,26 @@ const NewsSection = () => {
                   </div>
                 )}
               </div>
-              <div className="p-6">
+              <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center mb-4">
                   <div className="bg-blue-100 p-3 rounded-xl mr-4 flex-shrink-0">
-                    <i className={`fas ${item.icon} text-blue-600 text-xl`} aria-hidden="true"></i>
+                    {item.icon}
                   </div>
                   <h3 className="text-xl font-bold text-gray-900">{item.title}</h3>
                 </div>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600 mb-4 flex-grow">
                   {item.description}
                 </p>
-                <a
-                  href="#"
-                  className="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition duration-300 group"
-                  aria-label={`En savoir plus sur ${item.title}`}
-                >
-                  En savoir plus
-                  <i className="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition duration-300" aria-hidden="true"></i>
-                </a>
+                <div className="mt-auto">
+                  <a
+                    href="#"
+                    className="inline-flex items-center text-blue-600 font-medium hover:text-blue-800 transition duration-300 group"
+                    aria-label={`En savoir plus sur ${item.title}`}
+                  >
+                    En savoir plus
+                    <FaArrowRight className="ml-2 transform group-hover:translate-x-1 transition duration-300" />
+                  </a>
+                </div>
               </div>
             </article>
           ))}
@@ -92,7 +96,7 @@ const NewsSection = () => {
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 to-blue-800 group-hover:from-blue-700 group-hover:to-blue-900 transition-colors duration-300"></span>
             <span className="relative z-10 text-white font-medium flex items-center">
               Voir tous les programmes
-              <i className="fas fa-chevron-right ml-2 transform group-hover:translate-x-1 transition duration-300" aria-hidden="true"></i>
+              <FaChevronRight className="ml-2 transform group-hover:translate-x-1 transition duration-300" />
             </span>
           </a>
         </div>
@@ -101,4 +105,4 @@ const NewsSection = () => {
   );
 };
 
-export default NewsSection;
+export default ProgrammesSection;

@@ -91,12 +91,6 @@ const Hero = () => {
                 href="#programmes" 
                 className="relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium rounded-full group bg-white text-blue-900 hover:bg-gray-100 transition duration-300 hover:shadow-lg"
               >
-                <span className="relative z-10 font-semibold">Découvrir</span>
-              </a>
-              <a 
-                href="#candidature" 
-                className="relative inline-flex items-center justify-center px-8 py-3 overflow-hidden font-medium rounded-full border-2 border-white text-white hover:bg-white/10 transition duration-300 hover:shadow-lg"
-              >
                 <span className="relative z-10 font-semibold">Postuler</span>
               </a>
             </motion.div>

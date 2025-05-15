@@ -1,5 +1,8 @@
+import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
+import { AuthContextType, useAuth } from "@/Context/AuthProvider";
 import { postData } from "@/Helpers/CRUDFunctions";
+import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import {
   AuthenticationFormValues,
@@ -8,7 +11,6 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 
 const SignInForm = () => {
   const {
@@ -21,7 +23,8 @@ const SignInForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | undefined>(undefined);
-
+  const alert = useAlert();
+  const auth: AuthContextType = useAuth();
   const navigate = useNavigate();
   const onSubmit = async (data: AuthenticationFormValues) => {
     setLoading(true);
@@ -31,14 +34,11 @@ const SignInForm = () => {
         data
       );
 
-      Swal.fire({
-        icon: "success",
-        title: "Authentication réussie",
-        text: res?.message || "Vous etes authentifié.",
-      });
+      auth.login();
+      alert.toast(res?.message || "Authentication réussie", "success");
       setTimeout(() => {
         navigate(appConfig.FRONTEND_PATHS.landingPage.path);
-      }, 1000);
+      }, 200);
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields
@@ -55,11 +55,11 @@ const SignInForm = () => {
         });
       } else {
         // General API error
-        Swal.fire({
-          icon: "error",
-          title: "Erreur d'authentification: " + err.status,
-          text: err.errors || "Une erreur est survenue",
-        });
+        alert.error(
+          "Erreur d'authentification: " + err.status,
+          err.errors || "Une erreur est survenue"
+        );
+        auth.logout();
       }
     } finally {
       setLoading(false);
@@ -72,7 +72,7 @@ const SignInForm = () => {
         {/* Left: Illustration */}
         <div className="w-1/2 hidden md:block">
           <img
-            src={`${appConfig.BACKEND_URL}/images/Inpt_Illustration_1.png`}
+            src={Inpt_Illustration_1}
             alt="Signup Illustration"
             className="w-full h-full object-cover"
           />

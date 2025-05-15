@@ -1,18 +1,15 @@
 import Footer from "@/Components/Footer/Footer";
 import Navbar from "@/Components/Navbar";
-import { checkAuth } from "@/Helpers/checkAuth";
-import { useEffect, useState } from "react";
+import { AuthContextType, useAuth } from "@/Context/AuthProvider";
+import { checkAuth } from "@/Helpers/AuthFunctions";
+import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 const AuthLayout = () => {
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const auth: AuthContextType = useAuth();
   useEffect(() => {
-    checkAuth(setIsAuthenticated, setLoading);
+    checkAuth(auth);
   }, []);
-
-  if (loading) return <div className="text-center py-10">Chargement...</div>;
 
   return;
   <>

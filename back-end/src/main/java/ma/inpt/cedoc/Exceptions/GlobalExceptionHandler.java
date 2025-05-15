@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -101,6 +102,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur interne est survenue", ex);
+    }
+
+    // Handle AuthenticationException globally
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException authException) {
+
+        // Create standardized error response
+        ErrorResponse errorResponse = ErrorResponse.builder().statusCode(HttpStatus.FORBIDDEN.value())
+                .message("Authentication failed: " + authException.getMessage())
+                .build();
+
+        // Return custom error response with 401 status code
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message, Exception ex) {
