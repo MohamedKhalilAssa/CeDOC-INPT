@@ -97,7 +97,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         // Skip authentication endpoints except logout and check
-        return (path.contains("/api/auth") &&
+        return (path.contains("/images") || path.contains("/api/auth") &&
                 !(path.contains("/api/auth/logout") || path.contains("/api/auth/check"))) ||
                 path.contains("/api/guest");
     }

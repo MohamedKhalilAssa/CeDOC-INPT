@@ -11,7 +11,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import ma.inpt.cedoc.model.entities.auth.Token;
@@ -59,7 +65,7 @@ public class JwtUtil {
 
     /* BUILD TOKEN */
     public String generateAccessTokenWithOnlyEmail(UserDetails userDetails) {
-        final long expiration = 300; // 5 minutes
+        final long expiration = 120; // 2 minutes
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT") // Manually setting the 'typ' claim
                 .setSubject(userDetails.getUsername())

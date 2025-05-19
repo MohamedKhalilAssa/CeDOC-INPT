@@ -8,7 +8,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.*;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.RoleResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.MapperHelpers.utilisateurs.LieuDeNaissanceMapperHelper;
 import ma.inpt.cedoc.model.DTOs.mapper.MapperHelpers.utilisateurs.NationaliteMapperHelper;
@@ -19,7 +23,7 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {
                 NationaliteMapperHelper.class,
-                LieuDeNaissanceMapperHelper.class })
+                LieuDeNaissanceMapperHelper.class }, unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface UtilisateurMapper {
 
         // Mapping method for converting DTO to Entity

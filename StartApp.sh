@@ -1,33 +1,33 @@
 #!/bin/bash
 
-
 # Check Java
 if ! command -v java &> /dev/null; then
-  echo "Java not found. Please make sure JAVA_HOME is set and Java is installed."
+  echo "Java not found. Please install Java and set JAVA_HOME if needed."
   exit 1
 fi
 
-# Build backend
-echo "Building backend..."
-cd back-end || exit
-./mvnw clean package -DskipTests
+# Check Maven or mvnw
+if [ -f "back-end/mvnw" ]; then
+  MVN_CMD="./mvnw"
+elif command -v mvn &> /dev/null; then
+  MVN_CMD="mvn"
+else
+  echo " Maven not found and no mvnw wrapper in back-end."
+  exit 1
+fi
+
+# Clean backend build
+echo "Cleaning backend build..."
+cd back-end || exit 1
+$MVN_CMD clean
+
+# Start backend with spring-boot:run (supports DevTools)
+echo " Starting backend with DevTools..."
+gnome-terminal -- bash -c "$MVN_CMD spring-boot:run; exec bash"
 cd ..
-
-# Find the latest .jar file dynamically (absolute path)
-JAR_FILE=$(realpath back-end/target/*.jar | sort -V | tail -n 1)
-
-# Check if a .jar file was found
-if [ -z "$JAR_FILE" ]; then
-  echo "No .jar file found in the backend directory."
-  exit 1
-fi
 
 # Start frontend
 echo "Starting frontend..."
 gnome-terminal -- bash -c "cd front-end && npm run dev; exec bash"
 
-# Start backend with the .jar file
-echo "Starting backend with $JAR_FILE..."
-gnome-terminal -- bash -c "java -jar $JAR_FILE; exec bash"
-
-echo "Done."
+echo "Dev environment launched successfully."

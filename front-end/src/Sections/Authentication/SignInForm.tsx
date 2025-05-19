@@ -39,7 +39,7 @@ const SignInForm = () => {
       setTimeout(() => {
         navigate(appConfig.FRONTEND_PATHS.landingPage.path);
       }, 200);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields
@@ -135,14 +135,15 @@ const SignInForm = () => {
               </Link>
             </p>
             <p className="text-sm text-center mt-4 text-gray-600">
-              Vous avez besoin de verifier votre compte?{" "}
+              Mot de passe oublié?{" "}
               <Link
-                to={`${appConfig.FRONTEND_PATHS.verifyEmail.path}`}
+                to={`${appConfig.FRONTEND_PATHS.forgotPassword.path}`}
                 className="text-blue-600 hover:underline"
               >
-                Demander une verification
+                Recuperer le mot de passe
               </Link>
             </p>
+         
           </form>
         </div>
       </div>

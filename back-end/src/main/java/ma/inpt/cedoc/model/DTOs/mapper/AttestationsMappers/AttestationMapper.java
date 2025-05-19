@@ -1,8 +1,16 @@
 package ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers;
 
-import org.mapstruct.*;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-import ma.inpt.cedoc.model.DTOs.Attestation.*;
+import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationUpdateDTO;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
 import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
 
@@ -55,4 +63,4 @@ public interface AttestationMapper {
 
         // Add any custom logic here, e.g., mapping utilisateurId to user entity if
         // needed
-}
+}       
