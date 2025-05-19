@@ -1,6 +1,6 @@
 // context/AuthContext.tsx
 import { AuthContext } from "@/Context/Auth/AuthContext";
-import { type Utilisateur } from "@/Context/Auth/Types";
+import { type decodedJWT } from "@/Types/GlobalTypes";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 
@@ -10,11 +10,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem("isAuthenticated") === "true";
   });
-  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(() => {
+  const [utilisateur, setUtilisateur] = useState<decodedJWT | null>(() => {
     const token = localStorage.getItem("token");
     if (!token) return null;
     try {
-      return jwtDecode<Utilisateur>(token);
+      return jwtDecode<decodedJWT>(token);
     } catch {
       return null;
     }
@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        setUtilisateur(jwtDecode<Utilisateur>(token));
+        setUtilisateur(jwtDecode<decodedJWT>(token));
       } catch {
         setUtilisateur(null);
       }

@@ -65,7 +65,7 @@ public class JwtUtil {
 
     /* BUILD TOKEN */
     public String generateAccessTokenWithOnlyEmail(UserDetails userDetails) {
-        final long expiration = 120; // 2 minutes
+        final long expiration = 120000; // 2 minutes
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT") // Manually setting the 'typ' claim
                 .setSubject(userDetails.getUsername())

@@ -7,6 +7,7 @@ import SignUpPage from "@/Pages/Authentication/SignUpPage";
 import LandingPage from "@/Pages/LandingPage";
 import appConfig from "@/public/config";
 import { Route, Routes } from "react-router-dom";
+import ResetPasswordPage from "./Pages/Authentication/ResetPasswordPage";
 
 function App() {
   return (
@@ -37,6 +38,10 @@ function App() {
             <Route
               path={appConfig.FRONTEND_PATHS.forgotPassword.path}
               element={<ForgotPasswordPage />}
+            />
+            <Route
+              path={appConfig.FRONTEND_PATHS.resetPassword.path}
+              element={<ResetPasswordPage />}
             />
           </Route>
         </Route>
