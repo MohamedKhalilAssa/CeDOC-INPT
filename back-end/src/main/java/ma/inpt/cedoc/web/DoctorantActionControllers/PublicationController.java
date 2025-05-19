@@ -1,17 +1,16 @@
 package ma.inpt.cedoc.web.DoctorantActionControllers;
 
-import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationResponseDTO;
-import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
-import ma.inpt.cedoc.service.DoctorantActionService.PublicationService;
-import org.apache.coyote.Response;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationResponseDTO;
+import ma.inpt.cedoc.service.DoctorantActionService.PublicationService;
 
 @RestController
 @RequestMapping("/api/publications")
@@ -31,22 +30,22 @@ public class PublicationController {
 
     @PostMapping("/")
     public ResponseEntity<PublicationResponseDTO> createPublication(@AuthenticationPrincipal UserDetails userDetails,
-                                                                    @RequestBody PublicationRequestDTO request) {
+            @RequestBody PublicationRequestDTO request) {
         String email = userDetails.getUsername();
         return ResponseEntity.ok(publicationService.addPublication(request, email));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PublicationResponseDTO> updatePublication(@AuthenticationPrincipal UserDetails userDetails,
-                                                                    @RequestBody PublicationRequestDTO request,
-                                                                    @PathVariable Long id) {
+            @RequestBody PublicationRequestDTO request,
+            @PathVariable Long id) {
         String email = userDetails.getUsername();
         return ResponseEntity.ok(publicationService.updatePublication(request, id, email));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePublication(@AuthenticationPrincipal UserDetails userDetails,
-                                                    @PathVariable Long id) {
+            @PathVariable Long id) {
         String email = userDetails.getUsername();
         publicationService.deletePublication(id, email);
         return ResponseEntity.ok("Publication " + id + " est supprimé avec succès");
@@ -54,14 +53,14 @@ public class PublicationController {
 
     @PatchMapping("/{id}/valider")
     public ResponseEntity<PublicationResponseDTO> validerPublication(@AuthenticationPrincipal UserDetails userDetails,
-                                                                     @PathVariable Long id) {
+            @PathVariable Long id) {
         String email = userDetails.getUsername();
         return ResponseEntity.ok(publicationService.validerPublication(id, email));
     }
 
     @PatchMapping("/{id}/refuser")
     public ResponseEntity<PublicationResponseDTO> refuserPublication(@AuthenticationPrincipal UserDetails userDetails,
-                                                                     @PathVariable Long id) {
+            @PathVariable Long id) {
         String email = userDetails.getUsername();
         return ResponseEntity.ok(publicationService.refuserPublication(id, email));
     }

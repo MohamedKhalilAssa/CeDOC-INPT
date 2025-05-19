@@ -1,14 +1,12 @@
 package ma.inpt.cedoc.model.DTOs.mapper.formationsMappers;
 
+import org.mapstruct.*;
+
 import ma.inpt.cedoc.model.DTOs.Formations.VacationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.VacationResponseDTO;
 import ma.inpt.cedoc.model.entities.formation.Vacation;
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface VacationMapper {
 
     @Mapping(target = "id", ignore = true)

@@ -1,6 +1,12 @@
 package ma.inpt.cedoc.model.entities.DoctorantActions;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,13 +16,6 @@ import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -41,7 +40,8 @@ public class ConfParticipation {
     @NotBlank(message = "le lieu de CommunicationConference et obligatoire")
     private String lieu;
 
-    // J'ai pas fait @NotNull, parce que le justificatif peut manque (donc le responsable ne vas pas le valider)
+    // J'ai pas fait @NotNull, parce que le justificatif peut manque (donc le
+    // responsable ne vas pas le valider)
     // ou bien le doctorant peut le mettre après
     private String justificatif;
 
@@ -49,7 +49,8 @@ public class ConfParticipation {
     @Enumerated(EnumType.STRING)
     private EtatEnum status = EtatEnum.DECLAREE;
 
-    // il s'agit des noms des autres participants de la conférence séparé par des : comme ça, ils sont stocké comme ça
+    // il s'agit des noms des autres participants de la conférence séparé par des :
+    // comme ça, ils sont stocké comme ça
     // dans DB , et on va les traiter comme des listes.
     private String autresParticipants;
 
@@ -61,7 +62,7 @@ public class ConfParticipation {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    //----------- Relation --------------
+    // ----------- Relation --------------
 
     @ManyToOne
     @JoinColumn(name = "participant_id")

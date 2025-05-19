@@ -1,10 +1,11 @@
 package ma.inpt.cedoc.model.DTOs.mapper.DoctorantActionsMappers;
 
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

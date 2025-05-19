@@ -1,24 +1,23 @@
 package ma.inpt.cedoc.service.DoctorantActionService;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.DoctorantActionsMappers.ConfParticipationMapper;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
-import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 import ma.inpt.cedoc.repositories.DoctorantActionsRepositories.ConfParticipationRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirectionCedocRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +38,8 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Override
     public ConfParticipationResponseDTO getConfParticipationBy(Long id) {
         ConfParticipation confParticipation = confParticipationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("participation conférence "+id+" n'est pas trouvé"));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("participation conférence " + id + " n'est pas trouvé"));
         return confParticipationMapper.toResponseDTO(confParticipation);
     }
 
@@ -47,7 +47,7 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Transactional
     public ConfParticipationResponseDTO addConfParticipation(ConfParticipationRequestDTO requestDTO, String email) {
         Doctorant doctorant = doctorantRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("doctorant "+email+" n'est pas trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
         ConfParticipation confParticipation = confParticipationMapper.toEntity(requestDTO);
         confParticipation.setParticipant(doctorant);
         return confParticipationMapper.toResponseDTO(confParticipationRepository.save(confParticipation));
@@ -55,9 +55,10 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
 
     @Override
     @Transactional
-    public ConfParticipationResponseDTO updateConfParticipation(ConfParticipationRequestDTO requestDTO, Long id, String email) {
-        ConfParticipation confParticipation = confParticipationRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("participation à conférence "+id+" n'est pas trouvé"));
+    public ConfParticipationResponseDTO updateConfParticipation(ConfParticipationRequestDTO requestDTO, Long id,
+            String email) {
+        ConfParticipation confParticipation = confParticipationRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
         confParticipationMapper.updateFromRequest(requestDTO, confParticipation);
         return confParticipationMapper.toResponseDTO(confParticipationRepository.save(confParticipation));
     }
@@ -72,9 +73,10 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Transactional
     public ConfParticipationResponseDTO validerConfParticipation(Long id, String email) {
         DirectionCedoc directionCedoc = directionCedocRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc "+email+" n'est pas trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc " + email + " n'est pas trouvé"));
         ConfParticipation confParticipation = confParticipationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("participation à conférence "+id+" n'est pas trouvé"));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
         confParticipation.setValidateur(directionCedoc);
         confParticipation.setStatus(EtatEnum.VALIDE);
         return confParticipationMapper.toResponseDTO(confParticipationRepository.save(confParticipation));
@@ -84,9 +86,10 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Transactional
     public ConfParticipationResponseDTO refuserConfParticipation(Long id, String email) {
         DirectionCedoc directionCedoc = directionCedocRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc "+email+" n'est pas trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc " + email + " n'est pas trouvé"));
         ConfParticipation confParticipation = confParticipationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("participation à conférence "+id+" n'est pas trouvé"));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
         confParticipation.setValidateur(directionCedoc);
         confParticipation.setStatus(EtatEnum.REFUSEE);
         return confParticipationMapper.toResponseDTO(confParticipationRepository.save(confParticipation));

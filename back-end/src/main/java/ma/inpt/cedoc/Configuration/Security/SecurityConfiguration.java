@@ -18,7 +18,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.Configuration.Security.JWT.JwtFilter;
+import ma.inpt.cedoc.Configuration.Security.JWT.AccessTokenFilter;
+import ma.inpt.cedoc.Configuration.Security.JWT.RefreshTokenFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -26,7 +27,9 @@ import ma.inpt.cedoc.Configuration.Security.JWT.JwtFilter;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-        private final JwtFilter jwtFilter;
+        private final AccessTokenFilter AccessTokenFilter;
+        private final RefreshTokenFilter refreshTokenFilter;
+
         private final AuthenticationProvider authenticationProvider;
         private final UserDetailsService userDetailsService;
 
@@ -38,7 +41,10 @@ public class SecurityConfiguration {
 
                                 .csrf(csrf -> csrf.disable())
                                 .addFilterBefore(
-                                                jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                                                AccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                                .addFilterAfter(refreshTokenFilter,
+                                                AccessTokenFilter.class)
+
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
                                                 .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**")
@@ -48,6 +54,7 @@ public class SecurityConfiguration {
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authenticationProvider(authenticationProvider)
                                 .userDetailsService(userDetailsService)
+
                                 .build();
 
         }

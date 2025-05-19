@@ -130,6 +130,12 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public void validate(String token) throws JwtException {
+        Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token);
+    }
     // Getting the JWT_SECRET key
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
