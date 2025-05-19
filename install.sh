@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # run setup script in backend
-cd backend
+cd back-end
 ./setup-secrets.sh
 cd ..
 
 # install dependencies in frontend
-cd frontend
+cd front-end
 npm install
 cd ..
