@@ -13,8 +13,8 @@ public class FileServiceImpl implements FileService {
 
     // Assuming uploads is at: src/uploads (2 levels up from service implementation)
     private static final Path BASE_UPLOAD_PATH = Paths.get(System.getProperty("user.dir"))
-                                                      .resolve("src")
-                                                      .resolve("uploads");
+                                                    .resolve("src")
+                                                    .resolve("uploads");
 
     @Override
     public String storeFile(MultipartFile file, String subdirectory) throws IOException {
