@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository;
 import ma.inpt.cedoc.service.Global.EmailService;
@@ -24,7 +24,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
   private final UtilisateurRepository utilisateurRepository;
 
-  private final UtilisateurMapper utilisateurMapper;
+  private final UtilisateurMapperImpl utilisateurMapper;
 
   private final EmailService emailService;
   @Value("${app.front-end-url}")
@@ -138,7 +138,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     utilisateurRepository.save(utilisateur);
 
     UtilisateurResponseDTO utilisateurResponseDTO = utilisateurMapper
-        .utilisateurToUtilisateurResponseDTO(utilisateur);
+        .toResponse(utilisateur);
 
     return utilisateurResponseDTO;
   }
