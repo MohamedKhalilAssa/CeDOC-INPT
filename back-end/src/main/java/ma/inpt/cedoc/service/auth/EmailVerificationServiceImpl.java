@@ -104,7 +104,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 </p>
           """;
       content = String.format(content, user.getEmail(), verificationUrl, token);
-      return emailService.sendMailToUtilisateur(user, "Vérification de votre adresse email", content);
+      return emailService.sendMailToUtilisateur(user,"Vérification de votre adresse email" ,"Demande de Vérification de votre adresse email", content);
     } catch (Exception e) {
       return CompletableFuture.failedFuture(e);
     }

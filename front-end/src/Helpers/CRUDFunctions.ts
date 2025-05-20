@@ -1,4 +1,5 @@
-import { getExternalAuthHandlers } from "@/Context/AuthProvider";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { getExternalAuthHandlers } from "@/Context/Auth/index";
 import appConfig from "@/public/config";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
