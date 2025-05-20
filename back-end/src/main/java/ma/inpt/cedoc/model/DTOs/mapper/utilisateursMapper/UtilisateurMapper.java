@@ -3,23 +3,13 @@ package ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.mapstruct.*;
 
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.RoleResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.*;
 import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.MapperHelpers.utilisateurs.LieuDeNaissanceMapperHelper;
 import ma.inpt.cedoc.model.DTOs.mapper.MapperHelpers.utilisateurs.NationaliteMapperHelper;
-import ma.inpt.cedoc.model.entities.utilisateurs.LieuDeNaissance;
-import ma.inpt.cedoc.model.entities.utilisateurs.Nationalite;
-import ma.inpt.cedoc.model.entities.utilisateurs.Role;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {
                 NationaliteMapperHelper.class,
