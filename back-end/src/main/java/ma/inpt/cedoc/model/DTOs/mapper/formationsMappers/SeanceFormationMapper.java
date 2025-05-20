@@ -1,11 +1,6 @@
 package ma.inpt.cedoc.model.DTOs.mapper.formationsMappers;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;

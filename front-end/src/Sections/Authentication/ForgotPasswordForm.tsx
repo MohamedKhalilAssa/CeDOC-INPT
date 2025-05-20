@@ -4,12 +4,10 @@ import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
 type ForgotPasswordFormValues = { email: string };
 
 const ForgotPasswordForm = () => {
-  const navigate = useNavigate();
   const alert = useAlert();
   const [loading, setLoading] = useState(false);
 

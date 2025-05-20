@@ -273,6 +273,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                         .build();
                 }
                 Utilisateur utilisateur = resetToken.getUtilisateur();
+                if(passwordEncoder.matches(password, utilisateur.getPassword())) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il est impossible de mettre le meme mot de passe que l'ancien");
+                }
                 tokenService.revokeToken(resetToken);
                 utilisateur.setPassword(passwordEncoder.encode(password));
                 utilisateurRepository.save(utilisateur);

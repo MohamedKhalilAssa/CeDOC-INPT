@@ -20,6 +20,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.enums.auth.TokenEnum;
 import ma.inpt.cedoc.service.auth.TokenService;
 
 @Component
@@ -92,7 +93,8 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         }
 
         // Validate token in database
-        boolean isTokenValid = tokenService.findByTokenAndNonExpiredOrRevoked(accessToken) != null
+        var dbToken = tokenService.findByTokenAndNonExpiredOrRevoked(accessToken);
+        boolean isTokenValid = dbToken != null && dbToken.getTokenType() == TokenEnum.BEARER
                 && jwtUtil.isTokenValid(accessToken, user);
 
         if (!isTokenValid) {

@@ -21,8 +21,7 @@ public interface VacationMapper {
     @Mapping(target = "id", ignore = true)
     void updateVacationFromDTO(VacationRequestDTO dto, @MappingTarget Vacation vacation);
 
-
-    /* --------------------------HELPERS--------------------------------*/
+    /* --------------------------HELPERS-------------------------------- */
 
     default Long mapDoctorantId(Vacation vacation) {
         if (vacation.getDoctorant() == null) {
@@ -31,4 +30,3 @@ public interface VacationMapper {
         return vacation.getDoctorant().getId();
     }
 }
-
