@@ -26,7 +26,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
 import ma.inpt.cedoc.model.DTOs.auth.*;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.auth.TokenEnum;
@@ -45,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         private final JwtUtil jwtUtil;
         private final AuthenticationManager authenticationManager;
         private final TokenService tokenService;
-        private final UtilisateurMapper utilisateurMapper;
+        private final UtilisateurMapperImpl utilisateurMapper;
 
         @Value("${app.front-end-url}")
         private String frontendUrl;

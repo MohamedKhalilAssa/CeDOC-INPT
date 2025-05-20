@@ -13,7 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
 import ma.inpt.cedoc.model.entities.utilisateurs.Role;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.RoleRepository;
@@ -25,7 +25,7 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository
 public class UtilisateurServiceImpl implements UtilisateurService {
 
     private final UtilisateurRepository utilisateurRepository;
-    private final UtilisateurMapper utilisateurMapper;
+    private final UtilisateurMapperImpl utilisateurMapper;
     private final RoleRepository roleRepository;
 
     @Override
