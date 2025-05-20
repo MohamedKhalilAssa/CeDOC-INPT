@@ -19,7 +19,7 @@ public abstract class CandidatureMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "sujets", ignore = true) // you can handle this separately if needed
+    @Mapping(target = "sujets", ignore = true)
     @Mapping(target = "candidat", source = "candidatId")
     public abstract Candidature toEntity(CandidatureRequestDTO dto);
 

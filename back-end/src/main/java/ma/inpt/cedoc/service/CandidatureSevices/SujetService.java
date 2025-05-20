@@ -3,8 +3,11 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 import java.util.List;
 
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
 public interface SujetService {
+
+    Sujet proposerSujet(Sujet sujet, List<Professeur> professeurs);
 
     /* CREATE METHODS */
     Sujet saveSujet(Sujet sujet);
