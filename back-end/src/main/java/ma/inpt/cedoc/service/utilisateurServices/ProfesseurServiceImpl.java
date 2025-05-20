@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
+@Service
+@RequiredArgsConstructor
 public class ProfesseurServiceImpl implements ProfesseurService {
 
     @Override
