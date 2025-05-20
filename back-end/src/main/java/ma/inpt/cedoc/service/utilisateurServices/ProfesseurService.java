@@ -15,4 +15,7 @@ public interface ProfesseurService {
 
     List<Professeur> getAllProfesseurs();
     Page<Professeur> getAllProfesseurs(Pageable pageable);
+
+    List<Professeur> findAllByIds(List<Long> ids);
+    boolean existsById(Long id);
 }

@@ -138,7 +138,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     utilisateurRepository.save(utilisateur);
 
     UtilisateurResponseDTO utilisateurResponseDTO = utilisateurMapper
-        .utilisateurToUtilisateurResponseDTO(utilisateur);
+        .toResponse(utilisateur);
 
     return utilisateurResponseDTO;
   }

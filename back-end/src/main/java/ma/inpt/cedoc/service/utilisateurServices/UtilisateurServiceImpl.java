@@ -28,18 +28,19 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     private final UtilisateurMapper utilisateurMapper;
     private final RoleRepository roleRepository;
 
+    @Override
     public void assignRoleToUtilisateur(String email, String roleName) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
         Role role = roleRepository.findByIntitule(roleName).orElse(null);
 
         if (utilisateur != null && role != null) {
-            utilisateur.getRoles().add(role); // 🔥 Just add to the existing set
+            utilisateur.getRoles().add(role);
             utilisateurRepository.save(utilisateur);
-            System.out.println("Role " + roleName + " assigne a l'utilisateur " + email);
+            System.out.println("Role " + roleName + " assigné à l'utilisateur " + email);
             return;
         }
 
-        System.out.println("Utilisateur ou role introuvable");
+        System.out.println("Utilisateur ou rôle introuvable");
     }
 
     /*-----------------Delete----------------- */
@@ -47,111 +48,95 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public void deleteUtilisateur(Long id) {
         Utilisateur utilisateur = utilisateurRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
-
         utilisateurRepository.delete(utilisateur);
     }
 
     /*-----------------Search----------------- */
     @Override
     public boolean doesUserExistByEmail(String email) {
-        if (utilisateurRepository.existsByEmail(email)) {
-            return true;
-        }
-        return false;
+        return utilisateurRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean doesUserExistByTelephone(String telephone) {
+        return utilisateurRepository.existsByTelephone(telephone);
     }
 
     @Override
     public List<UtilisateurResponseDTO> findAllUtilisateurs() {
-        List<UtilisateurResponseDTO> utilisateurs = utilisateurRepository.findAll().stream()
-                .map(utilisateurMapper::utilisateurToUtilisateurResponseDTO).collect(Collectors.toList());
-
-        return utilisateurs;
+        return utilisateurRepository.findAll().stream()
+                .map(utilisateurMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UtilisateurResponseDTO findUtilisateurByEmail(String email) {
-
-        return utilisateurMapper
-                .utilisateurToUtilisateurResponseDTOFullRoles(utilisateurRepository.findByEmail(email).orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable")));
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+        return utilisateurMapper.toResponseWithRoles(utilisateur);
     }
 
     @Override
     public UtilisateurResponseDTO findUtilisateurById(Long id) {
-        return utilisateurMapper.utilisateurToUtilisateurResponseDTOFullRoles(
-                utilisateurRepository.findById(id).orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable")));
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+        return utilisateurMapper.toResponseWithRoles(utilisateur);
+    }
+
+    @Override
+    public UtilisateurResponseDTO findUtilisateurByTelephone(String telephone) {
+        Utilisateur utilisateur = utilisateurRepository.findByTelephone(telephone)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+        return utilisateurMapper.toResponseWithRoles(utilisateur);
     }
 
     @Override
     public Utilisateur findFullUtilisateurByEmail(String email) {
-        return utilisateurRepository.findByEmail(email).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+        return utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
     }
 
     @Override
     public Utilisateur findFullUtilisateurById(Long id) {
-        return utilisateurRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+        return utilisateurRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
     }
 
     @Override
     public Utilisateur findFullUtilisateurByTelephone(String telephone) {
-        return utilisateurRepository.findByTelephone(telephone).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+        return utilisateurRepository.findByTelephone(telephone)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
     }
 
     @Override
     public Page<UtilisateurResponseDTO> searchByNomOuPrenom(String query) {
         Pageable pageable = PageRequest.of(0, 10);
-
         Page<Utilisateur> utilisateursPage = utilisateurRepository
                 .findByNomContainsIgnoreCaseOrPrenomContainsIgnoreCase(query, query, pageable);
-
-        return utilisateursPage.map(utilisateurMapper::utilisateurToUtilisateurResponseDTO);
-    }
-
-    @Override
-    public boolean doesUserExistByTelephone(String telephone) {
-        if (utilisateurRepository.existsByTelephone(telephone)) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public UtilisateurResponseDTO findUtilisateurByTelephone(String telephone) {
-
-        return utilisateurMapper
-                .utilisateurToUtilisateurResponseDTOFullRoles(
-                        utilisateurRepository.findByTelephone(telephone).orElseThrow(
-                                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable")));
+        return utilisateursPage.map(utilisateurMapper::toResponse);
     }
 
     /*-----------------Save----------------- */
     @Override
     public List<UtilisateurResponseDTO> saveAllUtilisateurs(List<Utilisateur> utilisateurs) {
-
-        List<UtilisateurResponseDTO> utilisateurResponseDTO = utilisateurRepository.saveAll(utilisateurs).stream()
-                .map(utilisateurMapper::utilisateurToUtilisateurResponseDTO).collect(Collectors.toList());
-        return utilisateurResponseDTO;
+        return utilisateurRepository.saveAll(utilisateurs).stream()
+                .map(utilisateurMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UtilisateurResponseDTO saveUtilisateur(Utilisateur utilisateur) {
         if (utilisateurRepository.existsByEmail(utilisateur.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utilisateur deja existant");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Utilisateur déjà existant");
         }
-        return utilisateurMapper.utilisateurToUtilisateurResponseDTOFullRoles(
-                utilisateurRepository.save(utilisateur));
+        Utilisateur saved = utilisateurRepository.save(utilisateur);
+        return utilisateurMapper.toResponseWithRoles(saved);
     }
 
     /*-----------------Update----------------- */
     @Override
     public UtilisateurResponseDTO updateUtilisateur(Utilisateur utilisateur) {
-
-        return utilisateurMapper.utilisateurToUtilisateurResponseDTOFullRoles(
-                utilisateurRepository.save(utilisateur));
+        Utilisateur updated = utilisateurRepository.save(utilisateur);
+        return utilisateurMapper.toResponseWithRoles(updated);
     }
-
 }

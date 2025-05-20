@@ -3,114 +3,125 @@ package ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.mapstruct.InjectionStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.*;
 import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.MapperHelpers.utilisateurs.LieuDeNaissanceMapperHelper;
-import ma.inpt.cedoc.model.DTOs.mapper.MapperHelpers.utilisateurs.NationaliteMapperHelper;
-import ma.inpt.cedoc.model.entities.utilisateurs.LieuDeNaissance;
-import ma.inpt.cedoc.model.entities.utilisateurs.Nationalite;
-import ma.inpt.cedoc.model.entities.utilisateurs.Role;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
+import ma.inpt.cedoc.service.utilisateurServices.LieuDeNaissanceService;
+import ma.inpt.cedoc.service.utilisateurServices.NationaliteService;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = {
-                NationaliteMapperHelper.class,
-                LieuDeNaissanceMapperHelper.class }, unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
-public interface UtilisateurMapper {
+@Component
+@RequiredArgsConstructor
+public class UtilisateurMapper {
 
-        // Mapping method for converting DTO to Entity
-        /* UTILISATEUR_REQUEST TO UTILISATEUR */
-        @Mapping(target = "createdAt", ignore = true)
-        @Mapping(target = "id", ignore = true)
-        @Mapping(target = "roles", ignore = true)
-        @Mapping(target = "tokens", ignore = true)
-        @Mapping(target = "updatedAt", ignore = true)
-        @Mapping(target = "emailValider", ignore = true)
-        @Mapping(target = "nationalite", source = "nationaliteId", qualifiedByName = "mapNationalite")
-        @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissanceId", qualifiedByName = "mapLieuDeNaissance")
-        Utilisateur utilisateurRequestDTOToUtilisateur(UtilisateurRequestDTO utilisateurDTO);
+        private final NationaliteService nationaliteService;
+        private final LieuDeNaissanceService lieuDeNaissanceService;
 
-        /* REGISTER REQUEST TO UTILISATEUR */
-        @Mapping(target = "createdAt", ignore = true)
-        @Mapping(target = "id", ignore = true)
-        @Mapping(target = "roles", ignore = true)
-        @Mapping(target = "tokens", ignore = true)
-        @Mapping(target = "updatedAt", ignore = true)
-        @Mapping(target = "emailValider", ignore = true)
-        @Mapping(target = "nationalite", ignore = true)
-        @Mapping(target = "lieuDeNaissance", ignore = true)
-        @Mapping(target = "dateNaissance", ignore = true)
-        @Mapping(target = "etatCivilEnum", ignore = true)
-        @Mapping(target = "genre", ignore = true)
-        @Mapping(target = "nom", ignore = true)
-        @Mapping(target = "prenom", ignore = true)
-        @Mapping(target = "telephone", ignore = true)
-        Utilisateur RegisterRequestDTOToUtilisateur(RegisterRequestDTO utilisateurDTO);
+        // Mapping UtilisateurRequestDTO → Utilisateur
+        public Utilisateur fromRequestDTO(UtilisateurRequestDTO dto) {
+                Nationalite nationalite = nationaliteService.findById(dto.getNationaliteId());
+                LieuDeNaissance lieu = lieuDeNaissanceService.findById(dto.getLieuDeNaissanceId());
 
-        @Mappings({
-                        @Mapping(target = "roles", ignore = true),
-                        @Mapping(target = "roleNames", expression = "java(mapRoleNames(utilisateur.getRoles()))"),
-                        @Mapping(target = "nationalite", source = "nationalite"),
-                        @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissance")
-        })
-        // Mapping method for converting Entity to DTO
-        UtilisateurResponseDTO utilisateurToUtilisateurResponseDTO(Utilisateur utilisateur);
-
-        // Mapping from Utilisateur to UtilisateurResponseDTO with roles fully included
-        @Mappings({
-                        @Mapping(target = "roleNames", ignore = true),
-                        @Mapping(target = "roles", expression = "java(mapRolesToDTOs(utilisateur.getRoles()))"),
-                        @Mapping(target = "nationalite", source = "nationalite"),
-                        @Mapping(target = "lieuDeNaissance", source = "lieuDeNaissance")
-        })
-        UtilisateurResponseDTO utilisateurToUtilisateurResponseDTOFullRoles(Utilisateur utilisateur);
-
-        /*--------------------------------------------------------------HELPERS -------------------------------------------------------------------------------------------*/
-
-        // Helper method to map Role to a list of role names (List<String>)
-        default List<String> mapRoleNames(List<Role> roles) {
-                return roles.stream()
-                                .map(Role::getIntitule)
-                                .collect(Collectors.toList());
+                return Utilisateur.builder()
+                        .nom(dto.getNom())
+                        .prenom(dto.getPrenom())
+                        .email(dto.getEmail())
+                        .telephone(dto.getTelephone())
+                        .password(dto.getPassword())
+                        .dateNaissance(dto.getDateNaissance())
+                        .etatCivilEnum(dto.getEtatCivilEnum())
+                        .genre(dto.getGenre())
+                        .nationalite(nationalite)
+                        .lieuDeNaissance(lieu)
+                        .emailValider(false)
+                        .build();
         }
 
-        default List<RoleResponseDTO> mapRolesToDTOs(List<Role> roles) {
-                return roles.stream()
-                                .map(role -> RoleResponseDTO.builder()
-                                                .id(role.getId())
-                                                .intitule(role.getIntitule())
-                                                .createdAt(role.getCreatedAt())
-                                                .updatedAt(role.getUpdatedAt())
-                                                .build())
-                                .collect(Collectors.toList());
+        // Mapping RegisterRequestDTO → Utilisateur (email + mot de passe seulement)
+        public Utilisateur fromRegisterDTO(RegisterRequestDTO dto) {
+                return Utilisateur.builder()
+                        .email(dto.getEmail())
+                        .password(dto.getPassword())
+                        .emailValider(false)
+                        .build();
         }
-        // Mapping from Nationalite to NationaliteResponseDTO
 
-        default NationaliteResponseDTO mapNationaliteToDTO(Nationalite nationalite) {
-                if (nationalite == null) {
-                        return null;
-                }
+        // Mapping Utilisateur → UtilisateurResponseDTO (avec roleNames uniquement)
+        public UtilisateurResponseDTO toResponse(Utilisateur utilisateur) {
+                return UtilisateurResponseDTO.builder()
+                        .id(utilisateur.getId())
+                        .createdAt(utilisateur.getCreatedAt())
+                        .updatedAt(utilisateur.getUpdatedAt())
+                        .nom(utilisateur.getNom())
+                        .prenom(utilisateur.getPrenom())
+                        .email(utilisateur.getEmail())
+                        .telephone(utilisateur.getTelephone())
+                        .dateNaissance(utilisateur.getDateNaissance())
+                        .etatCivilEnum(utilisateur.getEtatCivilEnum())
+                        .genre(utilisateur.getGenre())
+                        .emailValider(utilisateur.isEmailValider())
+                        .nationalite(mapNationaliteToDTO(utilisateur.getNationalite()))
+                        .lieuDeNaissance(mapLieuDeNaissanceToDTO(utilisateur.getLieuDeNaissance()))
+                        .roleNames(mapRoleNames(utilisateur.getRoles()))
+                        .build();
+        }
+
+        // Mapping Utilisateur → UtilisateurResponseDTO (avec roles complets)
+        public UtilisateurResponseDTO toResponseWithRoles(Utilisateur utilisateur) {
+                return UtilisateurResponseDTO.builder()
+                        .id(utilisateur.getId())
+                        .createdAt(utilisateur.getCreatedAt())
+                        .updatedAt(utilisateur.getUpdatedAt())
+                        .nom(utilisateur.getNom())
+                        .prenom(utilisateur.getPrenom())
+                        .email(utilisateur.getEmail())
+                        .telephone(utilisateur.getTelephone())
+                        .dateNaissance(utilisateur.getDateNaissance())
+                        .etatCivilEnum(utilisateur.getEtatCivilEnum())
+                        .genre(utilisateur.getGenre())
+                        .emailValider(utilisateur.isEmailValider())
+                        .nationalite(mapNationaliteToDTO(utilisateur.getNationalite()))
+                        .lieuDeNaissance(mapLieuDeNaissanceToDTO(utilisateur.getLieuDeNaissance()))
+                        .roles(mapRolesToDTOs(utilisateur.getRoles()))
+                        .build();
+        }
+
+        // Helpers
+        public List<String> mapRoleNames(List<Role> roles) {
+                return roles.stream()
+                        .map(Role::getIntitule)
+                        .collect(Collectors.toList());
+        }
+
+        public List<RoleResponseDTO> mapRolesToDTOs(List<Role> roles) {
+                return roles.stream()
+                        .map(role -> RoleResponseDTO.builder()
+                                .id(role.getId())
+                                .intitule(role.getIntitule())
+                                .createdAt(role.getCreatedAt())
+                                .updatedAt(role.getUpdatedAt())
+                                .build())
+                        .collect(Collectors.toList());
+        }
+
+        public NationaliteResponseDTO mapNationaliteToDTO(Nationalite nationalite) {
+                if (nationalite == null) return null;
                 return NationaliteResponseDTO.builder()
-                                .id(nationalite.getId())
-                                .intitule(nationalite.getIntitule())
-                                .createdAt(nationalite.getCreatedAt())
-                                .updatedAt(nationalite.getUpdatedAt())
-                                .build();
+                        .id(nationalite.getId())
+                        .intitule(nationalite.getIntitule())
+                        .createdAt(nationalite.getCreatedAt())
+                        .updatedAt(nationalite.getUpdatedAt())
+                        .build();
         }
 
-        // Mapping from LieuDeNaissance to LieuDeNaissanceResponseDTO
-        default LieuDeNaissanceResponseDTO mapLieuDeNaissanceToDTO(LieuDeNaissance lieuDeNaissance) {
-                if (lieuDeNaissance == null) {
-                        return null;
-                }
+        public LieuDeNaissanceResponseDTO mapLieuDeNaissanceToDTO(LieuDeNaissance lieu) {
+                if (lieu == null) return null;
                 return LieuDeNaissanceResponseDTO.builder()
-                                .id(lieuDeNaissance.getId())
-                                .pays(lieuDeNaissance.getPays())
-                                .ville(lieuDeNaissance.getVille())
-                                .build();
+                        .id(lieu.getId())
+                        .pays(lieu.getPays())
+                        .ville(lieu.getVille())
+                        .build();
         }
 }

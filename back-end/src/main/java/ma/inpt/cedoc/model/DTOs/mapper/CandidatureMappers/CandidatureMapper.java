@@ -1,30 +1,34 @@
 package ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
+import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
 import ma.inpt.cedoc.service.utilisateurServices.CandidatService;
 
-@Mapper(componentModel = "spring", uses = {}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public abstract class CandidatureMapper {
+@Component
+@RequiredArgsConstructor
+public class CandidatureMapper {
 
-    @Autowired
-    protected CandidatService candidatService;
+    private final CandidatService candidatService;
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "sujets", ignore = true)
-    @Mapping(target = "candidat", source = "candidatId")
-    public abstract Candidature toEntity(CandidatureRequestDTO dto);
+    public Candidature toEntity(CandidatureRequestDTO dto) {
+        Candidat candidat = candidatService.findFullCandidatById(dto.getCandidatId());
 
-    // Custom mapping to resolve candidatId → Candidat
-    protected Candidat map(Long candidatId) {
-        return candidatService.findFullCandidatById(candidatId);
+        return Candidature.builder()
+                .statutCandidature(CandidatureEnum.SOUMISE) // état initial par défaut
+                .mentionBac(dto.getMentionBac())
+                .mentionDiplome(dto.getMentionDiplome())
+                .dossierCandidature(dto.getDossierCandidature())
+                .typeEtablissement(dto.getTypeEtablissement())
+                .specialite(dto.getSpecialite())
+                .intitulePFE(dto.getIntitulePFE())
+                .statutProfessionnel(dto.getStatutProfessionnel())
+                .candidat(candidat)
+                .sujets(null) // à associer dans un service séparé (si nécessaire)
+                .build();
     }
 }

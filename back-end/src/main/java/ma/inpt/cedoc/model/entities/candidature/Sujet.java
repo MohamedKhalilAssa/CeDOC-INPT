@@ -43,6 +43,10 @@ public class Sujet {
     @Builder.Default
     private boolean valide = false;
 
+    @Column(name = "est_public")
+    @Builder.Default
+    private boolean estPublic = false;
+
     // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)
     @CreatedDate
