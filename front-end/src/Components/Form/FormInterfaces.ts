@@ -1,4 +1,4 @@
-interface InputFieldProps {
+export interface InputFieldProps {
   label: string;
   name: string;
   type: string;
@@ -10,18 +10,55 @@ interface InputFieldProps {
   classes?: string;
   isPassword?: boolean;
 }
-interface SelectFieldProps {
+export interface SelectFieldProps {
   label: string;
   name: string;
-  options: { value: string|number; label: string | number }[];
+  options: { value: string | number; label: string | number }[];
   required?: boolean;
   register: any;
   errors: any;
   classes?: string;
 }
-interface FormComponentProps {
-  title: string;
-  onSubmit: (data: any) => void;
-  children: React.ReactNode;
+export interface DatePickerProps {
+  label: string;
+  name: string;
+  required?: boolean;
+  register: any;
+  errors: any;
+  classes?: string;
 }
-export type { FormComponentProps, InputFieldProps, SelectFieldProps };
+
+export interface FileUploadProps {
+  label: string;
+  name: string;
+  required?: boolean;
+  register: any;
+  errors: any;
+  classes?: string;
+  accept?: string;
+  helpText?: string;
+}
+
+export interface TagInputProps {
+  label: string;
+  name: string;
+  required?: boolean;
+  register: any;
+  errors: any;
+  classes?: string;
+  tags: string[];
+  setTags: (tags: string[]) => void;
+  placeholder?: string;
+}
+
+export interface TextAreaProps {
+  label: string;
+  name: string;
+  placeholder?: string;
+  required?: boolean;
+  register: any;
+  errors: any;
+  validation?: any;
+  classes?: string;
+  rows?: number;
+}

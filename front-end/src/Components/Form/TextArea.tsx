@@ -1,14 +1,16 @@
-import { SelectFieldProps } from "@/Components/Form/FormInterfaces.ts";
+import { TextAreaProps } from "@/Components/Form/FormInterfaces";
 
-const SelectField = ({
+const TextArea = ({
   label,
   name,
-  options,
+  placeholder,
   required = false,
   register,
   errors,
+  validation = {},
   classes,
-}: SelectFieldProps) => {
+  rows = 4,
+}: TextAreaProps) => {
   return (
     <div className={`mb-4 ${classes}`}>
       <label
@@ -17,22 +19,18 @@ const SelectField = ({
       >
         {label} {required && <span className="text-red-500">*</span>}
       </label>
-      <select
+      <textarea
         id={name}
+        rows={rows}
+        placeholder={placeholder}
         className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 input-focus ${
           errors[name] ? "border-red-500" : ""
         }`}
         {...register(name, {
-          required: required ? `${label} is required` : false,
+          required: required ? `${label} est requis` : false,
+          ...validation,
         })}
-      >
-        <option value="">Sélectionnez {label}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      ></textarea>
       {errors[name] && (
         <p className="mt-1 text-sm text-red-600">{errors[name].message}</p>
       )}
@@ -40,4 +38,4 @@ const SelectField = ({
   );
 };
 
-export default SelectField;
+export default TextArea;
