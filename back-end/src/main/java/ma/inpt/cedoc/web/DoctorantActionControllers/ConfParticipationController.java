@@ -5,6 +5,7 @@ import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 import ma.inpt.cedoc.service.DoctorantActionService.ConfParticipationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class ConfParticipationController {
         return ResponseEntity.ok(confParticipationService.getConfParticipationBy(id));
     }
 
+    @Secured("DOCTORANT")
     @PostMapping("/")
     public ResponseEntity<ConfParticipationResponseDTO> createConfParticipation(@AuthenticationPrincipal UserDetails userDetails,
                                                                                 @RequestBody ConfParticipationRequestDTO confParticipationRequestDTO) {
@@ -34,6 +36,7 @@ public class ConfParticipationController {
         return ResponseEntity.ok(confParticipationService.addConfParticipation(confParticipationRequestDTO, email));
     }
 
+    @Secured("DOCTORANT")
     @PutMapping("/{id}")
     public ResponseEntity<ConfParticipationResponseDTO> editConfParticipation(@AuthenticationPrincipal UserDetails userDetails,
                                                                               @PathVariable Long id,
@@ -42,6 +45,7 @@ public class ConfParticipationController {
         return ResponseEntity.ok(confParticipationService.updateConfParticipation(requestDTO, id, email));
     }
 
+    @Secured("DOCTORANT")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteConfParticipation(@AuthenticationPrincipal UserDetails userDetails,
                                                                                 @PathVariable Long id) {
@@ -50,6 +54,7 @@ public class ConfParticipationController {
         return ResponseEntity.ok("La participation à la conférence est supprimé avec succès");
     }
 
+    @Secured("DIRECTION_CEDOC")
     @PatchMapping("/{id}/valider")
     public ResponseEntity<ConfParticipationResponseDTO> validerConfParticipation(@AuthenticationPrincipal UserDetails userDetails,
                                                                                  @PathVariable Long id){
@@ -57,6 +62,7 @@ public class ConfParticipationController {
         return ResponseEntity.ok(confParticipationService.validerConfParticipation(id, email));
     }
 
+    @Secured("DIRECTION_CEDOC")
     @PatchMapping("/{id}/refuser")
     public ResponseEntity<ConfParticipationResponseDTO> refuserConfParticipation(@AuthenticationPrincipal UserDetails userDetails,
                                                                                  @PathVariable Long id){

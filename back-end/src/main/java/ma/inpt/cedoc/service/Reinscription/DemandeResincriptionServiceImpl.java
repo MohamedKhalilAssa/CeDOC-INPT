@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,12 +55,24 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
             String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                        .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
+        if (!doctorant.getId().equals(demande.getDemandeur().getId())) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
+        }
         demandeReinscriptionMapper.updateFromRequest(demandeDTO, demande);
         return demandeReinscriptionMapper.toResponseDTO(demandeReinscriptionRepository.save(demande));
     }
 
     @Transactional
     public void deleteDemande(Long id, String email) {
+        DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
+        if (!doctorant.getId().equals(demande.getDemandeur().getId())) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
+        }
         demandeReinscriptionRepository.deleteById(id);
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,16 @@ public class PublicationServiceImpl implements PublicationService {
                 .map(publicationMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+    // voici cette méthode qui récupère les publications du doctorant authentifié
+    @Override
+    public List<PublicationResponseDTO> getMyPublications(String email) {
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctorant "+email+" not found"));
+        List<Publication> publications = publicationRepository.findByAuteurId(doctorant.getId());
+        return publications.stream()
+                .map(publicationMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public PublicationResponseDTO getPublicationBy(Long id) {
@@ -56,12 +67,24 @@ public class PublicationServiceImpl implements PublicationService {
     public PublicationResponseDTO updatePublication(PublicationRequestDTO requestDTO, Long id, String email) {
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found"));
+        if (!publication.getAuteur().getId().equals(doctorant.getId())) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
+        }
         publicationMapper.updateFromRequest(requestDTO, publication);
         return publicationMapper.toResponseDTO(publicationRepository.save(publication));
     }
 
     @Override
     public void deletePublication(Long id, String email) {
+        Publication publication = publicationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found"));
+        if (!publication.getAuteur().getId().equals(doctorant.getId())) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
+        }
         publicationRepository.deleteById(id);
     }
 

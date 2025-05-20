@@ -5,6 +5,7 @@ import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionResponseDTO;
 import ma.inpt.cedoc.service.Reinscription.AvisReinscriptionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.getAvis(id));
     }
 
+    @Secured("DIRECTION_CEDOC")
     @PostMapping("/")
     public ResponseEntity<AvisReinscriptionResponseDTO> createAvis(@AuthenticationPrincipal UserDetails userDetails,
                                                                    @RequestBody AvisReinscriptionRequestDTO requestDTO){
@@ -34,6 +36,7 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.createAvis(requestDTO, email));
     }
 
+    @Secured("DIRECTION_CEDOC")
     @PutMapping("/{id}")
     public ResponseEntity<AvisReinscriptionResponseDTO> editAvis(@AuthenticationPrincipal UserDetails userDetails,
                                                                  @RequestBody AvisReinscriptionRequestDTO requestDTO,
@@ -42,6 +45,7 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.editAvis(requestDTO, id, email));
     }
 
+    @Secured("DIRECTION_CEDOC")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAvis(@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable Long id){

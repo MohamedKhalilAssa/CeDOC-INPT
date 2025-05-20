@@ -5,6 +5,7 @@ import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.service.Reinscription.DemandeResincriptionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.getDemande(id));
     }
 
+    @Secured("DOCTORANT")
     @PostMapping("/")
     public ResponseEntity<DemandeReinscriptionResponseDTO> createDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                                          @RequestBody DemandeReinscriptionRequestDTO demandeDTO) {
@@ -34,6 +36,7 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.createDemande(demandeDTO, email));
     }
 
+    @Secured("DOCTORANT")
     @PutMapping("/{id}")
     public ResponseEntity<DemandeReinscriptionResponseDTO> editDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                                        @PathVariable Long id,
@@ -42,6 +45,7 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.editDemande(id, demandeDTO, email));
     }
 
+    @Secured("DOCTORANT")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                 @PathVariable Long id) {

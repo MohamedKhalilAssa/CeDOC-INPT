@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -34,6 +35,16 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
                 .map(confParticipationMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+    // voici cette méthode qui récupère les participation au conférence du doctorant authentifié
+    @Override
+    public List<ConfParticipationResponseDTO> getMyConfParticipations(String email) {
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctorant "+email+" not found"));
+        List<ConfParticipation> confParticipations = confParticipationRepository.findByParticipantId(doctorant.getId());
+        return confParticipations.stream()
+                .map(confParticipationMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public ConfParticipationResponseDTO getConfParticipationBy(Long id) {
@@ -59,6 +70,11 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
             String email) {
         ConfParticipation confParticipation = confParticipationRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
+        if (!doctorant.getId().equals(confParticipation.getParticipant().getId())) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
+        }
         confParticipationMapper.updateFromRequest(requestDTO, confParticipation);
         return confParticipationMapper.toResponseDTO(confParticipationRepository.save(confParticipation));
     }
@@ -66,6 +82,13 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Override
     @Transactional
     public void deleteConfParticipation(Long id, String email) {
+        ConfParticipation confParticipation = confParticipationRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
+        Doctorant doctorant = doctorantRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
+        if (!doctorant.getId().equals(confParticipation.getParticipant().getId())) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
+        }
         confParticipationRepository.deleteById(id);
     }
 
