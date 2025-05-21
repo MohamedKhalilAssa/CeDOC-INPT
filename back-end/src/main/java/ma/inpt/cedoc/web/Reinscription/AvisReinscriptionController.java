@@ -23,9 +23,14 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.getAllAvis());
     }
 
+    @GetMapping("/directeurthese/{id}")
+    public ResponseEntity<List<AvisReinscriptionResponseDTO>> getAvisByDirecteurTheseId(@PathVariable Long id){
+        return ResponseEntity.ok(avisReinscriptionService.getAvisByDirecteurThese(id));
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<AvisReinscriptionResponseDTO> getById(@PathVariable Long id){
-        return ResponseEntity.ok(avisReinscriptionService.getAvis(id));
+    public ResponseEntity<AvisReinscriptionResponseDTO> getAvisById(@PathVariable Long id){
+        return ResponseEntity.ok(avisReinscriptionService.getAvisById(id));
     }
 
     @Secured("DIRECTION_CEDOC")

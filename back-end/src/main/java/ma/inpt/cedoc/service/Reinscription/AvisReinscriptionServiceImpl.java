@@ -33,10 +33,21 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
                 .collect(Collectors.toList());
     }
 
-    public AvisReinscriptionResponseDTO getAvis(Long id) {
+    @Override
+    public List<AvisReinscriptionResponseDTO> getAvisByDirecteurThese(Long id) {
+        DirecteurDeThese directeurDeThese = directeurDeTheseRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Directeur de these "+id+" n'est pas trouvé"));
+        List<AvisReinscription> avisList = directeurDeThese.getAvisReinscriptionList();
+        return avisList.stream()
+                .map(avisResinscriptionMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public AvisReinscriptionResponseDTO getAvisById(Long id) {
         return avisResinscriptionMapper.toResponseDTO(avisReinscriptionRepo.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Avis with id "  + id + " not found")));
     }
+
     @Transactional
     public AvisReinscriptionResponseDTO createAvis(AvisReinscriptionRequestDTO requestDTO, String email) {
         DirecteurDeThese directeurDeThese = directeurDeTheseRepo.findByEmail(email).
