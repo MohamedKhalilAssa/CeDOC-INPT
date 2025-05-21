@@ -9,7 +9,7 @@ import {
 } from "@/Types/RegisterTypes";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const SignUpForm = () => {
   const {
     register,
@@ -21,6 +21,7 @@ const SignUpForm = () => {
   const swal = useAlert();
   const [loading, setLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | undefined>(undefined);
+  const navigate = useNavigate();
   const onSubmit = async (data: RegisterFormValues) => {
     setLoading(true);
     console.log("Form Data:", data);
@@ -29,12 +30,14 @@ const SignUpForm = () => {
         appConfig.API_PATHS.register.path,
         data
       );
-      console.log(res);
       swal.success(
         "Inscription réussie",
         res?.message ||
           "Veuillez Verifier votre boite mail, avant de vous connecter."
       );
+      // Redirect to login page after successful registration
+      navigate(appConfig.FRONTEND_PATHS.login.path);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields
@@ -62,10 +65,10 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="h-full flex justify-center items-center">
-      <div className="flex w-full max-w-6xl bg-white rounded-lg shadow-lg overflow-hidden min-h-[70vh]">
+    <div className="h-screen lg:h-[80vh] flex justify-center items-center">
+      <div className="flex w-full max-w-xl lg:max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden h-[80vh]">
         {/* Left: Illustration */}
-        <div className="w-1/2 hidden md:block">
+        <div className="w-1/2 hidden lg:block">
           <img
             src={Inpt_Illustration_1}
             alt="Signup Illustration"
@@ -74,15 +77,15 @@ const SignUpForm = () => {
         </div>
 
         {/* Right: Form */}
-        <div className="h-[85vh] w-full md:w-1/2 p-10 ">
-          <div className="wrapper-title w-full flex justify-center md:justify-start ">
-            <div className="text-center md:text-left flex h-12  items-center justify-between mb-6">
+        <div className=" w-full lg:w-1/2 p-10 ">
+          <div className="wrapper-title w-full flex justify-center md:justify-start">
+            <div className="text-center md:text-left flex h-12  items-center justify-center">
               <h2 className="text-3xl font-bold text-gray-800 ">Inscription</h2>
             </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="second-sheet my-20">
+            <div className="second-sheet my-8">
               <InputField
                 label="Email"
                 name="email"

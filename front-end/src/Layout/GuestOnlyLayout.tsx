@@ -1,4 +1,4 @@
-import { useAuth } from "@/Context/AuthProvider";
+import { useAuth } from "@/Context/Auth/index";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import { useEffect, type JSX } from "react";

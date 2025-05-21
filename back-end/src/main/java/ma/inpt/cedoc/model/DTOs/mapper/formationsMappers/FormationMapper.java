@@ -8,7 +8,7 @@ import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface FormationMapper {
 
     // Mapping from FormationRequestDTO to Formation

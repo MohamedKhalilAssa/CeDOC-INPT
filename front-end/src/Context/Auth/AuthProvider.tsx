@@ -1,23 +1,8 @@
 // context/AuthContext.tsx
+import { AuthContext } from "@/Context/Auth/AuthContext";
+import { type decodedJWT } from "@/Types/GlobalTypes";
 import { jwtDecode } from "jwt-decode";
-import React, { createContext, useContext, useEffect, useState } from "react";
-export type AuthContextType = {
-  isAuthenticated: boolean;
-  login: () => void;
-  logout: () => void;
-  utilisateur: Utilisateur | null;
-};
-
-export type Utilisateur = {
-  sub: string; // subject OR Email
-  role: string[];
-  iat: number;
-  exp: number;
-};
-
-const AuthContext = createContext<AuthContextType | null>(null);
-let externalLogin: () => void = () => {};
-let externalLogout: () => void = () => {};
+import React, { useEffect, useState } from "react";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -25,11 +10,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return localStorage.getItem("isAuthenticated") === "true";
   });
-  const [utilisateur, setUtilisateur] = useState<Utilisateur | null>(() => {
+  const [utilisateur, setUtilisateur] = useState<decodedJWT | null>(() => {
     const token = localStorage.getItem("token");
     if (!token) return null;
     try {
-      return jwtDecode<Utilisateur>(token);
+      return jwtDecode<decodedJWT>(token);
     } catch {
       return null;
     }
@@ -39,7 +24,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem("isAuthenticated", "true");
 
     setIsAuthenticated(true);
-    setUtilisateur(utilisateur);
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        setUtilisateur(jwtDecode<decodedJWT>(token));
+      } catch {
+        setUtilisateur(null);
+      }
+    } else {
+      setUtilisateur(null);
+    }
   };
 
   const logout = () => {
@@ -49,8 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUtilisateur(null);
   };
 
-  externalLogin = login;
-  externalLogout = logout;
   // Handle storage changes across tabs or manually
   useEffect(() => {
     const syncAuthState = () => {
@@ -69,14 +61,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
-  return context;
-};
-
-export const getExternalAuthHandlers = () => ({
-  login: externalLogin,
-  logout: externalLogout,
-});

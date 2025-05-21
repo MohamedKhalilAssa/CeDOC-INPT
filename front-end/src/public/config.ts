@@ -86,6 +86,14 @@ const appConfig: AppConfig = {
       name: "Email Verification",
       path: "/auth/verify-email",
     },
+    forgotPassword: {
+      name: "Forgot Password",
+      path: "/auth/forgot-password",
+    },
+    resetPassword: {
+      name: "Reset Password",
+      path: "/auth/reset-password",
+    },
   },
 };
 

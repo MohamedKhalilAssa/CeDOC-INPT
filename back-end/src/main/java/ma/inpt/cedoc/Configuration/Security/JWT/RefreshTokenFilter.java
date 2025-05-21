@@ -28,6 +28,7 @@ import ma.inpt.cedoc.Helpers.UtilFunctions;
 import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
 import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
 import ma.inpt.cedoc.model.entities.auth.Token;
+import ma.inpt.cedoc.model.enums.auth.TokenEnum;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
 import ma.inpt.cedoc.service.auth.TokenService;
 
@@ -97,7 +98,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         // Skip authentication endpoints except logout and check
-        return (path.contains("/api/auth") &&
+        return (path.contains("/images") || path.contains("/api/auth") &&
                 !(path.contains("/api/auth/logout") || path.contains("/api/auth/check"))) ||
                 path.contains("/api/guest");
     }
@@ -111,6 +112,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     private boolean handleRefreshToken(String refreshToken, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         Token refreshTokenEntity = tokenService.findByToken(refreshToken);
+        refreshTokenEntity = refreshTokenEntity.getTokenType() == TokenEnum.REFRESH ? refreshTokenEntity : null;
 
         if (refreshTokenEntity == null) {
             logger.debug("Refresh token not found in database");

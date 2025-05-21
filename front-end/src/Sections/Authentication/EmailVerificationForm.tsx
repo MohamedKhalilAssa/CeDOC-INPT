@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 
 import { getQueryParam, postData } from "@/Helpers/CRUDFunctions";
+import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import { AuthenticationResponseValues } from "@/Types/RegisterTypes";
 
@@ -15,6 +15,7 @@ const EmailVerificationForm = () => {
   const location = useLocation();
   const hasRunRef = useRef(false);
   const navigate = useNavigate();
+  const alert = useAlert();
 
   const [page, setPage] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
@@ -50,17 +51,15 @@ const EmailVerificationForm = () => {
       );
       console.log(res);
       setVerified(true);
-      Swal.fire({
-        icon: "success",
-        title: "Vérification réussie",
-        text: "Votre email est maintenant vérifié.",
-      });
+      alert.success(
+        "Vérification réussie",
+        "Votre email est maintenant vérifié."
+      );
     } catch (err: any) {
-      Swal.fire({
-        icon: "error",
-        title: "Échec de la vérification",
-        text: err?.errors || "Token invalide ou expiré.",
-      });
+      alert.error(
+        "Échec de la vérification",
+        err?.errors || "Token invalide ou expiré."
+      );
     } finally {
       setLoading(false);
     }
@@ -79,11 +78,10 @@ const EmailVerificationForm = () => {
 
       setEmail(data.email);
       setPage(2);
-      Swal.fire({
-        icon: "info",
-        title: "Email envoyé",
-        text: "Un mail a été envoyé. Vous pouvez saisir le token manuellement ou clicker sur le lien dans le mail.",
-      });
+      alert.info(
+        "Vérification de l'email",
+        "Un email de vérification a été envoyé.<br/> Veuillez vérifier votre boîte de réception."
+      );
       setCanResendOtp(false);
       setTimeout(() => {
         setCanResendOtp(true);
@@ -105,11 +103,10 @@ const EmailVerificationForm = () => {
             navigate(appConfig.FRONTEND_PATHS.login.path);
           }, 3000);
         }
-        Swal.fire({
-          icon: "error",
-          title: "Erreur survenue: " + err.status,
-          text: finalError,
-        });
+        alert.error(
+          "Échec de l'envoi",
+          finalError || "Une erreur est survenue."
+        );
       }
     } finally {
       setLoading(false);
@@ -119,11 +116,11 @@ const EmailVerificationForm = () => {
   // On token submit manually
   const onTokenSubmit = async (data: TokenFormValues) => {
     if (!email) {
-      Swal.fire({
-        icon: "warning",
-        title: "Email requis",
-        text: "Veuillez entrer votre email avant de vérifier le token.",
-      });
+      alert.error(
+        "Email requis",
+        "Veuillez entrer votre email avant de vérifier le token."
+      );
+
       return;
     }
 

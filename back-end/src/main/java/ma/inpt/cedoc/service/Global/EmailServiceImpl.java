@@ -24,14 +24,14 @@ public class EmailServiceImpl implements EmailService {
 
     private String appEmail;
 
-    public CompletableFuture<Void> sendMailToUtilisateur(Utilisateur utilisateur, String title, String content) {
+    public CompletableFuture<Void> sendMailToUtilisateur(Utilisateur utilisateur,String subject, String title, String content) {
 
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             helper.setTo(utilisateur.getEmail());
-            helper.setSubject("Vérification de votre adresse email");
+            helper.setSubject(subject);
             helper.setFrom(appEmail);
             String logoUrl = baseUrl + "/images/Logo_inpt.png";
             String template = """

@@ -13,7 +13,7 @@ interface InputFieldProps {
 interface SelectFieldProps {
   label: string;
   name: string;
-  options: { value: string; label: string }[];
+  options: { value: string|number; label: string | number }[];
   required?: boolean;
   register: any;
   errors: any;

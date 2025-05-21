@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -26,11 +25,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
-import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
-import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
-import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
-import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
+import ma.inpt.cedoc.model.DTOs.auth.*;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.auth.TokenEnum;
@@ -49,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         private final JwtUtil jwtUtil;
         private final AuthenticationManager authenticationManager;
         private final TokenService tokenService;
-        private final UtilisateurMapper utilisateurMapper;
+        private final UtilisateurMapperImpl utilisateurMapper;
 
         @Value("${app.front-end-url}")
         private String frontendUrl;
@@ -71,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
 
                 request.setPassword(passwordEncoder.encode(request.getPassword()));
-                Utilisateur utilisateur = utilisateurMapper.RegisterRequestDTOToUtilisateur(request);
+                Utilisateur utilisateur = utilisateurMapper.fromRegisterDTO(request);
 
                 // save in db and return
                 var savedUtilisateur = utilisateurRepository.saveAndFlush(utilisateur);
@@ -261,7 +257,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                         """;
 
                         content = String.format(content, utilisateur.getEmail(), verificationUrl);
-                        return emailService.sendMailToUtilisateur(utilisateur, "Demande de changement de mot de passe",
+                        return emailService.sendMailToUtilisateur(utilisateur,"Changement de mot de passe" ,"Demande de changement de mot de passe",
                                         content);
                 } catch (Exception e) {
                         return CompletableFuture.failedFuture(e);
@@ -277,6 +273,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                         .build();
                 }
                 Utilisateur utilisateur = resetToken.getUtilisateur();
+                if(passwordEncoder.matches(password, utilisateur.getPassword())) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il est impossible de mettre le meme mot de passe que l'ancien");
+                }
                 tokenService.revokeToken(resetToken);
                 utilisateur.setPassword(passwordEncoder.encode(password));
                 utilisateurRepository.save(utilisateur);
