@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurSimpleDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.UtilisateurSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
@@ -52,8 +52,8 @@ public class SujetMapperImpl implements SujetMapper {
 
     @Override
     public SujetResponseDTO toResponseDTO(Sujet sujet) {
-        List<ProfesseurSimpleDTO> professeurs = sujet.getProfesseurs().stream()
-            .map(p -> ProfesseurSimpleDTO.builder()
+        List<ProfesseurResponseDTO> professeurs = sujet.getProfesseurs().stream()
+            .map(p -> ProfesseurResponseDTO.builder()
                 .id(p.getId())
                 .nom(p.getNom())
                 .prenom(p.getPrenom())
@@ -72,14 +72,14 @@ public class SujetMapperImpl implements SujetMapper {
                                     .estPublic(sujet.isEstPublic())
                                     .createdAt(sujet.getCreatedAt())
                                     .updatedAt(sujet.getUpdatedAt())
-                                    .chefEquipe(UtilisateurSimpleDTO.builder()
+                                    .chefEquipe(UtilisateurResponseDTO.builder()
                                         .id(sujet.getChefEquipe().getId())
                                         .nom(sujet.getChefEquipe().getNom())
                                         .prenom(sujet.getChefEquipe().getPrenom())
                                         .email(sujet.getChefEquipe().getEmail())
                                         .build())
                                     .directeurDeThese(sujet.getDirecteurDeThese() != null ?
-                                        UtilisateurSimpleDTO.builder()
+                                        UtilisateurResponseDTO.builder()
                                             .id(sujet.getDirecteurDeThese().getId())
                                             .nom(sujet.getDirecteurDeThese().getNom())
                                             .prenom(sujet.getDirecteurDeThese().getPrenom())

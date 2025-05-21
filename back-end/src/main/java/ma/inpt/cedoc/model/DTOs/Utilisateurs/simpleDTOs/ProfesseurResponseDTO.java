@@ -8,6 +8,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProfesseurSimpleDTO extends UtilisateurSimpleDTO {
+public class ProfesseurResponseDTO extends UtilisateurResponseDTO {
     private String grade; // You can use `String` or `GradeProfesseurEnum` if preferred
 }

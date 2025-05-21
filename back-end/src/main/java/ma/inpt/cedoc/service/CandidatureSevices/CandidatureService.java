@@ -8,7 +8,7 @@ import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 
 public interface CandidatureService {
 
@@ -20,7 +20,7 @@ public interface CandidatureService {
     // PUBLIC ACCESS
     List<EquipeSimpleDTO> getAllEquipes();
 
-    List<ProfesseurSimpleDTO> getProfesseursByEquipeId(Long equipeId);
+    List<ProfesseurResponseDTO> getProfesseursByEquipeId(Long equipeId);
 
     List<SujetResponseDTO> getSujetsByEquipeId(Long equipeId); // sujets publiés
 

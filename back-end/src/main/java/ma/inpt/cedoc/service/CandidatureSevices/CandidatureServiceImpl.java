@@ -13,7 +13,7 @@ import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.EquipeMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
@@ -97,7 +97,7 @@ public class CandidatureServiceImpl implements CandidatureService {
     }
 
     @Override
-    public List<ProfesseurSimpleDTO> getProfesseursByEquipeId(Long equipeId) {
+    public List<ProfesseurResponseDTO> getProfesseursByEquipeId(Long equipeId) {
         return professeurRepository.findAll().stream()
                 .filter(p -> p.getEquipeDeRechercheAcceuillante() != null
                         && p.getEquipeDeRechercheAcceuillante().getId().equals(equipeId))

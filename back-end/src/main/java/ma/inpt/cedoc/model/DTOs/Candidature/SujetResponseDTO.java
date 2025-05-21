@@ -5,8 +5,8 @@ import java.util.List;
 
 import lombok.Builder;
 import lombok.Data;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurSimpleDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.UtilisateurSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.UtilisateurResponseDTO;
 
 @Data
 @Builder
@@ -19,12 +19,12 @@ public class SujetResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private UtilisateurSimpleDTO chefEquipe;
-    private UtilisateurSimpleDTO directeurDeThese;
-    private List<ProfesseurSimpleDTO> professeurs;
+    private UtilisateurResponseDTO chefEquipe;
+    private UtilisateurResponseDTO directeurDeThese;
+    private List<ProfesseurResponseDTO> professeurs;
 
     public static class SujetResponseDTOBuilder {
-        public SujetResponseDTOBuilder professeurs(List<ProfesseurSimpleDTO> professeurs) {
+        public SujetResponseDTOBuilder professeurs(List<ProfesseurResponseDTO> professeurs) {
             this.professeurs = professeurs;
             return this;
         }
