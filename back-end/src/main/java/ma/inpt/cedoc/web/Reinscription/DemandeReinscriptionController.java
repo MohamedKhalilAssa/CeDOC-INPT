@@ -23,9 +23,19 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.getAllDemandes());
     }
 
+    @GetMapping("doctorant/{id}")
+    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByDoctorantId(@PathVariable Long id) {
+        return ResponseEntity.ok(demandeResincriptionService.getDemandesByDoctorantId(id));
+    }
+
+    @GetMapping("directeurthese/{id}")
+    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByDirecteurTheseId(@PathVariable Long id) {
+        return ResponseEntity.ok(demandeResincriptionService.getDemandesByDirecteurTheseId(id));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<DemandeReinscriptionResponseDTO> getDemandeById(@PathVariable Long id) {
-        return ResponseEntity.ok(demandeResincriptionService.getDemande(id));
+        return ResponseEntity.ok(demandeResincriptionService.getDemandeById(id));
     }
 
     @Secured("DOCTORANT")

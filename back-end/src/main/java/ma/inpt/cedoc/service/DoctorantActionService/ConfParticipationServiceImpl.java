@@ -35,19 +35,17 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
                 .map(confParticipationMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
-    // voici cette méthode qui récupère les participation au conférence du doctorant authentifié
+
     @Override
-    public List<ConfParticipationResponseDTO> getMyConfParticipations(String email) {
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctorant "+email+" not found"));
-        List<ConfParticipation> confParticipations = confParticipationRepository.findByParticipantId(doctorant.getId());
+    public List<ConfParticipationResponseDTO> getConfParticipationsByDoctorantId(Long participantId) {
+        List<ConfParticipation> confParticipations = confParticipationRepository.findByParticipantId(participantId);
         return confParticipations.stream()
                 .map(confParticipationMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ConfParticipationResponseDTO getConfParticipationBy(Long id) {
+    public ConfParticipationResponseDTO getConfParticipationById(Long id) {
         ConfParticipation confParticipation = confParticipationRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("participation conférence " + id + " n'est pas trouvé"));

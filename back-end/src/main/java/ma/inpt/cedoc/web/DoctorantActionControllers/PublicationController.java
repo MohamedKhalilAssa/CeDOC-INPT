@@ -24,9 +24,14 @@ public class PublicationController {
         return ResponseEntity.ok(publicationService.getAllPublications());
     }
 
+    @GetMapping("/doctorant/{id}")
+    public ResponseEntity<List<PublicationResponseDTO>> getPublicationsByDoctorantId(@PathVariable Long id) {
+        return ResponseEntity.ok(publicationService.getPublicationsByDoctorantId(id));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PublicationResponseDTO> getPublicationById(@PathVariable Long id) {
-        return ResponseEntity.ok(publicationService.getPublicationBy(id));
+        return ResponseEntity.ok(publicationService.getPublicationById(id));
     }
 
     @Secured("DOCTORANT")

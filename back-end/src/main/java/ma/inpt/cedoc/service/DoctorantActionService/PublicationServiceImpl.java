@@ -36,19 +36,17 @@ public class PublicationServiceImpl implements PublicationService {
                 .map(publicationMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
-    // voici cette méthode qui récupère les publications du doctorant authentifié
+
     @Override
-    public List<PublicationResponseDTO> getMyPublications(String email) {
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctorant "+email+" not found"));
-        List<Publication> publications = publicationRepository.findByAuteurId(doctorant.getId());
+    public List<PublicationResponseDTO> getPublicationsByDoctorantId(Long doctorantId) {
+        List<Publication> publications = publicationRepository.findByAuteurId(doctorantId);
         return publications.stream()
                 .map(publicationMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PublicationResponseDTO getPublicationBy(Long id) {
+    public PublicationResponseDTO getPublicationById(Long id) {
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " not found"));
         return publicationMapper.toResponseDTO(publication);

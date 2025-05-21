@@ -23,9 +23,14 @@ public class ConfParticipationController {
         return ResponseEntity.ok(confParticipationService.getAllConfParticipations());
     }
 
+    @GetMapping("doctorant/{id}")
+    public ResponseEntity<List<ConfParticipationResponseDTO>> getConfParticipationsByDoctorantId(@PathVariable Long id) {
+        return ResponseEntity.ok(confParticipationService.getConfParticipationsByDoctorantId(id));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ConfParticipationResponseDTO> getConfParticipationById(@PathVariable Long id) {
-        return ResponseEntity.ok(confParticipationService.getConfParticipationBy(id));
+        return ResponseEntity.ok(confParticipationService.getConfParticipationById(id));
     }
 
     @Secured("DOCTORANT")
