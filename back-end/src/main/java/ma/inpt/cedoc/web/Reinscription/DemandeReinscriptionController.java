@@ -5,6 +5,7 @@ import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.service.Reinscription.DemandeResincriptionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +23,22 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.getAllDemandes());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DemandeReinscriptionResponseDTO> getDemandeById(@PathVariable Long id) {
-        return ResponseEntity.ok(demandeResincriptionService.getDemande(id));
+    @GetMapping("doctorant/{id}")
+    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByDoctorantId(@PathVariable Long id) {
+        return ResponseEntity.ok(demandeResincriptionService.getDemandesByDoctorantId(id));
     }
 
+    @GetMapping("directeurthese/{id}")
+    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByDirecteurTheseId(@PathVariable Long id) {
+        return ResponseEntity.ok(demandeResincriptionService.getDemandesByDirecteurTheseId(id));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DemandeReinscriptionResponseDTO> getDemandeById(@PathVariable Long id) {
+        return ResponseEntity.ok(demandeResincriptionService.getDemandeById(id));
+    }
+
+    @Secured("DOCTORANT")
     @PostMapping("/")
     public ResponseEntity<DemandeReinscriptionResponseDTO> createDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                                          @RequestBody DemandeReinscriptionRequestDTO demandeDTO) {
@@ -34,6 +46,7 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.createDemande(demandeDTO, email));
     }
 
+    @Secured("DOCTORANT")
     @PutMapping("/{id}")
     public ResponseEntity<DemandeReinscriptionResponseDTO> editDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                                        @PathVariable Long id,
@@ -42,6 +55,7 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.editDemande(id, demandeDTO, email));
     }
 
+    @Secured("DOCTORANT")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                 @PathVariable Long id) {

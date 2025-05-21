@@ -8,7 +8,8 @@ import java.util.List;
 public interface AvisReinscriptionService {
 
     public List<AvisReinscriptionResponseDTO> getAllAvis();
-    public AvisReinscriptionResponseDTO getAvis(Long id);
+    public List<AvisReinscriptionResponseDTO> getAvisByDirecteurThese(Long id);
+    public AvisReinscriptionResponseDTO getAvisById(Long id);
     public AvisReinscriptionResponseDTO createAvis(AvisReinscriptionRequestDTO requestDTO, String email);
     public AvisReinscriptionResponseDTO editAvis(AvisReinscriptionRequestDTO requestDTO, Long id , String email);
     public void deleteAvis(Long id, String email);
