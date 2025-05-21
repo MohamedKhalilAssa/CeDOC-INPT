@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.entities.utilisateurs.EquipeDeRecherche;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
@@ -15,7 +15,7 @@ public interface CandidatureService {
     // Provisoire
     void propositionSujet(Long professeurId, Long sujetId);
 
-    Candidat registerCandidat(CandidatRequestDTO dto);
+    CandidatResponseDTO registerCandidat(CandidatRequestDTO dto);
 
     // PUBLIC ACCESS
     List<EquipeDeRecherche> getAllEquipes();

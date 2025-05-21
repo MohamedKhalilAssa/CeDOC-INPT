@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 
 @Service
@@ -86,5 +87,29 @@ public class SujetServiceImpl implements SujetService {
                     "Aucun sujet trouvé pour le doctorant avec l'identifiant : " + doctorantId);
         }
         return sujet;
+    }
+
+    @Override
+    public Sujet proposerSujet(Sujet sujet, List<Professeur> professeurs) {
+        // Vérifier que la liste des professeurs n'est pas vide
+        if (professeurs == null || professeurs.isEmpty()) {
+            throw new IllegalArgumentException("Au moins un professeur doit proposer le sujet.");
+        }
+
+        // Associer les professeurs au sujet
+        for (Professeur professeur : professeurs) {
+            if (professeur.getEquipeDeRechercheAcceuillante() == null) {
+                throw new IllegalArgumentException("Le professeur avec l'ID " + professeur.getId() + " n'appartient à aucune équipe.");
+            }
+        }
+
+        // Ajout des professeurs au sujet
+        sujet.setProfesseurs(professeurs);
+
+        // Le sujet n'est pas encore public tant qu'il n'est pas validé par le chef de l'équipe
+        sujet.setEstPublic(false);
+
+        // Enregistrement initial du sujet
+        return sujetRepository.save(sujet);
     }
 }
