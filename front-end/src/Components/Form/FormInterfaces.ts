@@ -37,6 +37,8 @@ export interface FileUploadProps {
   classes?: string;
   accept?: string;
   helpText?: string;
+  setValue?: any;
+  getValues?: any;
 }
 
 export interface TagInputProps {
@@ -49,6 +51,8 @@ export interface TagInputProps {
   tags: string[];
   setTags: (tags: string[]) => void;
   placeholder?: string;
+  setValue?: any;
+  getValues?: any;
 }
 
 export interface TextAreaProps {

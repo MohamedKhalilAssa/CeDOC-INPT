@@ -1,5 +1,5 @@
 import { TagInputProps } from "@/Components/Form/FormInterfaces";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const TagInput = ({
   label,
@@ -11,21 +11,41 @@ const TagInput = ({
   tags,
   setTags,
   placeholder = "Ajouter un mot-clé...",
+  setValue,
 }: TagInputProps) => {
   const [input, setInput] = useState("");
+
+  // When tags changes, update the hidden input value
+  useEffect(() => {
+    if (setValue && tags.length > 0) {
+      setValue(name, tags.join(","), { shouldValidate: true });
+    }
+  }, [tags, name, setValue]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
-      if (input.trim() && !tags.includes(input.trim())) {
-        setTags([...tags, input.trim()]);
-        setInput("");
+      addTag();
+    }
+  };
+
+  const addTag = () => {
+    if (input.trim() && !tags.includes(input.trim())) {
+      const newTags = [...tags, input.trim()];
+      setTags(newTags);
+      if (setValue) {
+        setValue(name, newTags.join(","), { shouldValidate: true });
       }
+      setInput("");
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
+    const newTags = tags.filter((tag) => tag !== tagToRemove);
+    setTags(newTags);
+    if (setValue) {
+      setValue(name, newTags.join(","), { shouldValidate: true });
+    }
   };
 
   return (
@@ -49,30 +69,38 @@ const TagInput = ({
                 onClick={() => removeTag(tag)}
                 className="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none"
               >
-                &times;
+                <i className="fas fa-times"></i>
               </button>
             </div>
           ))}
         </div>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-            errors[name] ? "border-red-500" : ""
-          }`}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className={`w-full px-3 py-2 pl-3 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              errors[name] ? "border-red-500" : ""
+            }`}
+          />
+          <button
+            type="button"
+            onClick={addTag}
+            className="absolute cursor-pointer right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800"
+          >
+            <i className="fas fa-plus"></i>
+          </button>
+        </div>
         <input
           type="hidden"
           {...register(name, {
             required: required ? `${label} est requis` : false,
-            validate: (value : string) => {
+            validate: () => {
               if (required && tags.length === 0) {
                 return `${label} est requis`;
               }
-              console.log("Value from tagInput:"+ value);
               return true;
             },
           })}

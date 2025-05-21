@@ -118,6 +118,50 @@ export const deleteData = async <T>(
   }
 };
 
+export const getFormData = (data: any): FormData => {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof FileList) {
+      Array.from(data[key]).forEach((file) => {
+        formData.append(key, file);
+      });
+    } else {
+      formData.append(key, data[key]);
+    }
+  });
+  return formData;
+};
+
+export const getFormDataWithFiles = (data: any): FormData => {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof File) {
+      formData.append(key, data[key]);
+    } else if (Array.isArray(data[key])) {
+      data[key].forEach((item) => {
+        formData.append(key, item);
+      });
+    } else {
+      formData.append(key, data[key]);
+    }
+  });
+  return formData;
+};
+
+export const setFormDataWithFiles = (formData: FormData, data: any): void => {
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof File) {
+      formData.set(key, data[key]);
+    } else if (Array.isArray(data[key])) {
+      data[key].forEach((item) => {
+        formData.set(key, item);
+      });
+    } else {
+      formData.set(key, data[key]);
+    }
+  });
+};
+
 export const getQueryParam = (search: string, key: string): string | null => {
   const params = new URLSearchParams(search);
   return params.get(key);
