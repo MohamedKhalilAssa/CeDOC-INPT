@@ -38,9 +38,7 @@ public class SujetController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<SujetResponseDTO> proposerSujet(
-            @RequestBody SujetRequestDTO requestDTO,
-            @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<SujetResponseDTO> proposerSujet(@RequestBody SujetRequestDTO requestDTO, @AuthenticationPrincipal UserDetails userDetails) {
 
         // mapping DTO to entity
         Sujet sujet = sujetMapper.toEntity(requestDTO);
