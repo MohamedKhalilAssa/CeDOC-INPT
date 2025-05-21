@@ -3,10 +3,12 @@ package ma.inpt.cedoc.model.DTOs.Attestation;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 
 @Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class AttestationAvecValidationRequestDTO extends AttestationRequestDTO {
 
