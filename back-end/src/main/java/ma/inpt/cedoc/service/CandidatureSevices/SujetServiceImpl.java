@@ -112,4 +112,12 @@ public class SujetServiceImpl implements SujetService {
         // Enregistrement initial du sujet
         return sujetRepository.save(sujet);
     }
+
+    // les candidats ne voient que les sujets validés et publics.
+    @Override
+    public List<Sujet> getAllPublicSujets() {
+        return sujetRepository.findAll().stream()
+                              .filter(Sujet::isEstPublic)
+                              .toList();
+    }
 }

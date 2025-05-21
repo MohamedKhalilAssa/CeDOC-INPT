@@ -34,4 +34,6 @@ public interface SujetService {
     List<Sujet> getSujetsByDirecteurDeTheseId(Long directeurDeTheseId);
 
     Sujet getSujetByDoctorantId(Long doctorant);
+
+    List<Sujet> getAllPublicSujets();
 }
