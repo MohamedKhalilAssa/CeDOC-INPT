@@ -16,7 +16,7 @@ const InputField = ({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className={`mb-4 ${classes}`}>
+    <div className={`mb-5 ${classes}`}>
       <label
         htmlFor={name}
         className="block text-sm font-medium text-gray-700 mb-1"

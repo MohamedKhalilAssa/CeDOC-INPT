@@ -2,6 +2,7 @@ package ma.inpt.cedoc.service.auth;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,10 @@ public interface AuthenticationService {
         Map<String, String> authenticate(LoginRequest request, Utilisateur utilisateur);
 
         AuthenticationResponse logout(HttpServletResponse response);
+
+        CompletableFuture<Void> forgotPassword(String email);
+
+        AuthenticationResponse resetPassword(String token, String password);
 
         AuthenticationResponse refreshToken(TokenRefreshRequest request, HttpServletResponse response)
                         throws IOException;

@@ -4,10 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,7 +39,7 @@ public class DirecteurDeThese extends Professeur {
     @JsonIgnore
     private List<Sujet> sujets;
 
-    @OneToMany(mappedBy = "directeurDeThese")
+    @OneToMany(mappedBy = "directeurDeThese", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<AvisReinscription> avisReinscriptionList;
 

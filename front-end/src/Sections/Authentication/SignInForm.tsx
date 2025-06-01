@@ -1,5 +1,8 @@
+import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
+import { AuthContextType, useAuth } from "@/Context/Auth/index";
 import { postData } from "@/Helpers/CRUDFunctions";
+import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import {
   AuthenticationFormValues,
@@ -8,7 +11,6 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 
 const SignInForm = () => {
   const {
@@ -21,6 +23,8 @@ const SignInForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | undefined>(undefined);
+  const alert = useAlert();
+  const auth: AuthContextType = useAuth();
   const navigate = useNavigate();
   const onSubmit = async (data: AuthenticationFormValues) => {
     setLoading(true);
@@ -30,15 +34,12 @@ const SignInForm = () => {
         data
       );
 
-      localStorage.setItem("token", "Bearer " + res?.access_token || "");
-      Swal.fire({
-        icon: "success",
-        title: "Authentication réussie",
-        text: res?.message || "Vous etes authentifié.",
-      });
+      auth.login();
+      alert.toast(res?.message || "Authentication réussie", "success");
       setTimeout(() => {
         navigate(appConfig.FRONTEND_PATHS.landingPage.path);
-      }, 1000);
+      }, 200);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields
@@ -55,11 +56,11 @@ const SignInForm = () => {
         });
       } else {
         // General API error
-        Swal.fire({
-          icon: "error",
-          title: "Erreur d'authentification: " + err.status,
-          text: err.errors || "Une erreur est survenue",
-        });
+        alert.error(
+          "Erreur d'authentification: " + err.status,
+          err.errors || "Une erreur est survenue"
+        );
+        auth.logout();
       }
     } finally {
       setLoading(false);
@@ -67,21 +68,21 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="h-full flex justify-center items-center">
-      <div className="flex w-full max-w-6xl bg-white rounded-lg shadow-lg overflow-hidden min-h-[70vh]">
+    <div className="h-screen lg:h-[80vh] flex justify-center items-center">
+      <div className="flex w-full max-w-xl lg:max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden h-[80vh]">
         {/* Left: Illustration */}
-        <div className="w-1/2 hidden md:block">
+        <div className="w-1/2 hidden lg:block">
           <img
-            src={`${appConfig.BACKEND_URL}/images/Inpt_Illustration_1.png`}
+            src={Inpt_Illustration_1}
             alt="Signup Illustration"
             className="w-full h-full object-cover"
           />
         </div>
 
         {/* Right: Form */}
-        <div className="w-full md:w-1/2 p-10 ">
+        <div className="w-full lg:w-1/2 p-10 ">
           <div className="wrapper-title w-full flex justify-center md:justify-start ">
-            <div className="text-center md:text-left flex h-12  items-center justify-between mb-6">
+            <div className="text-center md:text-left flex h-12  items-center justify-between ">
               <h2 className="text-3xl font-bold text-gray-800 ">
                 Authentification
               </h2>
@@ -89,7 +90,7 @@ const SignInForm = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="second-sheet my-20">
+            <div className="second-sheet my-8">
               <InputField
                 label="Email"
                 name="email"
@@ -133,6 +134,16 @@ const SignInForm = () => {
                 Creer un compte
               </Link>
             </p>
+            <p className="text-sm text-center mt-4 text-gray-600">
+              Mot de passe oublié?{" "}
+              <Link
+                to={`${appConfig.FRONTEND_PATHS.forgotPassword.path}`}
+                className="text-blue-600 hover:underline"
+              >
+                Recuperer le mot de passe
+              </Link>
+            </p>
+         
           </form>
         </div>
       </div>

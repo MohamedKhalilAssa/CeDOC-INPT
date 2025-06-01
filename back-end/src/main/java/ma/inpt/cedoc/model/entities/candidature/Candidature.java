@@ -9,16 +9,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
-import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.EtablissementEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.MentionEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.*;
 
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

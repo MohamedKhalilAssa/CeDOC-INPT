@@ -6,10 +6,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.Cookie;
@@ -35,6 +34,13 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequestDTO request,
             HttpServletResponse response) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
+            return alreadyLoggedIn();
+        }
+        
         try {
             AuthenticationResponse authResponse = authenticationService.register(request, response);
             return ResponseEntity.ok(authResponse);
@@ -51,7 +57,14 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request,
             HttpServletResponse response) {
-        System.out.println(request);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
+            return alreadyLoggedIn();
+        }
+
         try {
             AuthenticationResponse authResponse = authenticationService.login(request, response);
             return ResponseEntity.ok(authResponse);
@@ -110,10 +123,12 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/email/send-verification")
+    // MAIL VERIFICATION
+    @PostMapping("/send-verification")
     public ResponseEntity<AuthenticationResponse> sendVerificationMail(
-            @RequestBody @Valid SendMailVerificationRequest request) {
-        CompletableFuture<Void> future = emailVerificationService.sendVerificationToken(request);
+            @RequestBody @Valid EmailRequest request) {
+
+        CompletableFuture<Void> future = emailVerificationService.sendVerificationToken(request.getEmail());
 
         // ERROR HANDLING
         try {
@@ -136,7 +151,7 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/email/verify")
+    @PostMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestBody @Valid EmailVerificationRequest request) {
         try {
             UtilisateurResponseDTO verifiedUser = emailVerificationService.verifyEmail(request.getEmail(),
@@ -149,8 +164,61 @@ public class AuthenticationController {
         }
     }
 
-    // helper
+    // PASSWORD RESET HANDLING
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<AuthenticationResponse> forgotPassword(@RequestBody @Valid EmailRequest request) {
+        CompletableFuture<Void> future = authenticationService.forgotPassword(request.getEmail());
+        // ERROR HANDLING
+        try {
+            future.get();
+            return ResponseEntity.ok(
+                    AuthenticationResponse.builder()
+                            .status(HttpStatus.OK.value())
+                            .message("Email de reinstialisation de mot de passe envoyé avec succès")
+                            .build());
+        } catch (ExecutionException | InterruptedException | ResponseStatusException e) {
+            // Here you can handle the exception as needed
+            if (e.getCause() instanceof ResponseStatusException) {
+                ResponseStatusException exception = (ResponseStatusException) e.getCause();
+                // Handle the ResponseStatusException here
+                return handleResponseStatusException(exception);
+            }
+            return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'envoi de l'email");
+        } catch (Exception e) {
+            return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "Erreur lors de l'envoi de l'email");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        try {
+            AuthenticationResponse authResponse = authenticationService.resetPassword(request.getToken(),
+                    request.getNewPassword());
+            return ResponseEntity.ok(authResponse);
+        }
+        // CATCHING ERRORS
+        catch (ResponseStatusException e) {
+            return handleResponseStatusException(e);
+        } catch (Exception e) {
+            return handleException(e, HttpStatus.BAD_REQUEST, "Erreur lors de changement de mot de passe");
+        }
+
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<Object> checkAuth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() &&
+                !authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.ok().body(true);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+    }
+
+    // helper
     private ResponseEntity<AuthenticationResponse> handleException(Exception e, HttpStatus status,
             String defaultMessage) {
         return ResponseEntity.status(status).body(
@@ -167,4 +235,11 @@ public class AuthenticationController {
                         .message(e.getReason())
                         .build());
     }
+
+    private ResponseEntity<AuthenticationResponse> alreadyLoggedIn() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
+                .body(AuthenticationResponse.builder().status(HttpStatus.BAD_REQUEST.value())
+                        .message("You are already logged in").build());
+    }
+
 }

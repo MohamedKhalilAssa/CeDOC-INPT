@@ -16,6 +16,7 @@ interface AppConfig {
   APP_NAME: string;
   API_URL: string;
   FRONTEND_URL: string;
+  IMAGES_RESSOURCES: string;
   BACKEND_URL: string;
   API_PATHS: ApiPathsMap;
   FRONTEND_PATHS: FrontendPathsMap;
@@ -25,6 +26,7 @@ const appConfig: AppConfig = {
   API_URL: "http://localhost:8080/api",
   BACKEND_URL: "http://localhost:8080",
   FRONTEND_URL: "http://localhost:5173",
+  IMAGES_RESSOURCES: "@/assets/images",
   API_PATHS: {
     register: {
       name: "Register",
@@ -43,13 +45,28 @@ const appConfig: AppConfig = {
     },
     sendVerificationEmail: {
       name: "Send Verification Email",
-      path: "/auth/email/send-verification",
+      path: "/auth/send-verification",
       method: "POST",
     },
     verifyEmail: {
       name: "Verify Email",
-      path: "/auth/email/verify",
+      path: "/auth/verify-email",
       method: "POST",
+    },
+    forgotPassword: {
+      name: "Forgot Password",
+      path: "/auth/forgot-password",
+      method: "POST",
+    },
+    resetPassword: {
+      name: "Reset Password",
+      path: "/auth/reset-password",
+      method: "POST",
+    },
+    authCheck: {
+      name: "Auth Check",
+      path: "/auth/check",
+      method: "GET",
     },
   },
   FRONTEND_PATHS: {
@@ -65,9 +82,17 @@ const appConfig: AppConfig = {
       name: "Login",
       path: "/auth/login",
     },
-    emailVerification: {
+    verifyEmail: {
       name: "Email Verification",
       path: "/auth/verify-email",
+    },
+    forgotPassword: {
+      name: "Forgot Password",
+      path: "/auth/forgot-password",
+    },
+    resetPassword: {
+      name: "Reset Password",
+      path: "/auth/reset-password",
     },
   },
 };

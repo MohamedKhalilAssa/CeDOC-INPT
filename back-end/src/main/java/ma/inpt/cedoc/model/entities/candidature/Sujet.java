@@ -13,18 +13,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
-import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Data
 @Table(name = "sujets")
 @EntityListeners(AuditingEntityListener.class)
@@ -42,6 +38,14 @@ public class Sujet {
     @NotBlank(message = "La description du sujet est obligatoire")
     @Size(min = 10, message = "La description doit contenir au moins 10 caractères")
     private String description;
+
+    @Column(name = "est_valide")
+    @Builder.Default
+    private boolean valide = false;
+
+    @Column(name = "est_public")
+    @Builder.Default
+    private boolean estPublic = false;
 
     // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)
@@ -70,6 +74,15 @@ public class Sujet {
     @ManyToOne
     @JoinColumn(name = "chef_equipe_id", nullable = false)
     private ChefEquipe chefEquipe;
+    
+    // @ManyToMany
+    // @JoinTable(name = "sujet_chefs_equipes", joinColumns = @JoinColumn(name = "sujet_id"), inverseJoinColumns = @JoinColumn(name = "chef_equipe_id"))
+    // private List<ChefEquipe> chefsEquipes;
+
+    // @ElementCollection
+    // @CollectionTable(name = "sujet_validations", joinColumns = @JoinColumn(name = "sujet_id"))
+    // @Column(name = "chef_id")
+    // private List<Long> chefsAyantValide;
 
     @ManyToOne
     @JoinColumn(name = "directeur_these_id")

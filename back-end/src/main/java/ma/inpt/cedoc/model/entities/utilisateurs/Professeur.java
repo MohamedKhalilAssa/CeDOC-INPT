@@ -1,18 +1,16 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
-
-import java.util.List;
 
 @Entity
 @Data
@@ -41,7 +39,7 @@ public class Professeur extends Utilisateur {
     @JsonIgnore
     private List<Sujet> sujetsProposes;
 
-    //Relation avec Propose qui est classe association avec formations
+    //Relation avec formations
     @OneToMany(mappedBy = "professeur")
     private List<Formation> formationsProposees;
 

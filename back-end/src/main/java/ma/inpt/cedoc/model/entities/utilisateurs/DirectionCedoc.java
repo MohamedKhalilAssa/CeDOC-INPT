@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
+import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.entities.soutenance.Jury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.CEDocEnum;
@@ -36,5 +38,11 @@ public class DirectionCedoc extends Utilisateur {
     @OneToMany(mappedBy = "directionCedoc")
     @JsonIgnore
     private List<DemandeSoutenance> demandesSoutenance;
+
+    @OneToMany(mappedBy = "validateur", cascade = CascadeType.PERSIST)
+    private List<Publication> publicationsValide;
+
+    @OneToMany(mappedBy = "validateur", cascade = CascadeType.PERSIST)
+    private List<ConfParticipation> confParticipationsValide;
     
 }

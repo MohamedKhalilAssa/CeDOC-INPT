@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { getExternalAuthHandlers } from "@/Context/Auth/index";
 import appConfig from "@/public/config";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
@@ -11,6 +13,25 @@ API.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+
+API.interceptors.response.use(
+  (response) => {
+    const auth = getExternalAuthHandlers();
+    console.log("FROM CRUDFFUNTIONS, LOGGING RESPONSE: ");
+    console.log(response);
+    const newAccessToken = response.headers["authorization"];
+    if (newAccessToken && newAccessToken.startsWith("Bearer ")) {
+      const token = newAccessToken.replace("Bearer ", "");
+      localStorage.setItem("token", token);
+      auth.login();
+    }
+    return response;
+  },
+  (error) => {
+    // Handle 401 here too if refresh logic is needed
+    return Promise.reject(error);
+  }
+);
 
 interface FieldError {
   field: string;
@@ -95,6 +116,50 @@ export const deleteData = async <T>(
   } catch (error) {
     handleError(error as AxiosError);
   }
+};
+
+export const getFormData = (data: any): FormData => {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof FileList) {
+      Array.from(data[key]).forEach((file) => {
+        formData.append(key, file);
+      });
+    } else {
+      formData.append(key, data[key]);
+    }
+  });
+  return formData;
+};
+
+export const getFormDataWithFiles = (data: any): FormData => {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof File) {
+      formData.append(key, data[key]);
+    } else if (Array.isArray(data[key])) {
+      data[key].forEach((item) => {
+        formData.append(key, item);
+      });
+    } else {
+      formData.append(key, data[key]);
+    }
+  });
+  return formData;
+};
+
+export const setFormDataWithFiles = (formData: FormData, data: any): void => {
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof File) {
+      formData.set(key, data[key]);
+    } else if (Array.isArray(data[key])) {
+      data[key].forEach((item) => {
+        formData.set(key, item);
+      });
+    } else {
+      formData.set(key, data[key]);
+    }
+  });
 };
 
 export const getQueryParam = (search: string, key: string): string | null => {

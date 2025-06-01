@@ -26,7 +26,7 @@ const SelectField = ({
           required: required ? `${label} is required` : false,
         })}
       >
-        <option value="">Select {label}</option>
+        <option value="">Sélectionnez {label}</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

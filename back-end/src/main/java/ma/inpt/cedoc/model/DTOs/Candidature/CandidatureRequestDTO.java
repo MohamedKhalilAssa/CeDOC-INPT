@@ -4,11 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.EtablissementEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.MentionEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
+import lombok.*;
+import ma.inpt.cedoc.model.enums.candidature_enums.*;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CandidatureRequestDTO {
 
     @NotNull(message = "Le statut de la candidature est obligatoire")

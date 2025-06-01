@@ -2,10 +2,9 @@ package ma.inpt.cedoc.web.AttestationControllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAvecValidationResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Attestation.AttestationAutomatiqueRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Attestation.*;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import ma.inpt.cedoc.service.AttestationService.AttestationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,15 +44,15 @@ public class AttestationController {
         return ResponseEntity.ok(attestationService.getAllAttestationsAvecValidation());
     }
 
-    /* ------------------ Search by Name ------------------ */
+    /* ------------------ Search by Type ------------------ */
     @GetMapping("/automatique/search")
-    public ResponseEntity<List<AttestationAutomatiqueResponseDTO>> searchAutomatiqueByName(@RequestParam String name) {
-        return ResponseEntity.ok(attestationService.findAutomatiqueByName(name));
+    public ResponseEntity<List<AttestationAutomatiqueResponseDTO>> searchAutomatiqueByName(@RequestParam TypeAttestationAutoEnum typeAttestationAuto) {
+        return ResponseEntity.ok(attestationService.findAutomatiqueByType(typeAttestationAuto));
     }
 
     @GetMapping("/avec-validation/search")
-    public ResponseEntity<List<AttestationAvecValidationResponseDTO>> searchAvecValidationByName(@RequestParam String name) {
-        return ResponseEntity.ok(attestationService.findAvecValidationByName(name));
+    public ResponseEntity<List<AttestationAvecValidationResponseDTO>> searchAvecValidationByName(@RequestParam TypeAttestationValidationEnum typeAttestationValidation) {
+        return ResponseEntity.ok(attestationService.findAvecValidationByType(typeAttestationValidation));
     }
 
     /* ------------------ Find by ID ------------------ */
@@ -65,6 +64,14 @@ public class AttestationController {
     @GetMapping("/avec-validation/{id}")
     public ResponseEntity<AttestationAvecValidationResponseDTO> getAvecValidationById(@PathVariable Long id) {
         return ResponseEntity.ok(attestationService.findAvecValidationById(id));
+    }
+
+    /* ------------------ Update ------------------ */
+    @PatchMapping("/avec-validation/{id}/etat")
+    public ResponseEntity<AttestationAvecValidationResponseDTO> updateEtat(
+            @PathVariable Long id,
+            @RequestBody AttestationAvecValidationUpdateDTO dto) {
+        return ResponseEntity.ok(attestationService.updateEtatAttestationAvecValidation(id, dto));
     }
 
     /* ------------------ Delete ------------------ */

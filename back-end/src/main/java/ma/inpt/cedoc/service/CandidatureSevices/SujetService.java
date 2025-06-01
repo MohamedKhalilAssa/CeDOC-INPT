@@ -2,17 +2,21 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 
 import java.util.List;
 
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 
 public interface SujetService {
 
-    /* CREATE METHODS */
-    Sujet saveSujet(Sujet sujet);
+    SujetResponseDTO proposerSujet(SujetRequestDTO dto);
 
-    List<Sujet> saveSujets(List<Sujet> sujets);
+    /* CREATE METHODS */
+    SujetResponseDTO saveSujet(SujetRequestDTO dto);
+
+    List<SujetResponseDTO> saveSujets(List<SujetRequestDTO> dtos);
 
     /* UPDATE METHODS */
-    Sujet updateSujet(Sujet sujet);
+    SujetResponseDTO updateSujet(SujetRequestDTO dto, Long id);
 
     /* DELETE METHODS */
     void deleteSujet(Sujet sujet);
@@ -20,15 +24,17 @@ public interface SujetService {
     void deleteAllSujets();
 
     /* GET METHODS */
-    Sujet getSujetById(Long id);
+    SujetResponseDTO getSujetById(Long id);
 
-    List<Sujet> getAllSujets();
+    List<SujetResponseDTO> getAllSujets();
 
-    List<Sujet> getSujetsByChefEquipeId(Long chefEquipeId);
+    List<SujetResponseDTO> getSujetsByChefEquipeId(Long chefEquipeId);
 
-    List<Sujet> getSujetsByProfesseurId(Long professeurId);
+    List<SujetResponseDTO> getSujetsByProfesseurId(Long professeurId);
 
-    List<Sujet> getSujetsByDirecteurDeTheseId(Long directeurDeTheseId);
+    List<SujetResponseDTO> getSujetsByDirecteurDeTheseId(Long directeurDeTheseId);
 
-    Sujet getSujetByDoctorantId(Long doctorant);
+    SujetResponseDTO getSujetByDoctorantId(Long doctorantId);
+
+    List<SujetResponseDTO> getAllPublicSujets();
 }
