@@ -94,6 +94,10 @@ const appConfig: AppConfig = {
       name: "Reset Password",
       path: "/auth/reset-password",
     },
+    postuler: {
+      name: "Postuler",
+      path: "/postuler",
+    },
   },
 };
 
