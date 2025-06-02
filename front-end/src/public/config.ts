@@ -68,6 +68,11 @@ const appConfig: AppConfig = {
       path: "/auth/check",
       method: "GET",
     },
+    currentUser: {
+      name: "Current User",
+      path: "/utilisateurs/logged-in",
+      method: "GET",
+    },
   },
   FRONTEND_PATHS: {
     landingPage: {
@@ -93,6 +98,10 @@ const appConfig: AppConfig = {
     resetPassword: {
       name: "Reset Password",
       path: "/auth/reset-password",
+    },
+    postuler: {
+      name: "Postuler",
+      path: "/postuler",
     },
   },
 };

@@ -6,6 +6,8 @@ export interface InputFieldProps {
   required?: boolean;
   register: any;
   errors: any;
+  defaultValue?: string | null;
+  disabled?: boolean;
   validation?: any;
   classes?: string;
   isPassword?: boolean;
@@ -17,6 +19,7 @@ export interface SelectFieldProps {
   required?: boolean;
   register: any;
   errors: any;
+  disabled?: boolean;
   classes?: string;
 }
 export interface DatePickerProps {

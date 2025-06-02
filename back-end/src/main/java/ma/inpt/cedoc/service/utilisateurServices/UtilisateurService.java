@@ -22,19 +22,19 @@ public interface UtilisateurService {
 
     public boolean doesUserExistByTelephone(String telephone);
 
-    public Utilisateur findFullUtilisateurByEmail(String email);
+    public Utilisateur getFullUtilisateurByEmail(String email);
 
-    public Utilisateur findFullUtilisateurById(Long id);
+    public Utilisateur getFullUtilisateurById(Long id);
 
-    public Utilisateur findFullUtilisateurByTelephone(String telephone);
+    public Utilisateur getFullUtilisateurByTelephone(String telephone);
 
-    public UtilisateurResponseDTO findUtilisateurById(Long id);
+    public UtilisateurResponseDTO getUtilisateurById(Long id);
 
-    public UtilisateurResponseDTO findUtilisateurByEmail(String email);
+    public UtilisateurResponseDTO getUtilisateurByEmail(String email);
 
-    public UtilisateurResponseDTO findUtilisateurByTelephone(String telephone);
+    public UtilisateurResponseDTO getUtilisateurByTelephone(String telephone);
 
-    public List<UtilisateurResponseDTO> findAllUtilisateurs();
+    public List<UtilisateurResponseDTO> getAllUtilisateurs();
 
     public Page<UtilisateurResponseDTO> searchByNomOuPrenom(String query);
 }

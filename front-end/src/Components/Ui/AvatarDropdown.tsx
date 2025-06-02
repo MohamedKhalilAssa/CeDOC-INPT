@@ -1,3 +1,4 @@
+import Avatar from "@mui/material/Avatar";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
@@ -39,12 +40,12 @@ const AvatarDropdown = ({
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-      <button
+      <Avatar
         onClick={() => setIsOpen((prev) => !prev)}
-        className="truncate max-w-44 px-4 py-2 cursor-pointer rounded-lg  bg-gradient-to-r from-blue-600 to-blue-800  hover:opacity-90 text-white font-semibold shadow hover:shadow-lg transition"
+        className="truncate max-w-52 px-5 py-3 cursor-pointer rounded-lg  bg-gradient-to-r from-blue-600 to-blue-800  hover:opacity-90 text-white font-semibold shadow hover:shadow-lg transition"
       >
-        {triggerLabel}
-      </button>
+        {triggerLabel.substring(0, 2).toUpperCase()}
+      </Avatar>
 
       <AnimatePresence>
         {isOpen && (
@@ -77,7 +78,7 @@ const AvatarDropdown = ({
                           item.onClick();
                           setIsOpen(false);
                         }}
-                        className={`w-[90%] cursor-pointer px-4 py-2 text-sm text-white bg-${item.color}-600 hover:bg-${item.color}-700 rounded-lg transition mx-auto`}
+                        className={`w-[90%] cursor-pointer px-4 py-2 text-sm text-white bg-${item.color}-600 hover:bg-${item.color}-800 rounded-lg transition mx-auto`}
                       >
                         {item.label}
                       </button>
