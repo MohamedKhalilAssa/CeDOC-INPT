@@ -4,6 +4,7 @@ import SelectField from "@/Components/Form/SelectField";
 import { getData } from "@/Helpers/CRUDFunctions";
 import { UseJWT } from "@/Hooks/UseJWT";
 import appConfig from "@/public/config";
+import { UtilisateurResponseDTO } from "@/Types/UtilisateursResponses";
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 // Define nationality options
@@ -33,8 +34,10 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
   const { getClaim } = UseJWT(localStorage.getItem("token"));
   useEffect(() => {
     const fetchData = async () => {
-      const user = await getData(appConfig.API_PATHS.currentUser.path);
-      console.log("User data fetched:", user);
+      const user: UtilisateurResponseDTO | undefined = await getData(
+        appConfig.API_PATHS.currentUser.path
+      );
+      console.log("User data fetched:", user?.id);
     };
     fetchData();
   }, []);

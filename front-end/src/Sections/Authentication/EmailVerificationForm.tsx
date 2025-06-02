@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getQueryParam, postData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
-import { AuthenticationResponseValues } from "@/Types/RegisterTypes";
+import { AuthenticationResponseValues } from "@/Types/AuthTypes";
 
 // Types
 type EmailFormValues = { email: string };

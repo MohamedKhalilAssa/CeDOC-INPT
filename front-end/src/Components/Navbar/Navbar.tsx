@@ -2,7 +2,6 @@ import Logo_inpt from "@/assets/images/Logo_inpt.png";
 import { ProfileMenu } from "@/Components/Navbar/ProfileMenu";
 import { Dropdown } from "@/Components/Ui/Dropdown";
 import type { AuthContextType } from "@/Context/Auth/index";
-import { checkAuth } from "@/Helpers/AuthFunctions";
 import { UseAlert, useAlert } from "@/Hooks/UseAlert";
 import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
@@ -32,7 +31,6 @@ const Navbar = (): JSX.Element => {
       }
     };
 
-    checkAuth(auth);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);

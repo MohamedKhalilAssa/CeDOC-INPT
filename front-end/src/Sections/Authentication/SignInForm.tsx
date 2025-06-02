@@ -1,13 +1,14 @@
 import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
 import { AuthContextType, useAuth } from "@/Context/Auth/index";
+import { userDirectedLoginStorage } from "@/Helpers/AuthFunctions";
 import { postData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import {
   AuthenticationFormValues,
   AuthenticationResponseValues,
-} from "@/Types/RegisterTypes";
+} from "@/Types/AuthTypes";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -33,7 +34,7 @@ const SignInForm = () => {
         appConfig.API_PATHS.login.path,
         data
       );
-
+      userDirectedLoginStorage();
       auth.login();
       alert.toast(res?.message || "Authentication réussie", "success");
       setTimeout(() => {
@@ -143,7 +144,6 @@ const SignInForm = () => {
                 Recuperer le mot de passe
               </Link>
             </p>
-         
           </form>
         </div>
       </div>

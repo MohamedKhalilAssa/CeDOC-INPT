@@ -1,5 +1,4 @@
 import { AuthContextType, useAuth } from "@/Context/Auth/index";
-import { checkAuth } from "@/Helpers/AuthFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import { useEffect } from "react";
@@ -11,12 +10,16 @@ const AuthOnlyLayout = () => {
   const swal = useAlert();
 
   useEffect(() => {
-    if (localStorage.getItem("isAuthenticated") === "true") checkAuth(auth);
-    if (!auth.isAuthenticated) {
+    if (!auth.loading && !auth.isAuthenticated) {
+      const fromLogout = localStorage.getItem("userDirectedLogout") === "true";
+      if (!fromLogout) {
+        swal.toast("Accès refusé : Vous êtes non connecté", "error");
+      }
       navigate(appConfig.FRONTEND_PATHS.login.path);
-      swal.toast("Accès refusé : Vous êtes Non connecté", "error");
     }
-  }, []);
+  }, [auth.loading, auth.isAuthenticated]);
+
+  if (auth.loading) return <div>Loading...</div>;
 
   return <Outlet />;
 };

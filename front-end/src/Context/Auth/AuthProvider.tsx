@@ -1,5 +1,6 @@
 // context/AuthContext.tsx
 import { AuthContext } from "@/Context/Auth/AuthContext";
+import { checkAuth } from "@/Helpers/AuthFunctions"; // your function that validates token
 import { type decodedJWT } from "@/Types/GlobalTypes";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
@@ -7,33 +8,31 @@ import React, { useEffect, useState } from "react";
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem("isAuthenticated") === "true";
-  });
-  const [utilisateur, setUtilisateur] = useState<decodedJWT | null>(() => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [utilisateur, setUtilisateur] = useState<decodedJWT | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const syncStateFromToken = () => {
     const token = localStorage.getItem("token");
-    if (!token) return null;
-    try {
-      return jwtDecode<decodedJWT>(token);
-    } catch {
-      return null;
+    if (!token) {
+      setIsAuthenticated(false);
+      setUtilisateur(null);
+      return;
     }
-  });
+
+    try {
+      const decoded = jwtDecode<decodedJWT>(token);
+      setUtilisateur(decoded);
+      setIsAuthenticated(true);
+    } catch {
+      setUtilisateur(null);
+      setIsAuthenticated(false);
+    }
+  };
 
   const login = () => {
     localStorage.setItem("isAuthenticated", "true");
-
-    setIsAuthenticated(true);
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        setUtilisateur(jwtDecode<decodedJWT>(token));
-      } catch {
-        setUtilisateur(null);
-      }
-    } else {
-      setUtilisateur(null);
-    }
+    syncStateFromToken();
   };
 
   const logout = () => {
@@ -43,11 +42,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUtilisateur(null);
   };
 
-  // Handle storage changes across tabs or manually
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token");
+
+        const result = await checkAuth(login, logout);
+        if (result.success) {
+          syncStateFromToken();
+        } else {
+          logout();
+        }
+      } catch (err) {
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyAuth();
+  }, []);
+
   useEffect(() => {
     const syncAuthState = () => {
-      const storedState = localStorage.getItem("isAuthenticated") === "true";
-      setIsAuthenticated(storedState);
+      syncStateFromToken();
     };
     window.addEventListener("storage", syncAuthState);
     return () => window.removeEventListener("storage", syncAuthState);
@@ -55,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, utilisateur }}
+      value={{ isAuthenticated, utilisateur, login, logout, loading }}
     >
       {children}
     </AuthContext.Provider>

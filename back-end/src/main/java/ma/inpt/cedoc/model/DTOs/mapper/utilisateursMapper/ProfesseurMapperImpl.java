@@ -6,7 +6,8 @@ import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
 @Component
-public class ProfesseurMapperImpl {
+public class ProfesseurMapperImpl implements ProfesseurMapper {
+    @Override
     public ProfesseurResponseDTO toSimpleDTO(Professeur p) {
         return ProfesseurResponseDTO.builder()
                 .id(p.getId())

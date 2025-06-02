@@ -5,4 +5,5 @@ export type AuthContextType = {
   login: () => void;
   logout: () => void;
   utilisateur: decodedJWT | null;
+  loading: boolean;
 };

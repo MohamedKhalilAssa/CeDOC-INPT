@@ -6,7 +6,7 @@ import appConfig from "@/public/config";
 import {
   AuthenticationResponseValues,
   RegisterFormValues,
-} from "@/Types/RegisterTypes";
+} from "@/Types/AuthTypes";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -37,7 +37,7 @@ const SignUpForm = () => {
       );
       // Redirect to login page after successful registration
       navigate(appConfig.FRONTEND_PATHS.login.path);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields

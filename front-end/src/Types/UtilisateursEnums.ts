@@ -1,16 +1,16 @@
 export enum StatutProfessionnelEnum {
-  SALARIE,
-  NON_SALARIE,
+  SALARIE = "Salarie",
+  NON_SALARIE = "Non Salarie",
 }
 
 export enum GenreEnum {
-  HOMME,
-  FEMME,
+  HOMME = "Homme",
+  FEMME = "Femme",
 }
 export enum EtatCivilEnum {
-  MARIER,
-  CELIBATAIRE,
-  DIVORCER,
+  MARIER = "Marié",
+  CELIBATAIRE = "Célibataire",
+  DIVORCER = "Divorcé",
 }
 export enum MentionEnum {
   P, // Passable

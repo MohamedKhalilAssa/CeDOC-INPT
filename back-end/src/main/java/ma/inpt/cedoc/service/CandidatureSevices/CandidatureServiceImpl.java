@@ -42,7 +42,7 @@ public class CandidatureServiceImpl implements CandidatureService {
 
     private final EquipeMapper equipeMapper;
     private final SujetMapper sujetMapper;
-    
+
     private final SujetRepository sujetRepository;
     private final EquipeDeRechercheRepository equipeDeRechercheRepository;
     private final ProfesseurRepository professeurRepository;
@@ -104,7 +104,6 @@ public class CandidatureServiceImpl implements CandidatureService {
                 .map(professeurMapper::toSimpleDTO)
                 .toList();
     }
-
 
     @Override
     public List<SujetResponseDTO> getSujetsByEquipeId(Long equipeId) {
