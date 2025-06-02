@@ -1,8 +1,11 @@
 import DatePicker from "@/Components/Form/DatePicker";
 import InputField from "@/Components/Form/InputField";
 import SelectField from "@/Components/Form/SelectField";
+import { getData } from "@/Helpers/CRUDFunctions";
+import { UseJWT } from "@/Hooks/UseJWT";
+import appConfig from "@/public/config";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
-
 // Define nationality options
 const nationalityOptions = [
   { value: "fr", label: "France" },
@@ -27,6 +30,15 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
     formState: { errors },
   } = form;
 
+  const { getClaim } = UseJWT(localStorage.getItem("token"));
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = await getData(appConfig.API_PATHS.currentUser.path);
+      console.log("User data fetched:", user);
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <h3 className="text-lg font-semibold text-blue-600 flex items-center mb-4">
@@ -39,7 +51,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputField
           label="Prénom"
-          name="firstName"
+          name="nom"
           type="text"
           placeholder="Entrez votre prénom"
           register={register}
@@ -49,7 +61,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
 
         <InputField
           label="Nom"
-          name="lastName"
+          name="prenom"
           type="text"
           placeholder="Entrez votre nom de famille"
           register={register}
@@ -70,6 +82,8 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
               message: "Adresse email invalide",
             },
           }}
+          defaultValue={getClaim("sub")}
+          disabled={true}
           required={true}
         />
 

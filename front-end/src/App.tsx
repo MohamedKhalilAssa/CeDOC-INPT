@@ -1,3 +1,4 @@
+import AuthOnlyLayout from "@/Layout/AuthOnlyLayout";
 import GeneralLayout from "@/Layout/GeneralLayout";
 import GuestOnlyLayout from "@/Layout/GuestOnlyLayout";
 import EmailVerificationPage from "@/Pages/Authentication/EmailVerificationPage";
@@ -45,8 +46,9 @@ function App() {
               element={<ResetPasswordPage />}
             />
           </Route>
-
-          <Route path="/postuler" element={<PostulerPage />} />
+          <Route element={<AuthOnlyLayout />}>
+            <Route path="/postuler" element={<PostulerPage />} />
+          </Route>
         </Route>
       </Routes>
     </>

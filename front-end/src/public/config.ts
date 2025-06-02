@@ -68,6 +68,11 @@ const appConfig: AppConfig = {
       path: "/auth/check",
       method: "GET",
     },
+    currentUser: {
+      name: "Current User",
+      path: "/utilisateurs/logged-in",
+      method: "GET",
+    },
   },
   FRONTEND_PATHS: {
     landingPage: {
