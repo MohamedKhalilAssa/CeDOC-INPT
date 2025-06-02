@@ -8,7 +8,9 @@ import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 public interface ConfParticipationService {
     public List<ConfParticipationResponseDTO> getAllConfParticipations();
 
-    public ConfParticipationResponseDTO getConfParticipationBy(Long id);
+    public List<ConfParticipationResponseDTO> getConfParticipationsByDoctorantId(Long id);
+
+    public ConfParticipationResponseDTO getConfParticipationById(Long id);
 
     public ConfParticipationResponseDTO addConfParticipation(ConfParticipationRequestDTO requestDTO, String email);
 

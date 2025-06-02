@@ -8,13 +8,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.EquipeMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.CandidatMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ProfesseurMapper;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
-import ma.inpt.cedoc.model.entities.utilisateurs.EquipeDeRecherche;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
@@ -31,31 +38,36 @@ public class CandidatureServiceImpl implements CandidatureService {
 
     private final CandidatureRepository candidatureRepository;
     private final CandidatRepository candidatRepository;
+    private final CandidatureMapper candidatureMapper;
+
+    private final EquipeMapper equipeMapper;
+    private final SujetMapper sujetMapper;
+    
     private final SujetRepository sujetRepository;
     private final EquipeDeRechercheRepository equipeDeRechercheRepository;
     private final ProfesseurRepository professeurRepository;
+    private final ProfesseurMapper professeurMapper;
 
     private final CandidatService candidatService;
     private final CandidatMapper candidatMapper;
 
     @Override
-    public Candidature accepterCandidature(Long candidatureId, LocalDate entretien) {
+    public CandidatureResponseDTO accepterCandidature(Long candidatureId, LocalDate entretien) {
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new ResponseStatusException(404, "Candidature introuvable", null));
 
         candidature.setStatutCandidature(CandidatureEnum.ACCEPTER);
-        // Optional: stocker la date d’entretien si le champ existe
-        return candidatureRepository.save(candidature);
+        return candidatureMapper.toResponseDTO(candidatureRepository.save(candidature));
     }
 
     @Override
-    public Candidature refuserCandidature(Long candidatureId, String motif) {
+    public CandidatureResponseDTO refuserCandidature(Long candidatureId, String motif) {
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new ResponseStatusException(404, "Candidature introuvable", null));
 
         candidature.setStatutCandidature(CandidatureEnum.REFUSER);
         // Le champ "motif" peut être ajouté dans l’entité si besoin
-        return candidatureRepository.save(candidature);
+        return candidatureMapper.toResponseDTO(candidatureRepository.save(candidature));
     }
 
     @Override
@@ -65,32 +77,40 @@ public class CandidatureServiceImpl implements CandidatureService {
 
         candidat.setArchiver(true);
         candidatRepository.save(candidat);
-        // Optionnel : suppression après délai (automatisée par tâche cron ou batch)
+        // suppression après délai (automatisée par tâche cron ou batch)
     }
 
     @Override
-    public List<EquipeDeRecherche> getAllEquipes() {
-        return equipeDeRechercheRepository.findAll();
-    }
-
-    @Override
-    public List<Sujet> getAllPublicSujets() {
-        return sujetRepository.findAll().stream()
-                .filter(Sujet::isEstPublic)
+    public List<EquipeSimpleDTO> getAllEquipes() {
+        return equipeDeRechercheRepository.findAll()
+                .stream()
+                .map(equipeMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<Professeur> getProfesseursByEquipeId(Long equipeId) {
+    public List<SujetResponseDTO> getAllPublicSujets() {
+        return sujetRepository.findAll().stream()
+                .filter(Sujet::isEstPublic)
+                .map(sujetMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ProfesseurResponseDTO> getProfesseursByEquipeId(Long equipeId) {
         return professeurRepository.findAll().stream()
                 .filter(p -> p.getEquipeDeRechercheAcceuillante() != null
                         && p.getEquipeDeRechercheAcceuillante().getId().equals(equipeId))
+                .map(professeurMapper::toSimpleDTO)
                 .toList();
     }
 
+
     @Override
-    public List<Sujet> getSujetsByEquipeId(Long equipeId) {
-        return sujetRepository.findByChefEquipeId(equipeId);
+    public List<SujetResponseDTO> getSujetsByEquipeId(Long equipeId) {
+        return sujetRepository.findByChefEquipeId(equipeId).stream()
+                .map(sujetMapper::toResponseDTO)
+                .toList();
     }
 
     @Override

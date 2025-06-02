@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface DoctorantRepository extends JpaRepository<Doctorant, Long> {
     Optional<Doctorant> findByEmail(String username);
+
+    public Optional<Long> getIdByEmail(String email);
 }
