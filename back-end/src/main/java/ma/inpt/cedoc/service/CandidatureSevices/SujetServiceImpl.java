@@ -20,9 +20,9 @@ import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 public class SujetServiceImpl implements SujetService {
 
     private final SujetRepository sujetRepository;
-    private final SujetMapper sujetMapper;
+    private final SujetMapper sujetMapper; /* CREATE --------------------------------------------- */
+    // DTO-based methods
 
-    /* CREATE --------------------------------------------- */
     @Override
     public SujetResponseDTO saveSujet(SujetRequestDTO dto) {
         Sujet sujet = sujetMapper.toEntity(dto);
@@ -39,7 +39,18 @@ public class SujetServiceImpl implements SujetService {
                 .collect(Collectors.toList());
     }
 
-    /* UPDATE --------------------------------------------- */
+    // Entity-based methods
+    @Override
+    public Sujet saveSujetEntity(Sujet sujet) {
+        return sujetRepository.save(sujet);
+    }
+
+    @Override
+    public List<Sujet> saveSujetsEntities(List<Sujet> sujets) {
+        return sujetRepository.saveAll(sujets);
+    } /* UPDATE --------------------------------------------- */
+    // DTO-based methods
+
     @Override
     public SujetResponseDTO updateSujet(SujetRequestDTO dto, Long id) {
         if (!sujetRepository.existsById(id)) {
@@ -50,7 +61,16 @@ public class SujetServiceImpl implements SujetService {
         return sujetMapper.toResponseDTO(sujetRepository.save(sujet));
     }
 
-    /* DELETE --------------------------------------------- */
+    // Entity-based methods
+    @Override
+    public Sujet updateSujetEntity(Sujet sujet, Long id) {
+        if (!sujetRepository.existsById(id)) {
+            throw new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id);
+        }
+        sujet.setId(id);
+        return sujetRepository.save(sujet);
+    } /* DELETE --------------------------------------------- */
+
     @Override
     public void deleteSujet(Sujet sujet) {
         if (!sujetRepository.existsById(sujet.getId())) {
@@ -61,11 +81,20 @@ public class SujetServiceImpl implements SujetService {
     }
 
     @Override
+    public void deleteSujetById(Long id) {
+        if (!sujetRepository.existsById(id)) {
+            throw new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id);
+        }
+        sujetRepository.deleteById(id);
+    }
+
+    @Override
     public void deleteAllSujets() {
         sujetRepository.deleteAll();
     }
 
     /* GET --------------------------------------------- */
+    // DTO-based methods
     @Override
     public SujetResponseDTO getSujetById(Long id) {
         Sujet sujet = sujetRepository.findById(id)
@@ -105,9 +134,62 @@ public class SujetServiceImpl implements SujetService {
     public SujetResponseDTO getSujetByDoctorantId(Long doctorantId) {
         Sujet sujet = sujetRepository.findByDoctorantsId(doctorantId);
         if (sujet == null) {
-            throw new EntityNotFoundException("Aucun sujet trouvé pour le doctorant avec l'identifiant : " + doctorantId);
+            throw new EntityNotFoundException(
+                    "Aucun sujet trouvé pour le doctorant avec l'identifiant : " + doctorantId);
         }
         return sujetMapper.toResponseDTO(sujet);
+    }
+
+    @Override
+    public List<SujetResponseDTO> getAllPublicSujets() {
+        return sujetRepository.findAll().stream()
+                .filter(Sujet::isEstPublic)
+                .map(sujetMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Entity-based methods
+    @Override
+    public Sujet getSujetEntityById(Long id) {
+        return sujetRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id));
+    }
+
+    @Override
+    public List<Sujet> getAllSujetsEntities() {
+        return sujetRepository.findAll();
+    }
+
+    @Override
+    public List<Sujet> getSujetsEntitiesByChefEquipeId(Long chefEquipeId) {
+        return sujetRepository.findByChefEquipeId(chefEquipeId);
+    }
+
+    @Override
+    public List<Sujet> getSujetsEntitiesByProfesseurId(Long professeurId) {
+        return sujetRepository.findByProfesseursId(professeurId);
+    }
+
+    @Override
+    public List<Sujet> getSujetsEntitiesByDirecteurDeTheseId(Long directeurDeTheseId) {
+        return sujetRepository.findByDirecteurDeTheseId(directeurDeTheseId);
+    }
+
+    @Override
+    public Sujet getSujetEntityByDoctorantId(Long doctorantId) {
+        Sujet sujet = sujetRepository.findByDoctorantsId(doctorantId);
+        if (sujet == null) {
+            throw new EntityNotFoundException(
+                    "Aucun sujet trouvé pour le doctorant avec l'identifiant : " + doctorantId);
+        }
+        return sujet;
+    }
+
+    @Override
+    public List<Sujet> getAllPublicSujetsEntities() {
+        return sujetRepository.findAll().stream()
+                .filter(Sujet::isEstPublic)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -120,12 +202,13 @@ public class SujetServiceImpl implements SujetService {
         for (Professeur professeur : professeurs) {
             if (professeur.getEquipeDeRechercheAcceuillante() == null) {
                 throw new IllegalArgumentException("Le professeur avec l'ID " + professeur.getId()
-                    + " n'appartient à aucune équipe.");
+                        + " n'appartient à aucune équipe.");
             }
         }
 
         // TODO: Implémenter la logique pour gérer plusieurs chefs d'équipes
-        // Actuellement, on ne supporte qu'un seul chefEquipe pour simplification temporaire
+        // Actuellement, on ne supporte qu'un seul chefEquipe pour simplification
+        // temporaire
         // sujet.setChefsEquipes(déduits des équipes des profs);
         // sujet.setChefsAyantValide(new ArrayList<>());
 
@@ -135,16 +218,6 @@ public class SujetServiceImpl implements SujetService {
 
         // Persistance
         Sujet saved = sujetRepository.save(sujet);
-
         return sujetMapper.toResponseDTO(saved);
-    }
-
-    // les candidats ne voient que les sujets validés et publics.
-    @Override
-    public List<SujetResponseDTO> getAllPublicSujets() {
-        return sujetRepository.findAll().stream()
-                .filter(Sujet::isEstPublic)
-                .map(sujetMapper::toResponseDTO)
-                .collect(Collectors.toList());
     }
 }

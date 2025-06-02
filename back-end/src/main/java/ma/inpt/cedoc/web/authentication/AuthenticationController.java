@@ -21,7 +21,6 @@ import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.auth.*;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
 import ma.inpt.cedoc.service.auth.EmailVerificationService;
-import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -30,7 +29,6 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
     private final EmailVerificationService emailVerificationService;
-    private final UtilisateurService utilisateurService;
 
     // for registering new User
     @PostMapping("/register")
@@ -42,7 +40,7 @@ public class AuthenticationController {
                 !authentication.getPrincipal().equals("anonymousUser")) {
             return alreadyLoggedIn();
         }
-        
+
         try {
             AuthenticationResponse authResponse = authenticationService.register(request, response);
             return ResponseEntity.ok(authResponse);
@@ -207,9 +205,6 @@ public class AuthenticationController {
         }
 
     }
-
-    
-    
 
     @GetMapping("/check")
     public ResponseEntity<Object> checkAuth() {
