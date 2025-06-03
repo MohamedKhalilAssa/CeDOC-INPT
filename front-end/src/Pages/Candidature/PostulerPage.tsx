@@ -1,4 +1,4 @@
-import CVUploadForm from "@/Sections/Candidature/CVUploadForm";
+import CVUploadForm from "@/Sections/Candidature/DossierCandidatureForm";
 import EducationHistoryForm from "@/Sections/Candidature/EducationHistoryForm";
 import FormNavigation from "@/Sections/Candidature/FormNavigation";
 import FormStepper from "@/Sections/Candidature/FormStepper";
