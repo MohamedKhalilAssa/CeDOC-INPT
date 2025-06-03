@@ -20,29 +20,29 @@ function App() {
         */}
         <Route element={<GeneralLayout />}>
           <Route
-            path={appConfig.FRONTEND_PATHS.landingPage.path}
+            path={appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}
             element={<LandingPage />}
           />
 
           <Route element={<GuestOnlyLayout />}>
             <Route
-              path={appConfig.FRONTEND_PATHS.register.path}
+              path={appConfig.FRONTEND_PATHS.AUTH.register.path}
               element={<SignUpPage />}
             />
             <Route
-              path={appConfig.FRONTEND_PATHS.login.path}
+              path={appConfig.FRONTEND_PATHS.AUTH.login.path}
               element={<SignInPage />}
             />
             <Route
-              path={appConfig.FRONTEND_PATHS.verifyEmail.path}
+              path={appConfig.FRONTEND_PATHS.AUTH.verifyEmail.path}
               element={<EmailVerificationPage />}
             />
             <Route
-              path={appConfig.FRONTEND_PATHS.forgotPassword.path}
+              path={appConfig.FRONTEND_PATHS.AUTH.forgotPassword.path}
               element={<ForgotPasswordPage />}
             />
             <Route
-              path={appConfig.FRONTEND_PATHS.resetPassword.path}
+              path={appConfig.FRONTEND_PATHS.AUTH.resetPassword.path}
               element={<ResetPasswordPage />}
             />
           </Route>

@@ -7,6 +7,7 @@ const DatePicker = ({
   register,
   errors,
   classes,
+  defaultValue = null,
 }: DatePickerProps) => {
   return (
     <div className={`mb-4 ${classes}`}>
@@ -17,6 +18,9 @@ const DatePicker = ({
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
+        defaultValue={
+          defaultValue ? defaultValue.toISOString().split("T")[0] : ""
+        }
         type="date"
         id={name}
         className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 input-focus ${

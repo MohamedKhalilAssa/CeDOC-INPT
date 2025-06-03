@@ -1,4 +1,4 @@
-import CVUploadForm from "@/Sections/Candidature/CVUploadForm";
+import CVUploadForm from "@/Sections/Candidature/DossierCandidatureForm";
 import EducationHistoryForm from "@/Sections/Candidature/EducationHistoryForm";
 import FormNavigation from "@/Sections/Candidature/FormNavigation";
 import FormStepper from "@/Sections/Candidature/FormStepper";
@@ -21,9 +21,8 @@ const PostulerPage = () => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       // Add any default values here
       keywords: "",

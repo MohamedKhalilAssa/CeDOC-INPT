@@ -22,6 +22,9 @@ public class CandidatureRequestDTO {
     @NotNull(message = "La mention du Bac est obligatoire")
     private MentionEnum mentionBac;
 
+    @NotNull(message = "Le type de diplôme est obligatoire")
+    private DiplomeEnum diplome;
+
     @NotNull(message = "La mention du diplôme est obligatoire")
     private MentionEnum mentionDiplome;
 
@@ -36,9 +39,6 @@ public class CandidatureRequestDTO {
 
     @NotBlank(message = "L'intitulé du PFE est obligatoire.")
     private String intitulePFE;
-
-    @NotNull(message = "Le statut professionnel est obligatoire")
-    private StatutProfessionnelEnum statutProfessionnel;
 
     @NotNull(message = "Le candidat est obligatoire")
     private Long candidatId;

@@ -12,7 +12,7 @@ export const checkAuth = async (
   try {
     if (localStorage.getItem("isAuthenticated") === "false") return;
 
-    const res = await getData(appConfig.API_PATHS.authCheck.path);
+    const res = await getData(appConfig.API_PATHS.AUTH.authCheck.path);
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Missing token");
 
@@ -27,7 +27,7 @@ export const checkAuth = async (
 export const logout = async (auth: AuthContextType, swal: UseAlert) => {
   try {
     const res: AuthenticationResponseValues | undefined = await postData(
-      appConfig.API_PATHS.logout.path,
+      appConfig.API_PATHS.AUTH.logout.path,
       {}
     );
 

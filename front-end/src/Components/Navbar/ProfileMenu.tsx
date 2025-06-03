@@ -17,7 +17,7 @@ export const ProfileMenu = ({
     {
       type: "link" as const,
       label: "Postuler",
-      to: appConfig.FRONTEND_PATHS.postuler.path,
+      to: appConfig.FRONTEND_PATHS.GLOBAL.postuler.path,
     },
     {
       type: "button" as const,

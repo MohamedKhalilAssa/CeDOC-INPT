@@ -43,7 +43,7 @@ const EmailVerificationForm = () => {
     setLoading(true);
     try {
       const res: AuthenticationResponseValues | undefined = await postData(
-        appConfig.API_PATHS.verifyEmail.path,
+        appConfig.API_PATHS.AUTH.verifyEmail.path,
         {
           token,
           email: emailToUse,
@@ -70,7 +70,7 @@ const EmailVerificationForm = () => {
     setLoading(true);
     try {
       const res: AuthenticationResponseValues | undefined = await postData(
-        appConfig.API_PATHS.sendVerificationEmail.path,
+        appConfig.API_PATHS.AUTH.sendVerificationEmail.path,
         { email: data.email }
       );
 
@@ -100,7 +100,7 @@ const EmailVerificationForm = () => {
         if (error.includes("deja verifi")) {
           finalError = `${error} \n Redirection...`;
           setTimeout(() => {
-            navigate(appConfig.FRONTEND_PATHS.login.path);
+            navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
           }, 3000);
         }
         alert.error(
@@ -155,7 +155,7 @@ const EmailVerificationForm = () => {
             <>
               Vous pouvez maintenant vous connecter.{" "}
               <Link
-                to={appConfig.FRONTEND_PATHS.login.path}
+                to={appConfig.FRONTEND_PATHS.AUTH.login.path}
                 className="text-blue-600 underline"
               >
                 Se connecter

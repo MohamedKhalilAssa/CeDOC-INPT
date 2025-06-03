@@ -36,7 +36,6 @@ public class CandidatMapperImpl implements CandidatMapper {
         // Création de l’objet candidat
         Candidat candidat = Candidat.builder()
                 .email(dto.getEmail())
-                .password(dto.getPassword())
                 .genre(dto.getGenre())
                 .etatCivilEnum(dto.getEtatCivilEnum())
                 .nom(dto.getNom())

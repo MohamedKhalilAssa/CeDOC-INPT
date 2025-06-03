@@ -10,9 +10,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
-import ma.inpt.cedoc.model.enums.candidature_enums.*;
+import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.DiplomeEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.EtablissementEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.MentionEnum;
 
 @Entity
 @Builder
@@ -31,10 +37,13 @@ public class Candidature {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut_candidature")
     private CandidatureEnum statutCandidature;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "mention_bac")
     private MentionEnum mentionBac;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "diplome")
+    private DiplomeEnum diplome;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mention_diplome")
@@ -50,16 +59,8 @@ public class Candidature {
 
     @Column(name = "specialite")
     private String specialite;
-
     @Column(name = "intitule_pfe")
     private String intitulePFE;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "statut_professionnel")
-    private StatutProfessionnelEnum statutProfessionnel;
-
-    @Column(name = "date_refus")
-    private LocalDate dateRefus;
 
     // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)
