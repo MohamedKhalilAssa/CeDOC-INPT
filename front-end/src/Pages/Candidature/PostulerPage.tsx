@@ -21,9 +21,8 @@ const PostulerPage = () => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       // Add any default values here
       keywords: "",

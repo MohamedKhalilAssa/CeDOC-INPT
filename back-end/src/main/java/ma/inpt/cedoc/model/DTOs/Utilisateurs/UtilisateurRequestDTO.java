@@ -37,14 +37,6 @@ public class UtilisateurRequestDTO {
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Le numéro de téléphone doit être valide (format international optionnel, exemple : +212600000000)")
     private String telephone;
 
-    @NotBlank(message = "Le mot de passe est obligatoire.")
-    @Size(min = 8, message = "Le mot de passe doit comporter au moins 8 caractères.")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.")
-    private String password;
-
-    @NotBlank(message = "La confirmation du mot de passe est obligatoire.")
-    private String passwordConfirmation;
-
     @Past(message = "La date de naissance doit être dans le passé.")
     @NotNull(message = "La date de naissance est obligatoire.")
     private LocalDate dateNaissance;

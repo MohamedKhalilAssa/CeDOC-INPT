@@ -29,7 +29,6 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
                         .prenom(dto.getPrenom())
                         .email(dto.getEmail())
                         .telephone(dto.getTelephone())
-                        .password(dto.getPassword())
                         .dateNaissance(dto.getDateNaissance())
                         .etatCivilEnum(dto.getEtatCivilEnum())
                         .genre(dto.getGenre())

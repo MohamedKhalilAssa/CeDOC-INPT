@@ -20,6 +20,7 @@ export interface SelectFieldProps {
   register: any;
   errors: any;
   disabled?: boolean;
+  defaultValue?: string | number | null;
   classes?: string;
 }
 export interface DatePickerProps {
@@ -27,6 +28,7 @@ export interface DatePickerProps {
   name: string;
   required?: boolean;
   register: any;
+  defaultValue?: Date | null;
   errors: any;
   classes?: string;
 }

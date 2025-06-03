@@ -1,6 +1,6 @@
 export enum StatutProfessionnelEnum {
-  SALARIE = "Salarie",
-  NON_SALARIE = "Non Salarie",
+  SALARIE = "Salarié",
+  NON_SALARIE = "Non Salarié",
 }
 
 export enum GenreEnum {

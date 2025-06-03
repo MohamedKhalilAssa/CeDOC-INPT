@@ -10,7 +10,8 @@ export interface Nationalite extends baseResponse {
   intitule: string;
 }
 export interface LieuDeNaissance extends baseResponse {
-  nom: string;
+  pays: string;
+  ville: string;
 }
 export interface UtilisateurResponseDTO extends baseResponse {
   nom?: string;
@@ -19,6 +20,8 @@ export interface UtilisateurResponseDTO extends baseResponse {
   telephone?: string;
   dateNaissance?: Date;
   etatCivilEnum?: EtatCivilEnum;
+  statutProfessionnel?: string;
+  
   genre?: GenreEnum;
   emailValider: boolean;
   roles: Role[];
