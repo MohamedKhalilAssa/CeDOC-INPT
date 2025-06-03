@@ -40,7 +40,7 @@ public interface CandidatService {
 
     boolean doesCandidatExistByTelephone(String telephone);
 
-    boolean archiverCandidat(Long id);
+    boolean archiverCandidat(Long candidatId);
 
     boolean archiverCandidatMyEmail(String email);
 }

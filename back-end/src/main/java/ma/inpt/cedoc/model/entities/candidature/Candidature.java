@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.model.entities.candidature;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -56,6 +57,9 @@ public class Candidature {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut_professionnel")
     private StatutProfessionnelEnum statutProfessionnel;
+
+    @Column(name = "date_refus")
+    private LocalDate dateRefus;
 
     // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)
