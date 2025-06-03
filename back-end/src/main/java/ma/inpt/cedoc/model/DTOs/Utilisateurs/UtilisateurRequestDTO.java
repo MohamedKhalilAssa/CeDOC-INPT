@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.Annotations.FieldMatcher.FieldMatch;
+import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 
@@ -43,6 +44,9 @@ public class UtilisateurRequestDTO {
 
     @NotNull(message = "L'etat civil est obligatoire.")
     private EtatCivilEnum etatCivilEnum;
+
+    @NotBlank(message = "Le statut professionnel est obligatoire.")
+    private StatutProfessionnelEnum statutProfessionnel;
 
     @NotNull(message = "Veuillez préciser votre genre.")
     private GenreEnum genre;

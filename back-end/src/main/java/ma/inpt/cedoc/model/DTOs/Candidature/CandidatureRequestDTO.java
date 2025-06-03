@@ -20,12 +20,15 @@ public class CandidatureRequestDTO {
     @NotNull(message = "La mention du Bac est obligatoire")
     private MentionEnum mentionBac;
 
+    @NotNull(message = "Le type de diplôme est obligatoire")
+    private DiplomeEnum diplome;
+
     @NotNull(message = "La mention du diplôme est obligatoire")
     private MentionEnum mentionDiplome;
 
-    @NotBlank(message = "Le dossier de candidature est obligatoire")
-    @Pattern(regexp = "^.+\\.zip$", message = "Le dossier doit être un fichier .zip")
-    private String dossierCandidature; // Peut contenir un lien ou chemin vers un fichier ZIP
+    // @NotBlank(message = "Le dossier de candidature est obligatoire")
+    // @Pattern(regexp = "^.+\\.zip$", message = "Le dossier doit être un fichier .zip")
+    // private String dossierCandidature; // Peut contenir un lien ou chemin vers un fichier ZIP
 
     @NotNull(message = "Le type d'établissement est obligatoire")
     private EtablissementEnum typeEtablissement;
@@ -37,9 +40,6 @@ public class CandidatureRequestDTO {
     @NotBlank(message = "L'intitulé du PFE est obligatoire.")
     @Pattern(regexp = "^[\\p{L}0-9,.'\"()&-]+(?:\\s[\\p{L}0-9,.'\"()&-]+)*$", message = "L'intitulé PFE contient des caracteres invalides.")
     private String intitulePFE;
-
-    @NotNull(message = "Le statut professionnel est obligatoire")
-    private StatutProfessionnelEnum statutProfessionnel;
 
     @NotNull(message = "Le candidat est obligatoire")
     private Long candidatId;

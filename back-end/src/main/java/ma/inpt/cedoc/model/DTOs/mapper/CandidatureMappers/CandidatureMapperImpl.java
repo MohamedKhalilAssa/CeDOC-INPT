@@ -21,16 +21,15 @@ public class CandidatureMapperImpl implements CandidatureMapper {
     @Override
     public Candidature toEntity(CandidatureRequestDTO dto) {
         Candidat candidat = candidatService.findFullCandidatById(dto.getCandidatId());
-
         return Candidature.builder()
                 .statutCandidature(CandidatureEnum.SOUMISE)
                 .mentionBac(dto.getMentionBac())
+                .diplome(dto.getDiplome())
                 .mentionDiplome(dto.getMentionDiplome())
-                .dossierCandidature(dto.getDossierCandidature())
+                // .dossierCandidature(dto.getDossierCandidature())
                 .typeEtablissement(dto.getTypeEtablissement())
                 .specialite(dto.getSpecialite())
                 .intitulePFE(dto.getIntitulePFE())
-                .statutProfessionnel(dto.getStatutProfessionnel())
                 .candidat(candidat)
                 .sujets(null)
                 .build();
@@ -44,14 +43,15 @@ public class CandidatureMapperImpl implements CandidatureMapper {
                 .updatedAt(entity.getUpdatedAt())
                 .statutCandidature(entity.getStatutCandidature())
                 .mentionBac(entity.getMentionBac())
+                .diplome(entity.getDiplome())
                 .mentionDiplome(entity.getMentionDiplome())
                 .dossierCandidature(entity.getDossierCandidature())
                 .typeEtablissement(entity.getTypeEtablissement())
                 .specialite(entity.getSpecialite())
                 .intitulePFE(entity.getIntitulePFE())
-                .statutProfessionnel(entity.getStatutProfessionnel())
                 .candidatId(entity.getCandidat().getId())
-                .sujetsIds(entity.getSujets() != null ? entity.getSujets().stream().map(s -> s.getId()).toList() : List.of())
+                .sujetsIds(entity.getSujets() != null ? entity.getSujets().stream().map(s -> s.getId()).toList()
+                        : List.of())
                 .build();
     }
 }
