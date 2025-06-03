@@ -54,7 +54,7 @@ const Navbar = (): JSX.Element => {
           {/* Logo and Branding */}
           <div className="flex items-center">
             <Link
-              to={`${appConfig.FRONTEND_PATHS.landingPage.path}`}
+              to={`${appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}`}
               className="flex items-center"
             >
               <img className="h-10 w-auto" src={Logo_inpt} alt="Logo INPT" />
@@ -96,7 +96,7 @@ const Navbar = (): JSX.Element => {
             {/* Auth Button or Profile Menu - Always visible */}
             {!auth.isAuthenticated ? (
               <Link
-                to={`${appConfig.FRONTEND_PATHS.login.path}`}
+                to={`${appConfig.FRONTEND_PATHS.AUTH.login.path}`}
                 className="px-4 py-2 lg:px-6 bg-gradient-to-r from-blue-600 to-blue-800 text-white font-medium rounded-full text-sm shadow-sm hover:shadow-md transition duration-300"
               >
                 <span className="hidden sm:inline">Se Connecter</span>

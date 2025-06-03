@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!token) throw new Error("No token");
 
         const result = await checkAuth(login, logout);
-        if (result.success) {
+        if (result) {
           syncStateFromToken();
         } else {
           logout();

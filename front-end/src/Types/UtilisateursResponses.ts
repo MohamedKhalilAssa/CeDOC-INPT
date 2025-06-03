@@ -1,24 +1,18 @@
 // Main Utilisateur interface
+import { baseResponse } from "@/Types/GlobalTypes";
 import { EtatCivilEnum, GenreEnum } from "@/Types/UtilisateursEnums";
 // Supporting interfaces
-export interface Role {
+export interface Role extends baseResponse {
   id: number;
   intitule: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
-export interface Nationalite {
-  id: number;
+export interface Nationalite extends baseResponse {
   intitule: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
-export interface LieuDeNaissance {
-  id: number;
+export interface LieuDeNaissance extends baseResponse {
   nom: string;
 }
-export interface UtilisateurResponseDTO {
-  id: number;
+export interface UtilisateurResponseDTO extends baseResponse {
   nom?: string;
   prenom?: string;
   email: string;
@@ -27,8 +21,6 @@ export interface UtilisateurResponseDTO {
   etatCivilEnum?: EtatCivilEnum;
   genre?: GenreEnum;
   emailValider: boolean;
-  createdAt: Date;
-  updatedAt: Date;
   roles: Role[];
   nationalite?: Nationalite;
   lieuDeNaissance?: LieuDeNaissance;

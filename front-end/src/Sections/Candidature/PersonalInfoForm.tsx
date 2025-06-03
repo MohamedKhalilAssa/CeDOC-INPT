@@ -2,46 +2,80 @@ import DatePicker from "@/Components/Form/DatePicker";
 import InputField from "@/Components/Form/InputField";
 import SelectField from "@/Components/Form/SelectField";
 import { getData } from "@/Helpers/CRUDFunctions";
+import { useAlert } from "@/Hooks/UseAlert";
 import { UseJWT } from "@/Hooks/UseJWT";
 import appConfig from "@/public/config";
-import { UtilisateurResponseDTO } from "@/Types/UtilisateursResponses";
-import { useEffect } from "react";
+import {
+  LieuDeNaissance,
+  Nationalite,
+  UtilisateurResponseDTO,
+} from "@/Types/UtilisateursResponses";
+import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 // Define nationality options
-const nationalityOptions = [
-  { value: "fr", label: "France" },
-  { value: "ca", label: "Canada" },
-  { value: "be", label: "Belgique" },
-  { value: "ch", label: "Suisse" },
-  { value: "uk", label: "Royaume-Uni" },
-  { value: "us", label: "États-Unis" },
-  { value: "de", label: "Allemagne" },
-  { value: "it", label: "Italie" },
-  { value: "es", label: "Espagne" },
-  // Ajoutez d'autres pays selon vos besoins
-];
 
 interface PersonalInfoFormProps {
   form: UseFormReturn<any>;
 }
-
+// To store fetched data
+interface fetchedDataType {
+  utilisateur: UtilisateurResponseDTO | undefined;
+  nationalities: Nationalite[] | undefined;
+  lieuDeNaissance: LieuDeNaissance[] | undefined;
+}
 const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
   const {
     register,
     formState: { errors },
   } = form;
-
   const { getClaim } = UseJWT(localStorage.getItem("token"));
+  const swal = useAlert();
+  const [fetchedData, setFetchedData] = useState<fetchedDataType>({
+    utilisateur: undefined,
+    nationalities: [],
+    lieuDeNaissance: [],
+  });
+
+  // FETCH ON LOAD
   useEffect(() => {
     const fetchData = async () => {
-      const user: UtilisateurResponseDTO | undefined = await getData(
-        appConfig.API_PATHS.currentUser.path
+      const utilisateur: UtilisateurResponseDTO | undefined = await getData(
+        appConfig.API_PATHS.AUTH.currentUser.path
       );
-      console.log("User data fetched:", user?.id);
+      const nationalities: Nationalite[] | undefined = await getData(
+        appConfig.API_PATHS.NATIONALITE.getAll.path
+      );
+      const lieuDeNaissance: LieuDeNaissance[] | undefined = await getData(
+        appConfig.API_PATHS.LIEU_DE_NAISSANCE.getAll.path
+      );
+      return { utilisateur, nationalities, lieuDeNaissance };
     };
-    fetchData();
+
+    fetchData()
+      .then((data) => {
+        if (data) {
+          setFetchedData(data);
+        }
+      })
+      .catch((error) => {
+        swal.error(
+          "Erreur lors de la récupération des données",
+          "Veuillez contacter l'administrateur."
+        );
+        console.error("Error fetching data:", error);
+      });
   }, []);
 
+  const nationalityOptions =
+    fetchedData.nationalities?.map((nationality) => ({
+      value: nationality.id,
+      label: nationality.intitule,
+    })) || [];
+  const lieuDeNaissanceOptions =
+    fetchedData.lieuDeNaissance?.map((lieu) => ({
+      value: lieu.id,
+      label: lieu.nom,
+    })) || [];
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <h3 className="text-lg font-semibold text-blue-600 flex items-center mb-4">
@@ -102,7 +136,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
 
         <DatePicker
           label="Date de naissance"
-          name="birthDate"
+          name="laDateDeNaissance"
           register={register}
           errors={errors}
           required={true}
@@ -110,8 +144,16 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
 
         <SelectField
           label="Nationalité"
-          name="nationality"
+          name="nationalite"
           options={nationalityOptions}
+          register={register}
+          errors={errors}
+          required={true}
+        />
+        <SelectField
+          label="Lieu de naissance"
+          name="lieuDeNaissance"
+          options={lieuDeNaissanceOptions}
           register={register}
           errors={errors}
           required={true}

@@ -15,7 +15,7 @@ const AuthOnlyLayout = () => {
       if (!fromLogout) {
         swal.toast("Accès refusé : Vous êtes non connecté", "error");
       }
-      navigate(appConfig.FRONTEND_PATHS.login.path);
+      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
     }
   }, [auth.loading, auth.isAuthenticated]);
 
