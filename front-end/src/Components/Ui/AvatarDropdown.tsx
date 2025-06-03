@@ -3,10 +3,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
 
+const colorMap = {
+  red: "bg-red-600 hover:bg-red-800",
+  green: "bg-green-600 hover:bg-green-800",
+  blue: "bg-blue-600 hover:bg-blue-800",
+  yellow: "bg-yellow-600 hover:bg-yellow-800",
+} as const;
+
+type ColorKey = keyof typeof colorMap;
+
 type DropdownItem =
-  | { type: "button"; label: string; color: string; onClick: () => void }
+  | { type: "button"; label: string; color: ColorKey; onClick: () => void }
   | { type: "link"; label: string; to: string }
-  // | { type: "button-link"; label: string; to: string }
   | { type: "custom"; element: JSX.Element };
 
 interface DropdownProps {
@@ -14,7 +22,6 @@ interface DropdownProps {
   triggerLabel?: string;
   align?: "left" | "right";
 }
-
 const AvatarDropdown = ({
   items,
   triggerLabel = "Menu",
@@ -78,7 +85,10 @@ const AvatarDropdown = ({
                           item.onClick();
                           setIsOpen(false);
                         }}
-                        className={`w-[90%] cursor-pointer px-4 py-2 text-sm text-white bg-${item.color}-600 hover:bg-${item.color}-800 rounded-lg transition mx-auto`}
+                        className={`w-[90%] cursor-pointer px-4 py-2 text-sm text-white ${
+                          colorMap[item.color] ||
+                          "bg-gray-600 hover:bg-gray-800"
+                        } rounded-lg transition mx-auto`}
                       >
                         {item.label}
                       </button>

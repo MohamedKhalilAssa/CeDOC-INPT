@@ -21,7 +21,7 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
 
         // Mapping UtilisateurRequestDTO → Utilisateur
         public Utilisateur fromRequestDTO(UtilisateurRequestDTO dto) {
-                Nationalite nationalite = nationaliteService.findById(dto.getNationaliteId());
+                Nationalite nationalite = nationaliteService.getNationaliteEntityById(dto.getNationaliteId());
                 LieuDeNaissance lieu = lieuDeNaissanceService.findById(dto.getLieuDeNaissanceId());
 
                 return Utilisateur.builder()

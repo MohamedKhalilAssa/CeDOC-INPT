@@ -1,4 +1,4 @@
-package ma.inpt.cedoc.web.Utilisateur;
+package ma.inpt.cedoc.web.Utilisateurs;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

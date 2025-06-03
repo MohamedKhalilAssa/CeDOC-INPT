@@ -22,7 +22,7 @@ export const ProfileMenu = ({
     {
       type: "button" as const,
       label: "Deconnexion",
-      color: "red",
+      color: "red" as const,
       onClick: () => {
         logout(auth, swal);
       },
