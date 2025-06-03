@@ -73,6 +73,27 @@ const appConfig: AppConfig = {
       path: "/utilisateurs/logged-in",
       method: "GET",
     },
+    sujetsList: {
+      name: "Liste des Sujets",
+      path: "/sujets/",
+      method: "GET",
+    },
+    // ---------------- SUJETS ---------------------
+    sujetById: {
+      name: "Sujet par ID",
+      path: "/sujets/:id",
+      method: "GET",
+    },
+    createSujet: {
+      name: "Proposer un Sujet",
+      path: "/sujets/",
+      method: "POST",
+    },
+    deleteSujet: {
+      name: "Supprimer un Sujet",
+      path: "/sujets/:id",
+      method: "DELETE",
+    },    
   },
   FRONTEND_PATHS: {
     landingPage: {
