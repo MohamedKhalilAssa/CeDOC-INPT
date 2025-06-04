@@ -20,7 +20,7 @@ const ProgressSteps = ({ steps, currentStep }: ProgressStepsProps) => {
           </div>
 
           {/* Step label */}
-          <div className="hidden sm:block ml-2 mr-8 text-sm">{step.name}</div>
+          <div className="hidden sm:block ml-2 mr-2 text-sm">{step.name}</div>
 
           {/* Connector line */}
           {index < steps.length - 1 && (

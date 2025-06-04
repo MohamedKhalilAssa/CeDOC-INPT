@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.Annotations.FieldMatcher.FieldMatch;
+import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 
@@ -37,20 +38,15 @@ public class UtilisateurRequestDTO {
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Le numéro de téléphone doit être valide (format international optionnel, exemple : +212600000000)")
     private String telephone;
 
-    @NotBlank(message = "Le mot de passe est obligatoire.")
-    @Size(min = 8, message = "Le mot de passe doit comporter au moins 8 caractères.")
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.")
-    private String password;
-
-    @NotBlank(message = "La confirmation du mot de passe est obligatoire.")
-    private String passwordConfirmation;
-
     @Past(message = "La date de naissance doit être dans le passé.")
     @NotNull(message = "La date de naissance est obligatoire.")
     private LocalDate dateNaissance;
 
     @NotNull(message = "L'etat civil est obligatoire.")
     private EtatCivilEnum etatCivilEnum;
+
+    @NotBlank(message = "Le statut professionnel est obligatoire.")
+    private StatutProfessionnelEnum statutProfessionnel;
 
     @NotNull(message = "Veuillez préciser votre genre.")
     private GenreEnum genre;

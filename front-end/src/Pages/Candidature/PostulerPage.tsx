@@ -1,4 +1,4 @@
-import CVUploadForm from "@/Sections/Candidature/CVUploadForm";
+import CVUploadForm from "@/Sections/Candidature/DossierCandidatureForm";
 import EducationHistoryForm from "@/Sections/Candidature/EducationHistoryForm";
 import FormNavigation from "@/Sections/Candidature/FormNavigation";
 import FormStepper from "@/Sections/Candidature/FormStepper";
@@ -21,9 +21,8 @@ const PostulerPage = () => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       // Add any default values here
       keywords: "",
@@ -93,21 +92,26 @@ const PostulerPage = () => {
     switch (step) {
       case 1: // Personal Info
         return [
-          "firstName",
-          "lastName",
+          "nom",
+          "prenom",
           "email",
-          "phone",
-          "birthDate",
-          "nationality",
-          "highestDegree",
-          "fieldOfStudy",
-          "institution",
-          "graduationYear",
-          "cv",
+          "telephone",
+          "genre",
+          "etatCivilEnum",
+          "dateNaissance",
+          "nationaliteId",
+          "lieuDeNaissanceId",
+          "diplome",
+          "typeEtablissement",
+          "mentionDiplome",
+          "mentionBac",
+          "specialite",
+          "intitulePFE",
+          "dossierCandidature",
         ];
-      case 2: // Research Interests
-        return ["primaryResearchArea", "keywords", "researchStatement"];
-      case 3: // Terms and Conditions
+      // case 2: // Research Interests
+      //   return ["primaryResearchArea", "keywords", "researchStatement"];
+      case 2: // Terms and Conditions
         return ["termsAgreement"];
       default:
         return [];
@@ -126,13 +130,7 @@ const PostulerPage = () => {
           </>
         );
       case 2:
-        return (
-          <ResearchInterestsForm
-            form={form}
-            keywords={keywords}
-            setKeywords={setKeywords}
-          />
-        );
+        return <ResearchInterestsForm form={form} />;
       case 3:
         return (
           <TermsAndConditionsForm

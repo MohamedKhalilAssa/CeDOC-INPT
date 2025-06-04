@@ -30,13 +30,12 @@ public class CandidatMapperImpl implements CandidatMapper {
         Candidature candidature = candidatureMapper.toEntity(candidatureDTO);
 
         // Mapper les entités liées (relations ManyToOne)
-        Nationalite nationalite = nationaliteService.findById(dto.getNationaliteId());
+        Nationalite nationalite = nationaliteService.getNationaliteEntityById(dto.getNationaliteId());
         LieuDeNaissance lieu = lieuDeNaissanceService.findById(dto.getLieuDeNaissanceId());
 
         // Création de l’objet candidat
         Candidat candidat = Candidat.builder()
                 .email(dto.getEmail())
-                .password(dto.getPassword())
                 .genre(dto.getGenre())
                 .etatCivilEnum(dto.getEtatCivilEnum())
                 .nom(dto.getNom())

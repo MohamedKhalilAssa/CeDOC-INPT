@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
+import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 
@@ -30,6 +31,8 @@ public class UtilisateurResponseDTO extends BaseResponseDTO {
     private LocalDate dateNaissance;
 
     private EtatCivilEnum etatCivilEnum;
+
+    private StatutProfessionnelEnum statutProfessionnel;
 
     private GenreEnum genre;
 

@@ -6,7 +6,7 @@ import appConfig from "@/public/config";
 import {
   AuthenticationResponseValues,
   RegisterFormValues,
-} from "@/Types/RegisterTypes";
+} from "@/Types/AuthTypes";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,7 +27,7 @@ const SignUpForm = () => {
     console.log("Form Data:", data);
     try {
       const res: AuthenticationResponseValues | undefined = await postData(
-        appConfig.API_PATHS.register.path,
+        appConfig.API_PATHS.AUTH.register.path,
         data
       );
       swal.success(
@@ -36,8 +36,8 @@ const SignUpForm = () => {
           "Veuillez Verifier votre boite mail, avant de vous connecter."
       );
       // Redirect to login page after successful registration
-      navigate(appConfig.FRONTEND_PATHS.login.path);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (Array.isArray(err.errors)) {
         // Backend returned validation errors: map to form fields
@@ -133,7 +133,7 @@ const SignUpForm = () => {
             <p className="text-sm text-center mt-4 text-gray-600">
               Vous avez deja un compte?{" "}
               <Link
-                to={`${appConfig.API_PATHS.login.path}`}
+                to={`${appConfig.FRONTEND_PATHS.AUTH.login.path}`}
                 className="text-blue-600 hover:underline"
               >
                 Connectez-vous
@@ -142,7 +142,7 @@ const SignUpForm = () => {
             <p className="text-sm text-center mt-4 text-gray-600">
               Vous avez besoin de verifier votre compte?{" "}
               <Link
-                to={`${appConfig.FRONTEND_PATHS.verifyEmail.path}`}
+                to={`${appConfig.FRONTEND_PATHS.AUTH.verifyEmail.path}`}
                 className="text-blue-600 hover:underline"
               >
                 Demander une verification

@@ -17,8 +17,6 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => {
     const auth = getExternalAuthHandlers();
-    console.log("FROM CRUDFFUNTIONS, LOGGING RESPONSE: ");
-    console.log(response);
     const newAccessToken = response.headers["authorization"];
     if (newAccessToken && newAccessToken.startsWith("Bearer ")) {
       const token = newAccessToken.replace("Bearer ", "");

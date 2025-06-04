@@ -21,7 +21,7 @@ const ForgotPasswordForm = () => {
   const onSubmit = async (data: ForgotPasswordFormValues) => {
     setLoading(true);
     try {
-      await postData(appConfig.API_PATHS.forgotPassword.path, {
+      await postData(appConfig.API_PATHS.AUTH.forgotPassword.path, {
         email: data.email,
       });
       alert.info(
