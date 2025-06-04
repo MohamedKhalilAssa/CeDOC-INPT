@@ -21,6 +21,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.entities.auth.Token;
+import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 
@@ -60,10 +61,13 @@ public class Utilisateur implements UserDetails {
     @Column(name = "etat_civil", nullable = true)
     @Enumerated(EnumType.STRING)
     private EtatCivilEnum etatCivilEnum;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "genre", nullable = true)
     private GenreEnum genre;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statut_professionnel", nullable = true)
+    private StatutProfessionnelEnum statutProfessionnel;
 
     @Column(name = "email_valider", nullable = false)
     @Builder.Default

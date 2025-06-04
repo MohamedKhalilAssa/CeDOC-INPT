@@ -32,6 +32,7 @@ public class Role {
     @NotBlank(message = "Le nom est obligatoire")
     @Size(min = 2, max = 50, message = "Le nom doit contenir entre 2 et 50 caractères")
     @Pattern(regexp = "^[A-Z_]+$", message = "L'Intitule ne doit contenir que des lettres, des underscores (exp. PROFESSEUR_VACATAIRE)")
+    @Column(unique = true, nullable = false)
     private String intitule;
 
     // for logging and administration purposes it will be filled by the system

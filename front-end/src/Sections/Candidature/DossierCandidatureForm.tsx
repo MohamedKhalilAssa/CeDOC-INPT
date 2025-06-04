@@ -1,11 +1,11 @@
 import FileUpload from "@/Components/Form/FileUpload";
 import { UseFormReturn } from "react-hook-form";
 
-interface CVUploadFormProps {
+interface DossierCandidatureFormProps {
   form: UseFormReturn<any>;
 }
 
-const CVUploadForm = ({ form }: CVUploadFormProps) => {
+const DossierCandidatureForm = ({ form }: DossierCandidatureFormProps) => {
   const {
     register,
     formState: { errors },
@@ -19,21 +19,22 @@ const CVUploadForm = ({ form }: CVUploadFormProps) => {
         <span className="mr-2">
           <i className="fas fa-file-alt text-blue-600"></i>
         </span>
-        Curriculum Vitae
+        Dossier de Candidature
       </h3>
 
       <FileUpload
-        label="CV"
-        name="cv"
+        label="Document"
+        name="dossierCandidature"
         register={register}
         errors={errors}
         required={true}
-        helpText="PDF, DOC ou DOCX (max 5MB)"
+        helpText="Dossier .zip contenant : CV - Relevés de notes - Diplômes (BAC + autres diplômes)"
         setValue={setValue}
         getValues={getValues}
+        accept=".zip"
       />
     </div>
   );
 };
 
-export default CVUploadForm;
+export default DossierCandidatureForm;
