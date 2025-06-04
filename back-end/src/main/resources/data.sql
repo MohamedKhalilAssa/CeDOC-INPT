@@ -6,7 +6,7 @@ INSERT INTO roles (intitule) VALUES
 ('DOCTORANT'),
 ('CHEF_EQUIPE'),
 ('RESPONSABLE_FORMATION'),
-('DIRECTEUR_THESE'),
+('DIRECTEUR_DE_THESE'),
 ('DIRECTION_CEDOC');
 
 -- LIEU DE NAISSANCE
@@ -54,7 +54,7 @@ INSERT INTO `utilisateurs`(
     1,
     1
 ),
--- Professeur
+-- Professeur Fatima (will have multiple roles)
 (
     NOW(),
     '1992-11-03',
@@ -93,30 +93,40 @@ INSERT INTO candidats (id, archiver) VALUES
 
 -- PROFESSEUR
 INSERT INTO professeurs (id, grade) VALUES 
-(2, 'PES');
+(2, 'PES');  -- Single professor with multiple roles
+
 INSERT INTO utilisateur_roles (utilisateur_id, role_id) VALUES 
-(2, 2);
+(1, 1),  -- Candidat role
+(2, 2),  -- Base professeur role
+(2, 4),  -- ChefEquipe role
+(2, 6),  -- DirecteurDeThese role
+(2, 5),  -- ResponsableDeFormation role
+(2, 7),  -- DirectionCedoc role
+(3, 3);  -- Doctorant role
+
 -- DOCTORANT
 INSERT INTO doctorants (id, date_inscription, statut_doctorant, nombre_heures_labo, draft_diplome_url, archiver) VALUES 
 (3, '2023-09-01', 'EN_COURS', 100, 'http://example.com/draft.pdf', FALSE);
 
--- CHEF EQUIPE (as specialization of PROFESSEUR)
-INSERT INTO chefs_equipes (id) VALUES 
-(2);
+-- Role entities for composition approach
+INSERT INTO chef_equipe_roles (professeur_id) VALUES 
+(2);  -- Professeur ID 2 has Chef Equipe role
 
--- RESPONSABLE DE FORMATION
-INSERT INTO responsables_de_formations (id) VALUES 
-(2);
+INSERT INTO directeur_de_these_roles (professeur_id) VALUES 
+(2);  -- Professeur ID 2 has Directeur de These role
 
--- DIRECTEUR DE THESE
-INSERT INTO directeurs_de_theses (id) VALUES 
-(2);
+INSERT INTO responsable_de_formation_roles (professeur_id) VALUES 
+(2);  -- Professeur ID 2 has Responsable de Formation role
 
 -- DIRECTION CEDOC
 INSERT INTO direction_cedoc (id, role_administrative) VALUES 
-(2, 'DIRECTEUR');
+(2, 'DIRECTEUR');  -- Using professor ID 2 for DirectionCedoc role
 
+-- EQUIPE DE RECHERCHE
+INSERT INTO equipes_de_recherches (intitule, description, chef_equipe_role_id) VALUES 
+('Intelligence Artificielle et Data Science', 'Équipe spécialisée dans l\'IA et l\'analyse de données', 1);
 
+-- SUJETS with corrected role references
 INSERT INTO sujets (
     intitule,
     description,
@@ -124,16 +134,16 @@ INSERT INTO sujets (
     est_public,
     created_at,
     updated_at,
-    chef_equipe_id,
-    directeur_these_id
+    chef_equipe_role_id,
+    directeur_these_role_id
 ) VALUES
-('Analyse des données massives', 'Étude approfondie des techniques de traitement de Big Data.', true, true, NOW(), NOW(), 1, 1),
-('Sécurité des systèmes embarqués', 'Recherche sur la cybersécurité dans les systèmes embarqués modernes.', false, true, NOW(), NOW(), 1, 1),
-('Apprentissage automatique distribué', 'Optimisation des algorithmes de machine learning à grande échelle.', true, false, NOW(), NOW(), 1, 1),
-('Systèmes autonomes intelligents', 'Conception de systèmes auto-adaptatifs pour la robotique.', false, false, NOW(), NOW(), 1, 1),
-('Réseaux de neurones profonds', 'Amélioration de la performance des modèles de deep learning.', true, true, NOW(), NOW(), 1, 1),
-('Vision par ordinateur avancée', 'Détection d’objets en temps réel dans les flux vidéo.', false, true, NOW(), NOW(), 1, 1),
-('IoT et agriculture intelligente', 'Applications de l’internet des objets dans l’agriculture de précision.', true, true, NOW(), NOW(), 1, 1),
-('Cloud Computing pour le calcul scientifique', 'Déploiement de modèles scientifiques sur le cloud.', false, false, NOW(), NOW(), 1, 1),
-('Traitement du langage naturel en arabe', 'Développement de modèles NLP pour la langue arabe.', true, false, NOW(), NOW(), 1, 1),
-('Blockchain et traçabilité alimentaire', 'Utilisation de la blockchain pour le suivi des produits agricoles.', false, true, NOW(), NOW(), 1, 1);
+('Analyse des données massives', 'Étude approfondie des techniques de traitement de Big Data.', true, true, NOW(), NOW(), 2, 2),
+('Sécurité des systèmes embarqués', 'Recherche sur la cybersécurité dans les systèmes embarqués modernes.', false, true, NOW(), NOW(), 2, 2),
+('Apprentissage automatique distribué', 'Optimisation des algorithmes de machine learning à grande échelle.', true, false, NOW(), NOW(), 2, 2),
+('Systèmes autonomes intelligents', 'Conception de systèmes auto-adaptatifs pour la robotique.', false, false, NOW(), NOW(), 2, 2),
+('Réseaux de neurones profonds', 'Amélioration de la performance des modèles de deep learning.', true, true, NOW(), NOW(), 2, 2),
+('Vision par ordinateur avancée', 'Détection d’objets en temps réel dans les flux vidéo.', false, true, NOW(), NOW(), 2, 2),
+('IoT et agriculture intelligente', 'Applications de l’internet des objets dans l’agriculture de précision.', true, true, NOW(), NOW(), 2, 2),
+('Cloud Computing pour le calcul scientifique', 'Déploiement de modèles scientifiques sur le cloud.', false, false, NOW(), NOW(), 2, 2),
+('Traitement du langage naturel en arabe', 'Développement de modèles NLP pour la langue arabe.', true, false, NOW(), NOW(), 2, 2),
+('Blockchain et traçabilité alimentaire', 'Utilisation de la blockchain pour le suivi des produits agricoles.', false, true, NOW(), NOW(), 2, 2);

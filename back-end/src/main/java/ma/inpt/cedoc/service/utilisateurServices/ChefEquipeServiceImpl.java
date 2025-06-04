@@ -9,34 +9,33 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ChefEquipeServiceImpl implements ChefEquipeService {
 
-    private final ChefEquipeRepository chefEquipeRepository;
+    private final ChefEquipeRoleRepository chefEquipeRoleRepository;
     private final SujetRepository sujetRepository;
     private final CandidatureRepository candidatureRepository;
 
     @Override
-    public ChefEquipe findById(Long id) {
-        return chefEquipeRepository.findById(id).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chef d'équipe introuvable")
-        );
+    public ChefEquipeRole findById(Long id) {
+        return chefEquipeRoleRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chef d'équipe introuvable"));
     }
 
     @Override
-    public List<ChefEquipe> findAll() {
-        return chefEquipeRepository.findAll();
+    public List<ChefEquipeRole> findAll() {
+        return chefEquipeRoleRepository.findAll();
     }
 
     @Override
     public boolean existsById(Long id) {
-        return chefEquipeRepository.existsById(id);
+        return chefEquipeRoleRepository.existsById(id);
     }
 
     @Override

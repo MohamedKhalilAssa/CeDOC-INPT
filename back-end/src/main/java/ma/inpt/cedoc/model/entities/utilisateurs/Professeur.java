@@ -18,9 +18,6 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="professeurs")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="type_professeur", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("PROFESSEUR")
 public class Professeur extends Utilisateur {
 
     @Enumerated(EnumType.STRING)
@@ -43,5 +40,27 @@ public class Professeur extends Utilisateur {
     @OneToMany(mappedBy = "professeur")
     private List<Formation> formationsProposees;
 
+    // Roles - composition instead of inheritance
+    @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ChefEquipeRole chefEquipeRole;
+
+    @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private DirecteurDeTheseRole directeurDeTheseRole;
+
+    @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ResponsableDeFormationRole responsableDeFormationRole;
+
+    // Helper methods to check roles
+    public boolean isChefEquipe() {
+        return chefEquipeRole != null;
+    }
+
+    public boolean isDirecteurDeThese() {
+        return directeurDeTheseRole != null;
+    }
+
+    public boolean isResponsableDeFormation() {
+        return responsableDeFormationRole != null;
+    }
 
 }

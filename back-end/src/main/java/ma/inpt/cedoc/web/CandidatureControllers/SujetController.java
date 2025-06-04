@@ -47,6 +47,7 @@ public class SujetController {
 
     @GetMapping("/{id}/simple")
     public ResponseEntity<SujetResponseSimpleDTO> getSimple(@PathVariable Long id) {
+        System.out.println("simple");
         return ResponseEntity.ok(sujetService.getSimple(id));
     }
 
