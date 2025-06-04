@@ -4,14 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 
 @Entity
@@ -23,8 +17,9 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 @DiscriminatorValue("CHEF_EQUIPE")
 public class ChefEquipe extends Professeur {
 
-    @OneToMany(mappedBy = "chefEquipe")
-    private List<EquipeDeRecherche> equipeDeRecherche;
+    @OneToOne
+    @JoinColumn(name = "equipe_id", unique = true, nullable = false)
+    private EquipeDeRecherche equipeDeRecherche;
 
     @OneToMany(mappedBy = "chefEquipe")
     @JsonIgnore

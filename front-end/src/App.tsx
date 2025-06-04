@@ -6,6 +6,7 @@ import ForgotPasswordPage from "@/Pages/Authentication/ForgotPasswordPage";
 import SignInPage from "@/Pages/Authentication/SignInPage";
 import SignUpPage from "@/Pages/Authentication/SignUpPage";
 import PostulerPage from "@/Pages/Candidature/PostulerPage";
+import ResearchTeamsTable from "@/Pages/EquipesDeRecherchePage";
 import LandingPage from "@/Pages/LandingPage";
 import appConfig from "@/public/config";
 import { Route, Routes } from "react-router-dom";
@@ -49,6 +50,10 @@ function App() {
           <Route element={<AuthOnlyLayout />}>
             <Route path="/postuler" element={<PostulerPage />} />
           </Route>
+          <Route
+            path={appConfig.FRONTEND_PATHS.recherche.path}
+            element={<ResearchTeamsTable />}
+          />
         </Route>
       </Routes>
     </>

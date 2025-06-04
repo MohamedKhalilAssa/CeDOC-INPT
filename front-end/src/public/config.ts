@@ -73,12 +73,22 @@ const appConfig: AppConfig = {
       path: "/utilisateurs/logged-in",
       method: "GET",
     },
+    // ---------------- SUJETS ---------------------
+    chefsSujets: {
+      name: "Chefs et leurs Sujets",
+      path: "/chefs-equipe/chefs-sujets",
+      method: "GET",
+    },
+    sujetsEquipes: {
+      name: "Sujets et Équipes",
+      path: "/chefs-equipe/sujets-equipes",
+      method: "GET",
+    },
     sujetsList: {
       name: "Liste des Sujets",
       path: "/sujets/",
       method: "GET",
     },
-    // ---------------- SUJETS ---------------------
     sujetById: {
       name: "Sujet par ID",
       path: "/sujets/:id",
@@ -123,6 +133,10 @@ const appConfig: AppConfig = {
     postuler: {
       name: "Postuler",
       path: "/postuler",
+    },
+    recherche: {
+      name: "Recherche",
+      path: "/recherche",
     },
   },
 };
