@@ -24,6 +24,8 @@ interface AppConfig {
     AUTH: ApiPathsMap;
     NATIONALITE: ApiPathsMap;
     LIEU_DE_NAISSANCE: ApiPathsMap;
+    SUJET: ApiPathsMap;
+
     // Add more groups here
   };
 
@@ -84,6 +86,13 @@ const appConfig: AppConfig = {
       getAll: {
         name: "Get All LIEU_DE_NAISSANCE",
         path: "/lieux-de-naissances",
+        method: "GET",
+      },
+    },
+    SUJET: {
+      getAllSimple: {
+        name: "Get All SUJETS",
+        path: "/sujets/simple",
         method: "GET",
       },
     },

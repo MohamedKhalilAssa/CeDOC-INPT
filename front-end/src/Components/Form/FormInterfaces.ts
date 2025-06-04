@@ -1,3 +1,5 @@
+import { FieldErrors, UseFormRegister } from "react-hook-form";
+
 export interface InputFieldProps {
   label: string;
   name: string;
@@ -70,4 +72,15 @@ export interface TextAreaProps {
   validation?: any;
   classes?: string;
   rows?: number;
+}
+export interface CheckboxFieldProps {
+  label: string;
+  name: string;
+  register: UseFormRegister<any>;
+  errors: FieldErrors;
+  required?: boolean;
+  disabled?: boolean;
+  description?: string;
+  onChange?: (checked: boolean) => void;
+  className?: string;
 }

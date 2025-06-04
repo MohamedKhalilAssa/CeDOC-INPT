@@ -115,3 +115,25 @@ INSERT INTO directeurs_de_theses (id) VALUES
 -- DIRECTION CEDOC
 INSERT INTO direction_cedoc (id, role_administrative) VALUES 
 (2, 'DIRECTEUR');
+
+
+INSERT INTO sujets (
+    intitule,
+    description,
+    est_valide,
+    est_public,
+    created_at,
+    updated_at,
+    chef_equipe_id,
+    directeur_these_id
+) VALUES
+('Analyse des données massives', 'Étude approfondie des techniques de traitement de Big Data.', true, true, NOW(), NOW(), 1, 1),
+('Sécurité des systèmes embarqués', 'Recherche sur la cybersécurité dans les systèmes embarqués modernes.', false, true, NOW(), NOW(), 1, 1),
+('Apprentissage automatique distribué', 'Optimisation des algorithmes de machine learning à grande échelle.', true, false, NOW(), NOW(), 1, 1),
+('Systèmes autonomes intelligents', 'Conception de systèmes auto-adaptatifs pour la robotique.', false, false, NOW(), NOW(), 1, 1),
+('Réseaux de neurones profonds', 'Amélioration de la performance des modèles de deep learning.', true, true, NOW(), NOW(), 1, 1),
+('Vision par ordinateur avancée', 'Détection d’objets en temps réel dans les flux vidéo.', false, true, NOW(), NOW(), 1, 1),
+('IoT et agriculture intelligente', 'Applications de l’internet des objets dans l’agriculture de précision.', true, true, NOW(), NOW(), 1, 1),
+('Cloud Computing pour le calcul scientifique', 'Déploiement de modèles scientifiques sur le cloud.', false, false, NOW(), NOW(), 1, 1),
+('Traitement du langage naturel en arabe', 'Développement de modèles NLP pour la langue arabe.', true, false, NOW(), NOW(), 1, 1),
+('Blockchain et traçabilité alimentaire', 'Utilisation de la blockchain pour le suivi des produits agricoles.', false, true, NOW(), NOW(), 1, 1);

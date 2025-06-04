@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
@@ -42,8 +43,8 @@ public class SujetMapperImpl implements SujetMapper {
         return Sujet.builder()
                 .intitule(dto.getIntitule())
                 .description(dto.getDescription())
-                .valide(false)       // Validation par le chef d’équipe attendue
-                .estPublic(false)    // Affichage public seulement après validation
+                .valide(false) // Validation par le chef d’équipe attendue
+                .estPublic(false) // Affichage public seulement après validation
                 .chefEquipe(chefEquipe)
                 .directeurDeThese(directeur)
                 .professeurs(professeurs)
@@ -53,40 +54,57 @@ public class SujetMapperImpl implements SujetMapper {
     @Override
     public SujetResponseDTO toResponseDTO(Sujet sujet) {
         List<ProfesseurResponseDTO> professeurs = sujet.getProfesseurs().stream()
-            .map(p -> ProfesseurResponseDTO.builder()
-                .id(p.getId())
-                .nom(p.getNom())
-                .prenom(p.getPrenom())
-                .email(p.getEmail())
-                .grade(p.getGrade().name())
-                .build()
-            )
-            .collect(java.util.stream.Collectors.toList());
+                .map(p -> ProfesseurResponseDTO.builder()
+                        .id(p.getId())
+                        .nom(p.getNom())
+                        .prenom(p.getPrenom())
+                        .email(p.getEmail())
+                        .grade(p.getGrade().name())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
 
+        return SujetResponseDTO.builder()
+                .id(sujet.getId())
+                .intitule(sujet.getIntitule())
+                .description(sujet.getDescription())
+                .valide(sujet.isValide())
+                .estPublic(sujet.isEstPublic())
+                .createdAt(sujet.getCreatedAt())
+                .updatedAt(sujet.getUpdatedAt())
+                .chefEquipe(UtilisateurResponseDTO.builder()
+                        .id(sujet.getChefEquipe().getId())
+                        .nom(sujet.getChefEquipe().getNom())
+                        .prenom(sujet.getChefEquipe().getPrenom())
+                        .email(sujet.getChefEquipe().getEmail())
+                        .build())
+                .directeurDeThese(sujet.getDirecteurDeThese() != null ? UtilisateurResponseDTO.builder()
+                        .id(sujet.getDirecteurDeThese().getId())
+                        .nom(sujet.getDirecteurDeThese().getNom())
+                        .prenom(sujet.getDirecteurDeThese().getPrenom())
+                        .email(sujet.getDirecteurDeThese().getEmail())
+                        .build() : null)
+                .professeurs(professeurs)
+                .build();
 
-            return SujetResponseDTO.builder()
-                                    .id(sujet.getId())
-                                    .intitule(sujet.getIntitule())
-                                    .description(sujet.getDescription())
-                                    .valide(sujet.isValide())
-                                    .estPublic(sujet.isEstPublic())
-                                    .createdAt(sujet.getCreatedAt())
-                                    .updatedAt(sujet.getUpdatedAt())
-                                    .chefEquipe(UtilisateurResponseDTO.builder()
-                                        .id(sujet.getChefEquipe().getId())
-                                        .nom(sujet.getChefEquipe().getNom())
-                                        .prenom(sujet.getChefEquipe().getPrenom())
-                                        .email(sujet.getChefEquipe().getEmail())
-                                        .build())
-                                    .directeurDeThese(sujet.getDirecteurDeThese() != null ?
-                                        UtilisateurResponseDTO.builder()
-                                            .id(sujet.getDirecteurDeThese().getId())
-                                            .nom(sujet.getDirecteurDeThese().getNom())
-                                            .prenom(sujet.getDirecteurDeThese().getPrenom())
-                                            .email(sujet.getDirecteurDeThese().getEmail())
-                                            .build() : null)
-                                    .professeurs(professeurs)
-                                    .build();
-    
+    }
+
+    @Override
+    public SujetResponseSimpleDTO toSimpleResponseDTO(Sujet sujet) {
+        List<Long> professeurIds = sujet.getProfesseurs().stream()
+                .map(p -> p.getId())
+                .collect(java.util.stream.Collectors.toList());
+
+        return SujetResponseSimpleDTO.builder()
+                .id(sujet.getId())
+                .intitule(sujet.getIntitule())
+                .description(sujet.getDescription())
+                .valide(sujet.isValide())
+                .estPublic(sujet.isEstPublic())
+                .createdAt(sujet.getCreatedAt())
+                .updatedAt(sujet.getUpdatedAt())
+                .chefEquipe(sujet.getChefEquipe().getId())
+                .directeurDeThese(sujet.getDirecteurDeThese() != null ? sujet.getDirecteurDeThese().getId() : null)
+                .professeurs(professeurIds)
+                .build();
     }
 }

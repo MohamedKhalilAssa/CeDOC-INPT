@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
@@ -214,10 +215,24 @@ public class SujetServiceImpl implements SujetService {
 
         // Le sujet est invisible jusqu'à validation (future logique)
         sujet.setValide(false);
-        sujet.setEstPublic(false);
-
-        // Persistance
+        sujet.setEstPublic(false); // Persistance
         Sujet saved = sujetRepository.save(sujet);
         return sujetMapper.toResponseDTO(saved);
+    }
+
+    /* SIMPLE DTO METHODS --------------------------------------------- */
+    @Override
+    public SujetResponseSimpleDTO getSimple(Long id) {
+        Sujet sujet = sujetRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sujet non trouvé"));
+        return sujetMapper.toSimpleResponseDTO(sujet);
+    }
+
+    @Override
+    public List<SujetResponseSimpleDTO> getAllSimple() {
+        
+        return sujetRepository.findAll().stream()
+                .map(sujetMapper::toSimpleResponseDTO)
+                .collect(Collectors.toList());
     }
 }
