@@ -9,6 +9,9 @@ import LandingPage from "@/Pages/LandingPage";
 import appConfig from "@/public/config";
 import { Route, Routes } from "react-router-dom";
 import ResetPasswordPage from "./Pages/Authentication/ResetPasswordPage";
+import PostulerPage from "./Pages/Candidature/PostulerPage";
+import ContactPage from "./Pages/ContactPage";
+import FormationPage from "./Pages/FormationPage";
 
 function App() {
   return (
@@ -48,6 +51,12 @@ function App() {
           <Route element={<AuthOnlyLayout />}>
             <Route path="/postuler" element={<PostulerPage />} />
           </Route>
+        </Route>
+        <Route element={<GeneralLayout />}>
+            <Route path="/contact" element={<ContactPage />} />
+        </Route>
+        <Route element={<GeneralLayout />}>
+            <Route path="/formations" element={<FormationPage />} />
         </Route>
       </Routes>
     </>
