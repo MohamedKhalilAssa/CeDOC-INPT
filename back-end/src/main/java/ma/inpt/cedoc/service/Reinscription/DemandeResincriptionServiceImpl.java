@@ -118,7 +118,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO validerchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        demande.setAvisChef(true);
+        if
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 

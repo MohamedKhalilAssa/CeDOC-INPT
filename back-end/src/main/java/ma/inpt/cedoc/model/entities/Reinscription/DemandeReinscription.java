@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotNull;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
+import ma.inpt.cedoc.model.enums.reinscription_enums.DemandeReinscriptionEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -48,12 +49,9 @@ public class DemandeReinscription {
     private String demandeDerogation;
 
     // la demande d'inscription doit etre approuvé par le chef d'équipe et la direction du cedoc
-    private Boolean avisChef;
-
-    private Boolean avisDirection;
 
     @NotNull(message = "Etat de demande de réinscription est obligatoire")
-    private EtatEnum status = EtatEnum.DECLAREE;
+    private DemandeReinscriptionEnum status = DemandeReinscriptionEnum.DECLAREE;
 
     @Column(name = "created_at", updatable = false)
     @CreatedDate
