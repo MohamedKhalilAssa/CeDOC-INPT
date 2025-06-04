@@ -3,7 +3,7 @@ import TagInput from "@/Components/Form/TagInput";
 import TextArea from "@/Components/Form/TextArea";
 import { UseFormReturn } from "react-hook-form";
 
-// Define research area options
+// Define research area options MAYBE FOR LATER
 const researchAreaOptions = [
   { value: "cs", label: "Informatique" },
   { value: "ai", label: "Intelligence Artificielle" },

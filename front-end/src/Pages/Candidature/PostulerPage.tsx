@@ -3,22 +3,21 @@ import EducationHistoryForm from "@/Sections/Candidature/EducationHistoryForm";
 import FormNavigation from "@/Sections/Candidature/FormNavigation";
 import FormStepper from "@/Sections/Candidature/FormStepper";
 import PersonalInfoForm from "@/Sections/Candidature/PersonalInfoForm";
-import ResearchInterestsForm from "@/Sections/Candidature/ResearchInterestsForm";
 import StatusForm from "@/Sections/Candidature/StatusForm";
 import TermsAndConditionsForm from "@/Sections/Candidature/TermsAndConditionsForm";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const steps = [
   { id: 1, name: "Inscription" },
-  { id: 2, name: "Sujets de recherche" },
-  { id: 3, name: "Candidature" },
-  { id: 4, name: "Statut" },
+  // { id: 2, name: "Sujets de recherche" },
+  { id: 2, name: "Candidature" },
+  { id: 3, name: "Statut" },
 ];
 
 const PostulerPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [keywords, setKeywords] = useState<string[]>([]);
+  // const [keywords, setKeywords] = useState<string[]>([]);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm({
@@ -32,25 +31,17 @@ const PostulerPage = () => {
   const { handleSubmit, trigger, setValue, getValues } = form;
 
   // Initialize keywords from form data if available
-  useEffect(() => {
-    const keywordsValue = getValues("keywords");
-    if (
-      keywordsValue &&
-      typeof keywordsValue === "string" &&
-      keywordsValue.length > 0
-    ) {
-      setKeywords(keywordsValue.split(","));
-    }
+  // useEffect(() => {
+  //   const keywordsValue = getValues("keywords");
+  //   if (
+  //     keywordsValue &&
+  //     typeof keywordsValue === "string" &&
+  //     keywordsValue.length > 0
+  //   ) {
+  //     setKeywords(keywordsValue.split(","));
+  //   }
 
-    // This is just to avoid the unused variable warning
-    // The real usage of setValue happens in child components
-    const noop = () => {
-      if (process.env.NODE_ENV === "development" && false) {
-        setValue("keywords", "");
-      }
-    };
-    noop();
-  }, [getValues, setValue]);
+  // }, [getValues, setValue]);
 
   const onSubmit = async (data: any) => {
     console.log(data);
@@ -59,7 +50,7 @@ const PostulerPage = () => {
     // Simulate form submission
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    setCurrentStep(4); // Move to the final step (Status)
+    setCurrentStep(3); // Move to the final step (Status)
     setIsSubmitting(false);
   };
 
@@ -70,7 +61,7 @@ const PostulerPage = () => {
     const isStepValid = await trigger(fieldsToValidate as any);
 
     if (isStepValid) {
-      if (currentStep === 3) {
+      if (currentStep === 2) {
         // Submit the form if it's the last input step
         await handleSubmit(onSubmit)();
       } else {
@@ -92,21 +83,26 @@ const PostulerPage = () => {
     switch (step) {
       case 1: // Personal Info
         return [
-          "firstName",
-          "lastName",
+          "nom",
+          "prenom",
           "email",
-          "phone",
-          "birthDate",
-          "nationality",
-          "highestDegree",
-          "fieldOfStudy",
-          "institution",
-          "graduationYear",
-          "cv",
+          "telephone",
+          "genre",
+          "etatCivilEnum",
+          "dateNaissance",
+          "nationaliteId",
+          "lieuDeNaissanceId",
+          "diplome",
+          "typeEtablissement",
+          "mentionDiplome",
+          "mentionBac",
+          "specialite",
+          "intitulePFE",
+          "dossierCandidature",
         ];
-      case 2: // Research Interests
-        return ["primaryResearchArea", "keywords", "researchStatement"];
-      case 3: // Terms and Conditions
+      // case 2: // Research Interests
+      //   return ["primaryResearchArea", "keywords", "researchStatement"];
+      case 2: // Terms and Conditions
         return ["termsAgreement"];
       default:
         return [];
@@ -124,15 +120,15 @@ const PostulerPage = () => {
             <CVUploadForm form={form} />
           </>
         );
+      // case 2:
+      //   return (
+      //     <ResearchInterestsForm
+      //       form={form}
+      //       keywords={keywords}
+      //       setKeywords={setKeywords}
+      //     />
+      //   );
       case 2:
-        return (
-          <ResearchInterestsForm
-            form={form}
-            keywords={keywords}
-            setKeywords={setKeywords}
-          />
-        );
-      case 3:
         return (
           <TermsAndConditionsForm
             form={form}
@@ -140,7 +136,7 @@ const PostulerPage = () => {
             setAgreementChecked={setAgreementChecked}
           />
         );
-      case 4:
+      case 3:
         return <StatusForm />;
       default:
         return null;
@@ -155,7 +151,7 @@ const PostulerPage = () => {
         {renderStepForm()}
 
         {/* Don't show navigation on the status page */}
-        {currentStep < 4 && (
+        {currentStep < 3 && (
           <FormNavigation
             currentStep={currentStep}
             totalSteps={steps.length}

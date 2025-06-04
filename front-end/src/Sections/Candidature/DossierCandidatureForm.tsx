@@ -24,7 +24,7 @@ const DossierCandidatureForm = ({ form }: DossierCandidatureFormProps) => {
 
       <FileUpload
         label="Document"
-        name="cv"
+        name="dossierCandidature"
         register={register}
         errors={errors}
         required={true}

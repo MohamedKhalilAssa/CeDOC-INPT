@@ -83,7 +83,7 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
           register={register}
           errors={errors}
           required={true}
-        />{" "}
+        />
       </div>
 
       <div className="mt-4">

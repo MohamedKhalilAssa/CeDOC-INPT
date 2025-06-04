@@ -33,6 +33,7 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
+import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRefuserRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.CandidatRepository;
@@ -48,6 +49,7 @@ import ma.inpt.cedoc.service.utilisateurServices.CandidatService;
 public class CandidatureServiceImpl implements CandidatureService {
 
     private final CandidatureRepository candidatureRepository;
+    private final CandidatureRefuserRepository candidatureRefuserRepository;
     private final CandidatRepository candidatRepository;
     private final CandidatureMapper candidatureMapper;
 
@@ -252,7 +254,7 @@ public class CandidatureServiceImpl implements CandidatureService {
     public void archiverCandidatsRefuses() {
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
         // On récupère toutes les candidatures refusées avant oneMonthAgo
-        List<Candidature> refusesAnciens = candidatureRepository
+        List<Candidature> refusesAnciens = candidatureRefuserRepository
                 .findByStatutCandidatureAndDateRefusBefore(CandidatureEnum.REFUSER, oneMonthAgo);
 
         for (Candidature c : refusesAnciens) {
