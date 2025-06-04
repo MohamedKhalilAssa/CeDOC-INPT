@@ -4,7 +4,6 @@ import EmailVerificationPage from "@/Pages/Authentication/EmailVerificationPage"
 import ForgotPasswordPage from "@/Pages/Authentication/ForgotPasswordPage";
 import SignInPage from "@/Pages/Authentication/SignInPage";
 import SignUpPage from "@/Pages/Authentication/SignUpPage";
-import PostulerPage from "@/Pages/Candidature/PostulerPage";
 import LandingPage from "@/Pages/LandingPage";
 import appConfig from "@/public/config";
 import { Route, Routes } from "react-router-dom";
@@ -45,8 +44,6 @@ function App() {
               element={<ResetPasswordPage />}
             />
           </Route>
-
-          <Route path="/postuler" element={<PostulerPage />} />
         </Route>
       </Routes>
     </>
