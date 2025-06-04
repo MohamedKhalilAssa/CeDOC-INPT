@@ -14,4 +14,13 @@ public interface DemandeResincriptionService {
     public DemandeReinscriptionResponseDTO createDemande(DemandeReinscriptionRequestDTO demandeDTO, String email);
     public DemandeReinscriptionResponseDTO editDemande(Long id, DemandeReinscriptionRequestDTO demandeDTO, String email);
     public void deleteDemande(Long id, String email);
+
+
+    public DemandeReinscriptionResponseDTO validerchef(Long id, String email);
+
+    public DemandeReinscriptionResponseDTO refuserchef(Long id, String email);
+
+    public DemandeReinscriptionResponseDTO validerdirection(Long id, String email);
+
+    public DemandeReinscriptionResponseDTO refuserdirection(Long id, String email);
 }

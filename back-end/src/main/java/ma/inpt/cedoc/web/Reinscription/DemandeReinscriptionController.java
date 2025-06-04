@@ -28,6 +28,7 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.getDemandesByDoctorantId(id));
     }
 
+    // avoir les demandes de réinscription aux quelle ce directeur de thèse est responsable de réviser
     @GetMapping("directeurthese/{id}")
     public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByDirecteurTheseId(@PathVariable Long id) {
         return ResponseEntity.ok(demandeResincriptionService.getDemandesByDirecteurTheseId(id));
@@ -63,4 +64,35 @@ public class DemandeReinscriptionController {
         demandeResincriptionService.deleteDemande(id, email);
         return ResponseEntity.ok("Demande supprimé avec succès");
     }
+
+    @PatchMapping("/{id}/validerchef")
+    public ResponseEntity<DemandeReinscriptionResponseDTO> validerDemandeParChefEquipe(@AuthenticationPrincipal UserDetails userDetails,
+                                                      @PathVariable Long id){
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(demandeResincriptionService.validerchef(id, email));
+    }
+
+    @PatchMapping("/{id}/refuserchef")
+    public ResponseEntity<DemandeReinscriptionResponseDTO> refuserDemandeParChefEquipe(@AuthenticationPrincipal UserDetails userDetails,
+                                                      @PathVariable Long id){
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(demandeResincriptionService.refuserchef(id, email));
+    }
+
+    @PatchMapping("/{id}/validerdirection")
+    public ResponseEntity<DemandeReinscriptionResponseDTO> validerDemandeParDirection(@AuthenticationPrincipal UserDetails userDetails,
+                                                      @PathVariable Long id){
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(demandeResincriptionService.validerdirection(id, email));
+    }
+
+    @PatchMapping("/{id}/refuserdirection")
+    public ResponseEntity<DemandeReinscriptionResponseDTO> refuserDemandeParDirection(@AuthenticationPrincipal UserDetails userDetails,
+                                                      @PathVariable Long id){
+        String email = userDetails.getUsername();
+
+        return ResponseEntity.ok(demandeResincriptionService.refuserdirection(id, email));
+    }
+
+
 }

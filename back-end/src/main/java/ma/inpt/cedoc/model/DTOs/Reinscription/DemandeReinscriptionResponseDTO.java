@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
+import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 
 @NoArgsConstructor
 @Data
@@ -29,6 +30,12 @@ public class DemandeReinscriptionResponseDTO extends BaseResponseDTO {
     private Long demandeurId;
 
     private Long sujetId;
+
+    private Boolean avisChef;
+
+    private Boolean avisDirection;
+
+    private EtatEnum status;
 
     private Long avisReinscriptionId;
 }

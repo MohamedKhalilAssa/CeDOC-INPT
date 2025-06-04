@@ -40,7 +40,9 @@ public class PublicationMapper {
         dto.setPrixIntitule(entity.getPrixIntitule());
         dto.setStatus(entity.getStatus());
         dto.setAuteurId(entity.getAuteur().getId());
-        dto.setValidateurId(entity.getValidateur().getId());
+        if (entity.getValidateur() != null) {
+            dto.setValidateurId(entity.getValidateur().getId());
+        }
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
         return dto;

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
+import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.DirectionCedocRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     private final DemandeReinscriptionRepository demandeReinscriptionRepository;
     private final DoctorantRepository doctorantRepository;
     private final DirecteurDeTheseRepository directeurDeTheseRepository;
+    private final DirectionCedocRepository directionCedocRepository;
 
     public List<DemandeReinscriptionResponseDTO> getAllDemandes() {
         List<DemandeReinscription> demandes = demandeReinscriptionRepository.findAll();
@@ -108,5 +112,55 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
         }
         demandeReinscriptionRepository.deleteById(id);
+    }
+
+    @Override
+    public DemandeReinscriptionResponseDTO validerchef(Long id, String email) {
+        DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
+        demande.setAvisChef(true);
+        return demandeReinscriptionMapper.toResponseDTO(demande);
+    }
+
+    @Override
+    public DemandeReinscriptionResponseDTO refuserchef(Long id, String email) {
+        DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
+        demande.setAvisChef(false);
+        demande.setStatus(EtatEnum.REFUSEE);
+        return demandeReinscriptionMapper.toResponseDTO(demande);
+    }
+
+    @Override
+    public DemandeReinscriptionResponseDTO validerdirection(Long id, String email) {
+        DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
+        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
+        if (demande.getAvisChef() == null){
+            throw new RuntimeException("Vous ne pouvez pas reviser cette demande avant qu'un chef la révise");
+        }
+        if (demande.getAvisChef().equals(false)) {
+            demande.setStatus(EtatEnum.REFUSEE);
+        }else {
+            demande.setStatus(EtatEnum.VALIDE);
+        }
+
+        return demandeReinscriptionMapper.toResponseDTO(demande);
+    }
+
+    @Override
+    public DemandeReinscriptionResponseDTO refuserdirection(Long id, String email) {
+        DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
+        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
+
+        if (demande.getAvisChef() == null){
+            throw new RuntimeException("Vous ne pouvez pas reviser cette demande avant qu'un chef la révise");
+        }
+
+        demande.setStatus(EtatEnum.REFUSEE);
+        return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 }

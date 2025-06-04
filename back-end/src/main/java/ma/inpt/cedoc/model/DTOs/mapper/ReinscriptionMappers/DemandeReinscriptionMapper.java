@@ -56,6 +56,10 @@ public class DemandeReinscriptionMapper {
 
         responseDTO.setAvisReinscriptionId(entity.getAvisReinscription().getId());
 
+        responseDTO.setAvisChef(entity.getAvisChef());
+        responseDTO.setAvisDirection(entity.getAvisDirection());
+        responseDTO.setStatus(entity.getStatus());
+
         responseDTO.setCreatedAt(entity.getCreatedAt());
         responseDTO.setUpdatedAt(entity.getUpdatedAt());
 

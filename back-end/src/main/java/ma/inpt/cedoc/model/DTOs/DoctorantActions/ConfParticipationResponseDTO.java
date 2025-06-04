@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
+import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -27,6 +28,8 @@ public class ConfParticipationResponseDTO extends BaseResponseDTO {
     private String justificatif;
 
     private String autresParticipants;
+
+    private EtatEnum status;
 
     private Long participantId;
 
