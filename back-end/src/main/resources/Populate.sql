@@ -36,30 +36,30 @@ INSERT INTO roles (id, created_at, intitule, updated_at) VALUES
 -- Hashed: $2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG
 INSERT INTO utilisateurs (id, created_at, date_naissance, email, email_valider, etat_civil, genre, nom, password, prenom, statut_professionnel, telephone, updated_at, lieu_naissance_id, nationalite_id) VALUES
 -- Admin
-(1, NOW(), '1980-01-15', 'admin@university.edu', 1, 'MARIER', 'HOMME', 'Admin', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'System', 'NON_SALARIE', '0612345678', NOW(), 1, 1),
+(1, NOW(), '1980-01-15', 'admin@university.edu', 1, 'MARIER', 'HOMME', 'Admin', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'System', 'NON_SALARIE', '0612345678', NOW(), 1, 1),
 
 -- Professors
-(2, NOW(), '1975-05-20', 'prof1@university.edu', 1, 'MARIER', 'HOMME', 'Smith', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'John', 'NON_SALARIE', '0612345679', NOW(), 2, 2),
-(3, NOW(), '1980-08-12', 'prof2@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Johnson', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Alice', 'NON_SALARIE', '0612345680', NOW(), 3, 1),
-(4, NOW(), '1978-11-30', 'prof3@university.edu', 1, 'MARIER', 'HOMME', 'Williams', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Robert', 'NON_SALARIE', '0612345681', NOW(), 4, 3),
-(5, NOW(), '1982-03-25', 'prof4@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Brown', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Emily', 'NON_SALARIE', '0612345682', NOW(), 5, 4),
-(6, NOW(), '1970-07-18', 'prof5@university.edu', 1, 'DIVORCER', 'HOMME', 'Davis', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Michael', 'NON_SALARIE', '0612345683', NOW(), 6, 5),
+(2, NOW(), '1975-05-20', 'prof1@university.edu', 1, 'MARIER', 'HOMME', 'Smith', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'John', 'NON_SALARIE', '0612345679', NOW(), 2, 2),
+(3, NOW(), '1980-08-12', 'prof2@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Johnson', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Alice', 'NON_SALARIE', '0612345680', NOW(), 3, 1),
+(4, NOW(), '1978-11-30', 'prof3@university.edu', 1, 'MARIER', 'HOMME', 'Williams', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Robert', 'NON_SALARIE', '0612345681', NOW(), 4, 3),
+(5, NOW(), '1982-03-25', 'prof4@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Brown', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Emily', 'NON_SALARIE', '0612345682', NOW(), 5, 4),
+(6, NOW(), '1970-07-18', 'prof5@university.edu', 1, 'DIVORCER', 'HOMME', 'Davis', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Michael', 'NON_SALARIE', '0612345683', NOW(), 6, 5),
 
 -- Doctoral students
-(7, NOW(), '1990-02-10', 'doc1@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Martin', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Thomas', 'NON_SALARIE', '0612345684', NOW(), 7, 1),
-(8, NOW(), '1991-06-22', 'doc2@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Garcia', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Sophia', 'NON_SALARIE', '0612345685', NOW(), 8, 1),
-(9, NOW(), '1989-09-15', 'doc3@university.edu', 1, 'MARIER', 'HOMME', 'Lee', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'David', 'NON_SALARIE', '0612345686', NOW(), 9, 2),
-(10, NOW(), '1992-04-05', 'doc4@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Wilson', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Emma', 'NON_SALARIE', '0612345687', NOW(), 10, 1),
-(11, NOW(), '1988-12-30', 'doc5@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Anderson', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'James', 'NON_SALARIE', '0612345688', NOW(), 1, 3),
+(7, NOW(), '1990-02-10', 'doc1@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Martin', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Thomas', 'NON_SALARIE', '0612345684', NOW(), 7, 1),
+(8, NOW(), '1991-06-22', 'doc2@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Garcia', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Sophia', 'NON_SALARIE', '0612345685', NOW(), 8, 1),
+(9, NOW(), '1989-09-15', 'doc3@university.edu', 1, 'MARIER', 'HOMME', 'Lee', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'David', 'NON_SALARIE', '0612345686', NOW(), 9, 2),
+(10, NOW(), '1992-04-05', 'doc4@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Wilson', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Emma', 'NON_SALARIE', '0612345687', NOW(), 10, 1),
+(11, NOW(), '1988-12-30', 'doc5@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Anderson', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'James', 'NON_SALARIE', '0612345688', NOW(), 1, 3),
 
 -- Candidates
-(12, NOW(), '1993-07-14', 'cand1@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Taylor', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'William', 'NON_SALARIE', '0612345689', NOW(), 2, 2),
-(13, NOW(), '1994-01-25', 'cand2@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Moore', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Olivia', 'NON_SALARIE', '0612345690', NOW(), 3, 1),
-(14, NOW(), '1992-10-08', 'cand3@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Jackson', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Benjamin', 'NON_SALARIE', '0612345691', NOW(), 4, 4),
+(12, NOW(), '1993-07-14', 'cand1@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Taylor', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'William', 'NON_SALARIE', '0612345689', NOW(), 2, 2),
+(13, NOW(), '1994-01-25', 'cand2@university.edu', 1, 'CELIBATAIRE', 'FEMME', 'Moore', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Olivia', 'NON_SALARIE', '0612345690', NOW(), 3, 1),
+(14, NOW(), '1992-10-08', 'cand3@university.edu', 1, 'CELIBATAIRE', 'HOMME', 'Jackson', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Benjamin', 'NON_SALARIE', '0612345691', NOW(), 4, 4),
 
 -- Direction CEDOC
-(15, NOW(), '1972-09-17', 'dir1@university.edu', 1, 'MARIER', 'HOMME', 'White', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Richard', 'NON_SALARIE', '0612345692', NOW(), 5, 1),
-(16, NOW(), '1975-11-23', 'dir2@university.edu', 1, 'MARIER', 'FEMME', 'Harris', '$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG', 'Jennifer', 'NON_SALARIE', '0612345693', NOW(), 6, 2);
+(15, NOW(), '1972-09-17', 'dir1@university.edu', 1, 'MARIER', 'HOMME', 'White', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Richard', 'NON_SALARIE', '0612345692', NOW(), 5, 1),
+(16, NOW(), '1975-11-23', 'dir2@university.edu', 1, 'MARIER', 'FEMME', 'Harris', '$2a$10$q.i3ifYztf5j1gKly4kGRO72RgRLwGygrC6mxASa5YhKwk9zmjHFS', 'Jennifer', 'NON_SALARIE', '0612345693', NOW(), 6, 2);
 
 -- Assign roles to users
 INSERT INTO utilisateur_roles (utilisateur_id, role_id) VALUES
