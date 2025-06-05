@@ -4,14 +4,14 @@ import java.util.List;
 
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 
 public interface ChefEquipeService {
 
     /* GET METHODS */
-    ChefEquipe findById(Long id);
+    ChefEquipeRole findById(Long id);
 
-    List<ChefEquipe> findAll();
+    List<ChefEquipeRole> findAll();
 
     boolean existsById(Long id);
 

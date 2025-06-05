@@ -11,11 +11,8 @@ import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
-import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
-import ma.inpt.cedoc.service.utilisateurServices.DirecteurDeTheseService;
 import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 
 @Component
@@ -23,17 +20,22 @@ import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 public class SujetMapperImpl implements SujetMapper {
 
     private final ProfesseurService professeurService;
-    private final ChefEquipeService chefEquipeService;
-    private final DirecteurDeTheseService directeurDeTheseService;
 
     public Sujet toEntity(SujetRequestDTO dto) {
-        // Récupérer le chef d'équipe
-        ChefEquipe chefEquipe = chefEquipeService.findById(dto.getChefEquipeId());
-
+        // Récupérer le professeur qui sera chef d'équipe
+        Professeur professeurChef = professeurService.getProfesseurById(dto.getChefEquipeId());
+        if (professeurChef.getChefEquipeRole() == null) {
+            throw new IllegalArgumentException("Le professeur avec l'ID " + dto.getChefEquipeId() + " n'a pas le rôle de chef d'équipe.");
+        }
+        
         // Récupérer le directeur de thèse (facultatif)
-        DirecteurDeThese directeur = null;
+        DirecteurDeTheseRole directeurRole = null;
         if (dto.getDirecteurDeTheseId() != null) {
-            directeur = directeurDeTheseService.findById(dto.getDirecteurDeTheseId());
+            Professeur professeurDirecteur = professeurService.getProfesseurById(dto.getDirecteurDeTheseId());
+            if (professeurDirecteur.getDirecteurDeTheseRole() == null) {
+                throw new IllegalArgumentException("Le professeur avec l'ID " + dto.getDirecteurDeTheseId() + " n'a pas le rôle de directeur de thèse.");
+            }
+            directeurRole = professeurDirecteur.getDirecteurDeTheseRole();
         }
 
         // Récupérer les professeurs qui proposent le sujet
@@ -43,10 +45,10 @@ public class SujetMapperImpl implements SujetMapper {
         return Sujet.builder()
                 .intitule(dto.getIntitule())
                 .description(dto.getDescription())
-                .valide(false) // Validation par le chef d’équipe attendue
+                .valide(false) // Validation par le chef d'équipe attendue
                 .estPublic(false) // Affichage public seulement après validation
-                .chefEquipe(chefEquipe)
-                .directeurDeThese(directeur)
+                .chefEquipe(professeurChef.getChefEquipeRole())
+                .directeurDeThese(directeurRole)
                 .professeurs(professeurs)
                 .build();
     }
@@ -72,20 +74,19 @@ public class SujetMapperImpl implements SujetMapper {
                 .createdAt(sujet.getCreatedAt())
                 .updatedAt(sujet.getUpdatedAt())
                 .chefEquipe(UtilisateurResponseDTO.builder()
-                        .id(sujet.getChefEquipe().getId())
-                        .nom(sujet.getChefEquipe().getNom())
-                        .prenom(sujet.getChefEquipe().getPrenom())
-                        .email(sujet.getChefEquipe().getEmail())
+                        .id(sujet.getChefEquipe().getProfesseur().getId())
+                        .nom(sujet.getChefEquipe().getProfesseur().getNom())
+                        .prenom(sujet.getChefEquipe().getProfesseur().getPrenom())
+                        .email(sujet.getChefEquipe().getProfesseur().getEmail())
                         .build())
                 .directeurDeThese(sujet.getDirecteurDeThese() != null ? UtilisateurResponseDTO.builder()
-                        .id(sujet.getDirecteurDeThese().getId())
-                        .nom(sujet.getDirecteurDeThese().getNom())
-                        .prenom(sujet.getDirecteurDeThese().getPrenom())
-                        .email(sujet.getDirecteurDeThese().getEmail())
+                        .id(sujet.getDirecteurDeThese().getProfesseur().getId())
+                        .nom(sujet.getDirecteurDeThese().getProfesseur().getNom())
+                        .prenom(sujet.getDirecteurDeThese().getProfesseur().getPrenom())
+                        .email(sujet.getDirecteurDeThese().getProfesseur().getEmail())
                         .build() : null)
                 .professeurs(professeurs)
                 .build();
-
     }
 
     @Override
@@ -102,8 +103,8 @@ public class SujetMapperImpl implements SujetMapper {
                 .estPublic(sujet.isEstPublic())
                 .createdAt(sujet.getCreatedAt())
                 .updatedAt(sujet.getUpdatedAt())
-                .chefEquipe(sujet.getChefEquipe().getId())
-                .directeurDeThese(sujet.getDirecteurDeThese() != null ? sujet.getDirecteurDeThese().getId() : null)
+                .chefEquipe(sujet.getChefEquipe().getProfesseur().getId())
+                .directeurDeThese(sujet.getDirecteurDeThese() != null ? sujet.getDirecteurDeThese().getProfesseur().getId() : null)
                 .professeurs(professeurIds)
                 .build();
     }

@@ -9,10 +9,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
@@ -57,8 +54,8 @@ public class Doctorant extends Utilisateur {
         private EquipeDeRecherche equipeDeRecherche;
 
         @ManyToOne
-        @JoinColumn(name = "directeur_id")
-        private DirecteurDeThese directeurDeThese;
+        @JoinColumn(name = "directeur_role_id")
+        private DirecteurDeTheseRole directeurDeThese;
 
         @ManyToOne
         @JoinColumn(name = "sujet_id")
