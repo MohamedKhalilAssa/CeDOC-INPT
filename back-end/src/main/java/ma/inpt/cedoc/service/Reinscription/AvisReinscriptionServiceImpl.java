@@ -62,12 +62,19 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
         // vérifier si le directeur de these est responsable de cette demande ou pas (est ce qu'il est responsable pour ce sujet là)
         DemandeReinscription demandeResincription = demandeReinscriptionRepository.findById(requestDTO.getDemandeReinscriptionId())
                 .orElseThrow(() -> new ResourceNotFoundException("DemandeReinscription n'existe pas "));
+
+        // vérifier que si un demande de réinscription a un avis on ne peut pas créer un autre avis
+        if (!demandeResincription.getStatus().equals(DemandeReinscriptionEnum.DECLAREE)){
+            throw new RuntimeException("Ce demande à déjà un avis");
+        }
+
         if (!directeurDeThese.getSujets().contains(demandeResincription.getSujet())){
             throw new AccessDeniedException("Vous n'êtes pas autorisé à réviser ce demande de réinscription");
         }
         //--------------------------------------------------------------------------
         AvisReinscription avisReinscription = avisResinscriptionMapper.toEntity(requestDTO);
         avisReinscription.setDirecteurDeThese(directeurDeThese);
+
         if (avisReinscription.getAvisFinal().equals(AvisEnum.NON_FAVORABLE)){
             demandeResincription.setStatus(DemandeReinscriptionEnum.REFUSEE);
         }else{
@@ -94,6 +101,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
         }
 
         avisResinscriptionMapper.updateFromRequest(requestDTO, avisReinscription);
+
         if (avisReinscription.getAvisFinal().equals(AvisEnum.NON_FAVORABLE)){
             avisReinscription.getDemandeReinscription().setStatus(DemandeReinscriptionEnum.REFUSEE);
         }else{

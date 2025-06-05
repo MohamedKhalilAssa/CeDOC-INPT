@@ -131,7 +131,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE)){
-            throw new RuntimeException("if faut que la demande soit en état : révisé par directeur de thèse");
+            throw new RuntimeException("if faut que la demande soit en état : VALIDEE_DIRECTEUR_THESE, mais elle est : " + demande.getStatus());
         }
         demande.setStatus(DemandeReinscriptionEnum.VALIDEE_CHEF);
         demande.setChefEquipeValidateur(chefEquipeRole);
@@ -147,7 +147,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE)){
-            throw new RuntimeException("if faut que la demande soit en état : révisé par directeur de thèse");
+            throw new RuntimeException("if faut que la demande soit en état : VALIDEE_DIRECTEUR_THESE, mais elle est : " + demande.getStatus());
         }
         demande.setStatus(DemandeReinscriptionEnum.REFUSEE);
         demande.setChefEquipeValidateur(chefEquipeRole);
@@ -163,7 +163,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
-            throw new RuntimeException("Il faut que la demande soit en validé par le chef d'équipe en début");
+            throw new RuntimeException("Il faut que la demande soit en état : VALIDEE_CHEF, mais elle est : "+demande.getStatus());
         }
         demande.setStatus(DemandeReinscriptionEnum.VALIDEE);
         demande.setDirectionCedocValidateur(direction);
@@ -179,7 +179,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
-            throw new RuntimeException("if faut que la demande soit en état : révisé par directeur de thèse");
+            throw new RuntimeException("Il faut que la demande soit en état : VALIDEE_CHEF, mais elle est : "+demande.getStatus());
         }
         demande.setStatus(DemandeReinscriptionEnum.REFUSEE);
         demande.setDirectionCedocValidateur(direction);
