@@ -1,7 +1,7 @@
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import ComponentCard from "../../components/common/ComponentCard";
-import LineChartOne from "../../components/charts/line/LineChartOne";
-import PageMeta from "../../components/common/PageMeta";
+import LineChartOne from "@/Components/DashComps/charts/line/LineChartOne";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import PageBreadcrumb from "@/Components/DashComps/common/PageBreadCrumb";
+import PageMeta from "@/Components/DashComps/common/PageMeta";
 
 export default function LineChart() {
   return (

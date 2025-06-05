@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
-import TextArea from "../input/TextArea";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import TextArea from "@/Components/DashComps/form/input/TextArea";
 import Label from "../Label";
 
 export default function TextAreaInput() {

@@ -1,7 +1,7 @@
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import ComponentCard from "../../components/common/ComponentCard";
-import BarChartOne from "../../components/charts/bar/BarChartOne";
-import PageMeta from "../../components/common/PageMeta";
+import BarChartOne from "@/Components/DashComps/charts/bar/BarChartOne";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import PageBreadcrumb from "@/Components/DashComps/common/PageBreadCrumb";
+import PageMeta from "@/Components/DashComps/common/PageMeta";
 
 export default function BarChart() {
   return (

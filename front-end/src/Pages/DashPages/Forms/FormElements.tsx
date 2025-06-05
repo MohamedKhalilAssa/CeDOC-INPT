@@ -1,15 +1,16 @@
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import DefaultInputs from "../../components/form/form-elements/DefaultInputs";
-import InputGroup from "../../components/form/form-elements/InputGroup";
-import DropzoneComponent from "../../components/form/form-elements/DropZone";
-import CheckboxComponents from "../../components/form/form-elements/CheckboxComponents";
-import RadioButtons from "../../components/form/form-elements/RadioButtons";
-import ToggleSwitch from "../../components/form/form-elements/ToggleSwitch";
-import FileInputExample from "../../components/form/form-elements/FileInputExample";
-import SelectInputs from "../../components/form/form-elements/SelectInputs";
-import TextAreaInput from "../../components/form/form-elements/TextAreaInput";
-import InputStates from "../../components/form/form-elements/InputStates";
-import PageMeta from "../../components/common/PageMeta";
+import PageBreadcrumb from "@/Components/DashComps/common/PageBreadCrumb";
+import PageMeta from "@/Components/DashComps/common/PageMeta";
+import CheckboxComponents from "@/Components/DashComps/form/form-elements/CheckboxComponents";
+import DefaultInputs from "@/Components/DashComps/form/form-elements/DefaultInputs";
+import DropzoneComponent from "@/Components/DashComps/form/form-elements/DropZone";
+import FileInputExample from "@/Components/DashComps/form/form-elements/FileInputExample";
+import InputGroup from "@/Components/DashComps/form/form-elements/InputGroup";
+import InputStates from "@/Components/DashComps/form/form-elements/InputStates";
+import RadioButtons from "@/Components/DashComps/form/form-elements/RadioButtons";
+import SelectInputs from "@/Components/DashComps/form/form-elements/SelectInputs";
+import TextAreaInput from "@/Components/DashComps/form/form-elements/TextAreaInput";
+import ToggleSwitch from "@/Components/DashComps/form/form-elements/ToggleSwitch";
+
 
 export default function FormElements() {
   return (

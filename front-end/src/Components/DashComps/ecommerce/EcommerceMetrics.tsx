@@ -1,10 +1,6 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  BoxIconLine,
-  GroupIcon,
-} from "../../icons";
-import Badge from "../ui/badge/Badge";
+
+import { BoxIconLine } from "@/Dashicons";
+import { ArrowDownIcon, ArrowUpIcon, Badge, GroupIcon } from "lucide-react";
 
 export default function EcommerceMetrics() {
   return (

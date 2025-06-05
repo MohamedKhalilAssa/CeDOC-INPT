@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
-import Input from "../input/InputField";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import Input from "@/Components/DashComps/form/input/InputField";
 import Label from "../Label";
 export default function InputStates() {
   const [email, setEmail] = useState("");

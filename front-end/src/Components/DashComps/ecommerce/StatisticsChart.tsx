@@ -1,6 +1,6 @@
-import Chart from "react-apexcharts";
+import ChartTab from "@/Components/DashComps/common/ChartTab";
 import { ApexOptions } from "apexcharts";
-import ChartTab from "../common/ChartTab";
+import Chart from "react-apexcharts";
 
 export default function StatisticsChart() {
   const options: ApexOptions = {

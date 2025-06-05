@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import Label from "@/Components/DashComps/form/Label";
+import { CalenderIcon } from "@/Dashicons";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-import Label from "./Label";
-import { CalenderIcon } from "../../icons";
+import { useEffect } from "react";
 import Hook = flatpickr.Options.Hook;
 import DateOption = flatpickr.Options.DateOption;
 

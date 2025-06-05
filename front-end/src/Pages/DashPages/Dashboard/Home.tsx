@@ -1,10 +1,10 @@
-import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
-import StatisticsChart from "../../components/ecommerce/StatisticsChart";
-import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
-import RecentOrders from "../../components/ecommerce/RecentOrders";
-import DemographicCard from "../../components/ecommerce/DemographicCard";
-import PageMeta from "../../components/common/PageMeta";
+import PageMeta from "@/Components/DashComps/common/PageMeta";
+import DemographicCard from "@/Components/DashComps/ecommerce/DemographicCard";
+import EcommerceMetrics from "@/Components/DashComps/ecommerce/EcommerceMetrics";
+import MonthlySalesChart from "@/Components/DashComps/ecommerce/MonthlySalesChart";
+import MonthlyTarget from "@/Components/DashComps/ecommerce/MonthlyTarget";
+import RecentOrders from "@/Components/DashComps/ecommerce/RecentOrders";
+import StatisticsChart from "@/Components/DashComps/ecommerce/StatisticsChart";
 
 export default function Home() {
   return (

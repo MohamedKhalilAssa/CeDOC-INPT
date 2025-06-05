@@ -1,4 +1,4 @@
-import ComponentCard from "../../common/ComponentCard";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
 import { useDropzone } from "react-dropzone";
 // import Dropzone from "react-dropzone";
 

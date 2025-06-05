@@ -1,8 +1,8 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
 import Label from "../Label";
-import Select from "../Select";
-import MultiSelect from "../MultiSelect";
+import Select from "@/Components/DashComps/form/Select";
+import MultiSelect from "@/Components/DashComps/form/MultiSelect";
 
 export default function SelectInputs() {
   const options = [

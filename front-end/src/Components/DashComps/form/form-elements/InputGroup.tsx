@@ -1,8 +1,8 @@
-import ComponentCard from "../../common/ComponentCard";
-import Label from "../Label";
-import Input from "../input/InputField";
-import { EnvelopeIcon } from "../../../icons";
-import PhoneInput from "../group-input/PhoneInput";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import Label from "@/Components/DashComps/form/Label";
+import PhoneInput from "@/Components/DashComps/form/group-input/PhoneInput";
+import Input from "@/Components/DashComps/form/input/InputField";
+import { EnvelopeIcon } from "@/Dashicons";
 
 export default function InputGroup() {
   const countries = [

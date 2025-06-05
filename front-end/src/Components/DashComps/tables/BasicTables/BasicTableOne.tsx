@@ -4,9 +4,9 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../../ui/table";
+} from "@/Components/DashComps/ui/table";
 
-import Badge from "../../ui/badge/Badge";
+import Badge from "@/Components/DashComps/ui/badge/Badge";
 
 interface Order {
   id: number;

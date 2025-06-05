@@ -1,10 +1,10 @@
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import DatePicker from "@/Components/DashComps/form/date-picker";
+import Input from "@/Components/DashComps/form/input/InputField";
+import Label from "@/Components/DashComps/form/Label";
+import Select from "@/Components/DashComps/form/Select";
+import { EyeCloseIcon, EyeIcon, TimeIcon } from "@/Dashicons";
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
-import Label from "../Label";
-import Input from "../input/InputField";
-import Select from "../Select";
-import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../icons";
-import DatePicker from "../date-picker.tsx";
 
 export default function DefaultInputs() {
   const [showPassword, setShowPassword] = useState(false);

@@ -1,5 +1,5 @@
-import ComponentCard from "../../common/ComponentCard";
-import Switch from "../switch/Switch";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import Switch from "@/Components/DashComps/form/switch/Switch";
 
 export default function ToggleSwitch() {
   const handleSwitchChange = (checked: boolean) => {

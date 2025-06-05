@@ -1,11 +1,11 @@
+import Badge from "@/Components/DashComps/ui/badge/Badge";
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
-import Badge from "../ui/badge/Badge";
+} from "@/Components/DashComps/ui/table";
 
 // Define the TypeScript interface for the table rows
 interface Product {

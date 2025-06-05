@@ -1,6 +1,6 @@
+import { Dropdown } from "@/Components/DashComps/ui/dropdown/Dropdown";
+import { DropdownItem } from "@/Components/DashComps/ui/dropdown/DropdownItem";
 import { useState } from "react";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 
 export default function UserDropdown() {
@@ -54,7 +54,8 @@ export default function UserDropdown() {
             Taha Zizah
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-              tahazizah@outlook.com          </span>
+            tahazizah@outlook.com{" "}
+          </span>
         </div>
 
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">

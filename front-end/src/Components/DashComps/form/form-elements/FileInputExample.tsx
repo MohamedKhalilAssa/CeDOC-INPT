@@ -1,5 +1,5 @@
-import ComponentCard from "../../common/ComponentCard";
-import FileInput from "../input/FileInput";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import FileInput from "@/Components/DashComps/form/input/FileInput";
 import Label from "../Label";
 
 export default function FileInputExample() {

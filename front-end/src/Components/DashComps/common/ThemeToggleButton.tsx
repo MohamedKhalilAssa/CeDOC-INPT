@@ -1,4 +1,4 @@
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "@/Context/Auth/DashContext/ThemeContext";
 
 export const ThemeToggleButton: React.FC = () => {
   const { toggleTheme } = useTheme();

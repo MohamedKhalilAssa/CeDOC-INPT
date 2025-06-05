@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
-import Radio from "../input/Radio";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
+import Radio from "@/Components/DashComps/form/input/Radio";
 
 export default function RadioButtons() {
   const [selectedValue, setSelectedValue] = useState<string>("option2");
