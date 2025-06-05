@@ -15,7 +15,6 @@ public interface DemandeResincriptionService {
     public DemandeReinscriptionResponseDTO editDemande(Long id, DemandeReinscriptionRequestDTO demandeDTO, String email);
     public void deleteDemande(Long id, String email);
 
-
     public DemandeReinscriptionResponseDTO validerchef(Long id, String email);
 
     public DemandeReinscriptionResponseDTO refuserchef(Long id, String email);

@@ -38,14 +38,13 @@ public class DemandeReinscription {
     @NotBlank(message = "Le plan d'action est obligatoire")
     private String planAction;
 
-    @NotBlank(message = "La résidance est obligatoire")
     private boolean residance;
 
     @NotBlank(message = "L'attestation d'honneur est obligatoire")
     private String attestationHonneur;
 
     @NotBlank(message = "La certificat de travail est obligatoire")
-    private String CertificatTravail;
+    private String certificatTravail;
 
     @NotBlank(message = "Demande de derogation est obligatoire")
     private String demandeDerogation;

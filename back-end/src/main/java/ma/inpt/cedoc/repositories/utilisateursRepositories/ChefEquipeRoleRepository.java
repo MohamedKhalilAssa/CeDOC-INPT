@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface ChefEquipeRoleRepository extends JpaRepository<ChefEquipeRole, Long> {
 
-    Optional<ChefEquipeRole> findByEmail(String email);
+    Optional<ChefEquipeRole> findByProfesseurEmail(String email);
 }

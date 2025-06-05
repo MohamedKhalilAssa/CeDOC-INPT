@@ -11,6 +11,8 @@ import ma.inpt.cedoc.model.enums.reinscription_enums.DemandeReinscriptionEnum;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirectionCedocRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,8 @@ import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.ReinscriptionMappers.DemandeReinscriptionMapper;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-//import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.repositories.ResinscriptionRepositories.DemandeReinscriptionRepository;
-//import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 
 @Service
@@ -37,6 +37,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     private final DirecteurDeTheseRoleRepository directeurDeTheseRoleRepository;
     private final ChefEquipeRoleRepository chefEquipeRoleRepository;
     private final DirectionCedocRepository directionCedocRepository;
+    private static final Logger logger = LoggerFactory.getLogger(DemandeResincriptionServiceImpl.class);
 
     public List<DemandeReinscriptionResponseDTO> getAllDemandes() {
         List<DemandeReinscription> demandes = demandeReinscriptionRepository.findAll();
@@ -63,9 +64,11 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     // cette méthode va récupérer les demandes de réinscriptions dont le directeur
     // de thèse est responsable
     @Override
+    @Transactional
     public List<DemandeReinscriptionResponseDTO> getDemandesByDirecteurTheseId(Long id) {
         DirecteurDeTheseRole directeurDeThese = directeurDeTheseRoleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("directeur de thèse " + id + " n'est pas trouvé"));
+
         List<Long> sujetIds = directeurDeThese.getSujets().stream()
                 .map(Sujet::getId)
                 .toList();
@@ -124,13 +127,11 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO validerchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByEmail(email)
+        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByProfesseurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
-        if (demande.getAvisReinscription() == null){
-            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
-        }
-        if (!demande.getStatus().equals(DemandeReinscriptionEnum.DECLAREE)){
-            throw new RuntimeException("Il faut que la demande soit en état déclarée");
+
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE)){
+            throw new RuntimeException("if faut que la demande soit en état : révisé par directeur de thèse");
         }
         demande.setStatus(DemandeReinscriptionEnum.VALIDEE_CHEF);
         demande.setChefEquipeValidateur(chefEquipeRole);
@@ -142,15 +143,13 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO refuserchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByEmail(email)
+        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByProfesseurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
-        if (demande.getAvisReinscription() == null){
-            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
+
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE)){
+            throw new RuntimeException("if faut que la demande soit en état : révisé par directeur de thèse");
         }
-        if (!demande.getStatus().equals(DemandeReinscriptionEnum.DECLAREE)){
-            throw new RuntimeException("Il faut que la demande soit en état déclarée");
-        }
-        demande.setStatus(DemandeReinscriptionEnum.REFUSEEE);
+        demande.setStatus(DemandeReinscriptionEnum.REFUSEE);
         demande.setChefEquipeValidateur(chefEquipeRole);
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
@@ -162,9 +161,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
         DirectionCedoc direction = directionCedocRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
-        if (demande.getAvisReinscription() == null){
-            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
-        }
+
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
             throw new RuntimeException("Il faut que la demande soit en validé par le chef d'équipe en début");
         }
@@ -180,13 +177,11 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
         DirectionCedoc direction = directionCedocRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
-        if (demande.getAvisReinscription() == null){
-            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
-        }
+
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
-            throw new RuntimeException("Il faut que la demande soit en validé par le chef d'équipe en début");
+            throw new RuntimeException("if faut que la demande soit en état : révisé par directeur de thèse");
         }
-        demande.setStatus(DemandeReinscriptionEnum.REFUSEEE);
+        demande.setStatus(DemandeReinscriptionEnum.REFUSEE);
         demande.setDirectionCedocValidateur(direction);
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }

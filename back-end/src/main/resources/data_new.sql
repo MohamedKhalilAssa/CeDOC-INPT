@@ -191,15 +191,15 @@ INSERT INTO responsable_de_formation_roles (professeur_id) VALUES
 (5);  -- Professeur ID 5 has Responsable de Formation role
 
 -- CHEF EQUIPE (as specialization of PROFESSEUR) - Keep for backward compatibility during migration
-INSERT INTO chefs_equipes (id) VALUES 
+INSERT INTO chef_equipe_roles (professeur_id) VALUES
 (3);  -- Using separate ID for ChefEquipe role
 
 -- RESPONSABLE DE FORMATION
-INSERT INTO responsables_de_formations (id) VALUES 
+INSERT INTO responsable_de_formation_roles (professeur_id) VALUES
 (5);  -- Using separate ID for ResponsableDeFormation role
 
 -- DIRECTEUR DE THESE - Keep for backward compatibility during migration
-INSERT INTO directeurs_de_theses (id) VALUES 
+INSERT INTO directeur_de_these_roles (professeur_id) VALUES
 (4);  -- Using separate ID for DirecteurDeThese role
 
 -- DIRECTION CEDOC
@@ -225,8 +225,8 @@ INSERT INTO sujets (
 ('Apprentissage automatique distribué', 'Optimisation des algorithmes de machine learning à grande échelle.', true, false, NOW(), NOW(), 3, 4),
 ('Systèmes autonomes intelligents', 'Conception de systèmes auto-adaptatifs pour la robotique.', false, false, NOW(), NOW(), 3, 4),
 ('Réseaux de neurones profonds', 'Amélioration de la performance des modèles de deep learning.', true, true, NOW(), NOW(), 3, 4),
-('Vision par ordinateur avancée', 'Détection d'objets en temps réel dans les flux vidéo.', false, true, NOW(), NOW(), 3, 4),
-('IoT et agriculture intelligente', 'Applications de l'internet des objets dans l'agriculture de précision.', true, true, NOW(), NOW(), 3, 4),
+('Vision par ordinateur avancée', 'Détection dobjets en temps réel dans les flux vidéo.', false, true, NOW(), NOW(), 3, 4),
+('IoT et agriculture intelligente', 'Applications de linternet des objets dans lagriculture de précision.', true, true, NOW(), NOW(), 3, 4),
 ('Cloud Computing pour le calcul scientifique', 'Déploiement de modèles scientifiques sur le cloud.', false, false, NOW(), NOW(), 3, 4),
 ('Traitement du langage naturel en arabe', 'Développement de modèles NLP pour la langue arabe.', true, false, NOW(), NOW(), 3, 4),
 ('Blockchain et traçabilité alimentaire', 'Utilisation de la blockchain pour le suivi des produits agricoles.', false, true, NOW(), NOW(), 3, 4);
