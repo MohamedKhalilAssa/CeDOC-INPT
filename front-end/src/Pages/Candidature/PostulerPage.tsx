@@ -18,39 +18,56 @@ const steps = [
 
 const PostulerPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [keywords, setKeywords] = useState<string[]>([]);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const form = useForm({
-    mode: "onBlur",
+    mode: "onTouched", // Validate after field is touched/blurred
     defaultValues: {
-      // Add any default values here
+      // Personal Info defaults
+      nom: "",
+      prenom: "",
+      email: "",
+      telephone: "",
+      genre: "",
+      etatCivilEnum: "",
+      dateNaissance: null,
+      nationaliteId: "",
+      lieuDeNaissanceId: "",
+
+      // Education defaults
+      diplome: "",
+      typeEtablissement: "",
+      mentionDiplome: "",
+      mentionBac: "",
+      specialite: "",
+      intitulePFE: "",
+
+      // File upload defaults
+      dossierCandidature: null,
+
+      // Research interests defaults
+      primaryResearchArea: "",
       keywords: "",
+      researchStatement: "",
+
+      // Terms defaults
+      termsAgreement: false,
     },
   });
 
-  const { handleSubmit, trigger, setValue, getValues } = form;
-
+  const { handleSubmit, trigger, setValue, getValues, control } = form;
   // Initialize keywords from form data if available
   useEffect(() => {
-    const keywordsValue = getValues("keywords");
-    if (
-      keywordsValue &&
-      typeof keywordsValue === "string" &&
-      keywordsValue.length > 0
-    ) {
-      setKeywords(keywordsValue.split(","));
-    }
-
     // This is just to avoid the unused variable warning
     // The real usage of setValue happens in child components
-    const noop = () => {
-      if (process.env.NODE_ENV === "development" && false) {
-        setValue("keywords", "");
-      }
-    };
-    noop();
   }, [getValues, setValue]);
+
+  // Debug: Monitor current step changes and form values
+  useEffect(() => {
+    console.log("Step changed to:", currentStep);
+    console.log("Form values on step change:", getValues());
+  }, [currentStep, getValues]);
 
   const onSubmit = async (data: any) => {
     console.log(data);
@@ -61,28 +78,51 @@ const PostulerPage = () => {
 
     setCurrentStep(4); // Move to the final step (Status)
     setIsSubmitting(false);
-  };
-
-  // Function to handle moving to the next step
+  }; // Function to handle moving to the next step
   const handleNext = async () => {
-    // Validate the current step
+    // Debug: Log current form values
+    console.log("Current form values before validation:", getValues());
+
+    // Get the fields to validate for the current step
     const fieldsToValidate = getFieldsToValidate(currentStep);
+
+    // Validate the current step's fields
     const isStepValid = await trigger(fieldsToValidate as any);
 
-    if (isStepValid) {
-      if (currentStep === 3) {
-        // Submit the form if it's the last input step
-        await handleSubmit(onSubmit)();
-      } else {
-        // Move to the next step
-        setCurrentStep(currentStep + 1);
-      }
+    if (!isStepValid) {
+      // If validation fails, don't proceed to next step
+      console.log("Validation failed for step", currentStep);
+      return;
     }
-  };
 
-  // Function to handle moving to the previous step
+    console.log("Step", currentStep, "validation passed");
+
+    // Mark current step as completed
+    setCompletedSteps((prev) => new Set([...prev, currentStep]));
+
+    if (currentStep === 3) {
+      // Final submission - validate all steps and submit
+      const allFields = getFieldsToValidate(1)
+        .concat(getFieldsToValidate(2))
+        .concat(getFieldsToValidate(3));
+
+      const isFormValid = await trigger(allFields as any);
+
+      if (isFormValid) {
+        await handleSubmit(onSubmit)();
+      }
+    } else {
+      // Move to the next step
+      setCurrentStep(currentStep + 1);
+    }
+  }; // Function to handle moving to the previous step
   const handlePrevious = () => {
     if (currentStep > 1) {
+      // Debug: Log current form values when going back
+      console.log("Going back from step", currentStep, "to", currentStep - 1);
+      console.log("Current form values:", getValues());
+
+      // Don't clear errors when going back - let user see what needs fixing
       setCurrentStep(currentStep - 1);
     }
   };
@@ -109,9 +149,9 @@ const PostulerPage = () => {
           "intitulePFE",
           "dossierCandidature",
         ];
-      // case 2: // Research Interests
-      //   return ["primaryResearchArea", "keywords", "researchStatement"];
-      case 2: // Terms and Conditions
+      case 2: // Research Interests
+        return ["primaryResearchArea", "keywords", "researchStatement"];
+      case 3: // Terms and Conditions
         return ["termsAgreement"];
       default:
         return [];

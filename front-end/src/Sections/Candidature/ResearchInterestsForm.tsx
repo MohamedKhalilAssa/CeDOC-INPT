@@ -1,5 +1,4 @@
 import CheckboxField from "@/Components/Form/CheckboxField";
-import TextArea from "@/Components/Form/TextArea";
 import { getData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
@@ -30,9 +29,24 @@ const ResearchSubjectsForm = ({ form }: ResearchSubjectsFormProps) => {
     register,
     formState: { errors },
     setValue,
+    control,
+    getValues,
   } = form;
 
   const swal = useAlert();
+
+  // Sync local state with form state on mount and when form values change
+  useEffect(() => {
+    const formSelectedSujets = getValues("selectedSujets");
+    if (formSelectedSujets && Array.isArray(formSelectedSujets)) {
+      setSelectedSujets(formSelectedSujets);
+
+      // Also ensure individual checkbox fields are set
+      formSelectedSujets.forEach((sujetId: number) => {
+        setValue(`sujet_${sujetId}`, true);
+      });
+    }
+  }, [getValues, setValue]);
 
   // Fetch sujets from endpoint
   useEffect(() => {
@@ -56,9 +70,10 @@ const ResearchSubjectsForm = ({ form }: ResearchSubjectsFormProps) => {
         );
         console.error("Error fetching sujets:", error);
       });
-  }, []);
-  // Handle sujet selection (max 3)
+  }, []); // Handle sujet selection (max 3)
   const handleSujetChange = (sujetId: number, isChecked: boolean) => {
+    console.log(`Checkbox ${sujetId} changed to:`, isChecked);
+
     let newSelection: number[];
 
     if (isChecked) {
@@ -75,8 +90,14 @@ const ResearchSubjectsForm = ({ form }: ResearchSubjectsFormProps) => {
       newSelection = selectedSujets.filter((id) => id !== sujetId);
     }
 
+    console.log("New selection:", newSelection);
     setSelectedSujets(newSelection);
     setValue("selectedSujets", newSelection);
+
+    // Also update the individual checkbox field
+    setValue(`sujet_${sujetId}`, isChecked);
+
+    console.log("Updated form values:", getValues());
   };
 
   return (
@@ -107,6 +128,7 @@ const ResearchSubjectsForm = ({ form }: ResearchSubjectsFormProps) => {
                   name={`sujet_${sujet.id}`}
                   register={register}
                   errors={errors}
+                  control={control}
                   disabled={
                     !selectedSujets.includes(sujet.id) &&
                     selectedSujets.length >= 3
@@ -145,19 +167,6 @@ const ResearchSubjectsForm = ({ form }: ResearchSubjectsFormProps) => {
             })}
           />
         </div>
-      </div>
-
-      {/* Research Statement Section */}
-      <div className="mt-4">
-        <TextArea
-          label="Énoncé de recherche"
-          name="researchStatement"
-          placeholder="Décrivez brièvement vos intérêts de recherche et objectifs..."
-          register={register}
-          errors={errors}
-          required={true}
-          rows={6}
-        />
       </div>
     </div>
   );
