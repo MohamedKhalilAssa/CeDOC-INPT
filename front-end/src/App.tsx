@@ -30,7 +30,7 @@ function App() {
           <Route
             path={appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}
             element={<LandingPage />}
-          />
+        />
 
           <Route element={<GuestOnlyLayout />}>
             <Route

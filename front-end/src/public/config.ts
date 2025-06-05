@@ -104,6 +104,7 @@ const appConfig: AppConfig = {
     GLOBAL: {
       landingPage: { name: "Landing Page", path: "/" },
       postuler: { name: "Postuler", path: "/postuler" },
+      dashboard: { name: "Dashboard", path: "/dashboard" },
     },
     AUTH: {
       register: { name: "Register", path: "/auth/register" },
