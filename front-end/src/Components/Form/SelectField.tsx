@@ -19,8 +19,8 @@ const SelectField = ({
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
-        value={defaultValue}
         id={name}
+        defaultValue={defaultValue} 
         className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 input-focus ${
           errors[name] ? "border-red-500" : ""
         }`}

@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
-import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.DirectionCedocRepository;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -18,10 +17,10 @@ import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.ReinscriptionMappers.DemandeReinscriptionMapper;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+//import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.repositories.ResinscriptionRepositories.DemandeReinscriptionRepository;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRepository;
+//import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 
 @Service
@@ -30,8 +29,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     private final DemandeReinscriptionMapper demandeReinscriptionMapper;
     private final DemandeReinscriptionRepository demandeReinscriptionRepository;
     private final DoctorantRepository doctorantRepository;
-    private final DirecteurDeTheseRepository directeurDeTheseRepository;
-    private final DirectionCedocRepository directionCedocRepository;
+    private final DirecteurDeTheseRoleRepository directeurDeTheseRoleRepository;
 
     public List<DemandeReinscriptionResponseDTO> getAllDemandes() {
         List<DemandeReinscription> demandes = demandeReinscriptionRepository.findAll();
@@ -59,7 +57,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     // de thèse est responsable
     @Override
     public List<DemandeReinscriptionResponseDTO> getDemandesByDirecteurTheseId(Long id) {
-        DirecteurDeThese directeurDeThese = directeurDeTheseRepository.findById(id)
+        DirecteurDeTheseRole directeurDeThese = directeurDeTheseRoleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("directeur de thèse " + id + " n'est pas trouvé"));
         List<Long> sujetIds = directeurDeThese.getSujets().stream()
                 .map(Sujet::getId)

@@ -17,32 +17,33 @@ import {
 } from "@/Types/UtilisateursResponses";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-// Define nationality options
 
 interface PersonalInfoFormProps {
-  form: UseFormReturn<any>;
-  // form should be initialized with { mode: "onBlur" } in the parent component
+  form: UseFormReturn<any>; // must be initialized with { mode: "onBlur" }
 }
-// To store fetched data
+
 interface fetchedDataType {
   utilisateur: UtilisateurResponseDTO | undefined;
   nationalities: Nationalite[] | undefined;
   lieuDeNaissance: LieuDeNaissance[] | undefined;
 }
+
 const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
   const {
     register,
     formState: { errors },
+    reset,
   } = form;
+
   const { getClaim } = UseJWT(localStorage.getItem("token"));
   const swal = useAlert();
+
   const [fetchedData, setFetchedData] = useState<fetchedDataType>({
     utilisateur: undefined,
     nationalities: [],
     lieuDeNaissance: [],
   });
 
-  // FETCH ON LOAD
   useEffect(() => {
     const fetchData = async () => {
       const utilisateur: UtilisateurResponseDTO | undefined = await getData(
@@ -72,12 +73,33 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
       });
   }, []);
 
-  // OPTIONS
+  // Reset form values when data is fetched
+  useEffect(() => {
+    if (fetchedData.utilisateur) {
+      const user = fetchedData.utilisateur;
+      reset({
+        nom: user.nom || "",
+        prenom: user.prenom || "",
+        email: getClaim("sub") || "",
+        telephone: user.telephone || "",
+        genre: user.genre || "",
+        etatCivilEnum: user.etatCivilEnum || "",
+        statutProfessionnel: user.statutProfessionnel || "",
+        dateNaissance: user.dateNaissance
+          ? new Date(user.dateNaissance).toISOString().split("T")[0]
+          : null,
+        nationaliteId: user.nationalite?.id || "",
+        lieuDeNaissanceId: user.lieuDeNaissance?.id || "",
+      });
+    }
+  }, [fetchedData.utilisateur]);
+
   const nationalityOptions =
-    fetchedData.nationalities?.map((nationality) => ({
-      value: nationality.id,
-      label: nationality.intitule,
+    fetchedData.nationalities?.map((n) => ({
+      value: n.id,
+      label: n.intitule,
     })) || [];
+
   const lieuDeNaissanceOptions =
     fetchedData.lieuDeNaissance?.map((lieu) => ({
       value: lieu.id,
@@ -88,18 +110,23 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
     value: key,
     label: value,
   }));
+
   const etatCivilOptions = Object.entries(EtatCivilEnum).map(
     ([key, value]) => ({
       value: key,
       label: value,
     })
   );
+
   const statutProfessionnelOptions = Object.entries(
     StatutProfessionnelEnum
   ).map(([key, value]) => ({
     value: key,
     label: value,
   }));
+
+  if (!fetchedData.utilisateur) return <p>Chargement des données...</p>;
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <h3 className="text-lg font-semibold text-blue-600 flex items-center mb-4">
@@ -114,23 +141,20 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           label="Nom"
           name="nom"
           type="text"
-          defaultValue={fetchedData.utilisateur?.nom || ""}
           placeholder="Entrez votre nom de famille"
           register={register}
           errors={errors}
-          required={true}
+          required
         />
         <InputField
           label="Prénom"
           name="prenom"
           type="text"
-          defaultValue={fetchedData.utilisateur?.prenom || ""}
           placeholder="Entrez votre prénom"
           register={register}
           errors={errors}
-          required={true}
+          required
         />
-
         <InputField
           label="Email"
           name="email"
@@ -138,91 +162,70 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           placeholder="votre@email.com"
           register={register}
           errors={errors}
-          validation={{
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Adresse email invalide",
-            },
-          }}
-          defaultValue={getClaim("sub")}
-          disabled={true}
-          required={true}
+          disabled
+          required
         />
-
         <InputField
           label="Téléphone"
           name="telephone"
           type="tel"
-          defaultValue={fetchedData.utilisateur?.telephone || ""}
           placeholder="+212623456789 ou 0623456789"
           register={register}
+          errors={errors}
           validation={{
             pattern: {
               value: /^(\+212|0)([5-7][0-9]{8})$/,
               message: "Numéro de téléphone invalide",
             },
           }}
-          errors={errors}
-          required={true}
+          required
         />
-
         <SelectField
           label="Genre"
           name="genre"
           options={genreOptions}
-          defaultValue={fetchedData.utilisateur?.genre || ""}
           register={register}
           errors={errors}
-          required={true}
+          required
         />
         <SelectField
           label="État civil"
           name="etatCivilEnum"
           options={etatCivilOptions}
-          defaultValue={fetchedData.utilisateur?.etatCivilEnum || ""}
           register={register}
           errors={errors}
-          required={true}
+          required
         />
         <SelectField
           label="Statut professionnel"
           name="statutProfessionnel"
           options={statutProfessionnelOptions}
-          defaultValue={fetchedData.utilisateur?.statutProfessionnel || ""}
           register={register}
           errors={errors}
-          required={true}
+          required
         />
         <DatePicker
           label="Date de naissance"
           name="dateNaissance"
-          defaultValue={
-            fetchedData.utilisateur?.dateNaissance
-              ? new Date(fetchedData.utilisateur.dateNaissance)
-              : null
-          }
           register={register}
           errors={errors}
-          required={true}
+          required
         />
-
         <SelectField
           label="Nationalité"
           name="nationaliteId"
-          defaultValue={fetchedData.utilisateur?.nationalite?.id || ""}
           options={nationalityOptions}
           register={register}
           errors={errors}
-          required={true}
+          required
         />
         <SelectField
           label="Lieu de naissance"
           name="lieuDeNaissanceId"
-          defaultValue={fetchedData.utilisateur?.lieuDeNaissance?.id || ""}
           options={lieuDeNaissanceOptions}
           register={register}
           errors={errors}
-          required={true}
+          required
         />
       </div>
     </div>

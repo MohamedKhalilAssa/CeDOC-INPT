@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.enums.reinscription_enums.AvancementEnum;
 import ma.inpt.cedoc.model.enums.reinscription_enums.AvisEnum;
 
@@ -53,6 +53,6 @@ public class AvisReinscription {
     private DemandeReinscription demandeReinscription;
 
     @ManyToOne
-    @JoinColumn(name = "directeur_these_id")
-    private DirecteurDeThese directeurDeThese;
+    @JoinColumn(name = "directeur_role_id")
+    private DirecteurDeTheseRole directeurDeThese;
 }

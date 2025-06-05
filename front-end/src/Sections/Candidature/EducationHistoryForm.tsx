@@ -1,15 +1,27 @@
 import InputField from "@/Components/Form/InputField";
 import SelectField from "@/Components/Form/SelectField";
+import {
+  DiplomeEnum,
+  EtablissementEnum,
+  MentionEnum,
+} from "@/Types/UtilisateursEnums";
 import { UseFormReturn } from "react-hook-form";
 
 // Define degree options
-const degreeOptions = [
-  { value: "master", label: "Master" },
-  { value: "engineer", label: "Diplôme d'Ingénieur" },
-  { value: "phd", label: "Doctorat" },
-  { value: "other", label: "Autre" },
-];
-
+const diplomeOptions = Object.entries(DiplomeEnum).map(([key, value]) => ({
+  value: key,
+  label: value,
+}));
+const mentionOptions = Object.entries(MentionEnum).map(([key, value]) => ({
+  value: key,
+  label: value,
+}));
+const etablissementOptions = Object.entries(EtablissementEnum).map(
+  ([key, value]) => ({
+    value: key,
+    label: value,
+  })
+);
 interface EducationHistoryFormProps {
   form: UseFormReturn<any>;
 }
@@ -28,78 +40,63 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
         </span>
         Historique de Formation
       </h3>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SelectField
-          label="Diplôme le plus élevé"
-          name="highestDegree"
-          options={degreeOptions}
+          label="Type d'établissement"
+          name="typeEtablissement"
+          options={etablissementOptions}
           register={register}
           errors={errors}
           required={true}
         />
-
+        <SelectField
+          label="Type de diplôme"
+          name="diplome"
+          options={diplomeOptions}
+          register={register}
+          errors={errors}
+          required={true}
+        />
+        <SelectField
+          label="Mention du diplôme"
+          name="mentionDiplome"
+          options={mentionOptions}
+          register={register}
+          errors={errors}
+          required={true}
+        />
+        <SelectField
+          label="Mention du BAC"
+          name="mentionBac"
+          options={mentionOptions}
+          register={register}
+          errors={errors}
+          required={true}
+        />
+      </div>
+      <div className="mt-4">
         <InputField
           label="Domaine d'étude"
-          name="fieldOfStudy"
+          name="specialite"
           type="text"
-          placeholder="Ex: Informatique, Physique"
+          placeholder="Ex: Informatique, Mathématiques"
           register={register}
           errors={errors}
-          required={true}
-        />
-
-        <InputField
-          label="Institution"
-          name="institution"
-          type="text"
-          placeholder="Nom de l'université ou école"
-          register={register}
-          errors={errors}
-          required={true}
-        />
-
-        <InputField
-          label="Année d'obtention"
-          name="graduationYear"
-          type="number"
-          placeholder="AAAA"
-          register={register}
-          errors={errors}
-          validation={{
-            min: {
-              value: 1950,
-              message: "Année invalide",
-            },
-            max: {
-              value: new Date().getFullYear(),
-              message: "L'année ne peut pas être dans le futur",
-            },
-          }}
           required={true}
         />
       </div>
 
       <div className="mt-4">
         <InputField
-          label="Titre du mémoire/thèse"
-          name="thesisTitle"
+          label="Intitulé du PFE"
+          name="intitulePFE"
           type="text"
-          placeholder="Titre de votre mémoire ou thèse précédente"
+          placeholder="Titre de votre PFE"
           register={register}
           errors={errors}
           classes="w-full"
+          required={true}
         />
-      </div>
-
-      <div className="mt-4">
-        <button
-          type="button"
-          className="flex items-center text-blue-600 hover:text-blue-800"
-        >
-          <i className="fas fa-plus-circle mr-1"></i>
-          Ajouter un autre diplôme
-        </button>
       </div>
     </div>
   );

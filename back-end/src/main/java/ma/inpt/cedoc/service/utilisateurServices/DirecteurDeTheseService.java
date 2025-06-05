@@ -2,10 +2,10 @@ package ma.inpt.cedoc.service.utilisateurServices;
 
 import java.util.List;
 
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 
 public interface DirecteurDeTheseService {
-    DirecteurDeThese findById(Long id);
-    List<DirecteurDeThese> findAll();
+    DirecteurDeTheseRole findById(Long id);
+    List<DirecteurDeTheseRole> findAll();
     boolean existsById(Long id);
 }
