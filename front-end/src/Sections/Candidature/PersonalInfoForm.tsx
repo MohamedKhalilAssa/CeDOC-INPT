@@ -32,7 +32,6 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
   const {
     register,
     formState: { errors },
-    reset,
     control,
   } = form;
 

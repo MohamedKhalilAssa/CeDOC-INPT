@@ -1,3 +1,6 @@
+import { postData } from "@/Helpers/CRUDFunctions";
+import { useAlert } from "@/Hooks/UseAlert";
+import appConfig from "@/public/config";
 import CVUploadForm from "@/Sections/Candidature/DossierCandidatureForm";
 import EducationHistoryForm from "@/Sections/Candidature/EducationHistoryForm";
 import FormNavigation from "@/Sections/Candidature/FormNavigation";
@@ -6,8 +9,10 @@ import PersonalInfoForm from "@/Sections/Candidature/PersonalInfoForm";
 import ResearchInterestsForm from "@/Sections/Candidature/ResearchInterestsForm";
 import StatusForm from "@/Sections/Candidature/StatusForm";
 import TermsAndConditionsForm from "@/Sections/Candidature/TermsAndConditionsForm";
+import { CandidatResponseDTO } from "@/Types/UtilisateursResponses";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   { id: 1, name: "Inscription" },
@@ -21,6 +26,7 @@ const PostulerPage = () => {
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [globalError, setGlobalError] = useState<string | null>(null);
   const form = useForm({
     mode: "onTouched", // Validate after field is touched/blurred
     defaultValues: {
@@ -44,9 +50,8 @@ const PostulerPage = () => {
       intitulePFE: "",
 
       // File upload defaults
-      dossierCandidature: null,
-
-      // Research interests defaults
+      dossierCandidature: null, // Research interests defaults
+      selectedSujets: [],
       primaryResearchArea: "",
       keywords: "",
       researchStatement: "",
@@ -55,8 +60,16 @@ const PostulerPage = () => {
       termsAgreement: false,
     },
   });
-
-  const { handleSubmit, trigger, setValue, getValues, control } = form;
+  const swal = useAlert();
+  const navigate = useNavigate();
+  const {
+    handleSubmit,
+    trigger,
+    setValue,
+    getValues,
+    setError, // ✅ Now available
+    clearErrors, // ✅ For clearing errors
+  } = form;
   // Initialize keywords from form data if available
   useEffect(() => {
     // This is just to avoid the unused variable warning
@@ -65,21 +78,71 @@ const PostulerPage = () => {
 
   // Debug: Monitor current step changes and form values
   useEffect(() => {
-    console.log("Step changed to:", currentStep);
-    console.log("Form values on step change:", getValues());
+    // console.log("Step changed to:", currentStep);
+    // console.log("Form values on step change:", getValues());
   }, [currentStep, getValues]);
-
   const onSubmit = async (data: any) => {
-    console.log(data);
+    console.log("SUBMIT: ",data);
     setIsSubmitting(true);
+    setGlobalError(null); // Clear previous global errors
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // form submission
+    try {
+      const res: CandidatResponseDTO | undefined = await postData(
+        appConfig.API_PATHS.CANDIDATURE.postuler.path,
+        data
+      );
 
-    setCurrentStep(4); // Move to the final step (Status)
-    setIsSubmitting(false);
+      if (res) {
+        swal.toast("Candidature soumise avec succès", "success");
+        setTimeout(() => {
+          navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
+        }, 200);
+        setCurrentStep(4); // Move to the final step (Status) only on success
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error("Form submission error:", err);
+
+      if (err.errors && Array.isArray(err.errors)) {
+        // Backend returned validation errors: map to form fields
+        err.errors.forEach((e: { field: string; message: string }) => {
+          console.log(
+            "Setting error for field:",
+            e.field,
+            "message:",
+            e.message
+          );
+
+          if (e.field === "global") {
+            setGlobalError(e.message);
+          } else {
+            setError(e.field as any, {
+              type: "server",
+              message: e.message,
+            });
+          }
+        });
+
+        swal.error(
+          "Erreur de validation",
+          "Veuillez corriger les erreurs et réessayer"
+        );
+      } else {
+        // General API error
+        const errorMessage =
+          err.message || err.errors || "Une erreur est survenue";
+        setGlobalError(`Erreur de soumission: ${errorMessage}`);
+        swal.error("Erreur de soumission", errorMessage);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }; // Function to handle moving to the next step
   const handleNext = async () => {
+    // Clear previous errors before validation
+    setGlobalError(null);
+
     // Debug: Log current form values
     console.log("Current form values before validation:", getValues());
 
@@ -118,13 +181,16 @@ const PostulerPage = () => {
   }; // Function to handle moving to the previous step
   const handlePrevious = () => {
     if (currentStep > 1) {
-      // Debug: Log current form values when going back
-      console.log("Going back from step", currentStep, "to", currentStep - 1);
-      console.log("Current form values:", getValues());
-
-      // Don't clear errors when going back - let user see what needs fixing
+      // Clear errors when going back to avoid confusion
+      clearStepErrors();
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  // Clear errors when moving between steps
+  const clearStepErrors = () => {
+    clearErrors();
+    setGlobalError(null);
   };
 
   // Function to determine which fields to validate based on the current step
@@ -185,10 +251,58 @@ const PostulerPage = () => {
         return null;
     }
   };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <FormStepper steps={steps} currentStep={currentStep} />
+
+      {/* Global Error Display */}
+      {globalError && (
+        <div className="max-w-4xl mx-auto mb-6">
+          <div className="bg-red-50 border border-red-200 rounded-md p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Erreur de validation
+                </h3>
+                <div className="mt-2 text-sm text-red-700">{globalError}</div>
+              </div>
+              <div className="ml-auto pl-3">
+                <button
+                  type="button"
+                  className="text-red-400 hover:text-red-600"
+                  onClick={() => setGlobalError(null)}
+                >
+                  <span className="sr-only">Fermer</span>
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl mx-auto">
         {renderStepForm()}

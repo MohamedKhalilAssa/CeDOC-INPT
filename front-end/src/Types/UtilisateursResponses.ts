@@ -28,3 +28,6 @@ export interface UtilisateurResponseDTO extends baseResponse {
   nationalite?: Nationalite;
   lieuDeNaissance?: LieuDeNaissance;
 }
+export interface CandidatResponseDTO extends UtilisateurResponseDTO {
+
+}
