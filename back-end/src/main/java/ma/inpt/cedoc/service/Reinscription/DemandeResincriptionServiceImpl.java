@@ -118,7 +118,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO validerchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        if
+
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 
@@ -126,8 +126,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO refuserchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        demande.setAvisChef(false);
-        demande.setStatus(EtatEnum.REFUSEE);
+
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 
@@ -135,16 +134,6 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO validerdirection(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
-        if (demande.getAvisChef() == null){
-            throw new RuntimeException("Vous ne pouvez pas reviser cette demande avant qu'un chef la révise");
-        }
-        if (demande.getAvisChef().equals(false)) {
-            demande.setStatus(EtatEnum.REFUSEE);
-        }else {
-            demande.setStatus(EtatEnum.VALIDE);
-        }
 
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
@@ -153,14 +142,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO refuserdirection(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
 
-        if (demande.getAvisChef() == null){
-            throw new RuntimeException("Vous ne pouvez pas reviser cette demande avant qu'un chef la révise");
-        }
-
-        demande.setStatus(EtatEnum.REFUSEE);
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 }
