@@ -3,6 +3,8 @@ package ma.inpt.cedoc.model.entities.Reinscription;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotNull;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 import ma.inpt.cedoc.model.enums.reinscription_enums.DemandeReinscriptionEnum;
 import org.springframework.data.annotation.CreatedDate;
@@ -63,7 +65,6 @@ public class DemandeReinscription {
 
 
     // ----------- Relation ----------------
-
     @ManyToOne
     @JoinColumn(name = "doctorant_id")
     private Doctorant demandeur;
@@ -74,5 +75,13 @@ public class DemandeReinscription {
 
     @OneToOne(mappedBy = "demandeReinscription", cascade = CascadeType.ALL, orphanRemoval = true)
     private AvisReinscription avisReinscription;
+
+    @ManyToOne
+    @JoinColumn(name = "chef_equipe_id")
+    private ChefEquipeRole chefEquipeValidateur;
+
+    @ManyToOne
+    @JoinColumn(name = "direction_cedoc_id")
+    private DirectionCedoc DirectionCedocValidateur;
 
 }

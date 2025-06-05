@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 
 @Entity
@@ -29,5 +30,10 @@ public class ChefEquipeRole {
     @OneToMany(mappedBy = "chefEquipe")
     @JsonIgnore
     private List<Sujet> sujets;
+
+    // demandes de réinscription révisé
+    @OneToMany(mappedBy = "chefEquipeValidateur")
+    @JsonIgnore
+    private List<DemandeReinscription> demandesReinscriptions;
 
 }

@@ -49,17 +49,22 @@ public class DemandeReinscriptionMapper {
         responseDTO.setAttestationHonneur(entity.getAttestationHonneur());
         responseDTO.setCertificatTravail(entity.getCertificatTravail());
         responseDTO.setDemandeDerogation(entity.getDemandeDerogation());
+        responseDTO.setStatus(entity.getStatus());
 
         responseDTO.setDemandeurId(entity.getDemandeur().getId());
 
         responseDTO.setSujetId(entity.getSujet().getId());
+        if (entity.getAvisReinscription() != null){
+            responseDTO.setAvisReinscriptionId(entity.getAvisReinscription().getId());
+        }
 
-        responseDTO.setAvisReinscriptionId(entity.getAvisReinscription().getId());
+        if (entity.getChefEquipeValidateur() != null){
+            responseDTO.setChefEquipeValidateurId(entity.getChefEquipeValidateur().getId());
+        }
 
-        responseDTO.setAvisChef(entity.getAvisChef());
-        responseDTO.setAvisDirection(entity.getAvisDirection());
-        responseDTO.setStatus(entity.getStatus());
-
+        if (entity.getDirectionCedocValidateur() != null){
+            responseDTO.setDirectionCedocValidateurId(entity.getDirectionCedocValidateur().getId());
+        }
         responseDTO.setCreatedAt(entity.getCreatedAt());
         responseDTO.setUpdatedAt(entity.getUpdatedAt());
 

@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
+import ma.inpt.cedoc.model.enums.reinscription_enums.DemandeReinscriptionEnum;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.DirectionCedocRepository;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -30,6 +35,8 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     private final DemandeReinscriptionRepository demandeReinscriptionRepository;
     private final DoctorantRepository doctorantRepository;
     private final DirecteurDeTheseRoleRepository directeurDeTheseRoleRepository;
+    private final ChefEquipeRoleRepository chefEquipeRoleRepository;
+    private final DirectionCedocRepository directionCedocRepository;
 
     public List<DemandeReinscriptionResponseDTO> getAllDemandes() {
         List<DemandeReinscription> demandes = demandeReinscriptionRepository.findAll();
@@ -113,34 +120,74 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     }
 
     @Override
+    @Transactional
     public DemandeReinscriptionResponseDTO validerchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-
+        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
+        if (demande.getAvisReinscription() == null){
+            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
+        }
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.DECLAREE)){
+            throw new RuntimeException("Il faut que la demande soit en état déclarée");
+        }
+        demande.setStatus(DemandeReinscriptionEnum.VALIDEE_CHEF);
+        demande.setChefEquipeValidateur(chefEquipeRole);
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 
     @Override
+    @Transactional
     public DemandeReinscriptionResponseDTO refuserchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-
+        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
+        if (demande.getAvisReinscription() == null){
+            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
+        }
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.DECLAREE)){
+            throw new RuntimeException("Il faut que la demande soit en état déclarée");
+        }
+        demande.setStatus(DemandeReinscriptionEnum.REFUSEEE);
+        demande.setChefEquipeValidateur(chefEquipeRole);
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 
     @Override
+    @Transactional
     public DemandeReinscriptionResponseDTO validerdirection(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-
+        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
+        if (demande.getAvisReinscription() == null){
+            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
+        }
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
+            throw new RuntimeException("Il faut que la demande soit en validé par le chef d'équipe en début");
+        }
+        demande.setStatus(DemandeReinscriptionEnum.VALIDEE);
+        demande.setDirectionCedocValidateur(direction);
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 
     @Override
+    @Transactional
     public DemandeReinscriptionResponseDTO refuserdirection(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-
+        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
+        if (demande.getAvisReinscription() == null){
+            throw new RuntimeException("if faut que la demande doit être révisé par le directeur de thèse en premier");
+        }
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
+            throw new RuntimeException("Il faut que la demande soit en validé par le chef d'équipe en début");
+        }
+        demande.setStatus(DemandeReinscriptionEnum.REFUSEEE);
+        demande.setDirectionCedocValidateur(direction);
         return demandeReinscriptionMapper.toResponseDTO(demande);
     }
 }
