@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import ma.inpt.cedoc.model.enums.reinscription_enums.AvisEnum;
 import ma.inpt.cedoc.model.enums.reinscription_enums.DemandeReinscriptionEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
     private final AvisResinscriptionMapper avisResinscriptionMapper;
     private final DirecteurDeTheseRoleRepository directeurDeTheseRepo;
     private final DemandeReinscriptionRepository demandeReinscriptionRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AvisReinscriptionServiceImpl.class);
 
     public List<AvisReinscriptionResponseDTO> getAllAvis() {
         List<AvisReinscription> avis = avisReinscriptionRepo.findAll();
@@ -74,11 +77,12 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
         //--------------------------------------------------------------------------
         AvisReinscription avisReinscription = avisResinscriptionMapper.toEntity(requestDTO);
         avisReinscription.setDirecteurDeThese(directeurDeThese);
-
+//        logger.warn("this is it : " + requestDTO.getAvisFinal());
         if (avisReinscription.getAvisFinal().equals(AvisEnum.NON_FAVORABLE)){
             demandeResincription.setStatus(DemandeReinscriptionEnum.REFUSEE);
         }else{
             demandeResincription.setStatus(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE);
+//            logger.warn("we are in the zone");
         }
         return avisResinscriptionMapper.toResponseDTO(avisReinscriptionRepo.save(avisReinscription));
     }

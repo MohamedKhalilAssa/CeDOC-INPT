@@ -52,6 +52,7 @@ public class DemandeReinscription {
     // la demande d'inscription doit etre approuvé par le chef d'équipe et la direction du cedoc
 
     @NotNull(message = "Etat de demande de réinscription est obligatoire")
+    @Enumerated(EnumType.STRING)
     private DemandeReinscriptionEnum status = DemandeReinscriptionEnum.DECLAREE;
 
     @Column(name = "created_at", updatable = false)

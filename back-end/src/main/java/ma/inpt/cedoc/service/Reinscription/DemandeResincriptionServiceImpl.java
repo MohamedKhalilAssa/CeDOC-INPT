@@ -106,6 +106,9 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
         if (!doctorant.getId().equals(demande.getDemandeur().getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
         }
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.DECLAREE)){
+            throw new RuntimeException("Vous ne pouvez plus modifier ce demande d'inscription");
+        }
         demandeReinscriptionMapper.updateFromRequest(demandeDTO, demande);
         return demandeReinscriptionMapper.toResponseDTO(demandeReinscriptionRepository.save(demande));
     }
@@ -118,6 +121,9 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
         if (!doctorant.getId().equals(demande.getDemandeur().getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
+        }
+        if (!demande.getStatus().equals(DemandeReinscriptionEnum.DECLAREE)){
+            throw new RuntimeException("Vous ne pouvez plus supprimer ce demande d'inscription");
         }
         demandeReinscriptionRepository.deleteById(id);
     }
