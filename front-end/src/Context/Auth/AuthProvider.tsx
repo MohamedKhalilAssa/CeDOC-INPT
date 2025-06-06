@@ -23,6 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const decoded = jwtDecode<decodedJWT>(token);
       setUtilisateur(decoded);
+      console.log(decoded.role);
       setIsAuthenticated(true);
     } catch {
       setUtilisateur(null);

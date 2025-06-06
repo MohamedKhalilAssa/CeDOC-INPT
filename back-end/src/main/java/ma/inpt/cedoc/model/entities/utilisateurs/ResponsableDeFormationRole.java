@@ -16,7 +16,6 @@ import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
 public class ResponsableDeFormationRole {
 
     @Id    
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne

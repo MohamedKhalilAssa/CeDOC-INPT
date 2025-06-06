@@ -251,7 +251,7 @@ public class CandidatureServiceImpl implements CandidatureService {
     @Override
     public void propositionSujet(Long professeurId, Long sujetId) {
         Professeur professeur = professeurRepository.findById(professeurId)
-                .orElseThrow(() -> new ResponseStatusException(404, "Professeur introuvable", null));
+                                .orElseThrow(() -> new ResponseStatusException(404, "Professeur introuvable", null));
 
         Sujet sujet = sujetRepository.findById(sujetId)
                 .orElseThrow(() -> new ResponseStatusException(404, "Sujet introuvable", null));

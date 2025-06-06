@@ -29,7 +29,6 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 public class Doctorant {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
         @OneToOne

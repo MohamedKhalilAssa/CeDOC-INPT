@@ -26,7 +26,6 @@ const PostulerPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [globalError, setGlobalError] = useState<string | null>(null);
   const form = useForm({
     mode: "onTouched", // Validate after field is touched/blurred
@@ -68,9 +67,8 @@ const PostulerPage = () => {
     trigger,
     setValue,
     getValues,
-    setError, // ✅ Now available
-    clearErrors, // ✅ For clearing errors
-    formState,
+    setError, 
+    clearErrors, 
   } = form;
   // Initialize keywords from form data if available
   useEffect(() => {
@@ -182,9 +180,6 @@ const PostulerPage = () => {
     }
 
     console.log("Step", currentStep, "validation passed");
-
-    // Mark current step as completed
-    setCompletedSteps((prev) => new Set([...prev, currentStep]));
 
     if (currentStep === 3) {
       // Final submission - validate all steps and submit
