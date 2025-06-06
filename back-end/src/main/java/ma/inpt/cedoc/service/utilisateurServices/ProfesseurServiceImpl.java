@@ -4,61 +4,63 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.ProfesseurRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ProfesseurServiceImpl implements ProfesseurService {
 
+    private final ProfesseurRepository professeurRepository;
+
     @Override
     public Professeur createProfesseur(Professeur professeur) {
-        // TODO Auto-generated method stub
-        return null;
+        return professeurRepository.save(professeur);
     }
 
     @Override
     public void deleteProfesseur(Long id) {
-        // TODO Auto-generated method stub
-        
+        professeurRepository.deleteById(id);
     }
 
     @Override
     public List<Professeur> getAllProfesseurs() {
-        // TODO Auto-generated method stub
-        return null;
+        return professeurRepository.findAll();
     }
 
     @Override
     public Page<Professeur> getAllProfesseurs(Pageable pageable) {
-        // TODO Auto-generated method stub
-        return null;
+        return professeurRepository.findAll(pageable);
     }
 
     @Override
     public Professeur getProfesseurById(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+        return professeurRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Professeur introuvable"));
     }
 
     @Override
     public Professeur updateProfesseur(Long id, Professeur professeur) {
-        // TODO Auto-generated method stub
-        return null;
+        if (!professeurRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Professeur introuvable");
+        }
+        professeur.setId(id);
+        return professeurRepository.save(professeur);
     }
 
     @Override
     public boolean existsById(Long id) {
-        // TODO Auto-generated method stub
-        return false;
+        return professeurRepository.existsById(id);
     }
 
     @Override
     public List<Professeur> findAllByIds(List<Long> ids) {
-        // TODO Auto-generated method stub
-        return null;
+        return professeurRepository.findAllById(ids);
     }
     
 }

@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormation;
+import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormationRole;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
 
 @Data
@@ -61,6 +61,6 @@ public class SeanceFormation {
 
     @ManyToOne(optional = false) // valide
     @JoinColumn(name = "responsable_id")
-    private ResponsableDeFormation validePar; // 1 resp.→ * séances
+    private ResponsableDeFormationRole validePar; // 1 resp.→ * séances
 
 }

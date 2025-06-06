@@ -17,8 +17,6 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => {
     const auth = getExternalAuthHandlers();
-    console.log("FROM CRUDFFUNTIONS, LOGGING RESPONSE: ");
-    console.log(response);
     const newAccessToken = response.headers["authorization"];
     if (newAccessToken && newAccessToken.startsWith("Bearer ")) {
       const token = newAccessToken.replace("Bearer ", "");
@@ -118,7 +116,138 @@ export const deleteData = async <T>(
   }
 };
 
+export const getFormData = (data: any): FormData => {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof FileList) {
+      Array.from(data[key]).forEach((file) => {
+        formData.append(key, file);
+      });
+    } else {
+      formData.append(key, data[key]);
+    }
+  });
+  return formData;
+};
+
+export const getFormDataWithFiles = (data: any): FormData => {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof File) {
+      formData.append(key, data[key]);
+    } else if (Array.isArray(data[key])) {
+      data[key].forEach((item) => {
+        formData.append(key, item);
+      });
+    } else {
+      formData.append(key, data[key]);
+    }
+  });
+  return formData;
+};
+
+export const setFormDataWithFiles = (formData: FormData, data: any): void => {
+  Object.keys(data).forEach((key) => {
+    if (data[key] instanceof File) {
+      formData.set(key, data[key]);
+    } else if (Array.isArray(data[key])) {
+      data[key].forEach((item) => {
+        formData.set(key, item);
+      });
+    } else {
+      formData.set(key, data[key]);
+    }
+  });
+};
+
 export const getQueryParam = (search: string, key: string): string | null => {
   const params = new URLSearchParams(search);
   return params.get(key);
+};
+
+/**
+ * Transforms form data to FormData for multipart/form-data requests
+ * Handles files, arrays, and regular form fields automatically
+ */
+export const transformToFormData = (data: any): FormData => {
+  const formData = new FormData();
+
+  Object.keys(data).forEach((key) => {
+    const value = data[key];
+
+    // Skip null, undefined, or empty string values
+    if (value === null || value === undefined || value === "") {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      // Handle arrays by appending each item
+      value.forEach((item) => {
+        if (item !== null && item !== undefined && item !== "") {
+          formData.append(key, item.toString());
+        }
+      });
+    } else if (value instanceof File) {
+      // Handle file uploads
+      formData.append(key, value);
+    } else if (value instanceof FileList) {
+      // Handle FileList objects
+      Array.from(value).forEach((file) => {
+        formData.append(key, file);
+      });
+    } else {
+      // Handle other values (strings, numbers, booleans, etc.)
+      formData.append(key, value.toString());
+    }
+  });
+
+  return formData;
+};
+
+/**
+ * POST request with automatic multipart/form-data handling
+ * Use this when your backend expects @ModelAttribute or has MultipartFile fields
+ */
+export const postFormData = async <T>(
+  url: string,
+  data: any,
+  config?: AxiosRequestConfig
+): Promise<T | undefined> => {
+  try {
+    const formData = transformToFormData(data);
+    const res = await API.post<T>(url, formData, {
+      ...config,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...config?.headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    handleError(error as AxiosError);
+  }
+};
+
+/**
+ * PUT request with automatic multipart/form-data handling
+ * Use this when your backend expects @ModelAttribute or has MultipartFile fields
+ */
+export const putFormData = async <T>(
+  url: string,
+  data: any,
+  config?: AxiosRequestConfig
+): Promise<T | undefined> => {
+  try {
+    const formData = transformToFormData(data);
+    const res = await API.put<T>(url, formData, {
+      ...config,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...config?.headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    handleError(error as AxiosError);
+  }
 };

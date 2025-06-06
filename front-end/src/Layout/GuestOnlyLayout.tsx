@@ -8,11 +8,17 @@ const GuestAuthLayout = (): JSX.Element => {
   const navigate = useNavigate();
   const swal = useAlert();
   useEffect(() => {
-    if (auth.isAuthenticated) {
-      navigate(appConfig.FRONTEND_PATHS.landingPage.path);
-      swal.toast("Acces refusé: Vous etes deja connecter", "error");
+    if (!auth.loading && auth.isAuthenticated) {
+      const fromLogin = localStorage.getItem("userDirectedLogin") === "true";
+      if (!fromLogin) {
+        swal.toast("Accès refusé : Vous êtes déjà connecté", "error");
+      }
+      navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
     }
-  }, []);
+  }, [auth.loading, auth.isAuthenticated]);
+
+  if (auth.loading) return <div>Loading...</div>;
+
   return <Outlet />;
 };
 

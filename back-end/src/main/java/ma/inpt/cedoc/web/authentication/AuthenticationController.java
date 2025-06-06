@@ -40,7 +40,7 @@ public class AuthenticationController {
                 !authentication.getPrincipal().equals("anonymousUser")) {
             return alreadyLoggedIn();
         }
-        
+
         try {
             AuthenticationResponse authResponse = authenticationService.register(request, response);
             return ResponseEntity.ok(authResponse);
