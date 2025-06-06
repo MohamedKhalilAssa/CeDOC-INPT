@@ -37,7 +37,8 @@ const DashboardLayout = () => {
               to={`${appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}`}
               className="flex items-center"
             >
-              <img className="h-10 w-auto" src={Logo_inpt} alt="Logo INPT" /> {/* Increased logo size from h-8 to h-10 */}
+              <img className="h-10 w-auto" src={Logo_inpt} alt="Logo INPT" />{" "}
+              {/* Increased logo size from h-8 to h-10 */}
               <span className="block h-6 w-px bg-gray-300 mx-3"></span>
               <span className="text-lg font-bold bg-gradient-to-r from-blue-800 to-blue-600 bg-clip-text text-transparent">
                 CEDoc
@@ -244,7 +245,8 @@ const DashboardLayout = () => {
             >
               <svg
                 className="w-5 h-5 mr-3 text-slate-500 group-hover:text-blue-600"
-                fill="none"
+                fill="noneAD
+"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
