@@ -80,4 +80,25 @@ public class CandidatureController {
         List<SujetResponseDTO> sujets = candidatureService.getSujetsByEquipeId(equipeId);
         return ResponseEntity.ok(sujets);
     }
+
+        // 7) READ (par ID) – pour un candidat ou un admin
+        @GetMapping("/{id}")
+        public ResponseEntity<CandidatureResponseDTO> getCandidatureById(
+                @PathVariable Long id,
+                @AuthenticationPrincipal UserDetails userDetails) {
+    
+            CandidatureResponseDTO dto = candidatureService.getCandidatureById(id, userDetails);
+            return ResponseEntity.ok(dto);
+        }
+    
+        // 8) DELETE – supprimer une candidature (p.ex. si le candidat annule avant la date limite)
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteCandidature(
+                @PathVariable Long id,
+                @AuthenticationPrincipal UserDetails userDetails) {
+    
+            candidatureService.deleteCandidature(id, userDetails);
+            return ResponseEntity.noContent().build();
+        }
+    
 }

@@ -362,4 +362,44 @@ public class CandidatureServiceImpl implements CandidatureService {
         Candidature updated = candidatureRepository.save(existing);
         return candidatureMapper.toResponseDTO(updated);
     }
+
+
+    @Override
+    public CandidatureResponseDTO getCandidatureById(Long candidatureId, UserDetails userDetails) {
+        Candidature candidature = candidatureRepository.findById(candidatureId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidature introuvable"));
+
+        // Vérifie que le candidat authentifié est bien le propriétaire de la candidature
+        String emailConnecte = userDetails.getUsername();
+        if (!candidature.getCandidat().getEmail().equals(emailConnecte)) {
+            throw new AccessDeniedException("Accès refusé : vous ne pouvez consulter que vos propres candidatures.");
+        }
+
+        return candidatureMapper.toResponseDTO(candidature);
+    }
+
+    @Override
+    public void deleteCandidature(Long candidatureId, UserDetails userDetails) {
+        Candidature candidature = candidatureRepository.findById(candidatureId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidature introuvable"));
+
+        // Même contrôle d’accès : seul le propriétaire (ou éventuellement un ADMIN si vous le souhaitez) peut supprimer
+        String emailConnecte = userDetails.getUsername();
+        if (!candidature.getCandidat().getEmail().equals(emailConnecte)) {
+            throw new AccessDeniedException("Accès refusé : vous ne pouvez supprimer que vos propres candidatures.");
+        }
+
+        // Supprime d’abord le fichier ZIP stocké, s’il existe
+        String cheminFichier = candidature.getDossierCandidature();
+        if (cheminFichier != null && !cheminFichier.isBlank()) {
+            try {
+                fileService.deleteFile(cheminFichier);
+            } catch (IOException e) {
+                // On ignore la suppression du fichier si ça échoue, mais on continue de supprimer la ligne en DB
+            }
+        }
+
+        // Enfin, supprime l’enregistrement en base
+        candidatureRepository.delete(candidature);
+    }
 }
