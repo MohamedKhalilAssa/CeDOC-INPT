@@ -31,3 +31,13 @@ export interface UtilisateurResponseDTO extends baseResponse {
 export interface CandidatResponseDTO extends UtilisateurResponseDTO {
 
 }
+
+export enum RoleEnum {
+  CANDIDAT = "CANDIDAT",
+  PROFESSEUR = "PROFESSEUR",
+  DOCTORANT = "DOCTORANT",
+  CHEF_EQUIPE = "CHEF_EQUIPE",
+  RESPONSABLE_FORMATION = "RESPONSABLE_FORMATION",
+  DIRECTEUR_DE_THESE = "DIRECTEUR_DE_THESE",
+  DIRECTION_CEDOC = "DIRECTION_CEDOC"
+}
