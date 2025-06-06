@@ -32,7 +32,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
   const {
     register,
     formState: { errors },
-    reset,
+    control,
   } = form;
 
   const { getClaim } = UseJWT(localStorage.getItem("token"));
@@ -72,27 +72,30 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
         console.error("Error fetching data:", error);
       });
   }, []);
-
-  // Reset form values when data is fetched
+  // Set individual form values when data is fetched (don't reset entire form)
   useEffect(() => {
     if (fetchedData.utilisateur) {
       const user = fetchedData.utilisateur;
-      reset({
-        nom: user.nom || "",
-        prenom: user.prenom || "",
-        email: getClaim("sub") || "",
-        telephone: user.telephone || "",
-        genre: user.genre || "",
-        etatCivilEnum: user.etatCivilEnum || "",
-        statutProfessionnel: user.statutProfessionnel || "",
-        dateNaissance: user.dateNaissance
+      // Use setValue instead of reset to avoid overwriting other form sections
+      const { setValue } = form;
+
+      setValue("nom", user.nom || "");
+      setValue("prenom", user.prenom || "");
+      setValue("email", getClaim("sub") || "");
+      setValue("telephone", user.telephone || "");
+      setValue("genre", user.genre || "");
+      setValue("etatCivilEnum", user.etatCivilEnum || "");
+      setValue("statutProfessionnel", user.statutProfessionnel || "");
+      setValue(
+        "dateNaissance",
+        user.dateNaissance
           ? new Date(user.dateNaissance).toISOString().split("T")[0]
-          : null,
-        nationaliteId: user.nationalite?.id || "",
-        lieuDeNaissanceId: user.lieuDeNaissance?.id || "",
-      });
+          : null
+      );
+      setValue("nationaliteId", user.nationalite?.id || "");
+      setValue("lieuDeNaissanceId", user.lieuDeNaissance?.id || "");
     }
-  }, [fetchedData.utilisateur]);
+  }, [fetchedData.utilisateur, form]);
 
   const nationalityOptions =
     fetchedData.nationalities?.map((n) => ({
@@ -137,6 +140,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {" "}
         <InputField
           label="Nom"
           name="nom"
@@ -144,6 +148,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           placeholder="Entrez votre nom de famille"
           register={register}
           errors={errors}
+          control={control}
           required
         />
         <InputField
@@ -153,8 +158,9 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           placeholder="Entrez votre prénom"
           register={register}
           errors={errors}
+          control={control}
           required
-        />
+        />{" "}
         <InputField
           label="Email"
           name="email"
@@ -162,6 +168,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           placeholder="votre@email.com"
           register={register}
           errors={errors}
+          control={control}
           disabled
           required
         />
@@ -172,6 +179,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           placeholder="+212623456789 ou 0623456789"
           register={register}
           errors={errors}
+          control={control}
           validation={{
             pattern: {
               value: /^(\+212|0)([5-7][0-9]{8})$/,
@@ -179,13 +187,14 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
             },
           }}
           required
-        />
+        />{" "}
         <SelectField
           label="Genre"
           name="genre"
           options={genreOptions}
           register={register}
           errors={errors}
+          control={control}
           required
         />
         <SelectField
@@ -194,21 +203,24 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           options={etatCivilOptions}
           register={register}
           errors={errors}
+          control={control}
           required
-        />
+        />{" "}
         <SelectField
           label="Statut professionnel"
           name="statutProfessionnel"
           options={statutProfessionnelOptions}
           register={register}
           errors={errors}
+          control={control}
           required
-        />
+        />{" "}
         <DatePicker
           label="Date de naissance"
           name="dateNaissance"
           register={register}
           errors={errors}
+          control={control}
           required
         />
         <SelectField
@@ -217,6 +229,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           options={nationalityOptions}
           register={register}
           errors={errors}
+          control={control}
           required
         />
         <SelectField
@@ -225,6 +238,7 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
           options={lieuDeNaissanceOptions}
           register={register}
           errors={errors}
+          control={control}
           required
         />
       </div>

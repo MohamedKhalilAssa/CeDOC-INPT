@@ -14,11 +14,19 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name="professeurs")
-public class Professeur extends Utilisateur {
+public class Professeur {
+
+    @Id
+    private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "utilisateur_id")
+    private Utilisateur utilisateur;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Veuillez précisez le grade.")

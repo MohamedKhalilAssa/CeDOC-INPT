@@ -22,11 +22,19 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "doctorants")
-public class Doctorant extends Utilisateur {
+public class Doctorant {
+
+        @Id
+        private Long id;
+
+        @OneToOne
+        @MapsId
+        @JoinColumn(name = "utilisateur_id")
+        private Utilisateur utilisateur;
 
         @Column(name = "date_inscription")
         @NotNull(message = "La date d'inscription est obligatoire.")
@@ -46,7 +54,8 @@ public class Doctorant extends Utilisateur {
         @Nullable
         private String draftDiplomeUrl;
 
-        private boolean archiver = false;
+        @Builder.Default
+    private boolean archiver = false;
 
         // Relations
         @ManyToOne
