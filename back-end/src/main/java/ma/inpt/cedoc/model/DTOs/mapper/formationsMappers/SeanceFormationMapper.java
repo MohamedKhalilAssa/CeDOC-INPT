@@ -1,58 +1,66 @@
 package ma.inpt.cedoc.model.DTOs.mapper.formationsMappers;
 
-import org.mapstruct.*;
-
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormation;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SeanceFormationMapper {
+@Component
+public class SeanceFormationMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "formation", ignore = true) // Will be set manually later
-    @Mapping(target = "declarant", ignore = true) // Will be set manually later
-    @Mapping(target = "validePar", ignore = true) // Will be set manually later
-    SeanceFormation seanceFormationRequestDTOToSeanceFormation(SeanceFormationRequestDTO dto);
+    public SeanceFormation seanceFormationRequestDTOToSeanceFormation(SeanceFormationRequestDTO dto) {
+        if (dto == null) return null;
 
-    @Mappings({
-            @Mapping(target = "formationId", expression = "java(mapFormationId(seanceFormation))"),
-            @Mapping(target = "declarantId", expression = "java(mapDeclarantId(seanceFormation))"),
-            @Mapping(target = "valideParId", expression = "java(mapValideParId(seanceFormation))")
-    })
-    SeanceFormationResponseDTO seanceFormationToSeanceFormationResponseDTO(SeanceFormation seanceFormation);
-
-    @Mappings({
-            @Mapping(target = "id", ignore = true),
-            @Mapping(target = "createdAt", ignore = true),
-            @Mapping(target = "declarant", ignore = true),
-            @Mapping(target = "formation", ignore = true),
-            @Mapping(target = "updatedAt", ignore = true),
-            @Mapping(target = "validePar", ignore = true)
-    })
-    void updateSeanceFormationFromDTO(SeanceFormationRequestDTO dto, @MappingTarget SeanceFormation entity);
-
-    /*------------------------------------- HELPERS (if needed manually) ----------------------------------------*/
-    default Long mapFormationId(SeanceFormation seanceFormation) {
-        if (seanceFormation.getFormation() == null) {
-            return null;
-        }
-        return seanceFormation.getFormation().getId();
+        SeanceFormation seance = new SeanceFormation();
+        seance.setDuree(dto.getDuree());
+        seance.setJustificatifPdf(dto.getJustificatifPdf());
+        seance.setStatut(dto.getStatut());
+        // formation, declarant, and validePar are set manually later
+        return seance;
     }
 
-    default Long mapDeclarantId(SeanceFormation seanceFormation) {
-        if (seanceFormation.getDeclarant() == null) {
-            return null;
-        }
-        return seanceFormation.getDeclarant().getId();
+    public SeanceFormationResponseDTO seanceFormationToSeanceFormationResponseDTO(SeanceFormation seance) {
+        if (seance == null) return null;
+
+        return SeanceFormationResponseDTO.builder()
+                .id(seance.getId())
+                .duree(seance.getDuree())
+                .justificatifPdf(seance.getJustificatifPdf())
+                .statut(seance.getStatut())
+                .createdAt(seance.getCreatedAt())
+                .updatedAt(seance.getUpdatedAt())
+                .formationId(mapFormationId(seance))
+                .declarantId(mapDeclarantId(seance))
+                .valideParId(mapValideParId(seance))
+                .build();
     }
 
-    default Long mapValideParId(SeanceFormation seanceFormation) {
-        if (seanceFormation.getValidePar() == null) {
-            return null;
-        }
-        return seanceFormation.getValidePar().getId();
+    public void updateSeanceFormationFromDTO(SeanceFormationRequestDTO dto, SeanceFormation entity) {
+        if (dto == null || entity == null) return;
+
+        entity.setDuree(dto.getDuree());
+        entity.setJustificatifPdf(dto.getJustificatifPdf());
+        entity.setStatut(dto.getStatut());
+        // Do not override ids, formation, declarant, or validePar here
+    }
+
+    /*-------------------------- HELPERS --------------------------*/
+
+    private Long mapFormationId(SeanceFormation seance) {
+        Formation formation = seance.getFormation();
+        return formation != null ? formation.getId() : null;
+    }
+
+    private Long mapDeclarantId(SeanceFormation seance) {
+        Doctorant declarant = seance.getDeclarant();
+        return declarant != null ? declarant.getId() : null;
+    }
+
+    private Long mapValideParId(SeanceFormation seance) {
+        ResponsableDeFormation responsable = seance.getValidePar();
+        return responsable != null ? responsable.getId() : null;
     }
 }

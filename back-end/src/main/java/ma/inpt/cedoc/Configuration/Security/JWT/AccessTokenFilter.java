@@ -119,9 +119,11 @@ public class AccessTokenFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        // Skip authentication endpoints except logout and check
-        return (path.contains("/images") || path.contains("/api/auth") &&
-                !(path.contains("/api/auth/logout") || path.contains("/api/auth/check"))) ||
-                path.contains("/api/guest");
+        String method = request.getMethod();
+        return method.equalsIgnoreCase("OPTIONS") ||
+                path.startsWith("/api/auth/") ||
+                path.startsWith("/api/guest/") ||
+                path.startsWith("/images/") ||
+                path.startsWith("/api/formations");
     }
 }

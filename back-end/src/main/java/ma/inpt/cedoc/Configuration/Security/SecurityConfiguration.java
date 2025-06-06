@@ -47,7 +47,7 @@ public class SecurityConfiguration {
 
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
-                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**")
+                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**", "/api/formations/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session

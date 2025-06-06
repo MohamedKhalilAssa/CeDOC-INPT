@@ -30,7 +30,7 @@ public class SeanceFormation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer duree; // durée en minutes ou heures ? (INT in diagram)
+    private Integer duree; // durée en minutes ou heures? (INT in diagram)
 
     /*lien du justificatif PDF */
     @NotBlank

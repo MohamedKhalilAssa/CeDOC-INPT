@@ -3,10 +3,12 @@ package ma.inpt.cedoc.model.DTOs.Formations;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.formation_enums.ModuleEnum;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class FormationRequestDTO {
@@ -39,4 +41,6 @@ public class FormationRequestDTO {
         @NotBlank(message = "Le lieu est obligatoire")
         @Size(max = 255, message = "Le lieu ne doit pas dépasser 255 caractères")
         private String lieu;
+
+        private List<Long> doctorantsCiblesIds;
 }

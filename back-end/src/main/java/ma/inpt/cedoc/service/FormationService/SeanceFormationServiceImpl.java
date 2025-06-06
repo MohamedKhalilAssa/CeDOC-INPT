@@ -13,7 +13,6 @@ import ma.inpt.cedoc.repositories.formationRepositories.FormationRepository;
 import ma.inpt.cedoc.repositories.formationRepositories.SeanceFormationRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.ResponsableDeFormationRepository;
-import ma.inpt.cedoc.service.FormationService.SeanceFormationService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

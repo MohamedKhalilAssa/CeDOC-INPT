@@ -3,6 +3,7 @@ package ma.inpt.cedoc.service.FormationService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.FormationMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,7 +12,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.FormationMapper;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.repositories.formationRepositories.FormationRepository;
 
