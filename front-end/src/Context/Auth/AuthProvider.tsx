@@ -2,6 +2,7 @@
 import { AuthContext } from "@/Context/Auth/AuthContext";
 import { checkAuth } from "@/Helpers/AuthFunctions"; // your function that validates token
 import { type decodedJWT } from "@/Types/GlobalTypes";
+import { RoleEnum } from "@/Types/UtilisateursEnums";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 
@@ -11,6 +12,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [utilisateur, setUtilisateur] = useState<decodedJWT | null>(null);
   const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState<RoleEnum[]>([]);
 
   const syncStateFromToken = () => {
     const token = localStorage.getItem("token");
@@ -23,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const decoded = jwtDecode<decodedJWT>(token);
       setUtilisateur(decoded);
-      console.log(decoded.role);
+      setRoles(decoded.roles);
       setIsAuthenticated(true);
     } catch {
       setUtilisateur(null);
@@ -40,6 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem("isAuthenticated", "false");
     localStorage.removeItem("token");
     setIsAuthenticated(false);
+    setRoles([]);
     setUtilisateur(null);
   };
 
@@ -75,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, utilisateur, login, logout, loading }}
+      value={{ isAuthenticated, utilisateur, login, logout, loading, roles }}
     >
       {children}
     </AuthContext.Provider>

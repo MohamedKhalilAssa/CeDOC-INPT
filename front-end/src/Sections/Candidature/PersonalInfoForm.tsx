@@ -3,7 +3,6 @@ import InputField from "@/Components/Form/InputField";
 import SelectField from "@/Components/Form/SelectField";
 import { getData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
-import { useAuth } from "@/Hooks/UseAuth";
 import { UseJWT } from "@/Hooks/UseJWT";
 import appConfig from "@/public/config";
 import {
@@ -18,7 +17,6 @@ import {
 } from "@/Types/UtilisateursTypes";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 
 interface PersonalInfoFormProps {
   form: UseFormReturn<any>; // must be initialized with { mode: "onBlur" }
@@ -39,8 +37,6 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
 
   const { getClaim } = UseJWT(localStorage.getItem("token"));
   const swal = useAlert();
-  const auth = useAuth();
-  const navigate = useNavigate();
 
   const [fetchedData, setFetchedData] = useState<fetchedDataType>({
     utilisateur: undefined,
@@ -69,16 +65,6 @@ const PersonalInfoForm = ({ form }: PersonalInfoFormProps) => {
         }
       })
       .catch((error) => {
-        if (error.response?.status === 403) {
-          swal.error(
-            "Accès refusé",
-            "Vous n'avez pas les permissions nécessaires pour accéder à ces données."
-          );
-
-          auth.logout();
-
-          navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
-        }
         swal.error(
           "Erreur lors de la récupération des données",
           "Veuillez contacter l'administrateur."
