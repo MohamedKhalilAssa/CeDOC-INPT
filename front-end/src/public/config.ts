@@ -1,3 +1,5 @@
+// ─── Types ────────────────────────────────────────────────────────────
+
 interface ApiPaths {
   name: string;
   path: string;
@@ -27,16 +29,17 @@ interface AppConfig {
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
     verifyEmail: ApiPathsMap;
-    // …you can add more groups here if needed
+    chefsSujets: ApiPaths;
+    sujetsEquipes: ApiPaths;
   };
 
   FRONTEND_PATHS: {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
-    // “recherche” is a single FrontendPaths entry, not a map of multiple entries:
-    recherche: FrontendPaths;
   };
 }
+
+// ─── Actual config object ───────────────────────────────────────────────
 
 const appConfig: AppConfig = {
   APP_NAME: "CEDoc",
@@ -48,8 +51,8 @@ const appConfig: AppConfig = {
   API_PATHS: {
     AUTH: {
       register: { name: "Register", path: "/auth/register", method: "POST" },
-      login: { name: "Login", path: "/auth/login", method: "POST" },
-      logout: { name: "Logout", path: "/auth/logout", method: "POST" },
+      login:    { name: "Login", path: "/auth/login", method: "POST" },
+      logout:   { name: "Logout", path: "/auth/logout", method: "POST" },
       sendVerificationEmail: {
         name: "Send Verification Email",
         path: "/auth/send-verification",
@@ -70,7 +73,11 @@ const appConfig: AppConfig = {
         path: "/auth/reset-password",
         method: "POST",
       },
-      authCheck: { name: "Auth Check", path: "/auth/check", method: "GET" },
+      authCheck: {
+        name: "Auth Check",
+        path: "/auth/check",
+        method: "GET",
+      },
       currentUser: {
         name: "Current User",
         path: "/utilisateurs/logged-in",
@@ -147,22 +154,35 @@ const appConfig: AppConfig = {
         method: "POST",
       },
     },
+
+    // ── THE TWO NEW TOP‐LEVEL KEYS ──
+
+    chefsSujets: {
+      name: "Chefs et leurs Sujets",
+      path: "/chefs-equipe/chefs-sujets",
+      method: "GET",
+    },
+    sujetsEquipes: {
+      name: "Sujets et Équipes",
+      path: "/chefs-equipe/sujets-equipes",
+      method: "GET",
+    },
   },
 
   FRONTEND_PATHS: {
     GLOBAL: {
       landingPage: { name: "Landing Page", path: "/" },
-      postuler: { name: "Postuler", path: "/postuler" },
-      dashboard: { name: "Dashboard", path: "/dashboard" },
+      postuler:     { name: "Postuler", path: "/postuler" },
+      dashboard:    { name: "Dashboard", path: "/dashboard" },
+      recherche:    { name: "Recherche", path: "/recherche" },  // ← moved here
     },
     AUTH: {
-      register: { name: "Register", path: "/auth/register" },
-      login: { name: "Login", path: "/auth/login" },
-      verifyEmail: { name: "Email Verification", path: "/auth/verify-email" },
+      register:     { name: "Register", path: "/auth/register" },
+      login:        { name: "Login", path: "/auth/login" },
+      verifyEmail:  { name: "Email Verification", path: "/auth/verify-email" },
       forgotPassword: { name: "Forgot Password", path: "/auth/forgot-password" },
-      resetPassword: { name: "Reset Password", path: "/auth/reset-password" },
+      resetPassword:  { name: "Reset Password", path: "/auth/reset-password" },
     },
-    recherche: { name: "Recherche", path: "/recherche" },
   },
 };
 

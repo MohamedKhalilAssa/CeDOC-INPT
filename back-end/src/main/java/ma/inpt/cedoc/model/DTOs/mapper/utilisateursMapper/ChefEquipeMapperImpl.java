@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.ChefSujetsResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.service.CandidatureSevices.SujetService;
 import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
@@ -21,20 +21,22 @@ public class ChefEquipeMapperImpl {
     private final SujetService sujetService;
 
     /**
-     * Convertit une entité ChefEquipe en ChefSujetsResponseDTO existant.
+     * Convertit une entité ChefEquipeRole (anciennement ChefEquipe) en ChefSujetsResponseDTO.
      */
-    public ChefSujetsResponseDTO toDto(ChefEquipe chef) {
-        if (chef == null) {
+    public ChefSujetsResponseDTO toDto(ChefEquipeRole chefRole) {
+        if (chefRole == null) {
             return null;
         }
 
-        // 1) Récupérer le DTO complet de l'utilisateur (chef) via UtilisateurService
-        UtilisateurResponseDTO chefDto = utilisateurService.getUtilisateurById(chef.getId());
+        // 1) Récupérer le DTO complet de l’utilisateur (professeur derrière le rôle)
+        UtilisateurResponseDTO chefDto =
+            utilisateurService.getUtilisateurById(chefRole.getProfesseur().getId());
 
-        // 2) Récupérer la liste de sujets du chef (DTO) via SujetService
-        List<SujetResponseDTO> sujetsDuChef = sujetService.getSujetsByChefEquipeId(chef.getId());
+        // 2) Récupérer la liste de sujets gérés par ce chef (par son rôle)
+        List<SujetResponseDTO> sujetsDuChef =
+            sujetService.getSujetsByChefEquipeId(chefRole.getId());
 
-        // 3) Construire et renvoyer le DTO existant
+        // 3) Construire et renvoyer le DTO final
         return ChefSujetsResponseDTO.builder()
                 .chef(chefDto)
                 .sujets(sujetsDuChef)
@@ -42,9 +44,9 @@ public class ChefEquipeMapperImpl {
     }
 
     /**
-     * Convertit une liste de ChefEquipe en liste de ChefSujetsResponseDTO.
+     * Convertit une liste de ChefEquipeRole en liste de ChefSujetsResponseDTO.
      */
-    public List<ChefSujetsResponseDTO> toDtoList(List<ChefEquipe> chefs) {
+    public List<ChefSujetsResponseDTO> toDtoList(List<ChefEquipeRole> chefs) {
         if (chefs == null) {
             return null;
         }

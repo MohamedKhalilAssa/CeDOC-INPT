@@ -12,7 +12,7 @@ import ma.inpt.cedoc.model.DTOs.Utilisateurs.ChefSujetsResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ChefEquipeMapperImpl;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipe;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.service.CandidatureSevices.SujetService;
 import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
 
@@ -32,7 +32,7 @@ public class ChefEquipeController {
      */
     @GetMapping("/chefs-sujets")
     public ResponseEntity<List<ChefSujetsResponseDTO>> getChefsAvecLeursSujets() {
-        List<ChefEquipe> tousLesChefs = chefEquipeService.findAll();
+        List<ChefEquipeRole> tousLesChefs = chefEquipeService.findAll();
         List<ChefSujetsResponseDTO> dtoList = chefEquipeMapper.toDtoList(tousLesChefs);
         return ResponseEntity.ok(dtoList);
     }
@@ -54,54 +54,54 @@ public class ChefEquipeController {
         return ResponseEntity.ok(dtoList);
     }
 
-    // ───–──── CRUD “tout brut” pour ChefEquipe ───–────
+    // ───–──── CRUD “tout brut” pour ChefEquipeRole ───–────
 
     /**
      * POST /api/chefs-equipe
-     * Crée un nouveau ChefEquipe (en envoyant un JSON correspondant à l’entité ChefEquipe).
+     * Crée un nouveau ChefEquipeRole (JSON correspondant à ChefEquipeRole).
      */
     @PostMapping
-    public ResponseEntity<ChefEquipe> createChef(@RequestBody ChefEquipe chefEquipe) {
-        ChefEquipe saved = chefEquipeService.createChefEquipe(chefEquipe);
+    public ResponseEntity<ChefEquipeRole> createChef(@RequestBody ChefEquipeRole chefEquipeRole) {
+        ChefEquipeRole saved = chefEquipeService.createChefEquipe(chefEquipeRole);
         return ResponseEntity.status(201).body(saved);
     }
 
     /**
      * GET /api/chefs-equipe
-     * Renvoie la liste brute de tous les ChefEquipe (entités complètes).
+     * Renvoie la liste brute de tous les ChefEquipeRole.
      */
     @GetMapping
-    public ResponseEntity<List<ChefEquipe>> getAllChefs() {
-        List<ChefEquipe> list = chefEquipeService.findAll();
+    public ResponseEntity<List<ChefEquipeRole>> getAllChefs() {
+        List<ChefEquipeRole> list = chefEquipeService.findAll();
         return ResponseEntity.ok(list);
     }
 
     /**
      * GET /api/chefs-equipe/{id}
-     * Renvoie le ChefEquipe dont l’id vaut {id}, ou 404 s’il n’existe pas.
+     * Renvoie le ChefEquipeRole dont l’id vaut {id}, ou 404 s’il n’existe pas.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ChefEquipe> getChefById(@PathVariable Long id) {
-        ChefEquipe chef = chefEquipeService.findById(id);
+    public ResponseEntity<ChefEquipeRole> getChefById(@PathVariable Long id) {
+        ChefEquipeRole chef = chefEquipeService.findById(id);
         return ResponseEntity.ok(chef);
     }
 
     /**
      * PUT /api/chefs-equipe/{id}
-     * Met à jour le ChefEquipe d’identifiant {id}, avec les valeurs fournies dans le JSON.
+     * Met à jour le ChefEquipeRole d’identifiant {id}, avec les valeurs fournies dans le JSON.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ChefEquipe> updateChef(
+    public ResponseEntity<ChefEquipeRole> updateChef(
             @PathVariable Long id,
-            @RequestBody ChefEquipe chefEquipe
+            @RequestBody ChefEquipeRole chefEquipeRole
     ) {
-        ChefEquipe updated = chefEquipeService.updateChefEquipe(id, chefEquipe);
+        ChefEquipeRole updated = chefEquipeService.updateChefEquipe(id, chefEquipeRole);
         return ResponseEntity.ok(updated);
     }
 
     /**
      * DELETE /api/chefs-equipe/{id}
-     * Supprime le ChefEquipe d’identifiant {id}. Retourne 204 si la suppression réussit.
+     * Supprime le ChefEquipeRole d’identifiant {id}. Retourne 204 si la suppression réussit.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteChef(@PathVariable Long id) {

@@ -171,7 +171,7 @@ const ResearchSection = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <Link to={appConfig.FRONTEND_PATHS.recherche.path}>
+          <Link to={appConfig.FRONTEND_PATHS.GLOBAL.recherche.path}>
             <motion.div
               className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 font-medium rounded-full group cursor-pointer"
               whileHover={{
