@@ -1,4 +1,4 @@
-import { RoleEnum } from "./UtilisateursTypes";
+import { RoleEnum } from "./UtilisateursEnums";
 
 export type decodedJWT = {
   exp: number;
