@@ -1,6 +1,6 @@
 // Main Utilisateur interface
 import { baseResponse } from "@/Types/GlobalTypes";
-import { EtatCivilEnum, GenreEnum } from "@/Types/UtilisateursEnums";
+import { CandidatureEnum, DiplomeEnum, EtablissementEnum, EtatCivilEnum, GenreEnum, MentionEnum } from "@/Types/UtilisateursEnums";
 // Supporting interfaces
 export interface Role extends baseResponse {
   id: number;
@@ -28,9 +28,31 @@ export interface UtilisateurResponseDTO extends baseResponse {
   nationalite?: Nationalite;
   lieuDeNaissance?: LieuDeNaissance;
 }
-export interface CandidatResponseDTO extends UtilisateurResponseDTO {
+export interface CandidatureRequestDTO extends UtilisateurResponseDTO {
+  // On conserve le champ statutCandidature (même si on forcera en SOUMISE)
+  statutCandidature: CandidatureEnum;
 
+  mentionBac: MentionEnum;
+
+  diplome: DiplomeEnum;
+
+  mentionDiplome: MentionEnum;
+
+  dossierCandidature: File; // Use File or a custom type for file uploads
+
+  typeEtablissement: EtablissementEnum;
+
+  specialite: string;
+
+  intitulePFE: string;
+
+  /**
+   * Liste des IDs des sujets choisis (1 à 3 éléments).
+   */
+  sujetsIds: number[];
 }
+
+
 
 export enum RoleEnum {
   CANDIDAT = "CANDIDAT",

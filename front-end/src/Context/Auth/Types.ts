@@ -1,5 +1,5 @@
 import { decodedJWT } from "@/Types/GlobalTypes";
-import { RoleEnum } from "@/Types/UtilisateursResponses";
+import { RoleEnum } from "@/Types/UtilisateursTypes";
 
 export type AuthContextType = {
   isAuthenticated: boolean;

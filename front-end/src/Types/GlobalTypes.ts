@@ -12,3 +12,7 @@ export type baseResponse = {
 };
 
 
+export type APIResponse = {
+  message: string;
+  statusCode: number;
+}
