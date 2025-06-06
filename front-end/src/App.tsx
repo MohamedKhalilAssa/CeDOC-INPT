@@ -8,6 +8,7 @@ import LandingPage from "@/Pages/LandingPage";
 import appConfig from "@/public/config";
 import { Route, Routes } from "react-router-dom";
 import ResetPasswordPage from "./Pages/Authentication/ResetPasswordPage";
+import FormationsPage from "./Pages/Formations/FormationPage";
 
 function App() {
   return (
@@ -20,6 +21,11 @@ function App() {
           <Route
             path={appConfig.FRONTEND_PATHS.landingPage.path}
             element={<LandingPage />}
+          />
+                    {/* Formations Page Route */}
+          <Route
+            path="/formations"
+            element={<FormationsPage />}
           />
 
           <Route element={<GuestOnlyLayout />}>
@@ -45,6 +51,7 @@ function App() {
             />
           </Route>
         </Route>
+
       </Routes>
     </>
   );
