@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.service.AttestationService;
 
+import java.io.IOException;
 import java.util.List;
 
 import ma.inpt.cedoc.model.DTOs.Attestation.*;
@@ -13,6 +14,11 @@ public interface AttestationService {
     AttestationAutomatiqueResponseDTO saveAttestationAutomatique(AttestationAutomatiqueRequestDTO dto);
 
     AttestationAvecValidationResponseDTO saveAttestationAvecValidation(AttestationAvecValidationRequestDTO dto);
+
+    /* ------------------ Generate methods ------------------ */
+    byte[] generateAttestationAutomatique(Long doctorantId, TypeAttestationAutoEnum typeAttestationAuto) throws IOException;
+
+    byte[] generateAttestationAvecValidation(Long doctorantId, TypeAttestationValidationEnum typeAttestationValidation) throws IOException;
 
     /* ------------------ Get All ------------------ */
     List<Attestation> getAllAttestations();

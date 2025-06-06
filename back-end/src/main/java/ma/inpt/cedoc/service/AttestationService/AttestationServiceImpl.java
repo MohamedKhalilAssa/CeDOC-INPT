@@ -1,8 +1,14 @@
 package ma.inpt.cedoc.service.AttestationService;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -46,6 +52,38 @@ public class AttestationServiceImpl implements AttestationService {
                 .attestationAvecValidationRequestDTOToAttestationAvecValidation(dto);
         AttestationAvecValidation saved = attestationAvecValidationRepository.save(attestation);
         return attestationMapper.attestationAvecValidationToAttestationAvecValidationResponseDTO(saved);
+    }
+
+    /* ------------------ Generate methods ------------------ */
+
+    public byte[] generateAttestationAutomatique(Long doctorantID, TypeAttestationAutoEnum typeAttestationAuto) throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            //PDF structure and design
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            return out.toByteArray();
+        }
+    }
+
+    public byte[] generateAttestationAvecValidation(Long doctorantID, TypeAttestationValidationEnum typeAttestationValidation) throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            //PDF structure and design
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            return out.toByteArray();
+        }
     }
 
     /* ------------------ Get all methods ------------------ */

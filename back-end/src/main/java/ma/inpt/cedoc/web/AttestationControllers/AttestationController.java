@@ -6,7 +6,7 @@ import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import ma.inpt.cedoc.service.AttestationService.AttestationService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +31,50 @@ public class AttestationController {
             @RequestBody @Valid AttestationAvecValidationRequestDTO dto) {
         var saved = attestationService.saveAttestationAvecValidation(dto);
         return ResponseEntity.ok(saved);
+    }
+
+    /* ------------------ Generate ------------------ */
+
+    @GetMapping("/automatique/generate")
+    public ResponseEntity<byte[]> generateAttestationAutomatique(
+            @RequestParam Long doctorantId,
+            @RequestParam TypeAttestationAutoEnum typeAttestationAuto
+    ) {
+        try {
+            byte[] pdfBytes = attestationService.generateAttestationAutomatique(doctorantId, typeAttestationAuto);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.attachment()
+                    .filename("attestationAutomatique.pdf")
+                    .build());
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    @GetMapping("/avec-validation/generate")
+    public ResponseEntity<byte[]> generateAttestationAvecValidation(
+            @RequestParam Long doctorantId,
+            @RequestParam TypeAttestationValidationEnum typeAttestationValidation
+    ) {
+        try {
+            byte[] pdfBytes = attestationService.generateAttestationAvecValidation(doctorantId, typeAttestationValidation);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.attachment()
+                    .filename("attestationAvecValidation.pdf")
+                    .build());
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 
     /* ------------------ Get All ------------------ */
