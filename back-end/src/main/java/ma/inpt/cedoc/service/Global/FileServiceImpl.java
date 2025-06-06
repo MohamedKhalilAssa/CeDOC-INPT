@@ -1,10 +1,7 @@
 package ma.inpt.cedoc.service.Global;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -16,7 +13,7 @@ public class FileServiceImpl implements FileService {
     // Assuming uploads is at: src/uploads (2 levels up from service implementation)
     private static final Path BASE_UPLOAD_PATH = Paths.get(System.getProperty("user.dir"))
                                                     .resolve("src")
-                                                    .resolve("uploads");
+                                                    .resolve("Uploads");
 
     @Override
     public String storeFile(MultipartFile file, String subdirectory) throws IOException {

@@ -8,13 +8,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.enums.candidature_enums.*;
 
 @Data
-@Builder
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CandidatureRequestDTO {
+public class CandidatureRequestDTO extends UtilisateurRequestDTO{
 
     // On conserve le champ statutCandidature (même si on forcera en SOUMISE)
     private CandidatureEnum statutCandidature;
@@ -40,8 +43,6 @@ public class CandidatureRequestDTO {
     @NotBlank(message = "L'intitulé du PFE est obligatoire.")
     private String intitulePFE;
 
-    @NotNull(message = "Le candidat est obligatoire")
-    private Long candidatId;
 
     /**
      * Liste des IDs des sujets choisis (1 à 3 éléments).

@@ -56,7 +56,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
     public AvisReinscriptionResponseDTO createAvis(AvisReinscriptionRequestDTO requestDTO, String email) {
         // Find professor by email and get their directeur role
         Professeur professeur = professeurService.getAllProfesseurs().stream()
-                .filter(p -> p.getEmail().equals(email) && p.isDirecteurDeThese())
+                .filter(p -> p.getUtilisateur().getEmail().equals(email) && p.isDirecteurDeThese())
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Directeur du thèse "+email+" n'est pas trouvé"));
         
@@ -81,7 +81,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
         
         // Find professor by email and get their directeur role
         Professeur professeur = professeurService.getAllProfesseurs().stream()
-                .filter(p -> p.getEmail().equals(email) && p.isDirecteurDeThese())
+                .filter(p -> p.getUtilisateur().getEmail().equals(email) && p.isDirecteurDeThese())
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Directeur de thèse "+email+" n'est pas trouvé"));
         
@@ -106,7 +106,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
         
         // Find professor by email and get their directeur role
         Professeur professeur = professeurService.getAllProfesseurs().stream()
-                .filter(p -> p.getEmail().equals(email) && p.isDirecteurDeThese())
+                .filter(p -> p.getUtilisateur().getEmail().equals(email) && p.isDirecteurDeThese())
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Directeur de thèse "+email+" n'est pas trouvé"));
         

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
@@ -17,7 +18,7 @@ import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 
 @Service
 @RequiredArgsConstructor
-
+@Transactional
 public class SujetServiceImpl implements SujetService {
 
     private final SujetRepository sujetRepository;
@@ -229,8 +230,9 @@ public class SujetServiceImpl implements SujetService {
     }
 
     @Override
+    @Transactional
     public List<SujetResponseSimpleDTO> getAllSimple() {
-        
+        System.out.println("Fetching all simple sujets");
         return sujetRepository.findAll().stream()
                 .map(sujetMapper::toSimpleResponseDTO)
                 .collect(Collectors.toList());

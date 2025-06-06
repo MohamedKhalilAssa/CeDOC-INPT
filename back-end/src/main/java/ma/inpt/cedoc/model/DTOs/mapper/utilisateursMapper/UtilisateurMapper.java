@@ -11,6 +11,7 @@ public interface UtilisateurMapper {
     Utilisateur fromRegisterDTO(RegisterRequestDTO dto);
     UtilisateurResponseDTO toResponse(Utilisateur utilisateur);
     UtilisateurResponseDTO toResponseWithRoles(Utilisateur utilisateur);
+    Utilisateur UpdateUtilisateurFromRequestDTO(Utilisateur utilisateur, UtilisateurRequestDTO dto);
     List<String> mapRoleNames(List<Role> roles);
     List<RoleResponseDTO> mapRolesToDTOs(List<Role> roles);
     NationaliteResponseDTO mapNationaliteToDTO(Nationalite nationalite);

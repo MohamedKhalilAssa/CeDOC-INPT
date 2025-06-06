@@ -77,7 +77,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     @Transactional
     public DemandeReinscriptionResponseDTO createDemande(DemandeReinscriptionRequestDTO demandeDTO, String email) {
         DemandeReinscription newDemande = demandeReinscriptionMapper.toEntity(demandeDTO);
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
         newDemande.setDemandeur(doctorant); // parceque le personne qui crée cette demande là et le doctorant
                                             // authentifié à la platforme
@@ -89,7 +89,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
             String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
         if (!doctorant.getId().equals(demande.getDemandeur().getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
@@ -102,7 +102,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public void deleteDemande(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
         if (!doctorant.getId().equals(demande.getDemandeur().getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");

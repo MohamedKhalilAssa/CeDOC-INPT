@@ -66,7 +66,12 @@ public class CandidatServiceImpl implements CandidatService {
     @Override public CandidatResponseDTO findCandidatByTelephone(String telephone) { return null; }
     @Override public CandidatResponseDTO findCandidatByNomContainsOrPrenomContains(String query) { return null; }
     @Override public List<Candidat> findAllNonArchivedCandidats() { return null; }
-    @Override public Candidat findFullCandidatByEmail(String email) { return null; }
+    
+    @Override 
+    public Candidat findFullCandidatByEmail(String email) { 
+        return candidatRepository.findByUtilisateurEmail(email).orElse(null);
+    }
+    
     @Override public Candidat findFullCandidatByTelephone(String telephone) { return null; }
     @Override public CandidatResponseDTO updateCandidat(Candidat candidat) { return null; }
     @Override public void deleteCandidat(Long id) {}
@@ -78,13 +83,13 @@ public class CandidatServiceImpl implements CandidatService {
     private CandidatResponseDTO toResponse(Candidat candidat) {
         return CandidatResponseDTO.builder()
                 .id(candidat.getId())
-                .email(candidat.getEmail())
-                .nom(candidat.getNom())
-                .prenom(candidat.getPrenom())
-                .telephone(candidat.getTelephone())
+                .email(candidat.getUtilisateur().getEmail())
+                .nom(candidat.getUtilisateur().getNom())
+                .prenom(candidat.getUtilisateur().getPrenom())
+                .telephone(candidat.getUtilisateur().getTelephone())
                 .archiver(candidat.isArchiver())
-                .createdAt(candidat.getCreatedAt())
-                .updatedAt(candidat.getUpdatedAt())
+                .createdAt(candidat.getUtilisateur().getCreatedAt())
+                .updatedAt(candidat.getUtilisateur().getUpdatedAt())
                 .build();
     }
 }

@@ -55,7 +55,7 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Override
     @Transactional
     public ConfParticipationResponseDTO addConfParticipation(ConfParticipationRequestDTO requestDTO, String email) {
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
         ConfParticipation confParticipation = confParticipationMapper.toEntity(requestDTO);
         confParticipation.setParticipant(doctorant);
@@ -68,7 +68,7 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
             String email) {
         ConfParticipation confParticipation = confParticipationRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
         if (!doctorant.getId().equals(confParticipation.getParticipant().getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
@@ -82,7 +82,7 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     public void deleteConfParticipation(Long id, String email) {
         ConfParticipation confParticipation = confParticipationRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
         if (!doctorant.getId().equals(confParticipation.getParticipant().getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
@@ -93,7 +93,7 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Override
     @Transactional
     public ConfParticipationResponseDTO validerConfParticipation(Long id, String email) {
-        DirectionCedoc directionCedoc = directionCedocRepository.findByEmail(email)
+        DirectionCedoc directionCedoc = directionCedocRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc " + email + " n'est pas trouvé"));
         ConfParticipation confParticipation = confParticipationRepository.findById(id)
                 .orElseThrow(
@@ -106,7 +106,7 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     @Override
     @Transactional
     public ConfParticipationResponseDTO refuserConfParticipation(Long id, String email) {
-        DirectionCedoc directionCedoc = directionCedocRepository.findByEmail(email)
+        DirectionCedoc directionCedoc = directionCedocRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc " + email + " n'est pas trouvé"));
         ConfParticipation confParticipation = confParticipationRepository.findById(id)
                 .orElseThrow(

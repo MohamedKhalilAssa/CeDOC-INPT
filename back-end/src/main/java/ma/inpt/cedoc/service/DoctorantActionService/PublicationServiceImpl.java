@@ -54,7 +54,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public PublicationResponseDTO addPublication(PublicationRequestDTO requestDTO, String email) {
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found"));
         Publication publication = publicationMapper.toEntity(requestDTO);
         publication.setAuteur(doctorant);
@@ -65,7 +65,7 @@ public class PublicationServiceImpl implements PublicationService {
     public PublicationResponseDTO updatePublication(PublicationRequestDTO requestDTO, Long id, String email) {
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found"));
         if (!publication.getAuteur().getId().equals(doctorant.getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
@@ -78,7 +78,7 @@ public class PublicationServiceImpl implements PublicationService {
     public void deletePublication(Long id, String email) {
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));
-        Doctorant doctorant = doctorantRepository.findByEmail(email)
+        Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found"));
         if (!publication.getAuteur().getId().equals(doctorant.getId())) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à accéder à cette ressource.");
@@ -88,7 +88,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public PublicationResponseDTO validerPublication(Long id, String email) {
-        DirectionCedoc directionCedoc = directionCedocRepository.findByEmail(email)
+        DirectionCedoc directionCedoc = directionCedocRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc " + email + " n'est pas trouvé"));
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));
@@ -99,7 +99,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public PublicationResponseDTO refuserPublication(Long id, String email) {
-        DirectionCedoc directionCedoc = directionCedocRepository.findByEmail(email)
+        DirectionCedoc directionCedoc = directionCedocRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("DirectionCeDoc " + email + " n'est pas trouvé"));
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));

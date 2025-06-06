@@ -11,9 +11,9 @@ public class ProfesseurMapperImpl implements ProfesseurMapper {
     public ProfesseurResponseDTO toSimpleDTO(Professeur p) {
         return ProfesseurResponseDTO.builder()
                 .id(p.getId())
-                .nom(p.getNom())
-                .prenom(p.getPrenom())
-                .email(p.getEmail())
+                .nom(p.getUtilisateur().getNom())
+                .prenom(p.getUtilisateur().getPrenom())
+                .email(p.getUtilisateur().getEmail())
                 .grade(p.getGrade().name())
                 .build();
     }

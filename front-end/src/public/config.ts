@@ -25,6 +25,7 @@ interface AppConfig {
     NATIONALITE: ApiPathsMap;
     LIEU_DE_NAISSANCE: ApiPathsMap;
     SUJET: ApiPathsMap;
+    CANDIDATURE: ApiPathsMap;
 
     // Add more groups here
   };
@@ -96,6 +97,13 @@ const appConfig: AppConfig = {
         method: "GET",
       },
     },
+    CANDIDATURE:{
+      postuler: {
+        name: "Postuler",
+        path: "/candidatures/postuler",
+        method: "POST",
+      }
+    }
 
     // Add more API groups here (e.g. USERS, DOCUMENTS, FILES...)
   },
