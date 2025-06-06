@@ -1,7 +1,7 @@
 import {
   SidebarProvider,
   useSidebar,
-} from "@/Context/Auth/DashContext/SidebarContext";
+} from "@/Context/DashContext/SidebarContext";
 import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
