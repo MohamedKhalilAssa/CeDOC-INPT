@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getExternalAuthHandlers } from "@/Context/Auth/index";
+import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
@@ -27,7 +28,15 @@ API.interceptors.response.use(
   },
   (error) => {
     // Handle 401 here too if refresh logic is needed
-    return Promise.reject(error);
+    const swal = useAlert();
+    if (
+      error.response &&
+      error.response.data?.error == "authentication_error"
+    ) {
+      location.href =
+        appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+      swal.toast("Authentication error: Please log in again.", "error");
+    }
   }
 );
 

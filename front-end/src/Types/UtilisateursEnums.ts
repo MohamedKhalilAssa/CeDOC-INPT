@@ -13,7 +13,7 @@ export enum EtatCivilEnum {
   DIVORCER = "Divorcé",
 }
 export enum MentionEnum {
-  P= "Passable", // Passable
+  P = "Passable", // Passable
   AB = "Assez Bien", // Assez Bien
   B = "Bien", // Bien
   TB = "Très Bien", // Très Bien
@@ -32,4 +32,13 @@ export enum CandidatureEnum {
   EN_COURS_DE_TRAITEMENT,
   ACCEPTER,
   REFUSER,
+}
+export enum RoleEnum {
+  CANDIDAT = "CANDIDAT",
+  PROFESSEUR = "PROFESSEUR",
+  DOCTORANT = "DOCTORANT",
+  CHEF_EQUIPE = "CHEF_EQUIPE",
+  RESPONSABLE_FORMATION = "RESPONSABLE_FORMATION",
+  DIRECTEUR_DE_THESE = "DIRECTEUR_DE_THESE",
+  DIRECTION_CEDOC = "DIRECTION_CEDOC",
 }
