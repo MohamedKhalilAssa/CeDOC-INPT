@@ -86,6 +86,69 @@ const DashboardLayout = () => {
             </svg>
             Dashboard Overview
           </a>
+          {/* Doctoral Profile Management */}
+          <div className="pt-4">
+            <h3 className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              Doctoral Profile
+            </h3>
+            <Link
+              to="/dashboard/student-profile"
+              className="flex items-center px-4 py-3 text-sm font-medium text-slate-700 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+            >
+              <svg
+                className="w-5 h-5 mr-3 text-slate-500 group-hover:text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              My Profile
+            </Link>
+            <Link
+              to="/dashboard/team-assignment"
+              className="flex items-center px-4 py-3 text-sm font-medium text-slate-700 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+            >
+              <svg
+                className="w-5 h-5 mr-3 text-slate-500 group-hover:text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              Team Assignment
+            </Link>
+            <Link
+              to="/dashboard/publication-validation"
+              className="flex items-center px-4 py-3 text-sm font-medium text-slate-700 rounded-xl hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group"
+            >
+              <svg
+                className="w-5 h-5 mr-3 text-slate-500 group-hover:text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Publication Validation
+            </Link>
+          </div>
 
           {/* Students Management */}
           <div className="pt-4">
