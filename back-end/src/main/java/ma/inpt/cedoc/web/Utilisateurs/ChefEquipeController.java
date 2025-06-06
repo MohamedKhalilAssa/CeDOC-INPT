@@ -43,16 +43,16 @@ public class ChefEquipeController {
      */
     @GetMapping("/sujets-equipes")
     public ResponseEntity<List<SujetEquipeDTO>> getAllSujetsAvecEquipe() {
-        List<Sujet> entities = sujetService.getAllPublicSujets().stream()
-            .map(dto -> sujetService.getSujetEntityById(dto.getId()))
-            .collect(Collectors.toList());
-
+        // directly fetch all public Sujet entities
+        List<Sujet> entities = sujetService.getAllPublicSujetsEntities();
+    
         List<SujetEquipeDTO> dtoList = entities.stream()
             .map(sujetEquipeMapper::toDto)
             .collect(Collectors.toList());
-
+    
         return ResponseEntity.ok(dtoList);
     }
+    
 
     // ───–──── CRUD “tout brut” pour ChefEquipeRole ───–────
 

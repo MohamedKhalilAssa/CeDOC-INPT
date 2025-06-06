@@ -174,7 +174,7 @@ const appConfig: AppConfig = {
       landingPage: { name: "Landing Page", path: "/" },
       postuler:     { name: "Postuler", path: "/postuler" },
       dashboard:    { name: "Dashboard", path: "/dashboard" },
-      recherche:    { name: "Recherche", path: "/recherche" },  // ← moved here
+      recherche:    { name: "Recherche", path: "/recherche" },
     },
     AUTH: {
       register:     { name: "Register", path: "/auth/register" },
