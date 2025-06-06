@@ -9,10 +9,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
@@ -25,11 +22,19 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "doctorants")
-public class Doctorant extends Utilisateur {
+public class Doctorant {
+
+        @Id
+        private Long id;
+
+        @OneToOne
+        @MapsId
+        @JoinColumn(name = "utilisateur_id")
+        private Utilisateur utilisateur;
 
         @Column(name = "date_inscription")
         @NotNull(message = "La date d'inscription est obligatoire.")
@@ -49,7 +54,8 @@ public class Doctorant extends Utilisateur {
         @Nullable
         private String draftDiplomeUrl;
 
-        private boolean archiver = false;
+        @Builder.Default
+    private boolean archiver = false;
 
         // Relations
         @ManyToOne
@@ -57,8 +63,8 @@ public class Doctorant extends Utilisateur {
         private EquipeDeRecherche equipeDeRecherche;
 
         @ManyToOne
-        @JoinColumn(name = "directeur_id")
-        private DirecteurDeThese directeurDeThese;
+        @JoinColumn(name = "directeur_role_id")
+        private DirecteurDeTheseRole directeurDeThese;
 
         @ManyToOne
         @JoinColumn(name = "sujet_id")

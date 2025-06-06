@@ -6,9 +6,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
@@ -16,7 +18,7 @@ import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 
 @Service
 @RequiredArgsConstructor
-
+@Transactional
 public class SujetServiceImpl implements SujetService {
 
     private final SujetRepository sujetRepository;
@@ -214,10 +216,25 @@ public class SujetServiceImpl implements SujetService {
 
         // Le sujet est invisible jusqu'à validation (future logique)
         sujet.setValide(false);
-        sujet.setEstPublic(false);
-
-        // Persistance
+        sujet.setEstPublic(false); // Persistance
         Sujet saved = sujetRepository.save(sujet);
         return sujetMapper.toResponseDTO(saved);
+    }
+
+    /* SIMPLE DTO METHODS --------------------------------------------- */
+    @Override
+    public SujetResponseSimpleDTO getSimple(Long id) {
+        Sujet sujet = sujetRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sujet non trouvé"));
+        return sujetMapper.toSimpleResponseDTO(sujet);
+    }
+
+    @Override
+    @Transactional
+    public List<SujetResponseSimpleDTO> getAllSimple() {
+        System.out.println("Fetching all simple sujets");
+        return sujetRepository.findAll().stream()
+                .map(sujetMapper::toSimpleResponseDTO)
+                .collect(Collectors.toList());
     }
 }

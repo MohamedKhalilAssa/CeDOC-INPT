@@ -16,7 +16,5 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
     List<Candidature> findByStatutCandidatureAndCreatedAtBefore(
         CandidatureEnum statut, LocalDate beforeDate);
 
-    // Toutes les candidatures refusées depuis avant une date donnée
-    List<Candidature> findByStatutCandidatureAndDateRefusBefore(
-        CandidatureEnum statut, LocalDate beforeDate);
+
 }

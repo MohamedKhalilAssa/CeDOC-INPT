@@ -13,7 +13,7 @@ const GuestAuthLayout = (): JSX.Element => {
       if (!fromLogin) {
         swal.toast("Accès refusé : Vous êtes déjà connecté", "error");
       }
-      navigate(appConfig.FRONTEND_PATHS.landingPage.path);
+      navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
     }
   }, [auth.loading, auth.isAuthenticated]);
 

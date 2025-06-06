@@ -27,7 +27,7 @@ public class CandidatureController {
     private final CandidatureService candidatureService;
 
     // 1) Création d’une nouvelle candidature (multipart/form-data pour inclure le champ MultipartFile)
-    @PostMapping("/")
+    @PostMapping("/postuler")
     public ResponseEntity<CandidatureResponseDTO> createCandidature(
             @ModelAttribute @Validated CandidatureRequestDTO dto,
             @AuthenticationPrincipal UserDetails userDetails) {

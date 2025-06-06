@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
@@ -18,11 +17,18 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.CEDocEnum;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="direction_cedoc")
-public class DirectionCedoc extends Utilisateur {
+public class DirectionCedoc {
+
+    @Id
+    private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "utilisateur_id")
+    private Utilisateur utilisateur;
 
     @Column(name="role_administrative")
     @NotNull(message = "Veuillez précisez le rôle administrative.")

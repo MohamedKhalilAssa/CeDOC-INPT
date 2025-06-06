@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 
 @Entity
@@ -38,8 +38,8 @@ public class Jury {
     private List<ProfesseurJury> membres;
 
     @ManyToOne
-    @JoinColumn(name = "directeur_de_these_id", nullable = false)
-    private DirecteurDeThese directeurDeThese;
+    @JoinColumn(name = "directeur_role_id", nullable = false)
+    private DirecteurDeTheseRole directeurDeThese;
 
     @ManyToOne
     @JoinColumn(name = "direction_cedoc_id", nullable = false)

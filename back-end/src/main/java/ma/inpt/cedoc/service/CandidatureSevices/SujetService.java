@@ -4,6 +4,7 @@ import java.util.List;
 
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 
 public interface SujetService {
@@ -50,6 +51,11 @@ public interface SujetService {
     SujetResponseDTO getSujetByDoctorantId(Long doctorantId);
 
     List<SujetResponseDTO> getAllPublicSujets();
+
+    // Simple DTO methods
+    SujetResponseSimpleDTO getSimple(Long id);
+
+    List<SujetResponseSimpleDTO> getAllSimple();
 
     // Entity-based methods
     Sujet getSujetEntityById(Long id);

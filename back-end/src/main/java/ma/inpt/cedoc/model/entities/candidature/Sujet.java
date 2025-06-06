@@ -33,6 +33,7 @@ public class Sujet {
     @NotBlank(message = "L'intitulé du sujet est obligatoire")
     @Size(min = 3, max = 100, message = "L'intitulé doit contenir entre 3 et 100 caractères")
     @Pattern(regexp = "^[\\p{L}0-9,.'\"()&-]+(?:\\s[\\p{L}0-9,.'\"()&-]+)*$", message = "L'intitule contient des caracteres invalides.")
+    @Column(unique = true, nullable = false)
     private String intitule;
 
     @NotBlank(message = "La description du sujet est obligatoire")
@@ -71,9 +72,9 @@ public class Sujet {
     @JsonIgnore
     private List<Doctorant> doctorants;
 
-    @ManyToOne
-    @JoinColumn(name = "chef_equipe_id", nullable = false)
-    private ChefEquipe chefEquipe;
+    @ManyToOne(targetEntity = ChefEquipeRole.class)
+    @JoinColumn(name = "chef_equipe_role_id", nullable = false)
+    private ChefEquipeRole chefEquipe;
     
     // @ManyToMany
     // @JoinTable(name = "sujet_chefs_equipes", joinColumns = @JoinColumn(name = "sujet_id"), inverseJoinColumns = @JoinColumn(name = "chef_equipe_id"))
@@ -84,9 +85,9 @@ public class Sujet {
     // @Column(name = "chef_id")
     // private List<Long> chefsAyantValide;
 
-    @ManyToOne
-    @JoinColumn(name = "directeur_these_id")
-    private DirecteurDeThese directeurDeThese;
+    @ManyToOne(targetEntity = DirecteurDeTheseRole.class)
+    @JoinColumn(name = "directeur_these_role_id")
+    private DirecteurDeTheseRole directeurDeThese;
 
     @OneToMany(mappedBy = "sujet")
     @JsonIgnore

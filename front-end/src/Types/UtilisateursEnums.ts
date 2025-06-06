@@ -1,6 +1,6 @@
 export enum StatutProfessionnelEnum {
-  SALARIE = "Salarie",
-  NON_SALARIE = "Non Salarie",
+  SALARIE = "Salarié",
+  NON_SALARIE = "Non Salarié",
 }
 
 export enum GenreEnum {
@@ -13,19 +13,19 @@ export enum EtatCivilEnum {
   DIVORCER = "Divorcé",
 }
 export enum MentionEnum {
-  P, // Passable
-  AB, // Assez Bien
-  B, // Bien
-  TB, // Très Bien
-  E, // Excellent
+  P= "Passable", // Passable
+  AB = "Assez Bien", // Assez Bien
+  B = "Bien", // Bien
+  TB = "Très Bien", // Très Bien
+  E = "Excellent", // Excellent
 }
 export enum EtablissementEnum {
-  ECOLE,
-  UNIVERSITE,
+  ECOLE = "École",
+  UNIVERSITE = "Université",
 }
 export enum DiplomeEnum {
-  Ingenieur,
-  Master,
+  INGENIEUR = "Ingénieur",
+  MASTER = "Master",
 }
 export enum CandidatureEnum {
   SOUMISE,

@@ -3,6 +3,7 @@ interface ApiPaths {
   path: string;
   method: "POST" | "GET" | "PUT" | "DELETE";
 }
+
 interface FrontendPaths {
   name: string;
   path: string;
@@ -15,129 +16,153 @@ type FrontendPathsMap = { [key: string]: FrontendPaths };
 interface AppConfig {
   APP_NAME: string;
   API_URL: string;
+  BACKEND_URL: string;
   FRONTEND_URL: string;
   IMAGES_RESSOURCES: string;
-  BACKEND_URL: string;
-  API_PATHS: ApiPathsMap;
-  FRONTEND_PATHS: FrontendPathsMap;
+
+  API_PATHS: {
+    AUTH: ApiPathsMap;
+    NATIONALITE: ApiPathsMap;
+    LIEU_DE_NAISSANCE: ApiPathsMap;
+    SUJET: ApiPathsMap;
+    CANDIDATURE: ApiPathsMap;
+    verifyEmail: ApiPathsMap;
+    // …you can add more groups here if needed
+  };
+
+  FRONTEND_PATHS: {
+    AUTH: FrontendPathsMap;
+    GLOBAL: FrontendPathsMap;
+    // “recherche” is a single FrontendPaths entry, not a map of multiple entries:
+    recherche: FrontendPaths;
+  };
 }
+
 const appConfig: AppConfig = {
   APP_NAME: "CEDoc",
   API_URL: "http://localhost:8080/api",
   BACKEND_URL: "http://localhost:8080",
   FRONTEND_URL: "http://localhost:5173",
   IMAGES_RESSOURCES: "@/assets/images",
+
   API_PATHS: {
-    register: {
-      name: "Register",
-      path: "/auth/register",
-      method: "POST",
+    AUTH: {
+      register: { name: "Register", path: "/auth/register", method: "POST" },
+      login: { name: "Login", path: "/auth/login", method: "POST" },
+      logout: { name: "Logout", path: "/auth/logout", method: "POST" },
+      sendVerificationEmail: {
+        name: "Send Verification Email",
+        path: "/auth/send-verification",
+        method: "POST",
+      },
+      verifyEmail: {
+        name: "Verify Email",
+        path: "/auth/verify-email",
+        method: "POST",
+      },
+      forgotPassword: {
+        name: "Forgot Password",
+        path: "/auth/forgot-password",
+        method: "POST",
+      },
+      resetPassword: {
+        name: "Reset Password",
+        path: "/auth/reset-password",
+        method: "POST",
+      },
+      authCheck: { name: "Auth Check", path: "/auth/check", method: "GET" },
+      currentUser: {
+        name: "Current User",
+        path: "/utilisateurs/logged-in",
+        method: "GET",
+      },
     },
-    login: {
-      name: "Login",
-      path: "/auth/login",
-      method: "POST",
+
+    NATIONALITE: {
+      getAll: {
+        name: "Get All Nationalities",
+        path: "/nationalites",
+        method: "GET",
+      },
     },
-    logout: {
-      name: "Logout",
-      path: "/auth/logout",
-      method: "POST",
+
+    LIEU_DE_NAISSANCE: {
+      getAll: {
+        name: "Get All LIEU_DE_NAISSANCE",
+        path: "/lieux-de-naissances",
+        method: "GET",
+      },
     },
-    sendVerificationEmail: {
-      name: "Send Verification Email",
-      path: "/auth/send-verification",
-      method: "POST",
+
+    SUJET: {
+      getAllSimple: {
+        name: "Get All SUJETS",
+        path: "/sujets/simple",
+        method: "GET",
+      },
+      chefsSujets: {
+        name: "Chefs et leurs Sujets",
+        path: "/chefs-equipe/chefs-sujets",
+        method: "GET",
+      },
+      sujetsEquipes: {
+        name: "Sujets et Équipes",
+        path: "/chefs-equipe/sujets-equipes",
+        method: "GET",
+      },
+      sujetsList: {
+        name: "Liste des Sujets",
+        path: "/sujets/",
+        method: "GET",
+      },
+      sujetById: {
+        name: "Sujet par ID",
+        path: "/sujets/:id",
+        method: "GET",
+      },
+      createSujet: {
+        name: "Proposer un Sujet",
+        path: "/sujets/",
+        method: "POST",
+      },
+      deleteSujet: {
+        name: "Supprimer un Sujet",
+        path: "/sujets/:id",
+        method: "DELETE",
+      },
     },
+
+    CANDIDATURE: {
+      postuler: {
+        name: "Postuler",
+        path: "/candidatures/postuler",
+        method: "POST",
+      },
+    },
+
     verifyEmail: {
-      name: "Verify Email",
-      path: "/auth/verify-email",
-      method: "POST",
+      verify: {
+        name: "Verify Email",
+        path: "/auth/verify-email",
+        method: "POST",
+      },
     },
-    forgotPassword: {
-      name: "Forgot Password",
-      path: "/auth/forgot-password",
-      method: "POST",
-    },
-    resetPassword: {
-      name: "Reset Password",
-      path: "/auth/reset-password",
-      method: "POST",
-    },
-    authCheck: {
-      name: "Auth Check",
-      path: "/auth/check",
-      method: "GET",
-    },
-    currentUser: {
-      name: "Current User",
-      path: "/utilisateurs/logged-in",
-      method: "GET",
-    },
-    // ---------------- SUJETS ---------------------
-    chefsSujets: {
-      name: "Chefs et leurs Sujets",
-      path: "/chefs-equipe/chefs-sujets",
-      method: "GET",
-    },
-    sujetsEquipes: {
-      name: "Sujets et Équipes",
-      path: "/chefs-equipe/sujets-equipes",
-      method: "GET",
-    },
-    sujetsList: {
-      name: "Liste des Sujets",
-      path: "/sujets/",
-      method: "GET",
-    },
-    sujetById: {
-      name: "Sujet par ID",
-      path: "/sujets/:id",
-      method: "GET",
-    },
-    createSujet: {
-      name: "Proposer un Sujet",
-      path: "/sujets/",
-      method: "POST",
-    },
-    deleteSujet: {
-      name: "Supprimer un Sujet",
-      path: "/sujets/:id",
-      method: "DELETE",
-    },    
   },
+
   FRONTEND_PATHS: {
-    landingPage: {
-      name: "Landing Page",
-      path: "/",
+    GLOBAL: {
+      landingPage: { name: "Landing Page", path: "/" },
+      postuler: { name: "Postuler", path: "/postuler" },
+      dashboard: { name: "Dashboard", path: "/dashboard" },
     },
-    register: {
-      name: "Register",
-      path: "/auth/register",
+    AUTH: {
+      register: { name: "Register", path: "/auth/register" },
+      login: { name: "Login", path: "/auth/login" },
+      verifyEmail: { name: "Email Verification", path: "/auth/verify-email" },
+      forgotPassword: { name: "Forgot Password", path: "/auth/forgot-password" },
+      resetPassword: { name: "Reset Password", path: "/auth/reset-password" },
     },
-    login: {
-      name: "Login",
-      path: "/auth/login",
-    },
-    verifyEmail: {
-      name: "Email Verification",
-      path: "/auth/verify-email",
-    },
-    forgotPassword: {
-      name: "Forgot Password",
-      path: "/auth/forgot-password",
-    },
-    resetPassword: {
-      name: "Reset Password",
-      path: "/auth/reset-password",
-    },
-    postuler: {
-      name: "Postuler",
-      path: "/postuler",
-    },
-    recherche: {
-      name: "Recherche",
-      path: "/recherche",
-    },
+    recherche: { name: "Recherche", path: "/recherche" },
   },
 };
 

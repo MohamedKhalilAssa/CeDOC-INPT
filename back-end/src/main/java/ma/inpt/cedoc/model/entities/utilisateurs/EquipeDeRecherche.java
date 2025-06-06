@@ -35,8 +35,9 @@ public class EquipeDeRecherche {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "equipeDeRecherche")
-    private ChefEquipe chefEquipe;
+    @ManyToOne
+    @JoinColumn(name = "chef_equipe_role_id")
+    private ChefEquipeRole chefEquipe;
 
     @OneToMany(mappedBy = "equipeDeRechercheAcceuillante")
     private List<Professeur> membres;

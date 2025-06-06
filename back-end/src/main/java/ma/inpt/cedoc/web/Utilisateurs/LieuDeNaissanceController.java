@@ -17,7 +17,7 @@ import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
 import ma.inpt.cedoc.service.utilisateurServices.LieuDeNaissanceService;
 
 @RestController
-@RequestMapping("/api/utilisateurs/lieux-de-naissance")
+@RequestMapping("/api/lieux-de-naissances")
 @RequiredArgsConstructor
 public class LieuDeNaissanceController {
 
