@@ -1,20 +1,27 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Table(name = "candidats")
-public class Candidat extends Utilisateur {
+public class Candidat {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "utilisateur_id")
+    private Utilisateur utilisateur;
+
     @Builder.Default
     private boolean archiver = false;
 

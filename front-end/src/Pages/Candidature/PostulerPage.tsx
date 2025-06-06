@@ -1,4 +1,4 @@
-import { postData } from "@/Helpers/CRUDFunctions";
+import { postFormData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import CVUploadForm from "@/Sections/Candidature/DossierCandidatureForm";
@@ -9,7 +9,8 @@ import PersonalInfoForm from "@/Sections/Candidature/PersonalInfoForm";
 import ResearchInterestsForm from "@/Sections/Candidature/ResearchInterestsForm";
 import StatusForm from "@/Sections/Candidature/StatusForm";
 import TermsAndConditionsForm from "@/Sections/Candidature/TermsAndConditionsForm";
-import { CandidatResponseDTO } from "@/Types/UtilisateursResponses";
+import { APIResponse } from "@/Types/GlobalTypes";
+import { CandidatureRequestDTO } from "@/Types/UtilisateursTypes";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -83,19 +84,39 @@ const PostulerPage = () => {
     console.log("Form values on step change:", getValues());
   }, [currentStep, getValues]);
   const onSubmit = async (data: any) => {
-    console.log(data);
+    console.log("SUBMIT: ", data);
     setIsSubmitting(true);
     setGlobalError(null); // Clear previous global errors
 
-    // form submission
+    // Transform form data to match backend expectations
+    const transformedData: CandidatureRequestDTO = {
+      ...data,
+      // Map selectedSujets to sujetsIds (backend expects this field name)
+      sujetsIds: data.selectedSujets || [],
+      // Remove selectedSujets as it's not expected by backend
+    };
+
+    // Remove undefined values
+    Object.keys(transformedData).forEach(
+      (key) =>
+        (transformedData as any)[key] === undefined &&
+        delete (transformedData as any)[key]
+    );
+
+    console.log("TRANSFORMED DATA: ", transformedData);
+
+    // form submission using the new postFormData function
     try {
-      const res: CandidatResponseDTO | undefined = await postData(
+      const res: APIResponse | undefined = await postFormData(
         appConfig.API_PATHS.CANDIDATURE.postuler.path,
-        data
+        transformedData
       );
 
       if (res) {
-        swal.toast("Candidature soumise avec succès", "success");
+        swal.toast(
+          res?.message || "Candidature soumise avec succès",
+          "success"
+        );
         setTimeout(() => {
           navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
         }, 200);
@@ -125,9 +146,10 @@ const PostulerPage = () => {
           }
         });
 
-        swal.error(
-          "Erreur de validation",
-          "Veuillez corriger les erreurs et réessayer"
+        setCurrentStep(1); // Reset to first step on validation error
+        swal.toast(
+          "<h1>Erreur de validation</h1><p>Veuillez corriger les erreurs et réessayer</p>",
+          "error"
         );
       } else {
         // General API error

@@ -10,3 +10,9 @@ export type baseResponse = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+
+export type APIResponse = {
+  message: string;
+  statusCode: number;
+}

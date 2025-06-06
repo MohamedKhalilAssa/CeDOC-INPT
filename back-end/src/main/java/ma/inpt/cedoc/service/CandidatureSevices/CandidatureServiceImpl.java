@@ -21,6 +21,7 @@ import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
@@ -28,17 +29,17 @@ import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.EquipeMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.CandidatMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ProfesseurMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRefuserRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.CandidatRepository;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.EquipeDeRechercheRepository;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.ProfesseurRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.*;
 import ma.inpt.cedoc.service.Global.EmailService;
 import ma.inpt.cedoc.service.Global.FileService;
 import ma.inpt.cedoc.service.utilisateurServices.CandidatService;
@@ -66,6 +67,9 @@ public class CandidatureServiceImpl implements CandidatureService {
 
     private final FileService fileService;
     private final EmailService emailService;
+
+    private final UtilisateurRepository utilisateurRepository;
+    private final UtilisateurMapper utilisateurMapper;
 
     @Override
     public CandidatureResponseDTO accepterCandidature(Long candidatureId, LocalDate entretien) {
@@ -104,18 +108,28 @@ public class CandidatureServiceImpl implements CandidatureService {
     @Value("${app.date-limite-candidature}")
     private LocalDate dateLimiteCandidature;
 
+    // LOCATION DE STOCKAGE 
+
     // =====================================================================
     // Création d’une nouvelle candidature
     // =====================================================================
     @Override
     @Transactional
     public CandidatureResponseDTO createCandidature(CandidatureRequestDTO dto, UserDetails userDetails) {
-        // 1. Récupérer et vérifier le candidat
-        Candidat candidat = candidatService.findFullCandidatById(dto.getCandidatId());
-        if (!candidat.getEmail().equals(userDetails.getUsername())) {
-            throw new AccessDeniedException("Accès refusé : vous ne pouvez créer que vos propres candidatures.");
-        }
+        // 0. CHECK
+        Candidat cnd = candidatRepository.findByUtilisateurEmail(userDetails.getUsername()).orElse(null);
+        if (cnd != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Vous avez déjà une candidature en cours. Veuillez la modifier plutôt que d'en créer une nouvelle.");
+        }        
+        // 1. Récupérer le candidat à partir de l'email authentifié modifier si necessaire
+        Utilisateur newCandidat = utilisateurRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
 
+                // TAKE INTO CONSIDERATION THE CHANGES ON POSTULER
+        UtilisateurRequestDTO utilisateurRequestDTO = (UtilisateurRequestDTO) dto;
+        newCandidat = utilisateurMapper.UpdateUtilisateurFromRequestDTO(newCandidat, utilisateurRequestDTO);
+        utilisateurRepository.save(newCandidat);
         // 2. Vérifier la date limite
         if (LocalDate.now().isAfter(dateLimiteCandidature)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date limite de candidature dépassée");
@@ -145,22 +159,29 @@ public class CandidatureServiceImpl implements CandidatureService {
         try {
             dossierPath = fileService.storeFile(
                     file,
-                    "candidatures/" + candidat.getId());
+                    "candidatures/" + newCandidat.getId());
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Erreur lors de l’enregistrement du fichier");
         }
 
-        // 6. Construire l’entité Candidature
+        // 6. Enregister le nouveau candidat puis Construire l’entité Candidature
+
+        Candidat savedCnd = Candidat.builder()
+                .utilisateur(newCandidat)
+                .archiver(false) // par défaut, le candidat n'est pas archivé
+                .build();
+        candidatService.saveCandidat(savedCnd);
         Candidature candidature = Candidature.builder()
                 .statutCandidature(CandidatureEnum.SOUMISE) // statut forcé
                 .mentionBac(dto.getMentionBac())
                 .mentionDiplome(dto.getMentionDiplome())
                 .dossierCandidature(dossierPath)
+                .diplome(dto.getDiplome())
                 .typeEtablissement(dto.getTypeEtablissement())
                 .specialite(dto.getSpecialite())
                 .intitulePFE(dto.getIntitulePFE())
-                .candidat(candidat)
+                .candidat(savedCnd)
                 .sujets(null) // on gère la relation sujets juste après
                 .build();
 
@@ -308,7 +329,7 @@ public class CandidatureServiceImpl implements CandidatureService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidature introuvable"));
 
         // 1. Vérifier le propriétaire
-        if (!existing.getCandidat().getEmail().equals(userDetails.getUsername())) {
+        if (!existing.getCandidat().getUtilisateur().getEmail().equals(userDetails.getUsername())) {
             throw new AccessDeniedException("Accès refusé : vous n’êtes pas le propriétaire de cette candidature.");
         }
 
