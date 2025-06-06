@@ -1,0 +1,24 @@
+[33m4f6a6ef[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32malae[m[33m, [m[1;31morigin/alae[m[33m)[m Merge remote-tracking branch 'origin/main' into alae
+[33m32b4837[m[33m ([m[1;31morigin/taha[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m push
+[33mc1d0dfa[m updated sidebar , edited the content inside dashboard to start working on module 2
+[33m2aa524b[m ?
+[33ma6d5fe3[m Merge remote-tracking branch 'origin/main' into taha
+[33md53bfe1[m ?
+[33mb826f64[m feat: add chef equipe controller and fix some issues
+[33mc6c400a[m gitignore
+[33m40c03e8[m postuler fully working (front and back) fixes regarding composite mode instead of inheritance for utilisateur
+[33me11c9f6[m postuler linking
+[33mc36d202[m sujets is fully workingg, only remainingg is linkingg with backend's candidatureCReate, ux fix
+[33m902a4f3[m looks good
+[33m69a09dd[m after merge
+[33me59cb60[m Merge remote-tracking branch 'origin/main' into taha
+[33m07bc822[m most of the work is done only needs adapting
+[33m4906603[m not saved
+[33md9dcc91[m typo
+[33mae3f509[m Switching to Composing instead of Inheritance to match business logic. TODO: CHECK IF IT WORKS FULLY WITH THE CHANGES AND ADAPT ACCORDINGLY
+[33mb8a8ba6[m feat: add chef dequipe controller & link it to frontend
+[33me60547f[m added dash components
+[33m8122edd[m added contact and formation pages.
+[33m0bdbdaf[m Merge remote-tracking branch 'origin/main' into taha
+[33m3383869[m before
+[33m74572f5[m Sujet Ccalling requires solid data testing the rest works fine
