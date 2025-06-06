@@ -69,6 +69,7 @@ const PostulerPage = () => {
     getValues,
     setError, // ✅ Now available
     clearErrors, // ✅ For clearing errors
+    formState,
   } = form;
   // Initialize keywords from form data if available
   useEffect(() => {
@@ -78,11 +79,11 @@ const PostulerPage = () => {
 
   // Debug: Monitor current step changes and form values
   useEffect(() => {
-    // console.log("Step changed to:", currentStep);
-    // console.log("Form values on step change:", getValues());
+    console.log("Step changed to:", currentStep);
+    console.log("Form values on step change:", getValues());
   }, [currentStep, getValues]);
   const onSubmit = async (data: any) => {
-    console.log("SUBMIT: ",data);
+    console.log(data);
     setIsSubmitting(true);
     setGlobalError(null); // Clear previous global errors
 
