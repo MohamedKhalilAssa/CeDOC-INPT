@@ -1,4 +1,4 @@
-import { useTheme } from "@/Context/Auth/DashContext/ThemeContext";
+import { useTheme } from "@/Context/DashContext/ThemeContext";
 
 export default function ThemeTogglerTwo() {
   const { toggleTheme } = useTheme();
