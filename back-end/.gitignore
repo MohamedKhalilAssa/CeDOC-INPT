@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 
 src/main/resources/application-secrets.properties
+src/Uploads
 ### STS ###
 .apt_generated
 .classpath
