@@ -3,6 +3,7 @@ package ma.inpt.cedoc.web.FormationControllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ public class FormationController {
     private final FormationService formationService;
 
     @PostMapping
+    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
     public ResponseEntity<FormationResponseDTO> createFormation(
             @RequestBody @Valid FormationRequestDTO formationRequestDTO) {
         FormationResponseDTO savedFormation = formationService.saveFormation(formationRequestDTO);
@@ -33,20 +35,23 @@ public class FormationController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
     public ResponseEntity<FormationResponseDTO> updateFormation(@PathVariable Long id,
             @RequestBody @Valid FormationRequestDTO formationRequestDTO) {
         FormationResponseDTO updatedFormation = formationService.updateFormation(id, formationRequestDTO);
         return ResponseEntity.ok(updatedFormation);
     }
 
-    @PostMapping("/raw")
-    public ResponseEntity<?> createFormationWithoutDto(@RequestBody Formation formation) {
-        FormationResponseDTO savedFormation = formationService.saveFormationWithoutDto(formation);
-        return ResponseEntity.ok(savedFormation);
-
-    }
+//    @PostMapping("/raw")
+//    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
+//    public ResponseEntity<?> createFormationWithoutDto(@RequestBody Formation formation) {
+//        FormationResponseDTO savedFormation = formationService.saveFormationWithoutDto(formation);
+//        return ResponseEntity.ok(savedFormation);
+//
+//    }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
     public ResponseEntity<String> deleteFormation(@PathVariable Long id) {
         formationService.deleteById(id);
         return ResponseEntity.ok("Formation supprimée avec succès");

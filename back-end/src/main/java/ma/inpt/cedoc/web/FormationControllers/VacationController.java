@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Formations.VacationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.VacationResponseDTO;
 import ma.inpt.cedoc.service.FormationService.VacationService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +17,13 @@ public class VacationController {
     private final VacationService vacationService;
 
     @PostMapping
+    @PreAuthorize("hasRole('DOCTORANT')")
     public VacationResponseDTO create(@RequestBody VacationRequestDTO vacationRequestDTO) {
         return vacationService.create(vacationRequestDTO);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
     public VacationResponseDTO update(@PathVariable Long id, @RequestBody VacationRequestDTO vacationRequestDTO) {
         return vacationService.update(id, vacationRequestDTO);
     }

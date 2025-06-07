@@ -30,6 +30,8 @@ public class FormationMapper {
         formation.setDuree(dto.getDuree());
         formation.setLieu(dto.getLieu());
         formation.setDoctorantsCibles(mapDoctorantIdsToEntities(dto.getDoctorantsCiblesIds()));
+        formation.setDetails(dto.getDetails());
+        formation.setImage(dto.getImage());
         return formation;
     }
 
@@ -47,6 +49,8 @@ public class FormationMapper {
                 .createdAt(formation.getCreatedAt())
                 .updatedAt(formation.getUpdatedAt())
                 .doctorantIds(mapDoctorantEntitiesToIds(formation))
+                .details(formation.getDetails())
+                .image(formation.getImage())
                 .build();
     }
 

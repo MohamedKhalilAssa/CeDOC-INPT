@@ -5,7 +5,7 @@ import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormation;
+import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormationRole;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -60,7 +60,7 @@ public class SeanceFormationMapper {
     }
 
     private Long mapValideParId(SeanceFormation seance) {
-        ResponsableDeFormation responsable = seance.getValidePar();
+        ResponsableDeFormationRole responsable = seance.getValidePar();
         return responsable != null ? responsable.getId() : null;
     }
 }

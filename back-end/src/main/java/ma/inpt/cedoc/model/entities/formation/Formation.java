@@ -49,6 +49,12 @@ public class Formation {
 
         private String lieu; // peut etre distanciel
 
+        @Column(length = 1000)
+        private String details;
+
+        private String image; // store image URL or path
+
+
         // for logging and administration purposes it will be filled by the system
         @Column(name = "created_at", updatable = false)
         @CreatedDate

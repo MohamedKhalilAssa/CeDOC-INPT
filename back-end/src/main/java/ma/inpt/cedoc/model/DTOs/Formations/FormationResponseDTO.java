@@ -31,6 +31,11 @@ public class FormationResponseDTO extends BaseResponseDTO {
 
     private String lieu;
 
+    private String details;
+
+    private String image;
 
     private List<Long> doctorantIds; // IDs of Doctorants (to avoid circular fetching)
+
+
 }

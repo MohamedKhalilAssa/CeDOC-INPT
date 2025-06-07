@@ -43,4 +43,10 @@ public class FormationRequestDTO {
         private String lieu;
 
         private List<Long> doctorantsCiblesIds;
+
+        @Size(max = 1000, message = "Les détails ne doivent pas dépasser 1000 caractères")
+        private String details;
+
+        private String image; // optional field
+
 }
