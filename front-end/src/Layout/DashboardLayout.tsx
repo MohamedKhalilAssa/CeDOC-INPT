@@ -4,7 +4,7 @@ import { Sidebar } from "@/Components/sidebar/Sidebar";
 import { useAlert } from "@/Hooks/UseAlert";
 import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
-import { utilisateursSidebarConfig } from "@/public/sideBarConfigBasedOnRoles";
+import * as sideBarConfig from "@/public/sideBarConfigBasedOnRoles";
 import { RoleEnum } from "@/Types/UtilisateursEnums";
 import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
@@ -138,12 +138,43 @@ const DashboardLayout = () => {
   };
 
   //  YOU SHOULD ADD YOUR OWN SIDEBAR CONFIGURATION BASED ON ROLES LIKE THIS FOR EXAMPLE
-  // CHANGE THE SIDEBAR CONFIGURATION BASED ON THE USER ROLES ON sideBarConfigBasedOnRoles.ts 
+  // CHANGE THE SIDEBAR CONFIGURATION BASED ON THE USER ROLES ON sideBarConfigBasedOnRoles.ts
   // and import it here for links in the side
   if (roles[0] === RoleEnum.UTILISATEUR) {
-    sidebarConfig.navigationSections.push(...utilisateursSidebarConfig);
+    sidebarConfig.navigationSections.push(
+      ...sideBarConfig.utilisateursSidebarConfig
+    );
+  } else {
+    let set = new Set<sideBarConfig.NavigationGroup[]>();
+    roles.forEach((role) => {
+      switch (role) {
+        case RoleEnum.CANDIDAT:
+          set.add(sideBarConfig.candidatsSidebarConfig);
+          break;
+        case RoleEnum.DOCTORANT:
+          set.add(sideBarConfig.doctorantsSidebarConfig);
+          break;
+        case RoleEnum.PROFESSEUR:
+          set.add(sideBarConfig.professeursSidebarConfig);
+          break;
+        case RoleEnum.CHEF_EQUIPE:
+          set.add(sideBarConfig.chefsEquipesSidebarConfig);
+          break;
+        case RoleEnum.DIRECTEUR_DE_THESE:
+          set.add(sideBarConfig.directeurDeTheseSidebarConfig);
+          break;
+        case RoleEnum.DIRECTION_CEDOC:
+          set.add(sideBarConfig.directionCedocSidebarConfig);
+          break;
+        case RoleEnum.RESPONSABLE_FORMATION:
+          set.add(sideBarConfig.responsableFormationSidebarConfig);
+          break;
+        default:
+          break;
+      }
+    });
+    sidebarConfig.navigationSections.push(...Array.from(set).flat());
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Mobile sidebar overlay */}

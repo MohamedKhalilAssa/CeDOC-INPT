@@ -32,12 +32,12 @@ export const Sidebar = ({
               {branding.title}
             </span>
           </Link>
-        </div>
+        </div>{" "}
         <button
           onClick={onClose}
-          className="lg:hidden p-2 rounded-lg text-blue-100 hover:text-white hover:bg-blue-500 transition-colors"
+          className="lg:hidden p-2 rounded-lg text-blue-100 hover:text-white hover:bg-blue-500 transition-colors flex items-center justify-center"
         >
-          <i className="fas fa-times w-5 h-5 flex items-center justify-center"></i>
+          <i className="fas fa-times text-base"></i>
         </button>
       </div>
 

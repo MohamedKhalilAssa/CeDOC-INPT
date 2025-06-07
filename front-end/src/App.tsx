@@ -31,7 +31,7 @@ function App() {
       {/**────────────────────────────────────────────────── */}
       {/** All “public” pages live under GeneralLayout → Outlet */}
       <Route element={<GeneralLayout />}>
-        {/** Landing page ("/") */}  
+        {/** Landing page ("/") */}
         <Route
           path={appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}
           element={<LandingPage />}
@@ -80,19 +80,28 @@ function App() {
 
         {/** ──────────────────────────────────────────────── */}
         {/** Other public‐quality pages (no guard) */}
-        <Route path="/contact"    element={<ContactPage />} />
-        <Route path="/formations" element={<FormationPage />} />
+        <Route
+          path={appConfig.FRONTEND_PATHS.GLOBAL.contact.path}
+          element={<ContactPage />}
+        />
+        <Route
+          path={appConfig.FRONTEND_PATHS.FORMATION.formations.path}
+          element={<FormationPage />}
+        />
       </Route>
       {/**────────────────────────────────────────────────── */}
 
       {/**────────────────────────────────────────────────── */}
       {/** Dashboard / Admin‐style routes live at “/dashboard/*”  */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
+      <Route
+        path={appConfig.FRONTEND_PATHS.DASHBOARD.homePage.path}
+        element={<DashboardLayout />}
+      >
         <Route index element={<DashboardHomePage />} />
         <Route path="form-elements" element={<DashFormElements />} />
-        <Route path="charts/bar"    element={<DashBarChart />} />
-        <Route path="charts/line"   element={<DashLineChart />} />
-        <Route path="tables"        element={<DashTables />} />
+        <Route path="charts/bar" element={<DashBarChart />} />
+        <Route path="charts/line" element={<DashLineChart />} />
+        <Route path="tables" element={<DashTables />} />
       </Route>
       {/**────────────────────────────────────────────────── */}
     </Routes>

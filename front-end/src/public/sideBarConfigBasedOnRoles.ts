@@ -1,6 +1,6 @@
 import appConfig from "@/public/config";
 
-type NavigationGroup = {
+export type NavigationGroup = {
   title?: String;
   items: NavigationItem[];
 };
@@ -22,4 +22,36 @@ export const utilisateursSidebarConfig: NavigationGroup[] = [
     ],
   },
 ];
-export const sideBarConfigCandidat : NavigationGroup[] = [...utilisateurs,];
+export const candidatsSidebarConfig: NavigationGroup[] = [
+  ...utilisateursSidebarConfig,
+  //TEST ONLY
+  {
+    title: "Candidat",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path,
+        label: "Profile",
+        icon: "fas fa-user",
+      },
+    ],
+  },
+];
+export const doctorantsSidebarConfig: NavigationGroup[] = [
+  ...utilisateursSidebarConfig,
+];
+
+export const professeursSidebarConfig: NavigationGroup[] = [
+  ...utilisateursSidebarConfig,
+];
+export const chefsEquipesSidebarConfig: NavigationGroup[] = [
+  ...professeursSidebarConfig,
+];
+export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
+  ...professeursSidebarConfig,
+];
+export const directionCedocSidebarConfig: NavigationGroup[] = [
+  ...utilisateursSidebarConfig,
+];
+export const responsableFormationSidebarConfig: NavigationGroup[] = [
+  ...professeursSidebarConfig,
+];

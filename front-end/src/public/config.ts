@@ -34,8 +34,8 @@ interface AppConfig {
   FRONTEND_PATHS: {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
+    FORMATION: FrontendPathsMap;
     DASHBOARD: {
-      GLOBAL: FrontendPathsMap;
       homePage: FrontendPaths;
       utilisateurs: FrontendPathsMap;
     };
@@ -170,8 +170,8 @@ const appConfig: AppConfig = {
     GLOBAL: {
       landingPage: { name: "Landing Page", path: "/" },
       postuler: { name: "Postuler", path: "/postuler" },
-      dashboard: { name: "Dashboard", path: "/dashboard" },
       recherche: { name: "Recherche", path: "/recherche" },
+      contact: { name: "Contact", path: "/contact" },
     },
     AUTH: {
       register: { name: "Register", path: "/auth/register" },
@@ -183,14 +183,15 @@ const appConfig: AppConfig = {
       },
       resetPassword: { name: "Reset Password", path: "/auth/reset-password" },
     },
+    FORMATION: {
+      formations: { name: "Formations", path: "/formations" },
+    },
     DASHBOARD: {
       homePage: { name: "Dashboard Home", path: "/dashboard" },
       utilisateurs: {
         profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
       },
-      GLOBAL: {
-        empty: { name: "Dashboard Global", path: "/dashboard/global" },
-      },
+    
     },
   },
 };
