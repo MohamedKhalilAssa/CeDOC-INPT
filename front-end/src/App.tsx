@@ -10,7 +10,6 @@ import LandingPage from "@/Pages/LandingPage";
 import appConfig from "@/public/config";
 import { Route, Routes } from "react-router-dom";
 import ResetPasswordPage from "./Pages/Authentication/ResetPasswordPage";
-import FormationsPage from "./Pages/Formations/FormationPage";
 import PostulerPage from "./Pages/Candidature/PostulerPage";
 import ContactPage from "./Pages/ContactPage";
 import FormationPage from "./Pages/FormationPage";
@@ -32,13 +31,6 @@ function App() {
             path={appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}
             element={<LandingPage />}
           />
-                    {/* Formations Page Route */}
-          <Route
-            path="/formations"
-            element={<FormationsPage />}
-          />
-        
-
           <Route element={<GuestOnlyLayout />}>
             <Route
               path={appConfig.FRONTEND_PATHS.AUTH.register.path}

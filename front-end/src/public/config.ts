@@ -27,6 +27,8 @@ interface AppConfig {
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
 
+    //Formation API paths
+    FORMATION: ApiPathsMap;
     // Add more groups here
   };
 
@@ -102,6 +104,15 @@ const appConfig: AppConfig = {
         name: "Postuler",
         path: "/candidatures/postuler",
         method: "POST",
+      }
+    },
+
+    // Formation API paths
+    FORMATION: {
+      getAll: {
+        name: "Get All Formations",
+        path: "/formations",
+        method: "GET",
       }
     }
 
