@@ -1,24 +1,19 @@
+import { useSidebar } from "@/Context/DashContext/SidebarContext";
+import { HomeIcon, InfoIcon, NewspaperIcon, SchoolIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 
 // Using Material UI icons which are commonly available
-import HomeIcon from "@mui/icons-material/Home";
-import SchoolIcon from "@mui/icons-material/School";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import ArticleIcon from "@mui/icons-material/Article";
-import GroupsIcon from "@mui/icons-material/Groups";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import NewspaperIcon from "@mui/icons-material/Newspaper";
-import InfoIcon from "@mui/icons-material/Info";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
-import PeopleIcon from "@mui/icons-material/People";
-import WorkIcon from "@mui/icons-material/Work";
-import PublicIcon from "@mui/icons-material/Public";
+import ArticleIcon from "@mui/icons-material/Article";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import { useSidebar } from "../context/SidebarContext";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import GroupsIcon from "@mui/icons-material/Groups";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import PublicIcon from "@mui/icons-material/Public";
+import WorkIcon from "@mui/icons-material/Work";
 type NavItem = {
   name: string;
   icon: React.ReactNode;

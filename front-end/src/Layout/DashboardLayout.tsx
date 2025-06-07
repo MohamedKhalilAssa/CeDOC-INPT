@@ -1,17 +1,27 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
 import Logo_inpt from "@/assets/images/Logo_inpt.png";
+import { useAlert } from "@/Hooks/UseAlert";
+import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
-import { Link } from "react-router-dom";
-
-
-
+import { useEffect, useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 /**
  * PhD Studies Center Dashboard Layout for INPT
  * Academic-focused dashboard for managing PhD programs and research
  */
 const DashboardLayout = () => {
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const swal = useAlert();
+  useEffect(() => {
+    // Check if user is authenticated
+    if (auth.roles?.length == 0) {
+      // Redirect to login page if not authenticated
+      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
+      swal.toast("Vous n'avez pas les droits d'accès", "error");
+    }
+  }, [auth.isAuthenticated, auth.roles]);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
