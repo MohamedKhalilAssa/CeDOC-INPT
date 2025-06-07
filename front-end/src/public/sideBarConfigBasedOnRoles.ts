@@ -10,7 +10,7 @@ type NavigationItem = {
   label: string;
   icon: string;
 };
-export const utilisateurs: NavigationGroup[] = [
+export const utilisateursSidebarConfig: NavigationGroup[] = [
   {
     title: "Utilisateur",
     items: [

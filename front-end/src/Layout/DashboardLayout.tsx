@@ -4,8 +4,10 @@ import { Sidebar } from "@/Components/sidebar/Sidebar";
 import { useAlert } from "@/Hooks/UseAlert";
 import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
-import { useEffect, useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { utilisateursSidebarConfig } from "@/public/sideBarConfigBasedOnRoles";
+import { RoleEnum } from "@/Types/UtilisateursEnums";
+import { useState } from "react";
+import { Link, Outlet } from "react-router-dom";
 
 /**
  * PhD Studies Center Dashboard Layout for INPT
@@ -13,32 +15,8 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
  */
 const DashboardLayout = () => {
   const auth = useAuth();
-  const navigate = useNavigate();
   const swal = useAlert();
-  useEffect(() => {
-    // Check if user is authenticated
-    console.log("Auth roles:", auth.roles);
-
-    // Add a small delay to ensure auth state is properly loaded
-    const checkAuth = () => {
-      if (!auth.roles || auth.roles.length === 0) {
-        console.log("Authentication failed or no roles found, redirecting...");
-        // Redirect to login page if not authenticated
-        navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
-        swal.toast("Vous n'avez pas les droits d'accès", "error");
-      }
-    };
-
-    // Check immediately if auth is already loaded
-    if (auth.roles !== undefined) {
-      checkAuth();
-    } else {
-      // If auth is still loading, wait a bit
-      const timer = setTimeout(checkAuth, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [auth.roles, navigate, swal]);
-
+  const roles: RoleEnum[] = auth.roles || [RoleEnum.UTILISATEUR]; // Default to "UTILISATEUR" if roles are not defined
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Sidebar configuration
@@ -59,96 +37,96 @@ const DashboardLayout = () => {
           },
         ],
       },
-      {
-        title: "Doctoral Profile",
-        items: [
-          {
-            href: "/dashboard/student-profile",
-            label: "My Profile",
-            icon: "fas fa-user-circle",
-          },
-          {
-            href: "/dashboard/team-assignment",
-            label: "Team Assignment",
-            icon: "fas fa-users",
-          },
-          {
-            href: "/dashboard/publication-validation",
-            label: "Publication Validation",
-            icon: "fas fa-check-circle",
-          },
-        ],
-      },
-      {
-        title: "Student Management",
-        items: [
-          {
-            href: "/dashboard/students",
-            label: "PhD Students",
-            icon: "fas fa-user-graduate",
-          },
-          {
-            href: "/dashboard/applications",
-            label: "Applications",
-            icon: "fas fa-file-alt",
-          },
-        ],
-      },
-      {
-        title: "Research",
-        items: [
-          {
-            href: "/dashboard/research-projects",
-            label: "Research Projects",
-            icon: "fas fa-flask",
-          },
-          {
-            href: "/dashboard/publications",
-            label: "Publications",
-            icon: "fas fa-book-open",
-          },
-          {
-            href: "/dashboard/supervisors",
-            label: "Supervisors",
-            icon: "fas fa-chalkboard-teacher",
-          },
-        ],
-      },
-      {
-        title: "Academic",
-        items: [
-          {
-            href: "/dashboard/defenses",
-            label: "Thesis Defenses",
-            icon: "fas fa-medal",
-          },
-          {
-            href: "/dashboard/courses",
-            label: "Doctoral Courses",
-            icon: "fas fa-graduation-cap",
-          },
-          {
-            href: "/dashboard/seminars",
-            label: "Research Seminars",
-            icon: "fas fa-presentation",
-          },
-        ],
-      },
-      {
-        title: "Reports",
-        items: [
-          {
-            href: "/dashboard/analytics",
-            label: "Analytics",
-            icon: "fas fa-chart-bar",
-          },
-          {
-            href: "/dashboard/reports",
-            label: "Reports",
-            icon: "fas fa-chart-line",
-          },
-        ],
-      },
+      // {
+      //   title: "Doctoral Profile",
+      //   items: [
+      //     {
+      //       href: "/dashboard/student-profile",
+      //       label: "My Profile",
+      //       icon: "fas fa-user-circle",
+      //     },
+      //     {
+      //       href: "/dashboard/team-assignment",
+      //       label: "Team Assignment",
+      //       icon: "fas fa-users",
+      //     },
+      //     {
+      //       href: "/dashboard/publication-validation",
+      //       label: "Publication Validation",
+      //       icon: "fas fa-check-circle",
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Student Management",
+      //   items: [
+      //     {
+      //       href: "/dashboard/students",
+      //       label: "PhD Students",
+      //       icon: "fas fa-user-graduate",
+      //     },
+      //     {
+      //       href: "/dashboard/applications",
+      //       label: "Applications",
+      //       icon: "fas fa-file-alt",
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Research",
+      //   items: [
+      //     {
+      //       href: "/dashboard/research-projects",
+      //       label: "Research Projects",
+      //       icon: "fas fa-flask",
+      //     },
+      //     {
+      //       href: "/dashboard/publications",
+      //       label: "Publications",
+      //       icon: "fas fa-book-open",
+      //     },
+      //     {
+      //       href: "/dashboard/supervisors",
+      //       label: "Supervisors",
+      //       icon: "fas fa-chalkboard-teacher",
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Academic",
+      //   items: [
+      //     {
+      //       href: "/dashboard/defenses",
+      //       label: "Thesis Defenses",
+      //       icon: "fas fa-medal",
+      //     },
+      //     {
+      //       href: "/dashboard/courses",
+      //       label: "Doctoral Courses",
+      //       icon: "fas fa-graduation-cap",
+      //     },
+      //     {
+      //       href: "/dashboard/seminars",
+      //       label: "Research Seminars",
+      //       icon: "fas fa-presentation",
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Reports",
+      //   items: [
+      //     {
+      //       href: "/dashboard/analytics",
+      //       label: "Analytics",
+      //       icon: "fas fa-chart-bar",
+      //     },
+      //     {
+      //       href: "/dashboard/reports",
+      //       label: "Reports",
+      //       icon: "fas fa-chart-line",
+      //     },
+      //   ],
+      // },
     ],
     footer: {
       text: "Academic Year 2024-2025",
@@ -158,6 +136,13 @@ const DashboardLayout = () => {
       },
     },
   };
+
+  //  YOU SHOULD ADD YOUR OWN SIDEBAR CONFIGURATION BASED ON ROLES LIKE THIS FOR EXAMPLE
+  // CHANGE THE SIDEBAR CONFIGURATION BASED ON THE USER ROLES ON sideBarConfigBasedOnRoles.ts 
+  // and import it here for links in the side
+  if (roles[0] === RoleEnum.UTILISATEUR) {
+    sidebarConfig.navigationSections.push(...utilisateursSidebarConfig);
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
