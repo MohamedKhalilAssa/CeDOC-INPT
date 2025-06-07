@@ -14,7 +14,7 @@ import {
   LieuDeNaissance,
   Nationalite,
   UtilisateurResponseDTO,
-} from "@/Types/UtilisateursResponses";
+} from "@/Types/UtilisateursTypes";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 

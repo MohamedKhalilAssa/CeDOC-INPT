@@ -1,8 +1,8 @@
-import { useModal } from "../../Hooks/useModal";
-import { Modal } from "../ui/modal";
-import Button from "../ui/button/Button";
-import Input from "../form/input/InputField";
-import Label from "../form/Label";
+import Input from "@/Components/DashComps/form/input/InputField";
+import Label from "@/Components/DashComps/form/Label";
+import Button from "@/Components/DashComps/ui/button/Button";
+import { Modal } from "@/Components/DashComps/ui/modal";
+import { useModal } from "@/Hooks/DashHooks/useModal";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();

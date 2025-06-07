@@ -66,8 +66,7 @@ public interface CandidatureService {
      */
     List<CandidatureResponseDTO> getCandidaturesByChefEquipeId(Long chefEquipeId);
 
-    /**
-     * Consultation publique : lister toutes les équipes pour permettre au candidat de choisir un sujet.
-     */
-    // Intégré dans un autre service ou controller public. On peut exposer via ce service ou via un service dédié à l'“Equipe”.
+    CandidatureResponseDTO getCandidatureById(Long candidatureId, UserDetails userDetails);
+    void deleteCandidature(Long candidatureId, UserDetails userDetails);
+
 }

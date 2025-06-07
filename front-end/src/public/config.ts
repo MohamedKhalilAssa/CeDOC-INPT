@@ -30,13 +30,21 @@ interface AppConfig {
     //Formation API paths
     FORMATION: ApiPathsMap;
     // Add more groups here
+    CHEFS_EQUIPES: ApiPathsMap;
   };
 
   FRONTEND_PATHS: {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
+    FORMATION: FrontendPathsMap;
+    DASHBOARD: {
+      homePage: FrontendPaths;
+      utilisateurs: FrontendPathsMap;
+    };
   };
 }
+
+// ─── Actual config object ───────────────────────────────────────────────
 
 const appConfig: AppConfig = {
   APP_NAME: "CEDoc",
@@ -70,7 +78,11 @@ const appConfig: AppConfig = {
         path: "/auth/reset-password",
         method: "POST",
       },
-      authCheck: { name: "Auth Check", path: "/auth/check", method: "GET" },
+      authCheck: {
+        name: "Auth Check",
+        path: "/auth/check",
+        method: "GET",
+      },
       currentUser: {
         name: "Current User",
         path: "/utilisateurs/logged-in",
@@ -85,6 +97,7 @@ const appConfig: AppConfig = {
         method: "GET",
       },
     },
+
     LIEU_DE_NAISSANCE: {
       getAll: {
         name: "Get All LIEU_DE_NAISSANCE",
@@ -92,14 +105,46 @@ const appConfig: AppConfig = {
         method: "GET",
       },
     },
+
     SUJET: {
       getAllSimple: {
         name: "Get All SUJETS",
         path: "/sujets/simple",
         method: "GET",
       },
+      chefsSujets: {
+        name: "Chefs et leurs Sujets",
+        path: "/chefs-equipe/chefs-sujets",
+        method: "GET",
+      },
+      sujetsEquipes: {
+        name: "Sujets et Équipes",
+        path: "/chefs-equipe/sujets-equipes",
+        method: "GET",
+      },
+      sujetsList: {
+        name: "Liste des Sujets",
+        path: "/sujets/",
+        method: "GET",
+      },
+      sujetById: {
+        name: "Sujet par ID",
+        path: "/sujets/:id",
+        method: "GET",
+      },
+      createSujet: {
+        name: "Proposer un Sujet",
+        path: "/sujets/",
+        method: "POST",
+      },
+      deleteSujet: {
+        name: "Supprimer un Sujet",
+        path: "/sujets/:id",
+        method: "DELETE",
+      },
     },
-    CANDIDATURE:{
+
+    CANDIDATURE: {
       postuler: {
         name: "Postuler",
         path: "/candidatures/postuler",
@@ -114,16 +159,30 @@ const appConfig: AppConfig = {
         path: "/formations",
         method: "GET",
       }
-    }
+    },
 
-    // Add more API groups here (e.g. USERS, DOCUMENTS, FILES...)
+    // ── THE TWO NEW TOP‐LEVEL KEYS ──
+
+    CHEFS_EQUIPES: {
+      chefsSujets: {
+        name: "Chefs et leurs Sujets",
+        path: "/chefs-equipe/chefs-sujets",
+        method: "GET",
+      },
+      sujetsEquipes: {
+        name: "Sujets et Équipes",
+        path: "/chefs-equipe/sujets-equipes",
+        method: "GET",
+      },
+    },
   },
 
   FRONTEND_PATHS: {
     GLOBAL: {
       landingPage: { name: "Landing Page", path: "/" },
       postuler: { name: "Postuler", path: "/postuler" },
-      dashboard: { name: "Dashboard", path: "/dashboard" },
+      recherche: { name: "Recherche", path: "/recherche" },
+      contact: { name: "Contact", path: "/contact" },
     },
     AUTH: {
       register: { name: "Register", path: "/auth/register" },
@@ -134,6 +193,15 @@ const appConfig: AppConfig = {
         path: "/auth/forgot-password",
       },
       resetPassword: { name: "Reset Password", path: "/auth/reset-password" },
+    },
+    FORMATION: {
+      formations: { name: "Formations", path: "/formations" },
+    },
+    DASHBOARD: {
+      homePage: { name: "Dashboard Home", path: "/dashboard" },
+      utilisateurs: {
+        profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
+      },
     },
   },
 };

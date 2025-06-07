@@ -1,13 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { EventInput, DateSelectArg, EventClickArg } from "@fullcalendar/core";
-import { Modal } from "../components/ui/modal";
+import { PageMeta } from "@/Components/DashComps";
+import { Modal } from "@/Components/DashComps/ui/modal";
 import { useModal } from "@/Hooks/DashHooks/useModal";
-import PageMeta from "../components/common/PageMeta";
-
+import { DateSelectArg, EventClickArg, EventInput } from "@fullcalendar/core";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { useEffect, useRef, useState } from "react";
 interface CalendarEvent extends EventInput {
   extendedProps: {
     calendar: string;
