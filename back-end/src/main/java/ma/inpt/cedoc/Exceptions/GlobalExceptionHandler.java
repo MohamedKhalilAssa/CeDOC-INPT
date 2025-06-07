@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -110,12 +112,26 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException authException) {
 
         // Create standardized error response
-        ErrorResponse errorResponse = ErrorResponse.builder().statusCode(HttpStatus.FORBIDDEN.value())
+        ErrorResponse errorResponse = ErrorResponse.builder().statusCode(HttpStatus.UNAUTHORIZED.value())
                 .message("Authentication failed: " + authException.getMessage())
                 .build();
 
         // Return custom error response with 401 status code
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ErrorResponse.builder()
+                        .statusCode(HttpStatus.FORBIDDEN.value())
+                        .message("Access denied: " + ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponse> handleJWTException(JwtException jwtException) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "JWT Error: " + jwtException.getMessage(), jwtException);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message, Exception ex) {
@@ -126,8 +142,8 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-     @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponse> handleMaxSizeException(MaxUploadSizeExceededException ex) {
-          return buildErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE, "File size limit exceeded", ex);
+        return buildErrorResponse(HttpStatus.PAYLOAD_TOO_LARGE, "File size limit exceeded", ex);
     }
 }

@@ -1,5 +1,7 @@
+import { AuthContextType } from "@/Context/Auth";
 import { postFormData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
+import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config";
 import CVUploadForm from "@/Sections/Candidature/DossierCandidatureForm";
 import EducationHistoryForm from "@/Sections/Candidature/EducationHistoryForm";
@@ -10,6 +12,7 @@ import ResearchInterestsForm from "@/Sections/Candidature/ResearchInterestsForm"
 import StatusForm from "@/Sections/Candidature/StatusForm";
 import TermsAndConditionsForm from "@/Sections/Candidature/TermsAndConditionsForm";
 import { APIResponse } from "@/Types/GlobalTypes";
+import { RoleEnum } from "@/Types/UtilisateursEnums";
 import { CandidatureRequestDTO } from "@/Types/UtilisateursTypes";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,8 +29,8 @@ const PostulerPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const auth: AuthContextType = useAuth();
   const form = useForm({
     mode: "onTouched", // Validate after field is touched/blurred
     defaultValues: {
@@ -63,14 +66,8 @@ const PostulerPage = () => {
   });
   const swal = useAlert();
   const navigate = useNavigate();
-  const {
-    handleSubmit,
-    trigger,
-    setValue,
-    getValues,
-    setError, // ✅ Now available
-    clearErrors, // ✅ For clearing errors
-  } = form;
+  const { handleSubmit, trigger, setValue, getValues, setError, clearErrors } =
+    form;
   // Initialize keywords from form data if available
   useEffect(() => {
     // This is just to avoid the unused variable warning
@@ -79,9 +76,16 @@ const PostulerPage = () => {
 
   // Debug: Monitor current step changes and form values
   useEffect(() => {
-    // console.log("Step changed to:", currentStep);
-    // console.log("Form values on step change:", getValues());
+    console.log("Step changed to:", currentStep);
+    console.log("Form values on step change:", getValues());
   }, [currentStep, getValues]);
+
+  useEffect(() => {
+    if (auth.roles.includes(RoleEnum.CANDIDAT)) {
+      navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
+      swal.toast("Vous êtes déjà inscrit en tant que candidat", "error");
+    }
+  }, [auth.roles]);
   const onSubmit = async (data: any) => {
     console.log("SUBMIT: ", data);
     setIsSubmitting(true);
@@ -181,9 +185,6 @@ const PostulerPage = () => {
     }
 
     console.log("Step", currentStep, "validation passed");
-
-    // Mark current step as completed
-    setCompletedSteps((prev) => new Set([...prev, currentStep]));
 
     if (currentStep === 3) {
       // Final submission - validate all steps and submit
