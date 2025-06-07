@@ -36,6 +36,7 @@ interface AppConfig {
   FRONTEND_PATHS: {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
+    DASHBOARD: FrontendPathsMap;
   };
 }
 
@@ -51,8 +52,8 @@ const appConfig: AppConfig = {
   API_PATHS: {
     AUTH: {
       register: { name: "Register", path: "/auth/register", method: "POST" },
-      login:    { name: "Login", path: "/auth/login", method: "POST" },
-      logout:   { name: "Logout", path: "/auth/logout", method: "POST" },
+      login: { name: "Login", path: "/auth/login", method: "POST" },
+      logout: { name: "Logout", path: "/auth/logout", method: "POST" },
       sendVerificationEmail: {
         name: "Send Verification Email",
         path: "/auth/send-verification",
@@ -172,16 +173,26 @@ const appConfig: AppConfig = {
   FRONTEND_PATHS: {
     GLOBAL: {
       landingPage: { name: "Landing Page", path: "/" },
-      postuler:     { name: "Postuler", path: "/postuler" },
-      dashboard:    { name: "Dashboard", path: "/dashboard" },
-      recherche:    { name: "Recherche", path: "/recherche" },
+      postuler: { name: "Postuler", path: "/postuler" },
+      dashboard: { name: "Dashboard", path: "/dashboard" },
+      recherche: { name: "Recherche", path: "/recherche" },
     },
     AUTH: {
-      register:     { name: "Register", path: "/auth/register" },
-      login:        { name: "Login", path: "/auth/login" },
-      verifyEmail:  { name: "Email Verification", path: "/auth/verify-email" },
-      forgotPassword: { name: "Forgot Password", path: "/auth/forgot-password" },
-      resetPassword:  { name: "Reset Password", path: "/auth/reset-password" },
+      register: { name: "Register", path: "/auth/register" },
+      login: { name: "Login", path: "/auth/login" },
+      verifyEmail: { name: "Email Verification", path: "/auth/verify-email" },
+      forgotPassword: {
+        name: "Forgot Password",
+        path: "/auth/forgot-password",
+      },
+      resetPassword: { name: "Reset Password", path: "/auth/reset-password" },
+    },
+    DASHBOARD: {
+      homePage: { name: "Dashboard Home", path: "/dashboard" },
+      sujets: { name: "Sujets", path: "/dashboard/sujets" },
+      candidatures: { name: "Candidatures", path: "/dashboard/candidatures" },
+      profil: { name: "Profil", path: "/dashboard/profil" },
+      settings: { name: "Settings", path: "/dashboard/settings" },
     },
   },
 };

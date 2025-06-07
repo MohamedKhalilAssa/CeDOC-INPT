@@ -1,4 +1,4 @@
-import AvatarDropdown from "@/Components/Ui/AvatarDropdown";
+import AvatarDropdown, { DropdownItem } from "@/Components/Ui/AvatarDropdown";
 import type { AuthContextType } from "@/Context/Auth";
 import { logout } from "@/Helpers/AuthFunctions";
 import { UseAlert } from "@/Hooks/UseAlert";
@@ -12,17 +12,17 @@ export const ProfileMenu = ({
   swal: UseAlert;
 }) => {
   const userLabel = auth.utilisateur?.sub?.split("@")[0] || "??";
-
-  const dropdownItems = [
-    { type: "link" as const, label: "Mon compte", to: "/" },
-    {
-      type: "button" as const,
-      label: "Deconnexion",
-      color: "red" as const,
-      onClick: () => {
-        logout(auth, swal);
-      },
+  const logoutObj = {
+    type: "button" as const,
+    label: "Deconnexion",
+    color: "red" as const,
+    onClick: () => {
+      logout(auth, swal);
     },
+  };
+
+  const dropdownItems: DropdownItem[] = [
+    { type: "link", label: "Mon compte", to: "/" },
   ];
   if (!auth.roles.includes(RoleEnum.CANDIDAT)) {
     dropdownItems.push({
@@ -31,6 +31,13 @@ export const ProfileMenu = ({
       to: appConfig.FRONTEND_PATHS.GLOBAL.postuler.path,
     });
   }
-
+  if (auth.roles.length > 0) {
+    dropdownItems.push({
+      type: "link" as const,
+      label: "Dashboard",
+      to: appConfig.FRONTEND_PATHS.DASHBOARD.homePage.path,
+    });
+  }
+  dropdownItems.push(logoutObj);
   return <AvatarDropdown triggerLabel={userLabel} items={dropdownItems} />;
 };
