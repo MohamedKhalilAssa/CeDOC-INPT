@@ -191,7 +191,6 @@ const appConfig: AppConfig = {
       utilisateurs: {
         profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
       },
-    
     },
   },
 };

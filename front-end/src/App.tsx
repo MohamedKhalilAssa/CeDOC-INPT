@@ -20,9 +20,9 @@ import LandingPage from "@/Pages/LandingPage";
 import DashBarChart from "@/Pages/DashPages/Charts/BarChart";
 import DashLineChart from "@/Pages/DashPages/Charts/LineChart";
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
-import DashFormElements from "@/Pages/DashPages/Forms/FormElements";
 import DashTables from "@/Pages/DashPages/Tables/BasicTables";
 
+import UserProfiles from "@/Pages/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
 
 function App() {
@@ -98,7 +98,10 @@ function App() {
         element={<DashboardLayout />}
       >
         <Route index element={<DashboardHomePage />} />
-        <Route path="form-elements" element={<DashFormElements />} />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path}
+          element={<UserProfiles />}
+        />
         <Route path="charts/bar" element={<DashBarChart />} />
         <Route path="charts/line" element={<DashLineChart />} />
         <Route path="tables" element={<DashTables />} />
