@@ -1,4 +1,4 @@
-import { UtilisateurResponseDTO } from "@/Types/UtilisateursResponses";
+import { UtilisateurResponseDTO } from "@/Types/UtilisateursTypes";
 
 export interface ProfesseurResponseDTO extends UtilisateurResponseDTO {
   grade: string;
