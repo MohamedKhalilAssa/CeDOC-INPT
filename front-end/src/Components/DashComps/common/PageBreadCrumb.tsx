@@ -1,3 +1,4 @@
+import appConfig from "@/public/config";
 import { Link } from "react-router";
 
 interface BreadcrumbProps {
@@ -6,40 +7,26 @@ interface BreadcrumbProps {
 
 const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-      <h2
-        className="text-xl font-semibold text-gray-800 dark:text-white/90"
-        x-text="pageName"
-      >
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+      {" "}
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90 order-2 sm:order-1">
         {pageTitle}
       </h2>
-      <nav>
-        <ol className="flex items-center gap-1.5">
-          <li>
+      <nav className="order-1 sm:order-2">
+        <ol className="flex items-center gap-2">
+          <li className="flex items-center">
             <Link
-              className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
-              to="/"
+              className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              to={appConfig.FRONTEND_PATHS.DASHBOARD.homePage.path}
             >
-              Home
-              <svg
-                className="stroke-current"
-                width="17"
-                height="16"
-                viewBox="0 0 17 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366"
-                  stroke=""
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <i className="fas fa-home text-xs"></i>
+              <span>Home</span>
             </Link>
           </li>
-          <li className="text-sm text-gray-800 dark:text-white/90">
+          <li className="flex items-center text-gray-400 dark:text-gray-500">
+            <i className="fas fa-chevron-right text-xs"></i>
+          </li>
+          <li className="text-sm font-medium text-gray-800 dark:text-white/90">
             {pageTitle}
           </li>
         </ol>

@@ -26,12 +26,12 @@ export const candidatsSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
   //TEST ONLY
   {
-    title: "Candidat",
+    title: "Sujets",
     items: [
       {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path,
-        label: "Profile",
-        icon: "fas fa-user",
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path,
+        label: "Proposer un sujet",
+        icon: "fas fa-book",
       },
     ],
   },
@@ -42,6 +42,16 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
 
 export const professeursSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
+  {
+    title: "Sujets",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path,
+        label: "Proposer un sujet",
+        icon: "fas fa-book",
+      },
+    ],
+  },
 ];
 export const chefsEquipesSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,

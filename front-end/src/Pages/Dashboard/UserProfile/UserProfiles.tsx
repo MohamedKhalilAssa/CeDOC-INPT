@@ -1,8 +1,8 @@
 import { PageMeta } from "@/Components/DashComps";
 import PageBreadcrumb from "@/Components/DashComps/common/PageBreadCrumb";
-import UserAddressCard from "@/Pages/UserProfile/UserAddressCard";
-import UserInfoCard from "@/Pages/UserProfile/UserInfoCard";
-import UserMetaCard from "@/Pages/UserProfile/UserMetaCard";
+import UserAddressCard from "@/Pages/Dashboard/UserProfile/UserAddressCard";
+import UserInfoCard from "@/Pages/Dashboard/UserProfile/UserInfoCard";
+import UserMetaCard from "@/Pages/Dashboard/UserProfile/UserMetaCard";
 
 export default function UserProfiles() {
   return (

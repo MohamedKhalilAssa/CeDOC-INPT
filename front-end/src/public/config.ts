@@ -38,6 +38,7 @@ interface AppConfig {
     DASHBOARD: {
       homePage: FrontendPaths;
       utilisateurs: FrontendPathsMap;
+      sujets: FrontendPathsMap;
     };
   };
 }
@@ -189,7 +190,10 @@ const appConfig: AppConfig = {
     DASHBOARD: {
       homePage: { name: "Dashboard Home", path: "/dashboard" },
       utilisateurs: {
-        profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
+        profile: { name: "Profil", path: "utilisateurs/profile" },
+      },
+      sujets: {
+        proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
       },
     },
   },
