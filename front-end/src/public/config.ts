@@ -28,15 +28,17 @@ interface AppConfig {
     LIEU_DE_NAISSANCE: ApiPathsMap;
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
-    verifyEmail: ApiPathsMap;
-    chefsSujets: ApiPaths;
-    sujetsEquipes: ApiPaths;
+    CHEFS_EQUIPES: ApiPathsMap;
   };
 
   FRONTEND_PATHS: {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
-    DASHBOARD: FrontendPathsMap;
+    DASHBOARD: {
+      GLOBAL: FrontendPathsMap;
+      homePage: FrontendPaths;
+      utilisateurs: FrontendPathsMap;
+    };
   };
 }
 
@@ -148,25 +150,19 @@ const appConfig: AppConfig = {
       },
     },
 
-    verifyEmail: {
-      verify: {
-        name: "Verify Email",
-        path: "/auth/verify-email",
-        method: "POST",
-      },
-    },
-
     // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
-    chefsSujets: {
-      name: "Chefs et leurs Sujets",
-      path: "/chefs-equipe/chefs-sujets",
-      method: "GET",
-    },
-    sujetsEquipes: {
-      name: "Sujets et Équipes",
-      path: "/chefs-equipe/sujets-equipes",
-      method: "GET",
+    CHEFS_EQUIPES: {
+      chefsSujets: {
+        name: "Chefs et leurs Sujets",
+        path: "/chefs-equipe/chefs-sujets",
+        method: "GET",
+      },
+      sujetsEquipes: {
+        name: "Sujets et Équipes",
+        path: "/chefs-equipe/sujets-equipes",
+        method: "GET",
+      },
     },
   },
 
@@ -189,10 +185,12 @@ const appConfig: AppConfig = {
     },
     DASHBOARD: {
       homePage: { name: "Dashboard Home", path: "/dashboard" },
-      sujets: { name: "Sujets", path: "/dashboard/sujets" },
-      candidatures: { name: "Candidatures", path: "/dashboard/candidatures" },
-      profil: { name: "Profil", path: "/dashboard/profil" },
-      settings: { name: "Settings", path: "/dashboard/settings" },
+      utilisateurs: {
+        profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
+      },
+      GLOBAL: {
+        empty: { name: "Dashboard Global", path: "/dashboard/global" },
+      },
     },
   },
 };
