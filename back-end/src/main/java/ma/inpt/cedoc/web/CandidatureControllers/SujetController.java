@@ -55,7 +55,6 @@ public class SujetController {
     @PostMapping
     public ResponseEntity<SujetResponseDTO> proposerSujet(@RequestBody SujetRequestDTO requestDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
-        System.out.println("Proposer sujet: " + requestDTO);
         SujetResponseDTO saved = sujetService.proposerSujet(requestDTO);
         return ResponseEntity.ok(saved);
     }

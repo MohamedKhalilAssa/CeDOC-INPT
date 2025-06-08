@@ -157,7 +157,7 @@ const appConfig: AppConfig = {
         name: "Postuler",
         path: "/candidatures/postuler",
         method: "POST",
-      }
+      },
     },
 
     // Formation API paths
@@ -166,7 +166,7 @@ const appConfig: AppConfig = {
         name: "Get All Formations",
         path: "/formations",
         method: "GET",
-      }
+      },
     },
 
     // ── THE TWO NEW TOP‐LEVEL KEYS ──
@@ -182,8 +182,12 @@ const appConfig: AppConfig = {
         path: "/chefs-equipe/sujets-equipes",
         method: "GET",
       },
+      sujetsDesMembresEquipe: {
+        name: "Sujets des Membres de l'Équipe",
+        path: "/chefs-equipe/sujets/membres-equipe",
+        method: "GET",
+      },
     },
-
     PROFESSEUR: {
       getAll: {
         name: "Get All Professeurs",

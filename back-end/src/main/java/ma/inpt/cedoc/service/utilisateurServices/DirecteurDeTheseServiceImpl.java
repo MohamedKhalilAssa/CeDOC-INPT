@@ -12,6 +12,7 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 import ma.inpt.cedoc.repositories.soutenanceRepositories.DemandeSoutenanceRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleRepository;
@@ -85,6 +86,14 @@ public class DirecteurDeTheseServiceImpl implements DirecteurDeTheseService {
     @Override
     @Transactional
     public DirecteurDeTheseRole createDirecteurDeThese(DirecteurDeTheseRole directeurDeTheseRole) {
+        return directeurDeTheseRoleRepository.save(directeurDeTheseRole);
+    }
+
+    @Override
+    @Transactional
+    public DirecteurDeTheseRole createDirecteurDeTheseWithProfesseur(Professeur professeur) {
+        DirecteurDeTheseRole directeurDeTheseRole = new DirecteurDeTheseRole();
+        directeurDeTheseRole.setProfesseur(professeur);
         return directeurDeTheseRoleRepository.save(directeurDeTheseRole);
     }
 

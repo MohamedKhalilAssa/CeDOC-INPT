@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
@@ -24,4 +26,6 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
 
     Page<Sujet> findByEstPublic(boolean estPublic, Pageable pageable);
 
+    @Query("SELECT DISTINCT s FROM Sujet s JOIN s.professeurs p WHERE p.id IN :professeurIds")
+    Page<Sujet> findByProfesseursIdIn(@Param("professeurIds") List<Long> professeurIds, Pageable pageable);
 }

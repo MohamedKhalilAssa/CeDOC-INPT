@@ -3,10 +3,13 @@ package ma.inpt.cedoc.service.utilisateurServices;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
@@ -19,6 +22,7 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleReposit
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChefEquipeServiceImpl implements ChefEquipeService {
 
     private final ChefEquipeRoleRepository chefEquipeRoleRepository;
@@ -34,6 +38,14 @@ public class ChefEquipeServiceImpl implements ChefEquipeService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Chef d’équipe introuvable avec l’identifiant : " + id));
+    }
+
+    @Override
+    public ChefEquipeRole findByEmail(String email) {
+        return chefEquipeRoleRepository.findByProfesseurUtilisateurEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Chef d’équipe introuvable avec l’email : " + email));
     }
 
     @Override
@@ -177,6 +189,33 @@ public class ChefEquipeServiceImpl implements ChefEquipeService {
         }
 
         chefEquipeRoleRepository.delete(existing);
+    }
+
+    @Override
+    public Page<Sujet> findSujetsMembreEquipes(ChefEquipeRole chef, Pageable pageable) {
+
+        EquipeDeRecherche equipe = chef.getEquipeDeRecherche();
+
+        if (equipe == null) {
+            // ERREUR LOGIQUE
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Aucune équipe de recherche associée à ce chef d'équipe.");
+        }
+        List<Professeur> membres = equipe.getMembres();
+        if (membres == null || membres.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Aucun membre trouvé dans l'équipe de recherche associée à ce chef d'équipe.");
+        }
+        // Get member IDs for the many-to-many query
+        List<Long> membreIds = membres.stream()
+                .map(Professeur::getId)
+                .collect(Collectors.toList());
+
+        // Use the corrected repository method for many-to-many relationship
+        return sujetRepository.findByProfesseursIdIn(membreIds, pageable);
+
     }
 
 }

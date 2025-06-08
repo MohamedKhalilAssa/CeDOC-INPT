@@ -6,6 +6,7 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
 public interface DirecteurDeTheseService {
     // ───–──── READ BASIQUES ───–────
@@ -47,6 +48,8 @@ public interface DirecteurDeTheseService {
 
     /** Crée et enregistre un nouveau DirecteurDeTheseRole. */
     DirecteurDeTheseRole createDirecteurDeThese(DirecteurDeTheseRole directeurDeTheseRole);
+
+    DirecteurDeTheseRole createDirecteurDeTheseWithProfesseur(Professeur professeur);
 
     /** Met à jour le DirecteurDeTheseRole existant (ou 404 sinon). */
     DirecteurDeTheseRole updateDirecteurDeThese(Long id, DirecteurDeTheseRole dto);

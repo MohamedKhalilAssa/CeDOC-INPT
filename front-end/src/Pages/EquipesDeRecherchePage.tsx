@@ -1,7 +1,7 @@
 // src/Pages/EquipesDeRecherchePage.tsx
 import { getData } from "@/Helpers/CRUDFunctions";
 import appConfig from "@/public/config";
-import { PublicSujetWithParticipants } from "@/Types/CandidatureTypes.ts";
+import { PublicSujetWithParticipants } from "@/Types/CandidatureTypes";
 import { Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -91,7 +91,6 @@ const ResearchTeamsTable: React.FC = () => {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase">
                   Professeurs
                 </th>
-               
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
