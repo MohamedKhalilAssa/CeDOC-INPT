@@ -32,7 +32,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
     private final AvisResinscriptionMapper avisResinscriptionMapper;
     private final DirecteurDeTheseRoleRepository directeurDeTheseRepo;
     private final DemandeReinscriptionRepository demandeReinscriptionRepository;
-    private static final Logger logger = LoggerFactory.getLogger(AvisReinscriptionServiceImpl.class);
+    private final ProfesseurService professeurService;
 
     public List<AvisReinscriptionResponseDTO> getAllAvis() {
         List<AvisReinscription> avis = avisReinscriptionRepo.findAll();
@@ -103,14 +103,9 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
         if (!avisReinscription.getDirecteurDeThese().equals(directeurDeThese)){
             throw new AccessDeniedException("Vous n'avez pas accès à modifier cet avis de réinscription");
         }
+        //--------------------------------------------------------------------------
 
         avisResinscriptionMapper.updateFromRequest(requestDTO, avisReinscription);
-
-        if (avisReinscription.getAvisFinal().equals(AvisEnum.NON_FAVORABLE)){
-            avisReinscription.getDemandeReinscription().setStatus(DemandeReinscriptionEnum.REFUSEE);
-        }else{
-            avisReinscription.getDemandeReinscription().setStatus(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE);
-        }
         return avisResinscriptionMapper.toResponseDTO(avisReinscriptionRepo.save(avisReinscription));
     }
 
@@ -130,6 +125,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
         if (!avisReinscription.getDirecteurDeThese().equals(directeurDeThese)){
             throw new AccessDeniedException("Vous n'avez pas accès à modifier cet avis de réinscription");
         }
+        //--------------------------------------------------------------------------
 
         avisReinscriptionRepo.deleteById(id);
     }

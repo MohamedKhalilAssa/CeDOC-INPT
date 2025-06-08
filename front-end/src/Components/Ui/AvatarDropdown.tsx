@@ -12,7 +12,7 @@ const colorMap = {
 
 type ColorKey = keyof typeof colorMap;
 
-type DropdownItem =
+export type DropdownItem =
   | { type: "button"; label: string; color: ColorKey; onClick: () => void }
   | { type: "link"; label: string; to: string }
   | { type: "custom"; element: JSX.Element };

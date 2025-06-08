@@ -21,7 +21,6 @@ public class CandidatureMapperImpl implements CandidatureMapper {
 
     @Override
     public Candidature toEntity(CandidatureRequestDTO dto) {
-        Candidat candidat = candidatService.findFullCandidatById(dto.getCandidatId());
         Candidature c = Candidature.builder()
                 .statutCandidature(CandidatureEnum.SOUMISE)
                 .mentionBac(dto.getMentionBac())
@@ -31,7 +30,7 @@ public class CandidatureMapperImpl implements CandidatureMapper {
                 .typeEtablissement(dto.getTypeEtablissement())
                 .specialite(dto.getSpecialite())
                 .intitulePFE(dto.getIntitulePFE())
-                .candidat(candidat)
+                .candidat(toCandidat(dto))
                 .sujets(null) // la liste sera complétée en service
                 .build();
         return c;
@@ -62,4 +61,11 @@ public class CandidatureMapperImpl implements CandidatureMapper {
                                 : List.of())
                 .build();
     }
+
+    @Override
+    public Candidat toCandidat(CandidatureRequestDTO dto) {
+
+        return candidatService.findFullCandidatByEmail(dto.getEmail());
+    }
+
 }

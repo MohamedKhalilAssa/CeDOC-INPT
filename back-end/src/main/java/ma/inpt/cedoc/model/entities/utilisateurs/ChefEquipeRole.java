@@ -5,8 +5,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.*;
-import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 
 @Entity
@@ -17,6 +18,8 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 public class ChefEquipeRole {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     @OneToOne
@@ -30,10 +33,5 @@ public class ChefEquipeRole {
     @OneToMany(mappedBy = "chefEquipe")
     @JsonIgnore
     private List<Sujet> sujets;
-
-    // demandes de réinscription révisé
-    @OneToMany(mappedBy = "chefEquipeValidateur")
-    @JsonIgnore
-    private List<DemandeReinscription> demandesReinscriptions;
 
 }

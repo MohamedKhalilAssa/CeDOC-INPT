@@ -3,9 +3,11 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
@@ -14,14 +16,19 @@ import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
+import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 
 @Service
 @RequiredArgsConstructor
-
+@Transactional
 public class SujetServiceImpl implements SujetService {
 
+    private final ProfesseurService professeurService;
+
     private final SujetRepository sujetRepository;
-    private final SujetMapper sujetMapper; /* CREATE --------------------------------------------- */
+    private final SujetMapper sujetMapper;
+
+    /* CREATE --------------------------------------------- */
     // DTO-based methods
 
     @Override
@@ -198,6 +205,9 @@ public class SujetServiceImpl implements SujetService {
         // Récupération de l'entité Sujet depuis le DTO
         Sujet sujet = sujetMapper.toEntity(dto);
         List<Professeur> professeurs = sujet.getProfesseurs();
+        professeurs.add(
+                professeurService
+                        .getProfesseurByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
 
         // Sécurité : vérifier que les professeurs ont une équipe
         for (Professeur professeur : professeurs) {
@@ -229,8 +239,9 @@ public class SujetServiceImpl implements SujetService {
     }
 
     @Override
+    @Transactional
     public List<SujetResponseSimpleDTO> getAllSimple() {
-        
+        System.out.println("Fetching all simple sujets");
         return sujetRepository.findAll().stream()
                 .map(sujetMapper::toSimpleResponseDTO)
                 .collect(Collectors.toList());

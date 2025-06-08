@@ -8,10 +8,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.*;
 import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
-import ma.inpt.cedoc.model.entities.utilisateurs.LieuDeNaissance;
-import ma.inpt.cedoc.model.entities.utilisateurs.Nationalite;
-import ma.inpt.cedoc.model.entities.utilisateurs.Role;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
 import ma.inpt.cedoc.service.utilisateurServices.LieuDeNaissanceService;
 import ma.inpt.cedoc.service.utilisateurServices.NationaliteService;
 
@@ -127,5 +124,28 @@ public class UtilisateurMapperImpl implements UtilisateurMapper {
                                 .pays(lieu.getPays())
                                 .ville(lieu.getVille())
                                 .build();
+        }
+
+        @Override
+        public Utilisateur UpdateUtilisateurFromRequestDTO(Utilisateur utilisateur, UtilisateurRequestDTO dto) {
+                // Update the fields of the existing utilisateur with the new values from dto
+                utilisateur.setNom(dto.getNom());
+                utilisateur.setPrenom(dto.getPrenom());
+                utilisateur.setTelephone(dto.getTelephone());
+                utilisateur.setDateNaissance(dto.getDateNaissance());
+                utilisateur.setEtatCivilEnum(dto.getEtatCivilEnum());
+                utilisateur.setGenre(dto.getGenre());
+                utilisateur.setStatutProfessionnel(dto.getStatutProfessionnel());
+
+                // Update nationalite and lieuDeNaissance if they are provided
+                if (dto.getNationaliteId() != 0) {
+                        Nationalite nationalite = nationaliteService.getNationaliteEntityById(dto.getNationaliteId());
+                        utilisateur.setNationalite(nationalite);
+                }
+                if (dto.getLieuDeNaissanceId() != 0) {
+                        LieuDeNaissance lieu = lieuDeNaissanceService.findById(dto.getLieuDeNaissanceId());
+                        utilisateur.setLieuDeNaissance(lieu);
+                }
+                return utilisateur;
         }
 }

@@ -30,6 +30,7 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
   const {
     register,
     formState: { errors },
+    control,
   } = form;
 
   return (
@@ -39,14 +40,16 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
           <i className="fas fa-graduation-cap text-blue-600"></i>
         </span>
         Historique de Formation
-      </h3>
+      </h3>{" "}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {" "}
         <SelectField
           label="Type d'établissement"
           name="typeEtablissement"
           options={etablissementOptions}
           register={register}
           errors={errors}
+          control={control}
           required={true}
         />
         <SelectField
@@ -55,6 +58,7 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
           options={diplomeOptions}
           register={register}
           errors={errors}
+          control={control}
           required={true}
         />
         <SelectField
@@ -63,14 +67,16 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
           options={mentionOptions}
           register={register}
           errors={errors}
+          control={control}
           required={true}
-        />
+        />{" "}
         <SelectField
           label="Mention du BAC"
           name="mentionBac"
           options={mentionOptions}
           register={register}
           errors={errors}
+          control={control}
           required={true}
         />
       </div>
@@ -82,10 +88,10 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
           placeholder="Ex: Informatique, Mathématiques"
           register={register}
           errors={errors}
+          control={control}
           required={true}
         />
       </div>
-
       <div className="mt-4">
         <InputField
           label="Intitulé du PFE"
@@ -94,6 +100,7 @@ const EducationHistoryForm = ({ form }: EducationHistoryFormProps) => {
           placeholder="Titre de votre PFE"
           register={register}
           errors={errors}
+          control={control}
           classes="w-full"
           required={true}
         />
