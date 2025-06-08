@@ -71,7 +71,7 @@ export const professeursSidebarConfig: NavigationGroup[] = [
     title: "Applications",
     items: [
       {
-        href: "/dashboard/candidatures",
+        href: `/dashboard/${appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path}`,
         label: "Candidatures",
         icon: "fas fa-file-alt",
       },

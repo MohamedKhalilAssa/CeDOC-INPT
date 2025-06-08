@@ -439,20 +439,32 @@ public class CandidatureServiceImpl implements CandidatureService {
     }
 
     @Override
-    public List<Candidature> getAccessibleCandidatures(Utilisateur utilisateur) {
-        Long userId = utilisateur.getId();
+public List<Candidature> getAccessibleCandidatures(Utilisateur utilisateur) {
+    Long userId = utilisateur.getId();
 
-        if (utilisateur.hasRole(RoleEnum.CHEF_EQUIPE)) {
-            Long chefRoleId = chefEquipeRoleRepository.findByProfesseurUtilisateurId(userId)
-                    .orElseThrow(() -> new RuntimeException("Pas de rôle chef trouvé"))
-                    .getId();
-            return findByChefEquipeRoleId(chefRoleId);
-
-        } else if (utilisateur.hasRole(RoleEnum.PROFESSEUR)) {
-            return findByProfesseurId(userId);
-
-        } else {
-            throw new AccessDeniedException("Accès non autorisé");
-        }
+    // 1) Lab-head and CEDoc director see everything
+    if (utilisateur.hasRole(RoleEnum.DIRECTION_CEDOC)) {
+        return candidatureRepository.findAll();
     }
+
+    // 2) Team-leader sees only the candidatures on their team’s subjects
+    else if (utilisateur.hasRole(RoleEnum.CHEF_EQUIPE)) {
+        Long chefRoleId = chefEquipeRoleRepository
+            .findByProfesseurUtilisateurId(userId)
+            .orElseThrow(() -> new RuntimeException("Pas de rôle chef trouvé"))
+            .getId();
+        return findByChefEquipeRoleId(chefRoleId);
+    }
+
+    // 3) Ordinary professor sees only their own candida­tures
+    else if (utilisateur.hasRole(RoleEnum.PROFESSEUR)) {
+        return findByProfesseurId(userId);
+    }
+
+    // 4) Everyone else is forbidden
+    else {
+        throw new AccessDeniedException("Accès non autorisé");
+    }
+}
+
 }

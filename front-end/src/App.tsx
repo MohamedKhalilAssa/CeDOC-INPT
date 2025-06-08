@@ -110,7 +110,7 @@ function App() {
           element={<ProposerSujet />}
         />
          <Route
-          path="candidatures"
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path}
           element={<CandidaturesPage />}
           />
         {/* Formations */}
