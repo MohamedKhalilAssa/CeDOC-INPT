@@ -13,7 +13,8 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
     List<Sujet> findByChefEquipeId(Long chefEquipeId);
 
     List<Sujet> findByProfesseursId(Long professeurId);
-
+    List<Sujet> findByChefEquipeRoleId(Long chefEquipeRoleId);
+    
     List<Sujet> findByDirecteurDeTheseId(Long directeurDeTheseRoleId);
 
     Sujet findByDoctorantsId(Long id);
