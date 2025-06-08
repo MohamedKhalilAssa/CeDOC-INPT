@@ -59,7 +59,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
     @Transactional
     public AvisReinscriptionResponseDTO createAvis(AvisReinscriptionRequestDTO requestDTO, String email) {
 
-        DirecteurDeTheseRole directeurDeThese = directeurDeTheseRepo.findByProfesseurEmail(email)
+        DirecteurDeTheseRole directeurDeThese = directeurDeTheseRepo.findByProfesseurUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Directeur du thèse "+email+" n'est pas trouvé"));
 
         // vérifier si le directeur de these est responsable de cette demande ou pas (est ce qu'il est responsable pour ce sujet là)
@@ -97,7 +97,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
             throw new RuntimeException("vous ne pouvez plus modifier cet avis");
         }
 
-        DirecteurDeTheseRole directeurDeThese = directeurDeTheseRepo.findByProfesseurEmail(email)
+        DirecteurDeTheseRole directeurDeThese = directeurDeTheseRepo.findByProfesseurUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Directeur du thèse "+email+" n'est pas trouvé"));
 
         if (!avisReinscription.getDirecteurDeThese().equals(directeurDeThese)){
@@ -119,7 +119,7 @@ public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
             throw new RuntimeException("vous ne pouvez plus supprimer cet avis");
         }
 
-        DirecteurDeTheseRole directeurDeThese = directeurDeTheseRepo.findByProfesseurEmail(email)
+        DirecteurDeTheseRole directeurDeThese = directeurDeTheseRepo.findByProfesseurUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Directeur du thèse "+email+" n'est pas trouvé"));
 
         if (!avisReinscription.getDirecteurDeThese().equals(directeurDeThese)){

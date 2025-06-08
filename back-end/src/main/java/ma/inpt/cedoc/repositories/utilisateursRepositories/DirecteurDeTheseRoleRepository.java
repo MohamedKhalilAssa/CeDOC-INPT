@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface DirecteurDeTheseRoleRepository extends JpaRepository<DirecteurDeTheseRole, Long> {
 
-    Optional<DirecteurDeTheseRole> findByProfesseurEmail(String email);
+    Optional<DirecteurDeTheseRole> findByProfesseurUtilisateurEmail(String email);
 }

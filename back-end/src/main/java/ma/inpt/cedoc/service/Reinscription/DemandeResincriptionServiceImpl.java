@@ -133,7 +133,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO validerchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByProfesseurEmail(email)
+        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByProfesseurUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE)){
@@ -149,7 +149,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO refuserchef(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByProfesseurEmail(email)
+        ChefEquipeRole chefEquipeRole = chefEquipeRoleRepository.findByProfesseurUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Chef Equipe Role " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_DIRECTEUR_THESE)){
@@ -165,7 +165,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO validerdirection(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
+        DirectionCedoc direction = directionCedocRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
@@ -181,7 +181,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     public DemandeReinscriptionResponseDTO refuserdirection(Long id, String email) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande Reinscription " + id + " not found"));
-        DirectionCedoc direction = directionCedocRepository.findByEmail(email)
+        DirectionCedoc direction = directionCedocRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Direction Cedoc " + email + " not found"));
 
         if (!demande.getStatus().equals(DemandeReinscriptionEnum.VALIDEE_CHEF)){
