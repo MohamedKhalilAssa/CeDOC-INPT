@@ -3,7 +3,6 @@ import type { AuthContextType } from "@/Context/Auth";
 import { logout } from "@/Helpers/AuthFunctions";
 import { UseAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
-import { RoleEnum } from "@/Types/UtilisateursEnums";
 export const ProfileMenu = ({
   auth,
   swal,
@@ -24,7 +23,7 @@ export const ProfileMenu = ({
   const dropdownItems: DropdownItem[] = [
     { type: "link", label: "Mon compte", to: "/dashboard" },
   ];
-  if (!auth.roles.includes(RoleEnum.CANDIDAT)) {
+  if (auth.roles.length === 0) {
     dropdownItems.push({
       type: "link" as const,
       label: "Postuler",

@@ -67,27 +67,25 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
             // Extract refresh token from cookies
             String refreshToken = extractRefreshToken(request);
-
             if (refreshToken != null) {
                 boolean refreshSuccessful = handleRefreshToken(refreshToken, request, response);
                 if (refreshSuccessful) {
-
+                    logger.debug("Token refresh successful");
                     filterChain.doFilter(request, response);
                     return;
                 }
             }
 
             // If we get here, both access token and refresh token failed
+            logger.debug("Authentication failed - no valid tokens");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write("{\"error\":\"authentication_error\",\"message\":\"Access denied\"}");
             return;
-
         } catch (Exception e) {
-            logger.error("Error during token refresh: {}", e.getMessage());
+            logger.error("Token refresh error: {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write("{\"error\":\"authentication_error\",\"message\":\"Access denied\"}");
             return;
@@ -97,10 +95,16 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     // HELPER METHODS
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        // Skip authentication endpoints except logout and check
-        return (path.contains("/images") || path.contains("/api/auth") &&
-                !(path.contains("/api/auth/logout") || path.contains("/api/auth/check"))) ||
-                path.contains("/api/guest");
+        String method = request.getMethod();
+        return (!path.contains("/api/auth/logout") && !path.contains("/api/auth/check")) &&
+                (method.equalsIgnoreCase("OPTIONS") ||
+                        path.startsWith("/api/auth/") ||
+                        path.startsWith("/api/guest/") ||
+                        path.startsWith("/images/") ||
+                        (method.equalsIgnoreCase("GET") && path.startsWith("/api/formations")) ||
+                        (method.equalsIgnoreCase("GET") && path.equals("/api/chefs-equipe/chefs-sujets")) ||
+                        path.startsWith("/api/utilisateurs/assign-role") ||
+                        path.startsWith("/api/utilisateurs/set-role"));
     }
 
     private String extractRefreshToken(HttpServletRequest request) {
@@ -113,9 +117,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
             throws IOException {
         Token refreshTokenEntity = tokenService.findByToken(refreshToken);
         refreshTokenEntity = refreshTokenEntity.getTokenType() == TokenEnum.REFRESH ? refreshTokenEntity : null;
-
         if (refreshTokenEntity == null) {
-            logger.debug("Refresh token not found in database");
             return false;
         }
 
@@ -125,7 +127,6 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
             // Check if token is valid in our database
             if (refreshTokenEntity.isExpired() || refreshTokenEntity.isRevoked()) {
-                logger.debug("Refresh token is expired or revoked");
                 return false;
             }
 
@@ -148,7 +149,6 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 logger.debug("Authentication successful for user: {}", user.getUsername());
-                logger.debug("Token refresh successful");
                 return true;
             }
             return false;
