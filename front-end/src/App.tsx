@@ -20,6 +20,7 @@ import LandingPage from "@/Pages/LandingPage";
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
 import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 
+import CandidaturesPage from "@/Pages/Dashboard/Candidatures/CandidaturesPage";
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
 
@@ -104,6 +105,10 @@ function App() {
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path}
           element={<ProposerSujet />}
+        />
+         <Route
+          path="candidatures"
+          element={<CandidaturesPage />}
         />
       </Route>
 
