@@ -1,9 +1,9 @@
 package ma.inpt.cedoc.service.FormationService;
 
+import java.util.List;
+
 import ma.inpt.cedoc.model.DTOs.Formations.VacationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.VacationResponseDTO;
-
-import java.util.List;
 
 public interface VacationService {
     VacationResponseDTO create(VacationRequestDTO dto);

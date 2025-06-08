@@ -27,3 +27,30 @@ export interface SujetEquipeDTO {
   intituleSujet: string;
   nomEquipe: string;
 }
+
+// Extend your existing ProfesseurResponseDTO…
+export interface DoctorantResponseDTO extends UtilisateurResponseDTO {
+  dateInscription: string;
+  statutDoctorant: string;
+  nombreHeuresLabo: number;
+  draftDiplomeUrl: string;
+  archiver: boolean;
+}
+
+/**
+ * Payload returned by GET /api/chefs-equipe/chefs-sujets
+ */
+export interface PublicSujetWithParticipants {
+  sujet: {
+    id: number;
+    intitule: string;
+    description: string;
+    estPublic: boolean;
+    valide: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+  chef: UtilisateurResponseDTO | null;
+  professeurs: ProfesseurResponseDTO[];
+  doctorants: DoctorantResponseDTO[];
+}

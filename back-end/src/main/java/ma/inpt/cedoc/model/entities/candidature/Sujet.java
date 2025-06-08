@@ -10,15 +10,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
-import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
 
 @Entity
 @NoArgsConstructor

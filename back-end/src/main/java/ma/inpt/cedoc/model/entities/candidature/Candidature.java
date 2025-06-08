@@ -14,10 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
-import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.DiplomeEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.EtablissementEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.MentionEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.*;
 
 @Entity
 @Builder
@@ -36,6 +33,7 @@ public class Candidature {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut_candidature")
     private CandidatureEnum statutCandidature;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "mention_bac")
     private MentionEnum mentionBac;
@@ -58,6 +56,7 @@ public class Candidature {
 
     @Column(name = "specialite")
     private String specialite;
+    
     @Column(name = "intitule_pfe")
     private String intitulePFE;
 
