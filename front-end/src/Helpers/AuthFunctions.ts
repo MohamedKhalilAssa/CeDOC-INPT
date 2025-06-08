@@ -5,6 +5,7 @@ import appConfig from "@/public/config";
 import { AuthenticationResponseValues } from "@/Types/AuthTypes";
 import { decodedJWT } from "@/Types/GlobalTypes";
 import { jwtDecode } from "jwt-decode";
+
 export const checkAuth = async (
   onSuccess: (user: decodedJWT) => void,
   onFailure: () => void

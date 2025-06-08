@@ -38,7 +38,7 @@ export const candidatsSidebarConfig: NavigationGroup[] = [
 ];
 export const doctorantsSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
-    {
+  {
     title: "Doctorant",
     items: [
       {
@@ -46,7 +46,7 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
         label: "Doctorant Profile",
         icon: "fas fa-user",
       },
-            {
+      {
         href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path,
         label: "Mes Formations,",
         icon: "fas fa-graduation-cap",
