@@ -26,7 +26,25 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle 401 here too if refresh logic is needed
+    // Handle authentication errors - but don't use React hooks here
+    if (
+      error.response &&
+      (error.response.data?.error === "authentication_error" ||
+        error.response.status === 401)
+    ) {
+      // Clear token and redirect to login
+      localStorage.removeItem("token");
+      const auth = getExternalAuthHandlers();
+      auth.logout();
+
+      // Redirect to login page
+      if (typeof window !== "undefined") {
+        window.location.href =
+          appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+      }
+    }
+
+    // Re-throw the error so it can be handled by the calling component
     return Promise.reject(error);
   }
 );
@@ -42,27 +60,82 @@ interface APIError {
 }
 
 const handleError = (error: AxiosError): never => {
-  if (error.response) {
+  // Check if response exists first
+  if (error.response && error.response.data) {
     const data = error.response.data as any;
 
-    if (data?.errors) {
-      // Structured error from your backend
+    // Handle your backend's structured error format
+    if (data?.statusCode && data?.message) {
+      throw {
+        status: data.statusCode,
+        errors: data.message,
+      } as APIError;
+    }
+
+    // Handle validation errors (if your backend sends field errors)
+    if (data?.errors && Array.isArray(data.errors)) {
       throw {
         status: error.response.status,
         errors: data.errors,
       } as APIError;
     }
 
-    // Unstructured or simple message
+    // Handle other structured errors
+    if (data?.message) {
+      throw {
+        status: error.response.status,
+        errors: data.message,
+      } as APIError;
+    }
+
+    // Fallback for unstructured errors
     throw {
       status: error.response.status,
-      errors: data.message || "An unknown error occurred",
+      errors: data || "An unknown error occurred",
     } as APIError;
   }
 
+  // Handle response without data
+  if (error.response) {
+    throw {
+      status: error.response.status,
+      errors: `HTTP Error ${error.response.status}: ${
+        error.response.statusText || "Unknown error"
+      }`,
+    } as APIError;
+  }
+
+  // Network error or request timeout
+  if (error.code === "ECONNABORTED") {
+    throw {
+      status: 408,
+      errors: "Request timeout - please try again",
+    } as APIError;
+  }
+
+  // Network error
+  if (
+    error.code === "ERR_NETWORK" ||
+    error.message?.includes("Network Error")
+  ) {
+    throw {
+      status: 0,
+      errors: "Network error - please check your connection",
+    } as APIError;
+  }
+
+  // Other Axios error
+  if (error?.message) {
+    throw {
+      status: error.status || 500,
+      errors: error.message,
+    } as APIError;
+  }
+
+  // Final fallback
   throw {
     status: 500,
-    errors: "Something went wrong. Try again.",
+    errors: "An unexpected error occurred",
   } as APIError;
 };
 

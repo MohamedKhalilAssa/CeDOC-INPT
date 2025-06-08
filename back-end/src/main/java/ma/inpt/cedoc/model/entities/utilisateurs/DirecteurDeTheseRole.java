@@ -5,7 +5,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.Reinscription.AvisReinscription;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
@@ -19,6 +21,8 @@ import ma.inpt.cedoc.model.entities.soutenance.Jury;
 public class DirecteurDeTheseRole {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     @OneToOne

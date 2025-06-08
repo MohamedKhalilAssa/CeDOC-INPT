@@ -7,21 +7,54 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 
 public interface ChefEquipeService {
+    // ───–──── READ BASIQUES ───–────
 
-    /* GET METHODS */
+    /** Retourne un ChefEquipeRole par son ID, ou 404 si absence. */
     ChefEquipeRole findById(Long id);
 
+    /** Retourne la liste de tous les ChefEquipeRole. */
     List<ChefEquipeRole> findAll();
 
+    /** Indique si un ChefEquipeRole existe pour cet ID. */
     boolean existsById(Long id);
 
-    List<Sujet> findSujetsByChefEquipeId(Long id);
+    // ───–──── MÉTIER / LOGIQUE “SUJETS / CANDIDATURES” ───–────
 
-    List<Candidature> findCandidaturesByChefEquipeId(Long id);
+    /**
+     * Récupère la liste de tous les Sujets dont chefEquipe.id == chefId.
+     * (méthode exposée par GET /{id}/sujets)
+     */
+    List<Sujet> findSujetsByChefEquipeId(Long chefId);
 
-    /* ACTION / VALIDATION METHODS */
+    /**
+     * Pour un chef donné, retourne toutes les Candidatures
+     * qui contiennent au moins un Sujet géré par ce chef.
+     * (GET /{id}/candidatures)
+     */
+    List<Candidature> findCandidaturesByChefEquipeId(Long chefId);
+
+    /**
+     * Vérifie si un Chef peut accéder (true/false) à une Candidature donnée,
+     * c’est-à-dire si au moins un des Sujets de la Candidature appartient à ce Chef.
+     * (GET /{chefId}/can-access/{candidatureId})
+     */
     boolean canAccessCandidature(Long chefEquipeId, Long candidatureId);
 
+    /**
+     * Valide un Sujet (id = sujetId) à la demande d’un Chef (id = chefId).
+     * Passe sujet.valide=true, sujet.estPublic=true, puis sauvegarde.
+     * (POST /{chefId}/valider-sujet/{sujetId})
+     */
     Sujet validerSujet(Long chefEquipeId, Long sujetId);
 
+    // ───–──── CRUD “CRUD COMPLET” POUR ChefEquipeRole ───–────
+
+    /** Crée et enregistre un nouveau ChefEquipeRole. (POST /api/chefs-equipe) */
+    ChefEquipeRole createChefEquipe(ChefEquipeRole chefEquipeRole);
+
+    /** Met à jour le ChefEquipeRole existant (ou 404 sinon). (PUT /{id}) */
+    ChefEquipeRole updateChefEquipe(Long id, ChefEquipeRole dto);
+
+    /** Supprime le ChefEquipeRole si possible (404 si introuvable, 400 si sujets attachés). (DELETE /{id}) */
+    void deleteChefEquipe(Long id);
 }

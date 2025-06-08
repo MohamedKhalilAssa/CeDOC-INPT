@@ -1,6 +1,11 @@
 import { motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 
+// ← Importez Link pour la navigation client-side
+import { Link } from "react-router-dom";
+// ← Importez appConfig pour récupérer le chemin front-end
+import appConfig from "@/public/config";
+
 const ResearchSection = () => {
   const researchProjects = [
     {
@@ -64,9 +69,9 @@ const ResearchSection = () => {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   return (
@@ -155,6 +160,10 @@ const ResearchSection = () => {
           ))}
         </div>
         
+        {/*
+          → Ici on remplace <motion.a href="#">…</motion.a> par un Link React Router
+          pointant vers la route front-end “/recherche” :
+        */}
         <motion.div 
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -162,29 +171,31 @@ const ResearchSection = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <motion.a 
-            href="#" 
-            className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 font-medium rounded-full group"
-            whileHover={{ 
-              backgroundColor: "rgba(37, 99, 235, 0.1)",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
-            }}
-            transition={{ duration: 0.3 }}
-          >
-            Explorer toutes les recherches
-            <motion.span
-              className="ml-2"
-              animate={{ x: [0, 4, 0] }}
-              transition={{ 
-                repeat: Infinity,
-                duration: 1.5,
-                ease: "easeInOut"
+          <Link to={appConfig.FRONTEND_PATHS.GLOBAL.recherche.path}>
+            <motion.div
+              className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 font-medium rounded-full group cursor-pointer"
+              whileHover={{
+                backgroundColor: "rgba(37, 99, 235, 0.1)",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
               }}
+              transition={{ duration: 0.3 }}
             >
-              <FaArrowRight />
-            </motion.span>
-          </motion.a>
+              Explorer toutes les recherches
+              <motion.span
+                className="ml-2"
+                animate={{ x: [0, 4, 0] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.5,
+                  ease: "easeInOut",
+                }}
+              >
+                <FaArrowRight />
+              </motion.span>
+            </motion.div>
+          </Link>
         </motion.div>
+
       </div>
     </section>
   );

@@ -47,26 +47,30 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
             // Extract and validate the access token
             String accessToken = extractAccessToken(request);
 
             if (accessToken != null) {
                 processAccessToken(accessToken, request);
+            } else {
+                // No token provided for protected route
+                logger.debug("No access token provided for protected route: {}", request.getServletPath());
+                handleAuthenticationError(response, "TOKEN_MISSING", "Access token is required");
+                return;
             }
 
             filterChain.doFilter(request, response);
-
         } catch (JwtException e) {
             logger.error("JWT validation error: {}", e.getMessage());
             SecurityContextHolder.clearContext();
-            // Continue to refresh token filter
-            filterChain.doFilter(request, response);
+            handleAuthenticationError(response, "TOKEN_INVALID", "Invalid or expired token");
+            return; // Don't continue the filter chain
         } catch (Exception e) {
             logger.error("Authentication error: {}", e.getMessage());
             SecurityContextHolder.clearContext();
-            filterChain.doFilter(request, response);
+            handleAuthenticationError(response, "AUTH_ERROR", "Authentication failed");
+            return; // Don't continue the filter chain
         }
     }
 
@@ -85,26 +89,25 @@ public class AccessTokenFilter extends OncePerRequestFilter {
     private void processAccessToken(String accessToken, HttpServletRequest request) {
         // Extract subject from token
         String userSubject = jwtUtil.extractSubject(accessToken);
-        UserDetails user = userDetailsService.loadUserByUsername(userSubject);
 
         // Skip if subject is null or authentication is already set
         if (userSubject == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             return;
         }
 
-        // Validate token in database
-        var dbToken = tokenService.findByTokenAndNonExpiredOrRevoked(accessToken);
-        boolean isTokenValid = dbToken != null && dbToken.getTokenType() == TokenEnum.BEARER
-                && jwtUtil.isTokenValid(accessToken, user);
+        try {
+            UserDetails user = userDetailsService.loadUserByUsername(userSubject);
 
-        if (!isTokenValid) {
-            logger.debug("Token not found in database or is revoked/expired/invalid");
-            return;
-        }
+            // Validate token in database
+            var dbToken = tokenService.findByTokenAndNonExpiredOrRevoked(accessToken);
+            boolean isTokenValid = dbToken != null && dbToken.getTokenType() == TokenEnum.BEARER
+                    && jwtUtil.isTokenValid(accessToken, user);
 
-        // Load user details and validate token
+            if (!isTokenValid) {
+                logger.debug("Token not found in database or is revoked/expired/invalid");
+                return;
+            }
 
-        if (jwtUtil.isTokenValid(accessToken, user)) {
             // Create authentication token and set in security context
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     user,
@@ -114,7 +117,24 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
             logger.debug("Authentication successful for user: {}", userSubject);
+        } catch (Exception e) {
+            logger.error("Error loading user details: {}", e.getMessage());
+            // Don't throw exception, just skip authentication
         }
+    }
+
+    private void handleAuthenticationError(HttpServletResponse response, String errorCode, String message)
+            throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String jsonResponse = String.format(
+                "{\"error\": \"%s\", \"message\": \"%s\", \"status\": %d, \"timestamp\": \"%s\"}",
+                errorCode, message, HttpServletResponse.SC_UNAUTHORIZED,
+                java.time.Instant.now().toString());
+
+        response.getWriter().write(jsonResponse);
     }
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
