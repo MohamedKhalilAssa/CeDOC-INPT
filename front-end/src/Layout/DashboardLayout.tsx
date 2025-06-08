@@ -17,7 +17,8 @@ const DashboardLayout = () => {
   const auth = useAuth();
   const swal = useAlert();
   const navigate = useNavigate();
-  const roles: RoleEnum[] = auth.roles || [RoleEnum.UTILISATEUR]; // Default to "UTILISATEUR" if roles are not defined
+  const roles: RoleEnum[] =
+    auth.roles.length == 0 ? [RoleEnum.UTILISATEUR] : auth.roles; // Default to "UTILISATEUR" if roles are not defined
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Check localStorage for saved theme preference
@@ -55,6 +56,7 @@ const DashboardLayout = () => {
         "error"
       );
     }
+    console.log(roles);
   }, [auth.isAuthenticated, auth.loading, navigate]);
 
   // Sidebar configuration
