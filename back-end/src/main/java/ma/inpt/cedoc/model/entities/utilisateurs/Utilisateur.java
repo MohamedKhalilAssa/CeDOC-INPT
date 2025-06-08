@@ -79,7 +79,9 @@ public class Utilisateur implements UserDetails {
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"), inverseJoinColumns = @JoinColumn(name = "role_id"),
+    uniqueConstraints = @UniqueConstraint(columnNames = {"utilisateur_id", "role_id"})
+    )
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
 

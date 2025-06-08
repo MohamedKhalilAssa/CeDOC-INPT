@@ -19,7 +19,10 @@ import lombok.NoArgsConstructor;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "equipes_de_recherches")
 public class EquipeDeRecherche {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     @Column(name = "nom_de_equipe")
