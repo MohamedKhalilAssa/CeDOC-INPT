@@ -23,7 +23,5 @@ public class SujetRequestDTO {
 
     private Long directeurDeTheseId;
 
-    @Size(min = 1, message = "Au moins un professeur doit être sélectionné")
     private List<Long> professeursIds;
 }
-
