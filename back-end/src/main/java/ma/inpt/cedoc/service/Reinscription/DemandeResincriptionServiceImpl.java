@@ -79,12 +79,20 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
         return demandes;
     }
 
-    // cette méthode va récupérer les demandes de réinscriptions dont le directeur
-    // de thèse est responsable
+    // cette méthode va récupérer les demandes de réinscriptions des membres de sont équipes
+    @Override
+    @Transactional
     public List<DemandeReinscriptionResponseDTO> getDemandesByChefEquipeId(Long id) {
         ChefEquipeRole chefEquipe = chefEquipeRoleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Chef d'équipe " + id + " n'est pas trouvé"));
-        List<Doctorant> doctorants = chefEquipe.get
+        List<Doctorant> doctorants = chefEquipe.getEquipeDeRecherche().getDoctorants();
+        List<DemandeReinscription> demandes = new ArrayList<>();
+        for (Doctorant doctorant : doctorants) {
+            demandes.addAll(doctorant.getDemandesReinscription());
+        }
+        return demandes.stream()
+                .map(demandeReinscriptionMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

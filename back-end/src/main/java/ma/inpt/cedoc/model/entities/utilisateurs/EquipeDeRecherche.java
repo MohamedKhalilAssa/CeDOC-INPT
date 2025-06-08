@@ -36,7 +36,7 @@ public class EquipeDeRecherche {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "chef_equipe_role_id")
     private ChefEquipeRole chefEquipe;
 

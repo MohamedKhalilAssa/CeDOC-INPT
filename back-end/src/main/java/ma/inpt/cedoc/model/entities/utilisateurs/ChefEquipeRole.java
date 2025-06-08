@@ -25,8 +25,8 @@ public class ChefEquipeRole {
     @JoinColumn(name = "professeur_id")
     private Professeur professeur;
 
-    @OneToMany(mappedBy = "chefEquipe")
-    private List<EquipeDeRecherche> equipesDeRecherche;
+    @OneToOne(mappedBy = "chefEquipe")
+    private EquipeDeRecherche equipeDeRecherche;
 
     @OneToMany(mappedBy = "chefEquipe")
     @JsonIgnore

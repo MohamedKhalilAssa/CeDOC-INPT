@@ -10,6 +10,7 @@ public interface DemandeResincriptionService {
     public List<DemandeReinscriptionResponseDTO> getAllDemandes();
     public List<DemandeReinscriptionResponseDTO> getDemandesByDoctorantId(Long id);
     public List<DemandeReinscriptionResponseDTO> getDemandesByDirecteurTheseId(Long id);
+    public List<DemandeReinscriptionResponseDTO> getDemandesByChefEquipeId(Long id);
     public DemandeReinscriptionResponseDTO getDemandeById(Long id);
     public DemandeReinscriptionResponseDTO createDemande(DemandeReinscriptionRequestDTO demandeDTO, String email);
     public DemandeReinscriptionResponseDTO editDemande(Long id, DemandeReinscriptionRequestDTO demandeDTO, String email);

@@ -34,6 +34,12 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.getDemandesByDirecteurTheseId(id));
     }
 
+    // avoir les demandes de réinscription aux quelle ce chef d'équpie est responsable de réviser
+    @GetMapping("chefequipe/{id}")
+    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByChefEquipeId(@PathVariable Long id) {
+        return ResponseEntity.ok(demandeResincriptionService.getDemandesByChefEquipeId(id));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<DemandeReinscriptionResponseDTO> getDemandeById(@PathVariable Long id) {
         return ResponseEntity.ok(demandeResincriptionService.getDemandeById(id));
@@ -47,7 +53,6 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.createDemande(demandeDTO, email));
     }
 
-    @Secured("DOCTORANT")
     @PutMapping("/{id}")
     public ResponseEntity<DemandeReinscriptionResponseDTO> editDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                                        @PathVariable Long id,
@@ -56,7 +61,6 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.editDemande(id, demandeDTO, email));
     }
 
-    @Secured("DOCTORANT")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                 @PathVariable Long id) {
