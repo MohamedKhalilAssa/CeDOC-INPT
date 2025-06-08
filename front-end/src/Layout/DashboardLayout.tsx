@@ -73,7 +73,7 @@ const DashboardLayout = () => {
           {
             href: "/dashboard",
             label: "Dashboard Overview",
-            icon: "fas fa-tachometer-alt",
+            icon: "fa-solid fa-table-columns",
           },
         ],
       },

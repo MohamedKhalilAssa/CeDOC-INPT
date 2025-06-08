@@ -22,7 +22,7 @@ export const ProfileMenu = ({
   };
 
   const dropdownItems: DropdownItem[] = [
-    { type: "link", label: "Mon compte", to: "/" },
+    { type: "link", label: "Mon compte", to: "/dashboard" },
   ];
   if (!auth.roles.includes(RoleEnum.CANDIDAT)) {
     dropdownItems.push({
