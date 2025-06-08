@@ -97,7 +97,9 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         String method = request.getMethod();
-        return method.equalsIgnoreCase("OPTIONS") ||
+        return !path.contains("/api/auth/logout") && !path.contains(
+                "/api/auth/check")
+                && method.equalsIgnoreCase("OPTIONS") ||
                 path.startsWith("/api/auth/") ||
                 path.startsWith("/api/guest/") ||
                 path.startsWith("/images/") ||
