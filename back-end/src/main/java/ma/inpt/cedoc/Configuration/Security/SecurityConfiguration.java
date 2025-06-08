@@ -45,11 +45,14 @@ public class SecurityConfiguration {
                                                 AccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
                                 .addFilterAfter(refreshTokenFilter,
                                                 AccessTokenFilter.class)
-
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
                                                 .requestMatchers(HttpMethod.GET, "/api/formations/**").permitAll()
-                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**","/api/utilisateurs/assign-role","/api/utilisateurs/set-role")
+                                                .requestMatchers(HttpMethod.GET, "/api/chefs-equipe/chefs-sujets")
+                                                .permitAll()
+                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**",
+                                                                "/api/utilisateurs/assign-role",
+                                                                "/api/utilisateurs/set-role")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session

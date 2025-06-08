@@ -1,7 +1,7 @@
 import appConfig from "@/public/config";
 
 export type NavigationGroup = {
-  title?: String;
+  title?: string;
   items: NavigationItem[];
 };
 

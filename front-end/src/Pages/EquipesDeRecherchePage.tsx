@@ -55,54 +55,12 @@ const ResearchTeamsTable: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">INPT</span>
-                </div>
-                <span className="text-xl font-semibold text-gray-900">
-                  CEDoc
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-6">
-              <nav className="flex space-x-6">
-                <a href="#" className="text-gray-600 hover:text-gray-900">
-                  Accueil
-                </a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">
-                  Recherche
-                </a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">
-                  Admission
-                </a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">
-                  Pages
-                </a>
-              </nav>
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">LO</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             ÉQUIPES ET SUJETS DE RECHERCHE
           </h1>
-          <p className="text-gray-600 mb-6">
-            RECHERCHE ACTIVITIES SUPPORTED BY INPT CEDOC INCLUDING BASIC
-            RESEARCH, APPLIED RESEARCH, NETWORKS AND APPLIED TECHNOLOGY
-            LABORATORIES.
-          </p>
 
           {/* Search */}
           <div className="flex items-center mb-6">
@@ -133,9 +91,7 @@ const ResearchTeamsTable: React.FC = () => {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase">
                   Professeurs
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase">
-                  Doctorants
-                </th>
+               
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -155,11 +111,6 @@ const ResearchTeamsTable: React.FC = () => {
                   <td className="px-6 py-4 align-top">
                     {item.professeurs
                       .map((p) => `${p.prenom} ${p.nom}`)
-                      .join(", ") || "—"}
-                  </td>
-                  <td className="px-6 py-4 align-top">
-                    {item.doctorants
-                      .map((d) => `${d.prenom} ${d.nom}`)
                       .join(", ") || "—"}
                   </td>
                 </tr>
