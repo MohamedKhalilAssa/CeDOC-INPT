@@ -36,6 +36,7 @@ public class Sujet {
     @Column(unique = true, nullable = false)
     private String intitule;
 
+    @Column(name = "description", nullable = true, length = 1000)
     private String description;
 
     @Column(name = "est_valide")

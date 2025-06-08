@@ -28,7 +28,7 @@ public class ChefEquipeRole {
 
     @OneToOne(mappedBy = "chefEquipe")
     @JsonIgnore
-    private EquipeDeRecherche equipesDeRecherche;
+    private EquipeDeRecherche equipeDeRecherche;
 
     @OneToMany(mappedBy = "chefEquipe")
     @JsonIgnore

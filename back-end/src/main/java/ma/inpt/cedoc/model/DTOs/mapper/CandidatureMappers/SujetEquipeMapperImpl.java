@@ -25,8 +25,8 @@ public class SujetEquipeMapperImpl {
             return new SujetEquipeDTO(intitule, null);
         } // ChefEquipeRole a une seule EquipeDeRecherche.
         String nomEquipe = null;
-        if (chefRole.getEquipesDeRecherche() != null) {
-            nomEquipe = chefRole.getEquipesDeRecherche().getNomDeLequipe();
+        if (chefRole.getEquipeDeRecherche() != null) {
+            nomEquipe = chefRole.getEquipeDeRecherche().getNomDeLequipe();
         }
 
         return new SujetEquipeDTO(intitule, nomEquipe);
