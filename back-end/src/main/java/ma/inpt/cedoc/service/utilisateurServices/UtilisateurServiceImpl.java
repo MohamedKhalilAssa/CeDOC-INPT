@@ -47,6 +47,27 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         System.out.println("Utilisateur ou rôle introuvable");
     }
 
+    @Override
+    public void setSingleRoleToUtilisateur(String email, String newRoleName) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+        Role role = roleRepository.findByIntitule(newRoleName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rôle introuvable"));
+
+        // Clear existing roles
+        utilisateur.getRoles().clear();
+
+        // Assign the new role
+        utilisateur.getRoles().add(role);
+
+        // Save changes
+        utilisateurRepository.save(utilisateur);
+
+        System.out.println("Les anciens rôles ont été supprimés et le rôle " + newRoleName + " a été attribué à " + email);
+    }
+
+
     /*-----------------Delete----------------- */
     @Override
     public void deleteUtilisateur(Long id) {

@@ -26,6 +26,7 @@ public class DirecteurDeTheseRole {
     @OneToOne
     @MapsId
     @JoinColumn(name = "professeur_id")
+    @JsonIgnore
     private Professeur professeur;
 
     @OneToMany(mappedBy = "directeurDeThese")

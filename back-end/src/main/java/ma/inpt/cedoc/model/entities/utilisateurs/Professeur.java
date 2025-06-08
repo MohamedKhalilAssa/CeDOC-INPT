@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
@@ -26,6 +29,7 @@ public class Professeur {
     @OneToOne
     @MapsId
     @JoinColumn(name = "utilisateur_id")
+    @JsonIgnore
     private Utilisateur utilisateur;
 
     @Enumerated(EnumType.STRING)
@@ -35,6 +39,7 @@ public class Professeur {
 
     @ManyToOne
     @JoinColumn(name = "equipe_de_recherche_id")
+    @JsonIgnore
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
 
     @OneToMany(mappedBy = "professeur")

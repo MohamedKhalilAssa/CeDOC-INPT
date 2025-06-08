@@ -1,27 +1,29 @@
 package ma.inpt.cedoc.model.DTOs.Formations;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
+import ma.inpt.cedoc.model.enums.formation_enums.StatutVacationEnum;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VacationResponseDTO {
+@EqualsAndHashCode(callSuper = true)
+public class VacationResponseDTO extends BaseResponseDTO {
 
-    private Long id;
 
     private String titreDuCours;
 
     private String etablissement;
 
-    private Date date;
+    private LocalDate date;
 
     private String niveau;
 
@@ -29,11 +31,8 @@ public class VacationResponseDTO {
 
     private String justificatif;
 
-    private StatutFormationEnum statut;
+    private StatutVacationEnum statut;
 
-    private ZonedDateTime createdAt;
-
-    private ZonedDateTime updatedAt;
 
     private Long doctorantId; // to avoid circular reference
 }

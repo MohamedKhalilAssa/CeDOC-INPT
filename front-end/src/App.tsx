@@ -18,11 +18,14 @@ import FormationPage from "@/Pages/FormationPage";
 import LandingPage from "@/Pages/LandingPage";
 
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
+import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
 import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 
 import CandidaturesPage from "@/Pages/Dashboard/Candidatures/CandidaturesPage";
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
+
+
 
 function App() {
   return (
@@ -109,6 +112,11 @@ function App() {
          <Route
           path="candidatures"
           element={<CandidaturesPage />}
+          />
+        {/* Formations */}
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}
+          element={<DoctorantFormation />}
         />
       </Route>
 
