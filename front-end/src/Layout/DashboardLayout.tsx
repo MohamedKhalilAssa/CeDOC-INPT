@@ -6,8 +6,8 @@ import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
 import * as sideBarConfig from "@/public/sideBarConfigBasedOnRoles";
 import { RoleEnum } from "@/Types/UtilisateursEnums";
-import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
 /**
  * PhD Studies Center Dashboard Layout for INPT
@@ -16,8 +16,44 @@ import { Link, Outlet } from "react-router-dom";
 const DashboardLayout = () => {
   const auth = useAuth();
   const swal = useAlert();
+  const navigate = useNavigate();
   const roles: RoleEnum[] = auth.roles || [RoleEnum.UTILISATEUR]; // Default to "UTILISATEUR" if roles are not defined
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check localStorage for saved theme preference
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      return savedTheme === "dark";
+    }
+    // Check system preference
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem("theme", newTheme ? "dark" : "light");
+  };
+
+  // Apply theme to document
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    if (!auth.loading && !auth.isAuthenticated) {
+      const fromLogout = localStorage.getItem("userDirectedLogout") === "true";
+      if (!fromLogout) {
+        swal.toast("Accès refusé : Vous êtes non connecté", "error");
+      }
+      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
+    }
+  }, [auth.loading, auth.isAuthenticated]);
 
   // Sidebar configuration
   const sidebarConfig = {
@@ -176,7 +212,7 @@ const DashboardLayout = () => {
     sidebarConfig.navigationSections.push(...Array.from(set).flat());
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -197,42 +233,54 @@ const DashboardLayout = () => {
       {/* Main content */}
       <div className="lg:pl-72">
         {/* Top header */}
-        <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 shadow-sm">
+        <div className="sticky top-0 z-40 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center space-x-4">
+              {" "}
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center justify-center"
               >
-                <i className="fas fa-bars w-6 h-6 flex items-center justify-center"></i>
+                <i className="fas fa-bars text-base"></i>
               </button>
-              {/* back button */}
-              <Link
-                to={appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}
-                className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+              {/* back button */}{" "}
+              <button
+                onClick={() => navigate(-1)}
+                className="cursor-pointer inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
               >
-                <i className="fas fa-arrow-left w-4 h-4 mr-1 flex items-center justify-center"></i>
+                <i className="fas fa-arrow-left text-sm mr-1"></i>
                 Back
-              </Link>
-
-              {/* Search Bar */}
-              <div className="hidden md:flex items-center bg-slate-100 rounded-lg px-3 py-2">
-                <i className="fas fa-search w-4 h-4 text-slate-400 mr-2 flex items-center justify-center"></i>
+              </button>
+              {/* Search Bar */}{" "}
+              <div className="hidden md:flex items-center bg-slate-100 dark:bg-slate-700 rounded-lg px-3 py-2">
+                <i className="fas fa-search text-sm text-slate-400 dark:text-slate-300 mr-2"></i>
                 <input
                   type="text"
                   placeholder="Search students, projects..."
-                  className="bg-transparent text-sm text-slate-600 placeholder-slate-400 focus:outline-none"
+                  className="bg-transparent text-sm text-slate-600 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-400 focus:outline-none"
                 />
               </div>
-            </div>
-
+            </div>{" "}
             <div className="flex items-center space-x-4">
-              {/* Notifications */}
-              <button className="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-                <i className="fas fa-bell w-5 h-5 flex items-center justify-center"></i>
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2  cursor-pointer text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex items-center justify-center"
+                title={
+                  isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+                }
+              >
+                {isDarkMode ? (
+                  <i className="fas fa-sun text-base"></i>
+                ) : (
+                  <i className="fas fa-moon text-base"></i>
+                )}
+              </button>
+              {/* Notifications */}{" "}
+              <button className="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex items-center justify-center">
+                <i className="fas fa-bell text-base"></i>
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
-
               {/* User Menu */}
               <div className="flex items-center space-x-3">
                 {!auth.isAuthenticated ? (
@@ -253,7 +301,7 @@ const DashboardLayout = () => {
 
         {/* Page content */}
         <main className="p-6">
-          <Outlet />
+          {auth.loading ? <div>Loading...</div> : <Outlet />}
         </main>
       </div>
     </div>

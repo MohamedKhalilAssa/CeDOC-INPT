@@ -31,6 +31,7 @@ interface AppConfig {
     FORMATION: ApiPathsMap;
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
+    PROFESSEUR: ApiPathsMap;
   };
 
   FRONTEND_PATHS: {
@@ -40,6 +41,7 @@ interface AppConfig {
     DASHBOARD: {
       homePage: FrontendPaths;
       utilisateurs: FrontendPathsMap;
+      sujets: FrontendPathsMap;
     };
   };
 }
@@ -132,9 +134,14 @@ const appConfig: AppConfig = {
         path: "/sujets/:id",
         method: "GET",
       },
-      createSujet: {
+      proposerSujet: {
         name: "Proposer un Sujet",
-        path: "/sujets/",
+        path: "/sujets",
+        method: "POST",
+      },
+      createSujet: {
+        name: "Créer un Sujet",
+        path: "/sujets",
         method: "POST",
       },
       deleteSujet: {
@@ -175,6 +182,24 @@ const appConfig: AppConfig = {
         method: "GET",
       },
     },
+
+    PROFESSEUR: {
+      getAll: {
+        name: "Get All Professeurs",
+        path: "/professeurs",
+        method: "GET",
+      },
+      getById: {
+        name: "Get Professeur by ID",
+        path: "/professeurs/:id",
+        method: "GET",
+      },
+      search: {
+        name: "Search Professeurs",
+        path: "/professeurs/search",
+        method: "GET",
+      },
+    },
   },
 
   FRONTEND_PATHS: {
@@ -200,7 +225,10 @@ const appConfig: AppConfig = {
     DASHBOARD: {
       homePage: { name: "Dashboard Home", path: "/dashboard" },
       utilisateurs: {
-        profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
+        profile: { name: "Profil", path: "utilisateurs/profile" },
+      },
+      sujets: {
+        proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
       },
     },
   },

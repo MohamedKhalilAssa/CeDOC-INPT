@@ -17,12 +17,10 @@ import ResearchTeamsTable from "@/Pages/EquipesDeRecherchePage";
 import FormationPage from "@/Pages/FormationPage";
 import LandingPage from "@/Pages/LandingPage";
 
-import DashBarChart from "@/Pages/DashPages/Charts/BarChart";
-import DashLineChart from "@/Pages/DashPages/Charts/LineChart";
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
-import DashTables from "@/Pages/DashPages/Tables/BasicTables";
+import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 
-import UserProfiles from "@/Pages/UserProfile/UserProfiles";
+import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
 
 function App() {
@@ -97,16 +95,22 @@ function App() {
         path={appConfig.FRONTEND_PATHS.DASHBOARD.homePage.path}
         element={<DashboardLayout />}
       >
-        <Route index element={<DashboardHomePage />} />
+        <Route index element={<DashboardHomePage />} /> {/* Utilisateur */}
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path}
           element={<UserProfiles />}
         />
-        <Route path="charts/bar" element={<DashBarChart />} />
-        <Route path="charts/line" element={<DashLineChart />} />
-        <Route path="tables" element={<DashTables />} />
+        {/* Sujets */}
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path}
+          element={<ProposerSujet />}
+        />
       </Route>
+
       {/**────────────────────────────────────────────────── */}
+      {/** ──────────────────────────────────────────────── */}
+      {/** Catch‐all route for 404 Not Found */}
+      {/* <Route path="*" element={<NotFoundPage />} /> */}
     </Routes>
   );
 }

@@ -10,12 +10,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
-import ma.inpt.cedoc.model.entities.utilisateurs.*;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
 @Entity
 @NoArgsConstructor
@@ -30,14 +33,9 @@ public class Sujet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "L'intitulé du sujet est obligatoire")
-    @Size(min = 3, max = 100, message = "L'intitulé doit contenir entre 3 et 100 caractères")
-    @Pattern(regexp = "^[\\p{L}0-9,.'\"()&-]+(?:\\s[\\p{L}0-9,.'\"()&-]+)*$", message = "L'intitule contient des caracteres invalides.")
     @Column(unique = true, nullable = false)
     private String intitule;
 
-    @NotBlank(message = "La description du sujet est obligatoire")
-    @Size(min = 10, message = "La description doit contenir au moins 10 caractères")
     private String description;
 
     @Column(name = "est_valide")
@@ -75,13 +73,15 @@ public class Sujet {
     @ManyToOne(targetEntity = ChefEquipeRole.class)
     @JoinColumn(name = "chef_equipe_role_id", nullable = false)
     private ChefEquipeRole chefEquipe;
-    
+
     // @ManyToMany
-    // @JoinTable(name = "sujet_chefs_equipes", joinColumns = @JoinColumn(name = "sujet_id"), inverseJoinColumns = @JoinColumn(name = "chef_equipe_id"))
+    // @JoinTable(name = "sujet_chefs_equipes", joinColumns = @JoinColumn(name =
+    // "sujet_id"), inverseJoinColumns = @JoinColumn(name = "chef_equipe_id"))
     // private List<ChefEquipe> chefsEquipes;
 
     // @ElementCollection
-    // @CollectionTable(name = "sujet_validations", joinColumns = @JoinColumn(name = "sujet_id"))
+    // @CollectionTable(name = "sujet_validations", joinColumns = @JoinColumn(name =
+    // "sujet_id"))
     // @Column(name = "chef_id")
     // private List<Long> chefsAyantValide;
 
