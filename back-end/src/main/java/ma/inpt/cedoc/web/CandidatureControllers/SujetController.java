@@ -7,7 +7,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
@@ -33,9 +32,10 @@ public class SujetController {
     }
 
     @PostMapping
-    public ResponseEntity<SujetResponseDTO> proposerSujet(@RequestBody @Valid SujetRequestDTO requestDTO,
+    public ResponseEntity<SujetResponseDTO> proposerSujet(@RequestBody SujetRequestDTO requestDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
-        SujetResponseDTO saved = sujetService.saveSujet(requestDTO);
+        System.out.println("Proposer sujet: " + requestDTO);
+        SujetResponseDTO saved = sujetService.proposerSujet(requestDTO);
         return ResponseEntity.ok(saved);
     }
 

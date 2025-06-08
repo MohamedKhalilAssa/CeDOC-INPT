@@ -3,10 +3,10 @@ import PageMeta from "@/Components/DashComps/common/PageMeta";
 import Button from "@/Components/DashComps/ui/button/Button";
 import { HeaderCard } from "@/Components/Form/HeaderCard";
 import InputField from "@/Components/Form/InputField";
+import ProfesseurSearch from "@/Components/Form/ProfesseurSearch";
 import TextArea from "@/Components/Form/TextArea";
 import { postData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
-import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -15,21 +15,25 @@ import { useNavigate } from "react-router-dom";
 interface SujetFormData {
   intitule: string;
   description: string;
+  professeurs: number[];
 }
 
 const ProposerSujet = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const swal = useAlert();
-  const auth = useAuth();
-
   const {
-    register,
     control,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<SujetFormData>();
+  } = useForm<SujetFormData>({
+    defaultValues: {
+      intitule: "",
+      description: "",
+      professeurs: [],
+    },
+  });
   const onSubmit = async (data: SujetFormData) => {
     setIsSubmitting(true);
 
@@ -38,10 +42,11 @@ const ProposerSujet = () => {
 
       // Use the correct API endpoint from config
       const response = await postData(
-        appConfig.API_PATHS.SUJET.createSujet.path,
+        appConfig.API_PATHS.SUJET.proposerSujet.path,
         {
           intitule: data.intitule,
           description: data.description,
+          professeursIds: data.professeurs || [],
         }
       );
 
@@ -61,6 +66,7 @@ const ProposerSujet = () => {
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
+        error?.errors ||
         "Erreur lors de la proposition du sujet";
       swal.toast(errorMessage, "error");
     } finally {
@@ -134,6 +140,17 @@ const ProposerSujet = () => {
                       "La description ne peut pas dépasser 2000 caractères",
                   },
                 }}
+              />{" "}
+            </div>
+
+            {/* Professor Search */}
+            <div>
+              <ProfesseurSearch
+                control={control}
+                errors={errors}
+                name="professeurs"
+                label="Professeurs Participants"
+                placeholder="Rechercher des professeurs par nom ou email..."
               />
             </div>
 
@@ -142,7 +159,7 @@ const ProposerSujet = () => {
               <h3 className="font-semibold text-blue-900 mb-2 flex items-center">
                 <i className="fas fa-info-circle mr-2"></i>
                 Conseils pour une bonne proposition
-              </h3>
+              </h3>{" "}
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• Soyez précis et clair dans votre intitulé</li>
                 <li>• Décrivez le contexte et la problématique</li>
@@ -150,6 +167,9 @@ const ProposerSujet = () => {
                 <li>• Indiquez la méthodologie envisagée</li>
                 <li>• Précisez les compétences requises</li>
                 <li>• Estimez la durée et les ressources nécessaires</li>
+                <li>
+                  • Sélectionnez les professeurs qui participeront au sujet
+                </li>
               </ul>
             </div>
 

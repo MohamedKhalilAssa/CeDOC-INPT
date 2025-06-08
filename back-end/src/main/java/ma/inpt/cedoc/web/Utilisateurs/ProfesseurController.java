@@ -47,19 +47,9 @@ public class ProfesseurController {
      */
     @GetMapping("/search")
     public ResponseEntity<List<ProfesseurResponseDTO>> searchProfesseurs(@RequestParam String query) {
-        List<Professeur> professeurs = professeurService.getAllProfesseurs();
-        // Filter by name or email containing the query (case insensitive)
-        List<Professeur> filteredProfesseurs = professeurs.stream()
-                .filter(prof -> (prof.getUtilisateur().getNom() != null
-                        && prof.getUtilisateur().getNom().toLowerCase().contains(query.toLowerCase())) ||
-                        (prof.getUtilisateur().getPrenom() != null
-                                && prof.getUtilisateur().getPrenom().toLowerCase().contains(query.toLowerCase()))
-                        ||
-                        (prof.getUtilisateur().getEmail() != null
-                                && prof.getUtilisateur().getEmail().toLowerCase().contains(query.toLowerCase())))
-                .toList();
+        List<Professeur> professeurs = professeurService.searchForProfesseurs(query);
 
-        List<ProfesseurResponseDTO> professeursDto = professeurMapper.toDtoList(filteredProfesseurs);
+        List<ProfesseurResponseDTO> professeursDto = professeurMapper.toDtoList(professeurs);
         return ResponseEntity.ok(professeursDto);
     }
 }
