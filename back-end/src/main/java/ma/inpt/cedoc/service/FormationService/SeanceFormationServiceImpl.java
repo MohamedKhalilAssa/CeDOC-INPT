@@ -3,8 +3,10 @@ package ma.inpt.cedoc.service.FormationService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.FormationMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.SeanceFormationMapper;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
@@ -30,6 +32,8 @@ public class SeanceFormationServiceImpl implements SeanceFormationService {
     private final DoctorantRepository doctorantRepository;
     private final FormationRepository formationRepository;
     private final ResponsableDeFormationRoleRepository responsableDeFormationRepository;
+
+    private final FormationMapper formationMapper;
 
     @Override
     public SeanceFormationResponseDTO createSeanceFormation(SeanceFormationRequestDTO dto) {
@@ -104,5 +108,19 @@ public class SeanceFormationServiceImpl implements SeanceFormationService {
         return seanceFormationRepository.findSumDureeByDeclarantId(declarantId)
                 .orElse(0L);
     }
+
+    @Override
+    public List<FormationResponseDTO> getValidatedFormationsByDoctorant(Long doctorantId) {
+        List<Formation> formations = seanceFormationRepository.findDistinctValidatedFormationsByDoctorantId(doctorantId);
+        return formations.stream()
+                .map(formationMapper::formationToFormationResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long getValidatedSumDureeByDeclarant(Long doctorantId) {
+        return seanceFormationRepository.findSumDureeByDeclarantIdWhereFormationValidee(doctorantId).orElse(0L);
+    }
+
 
 }

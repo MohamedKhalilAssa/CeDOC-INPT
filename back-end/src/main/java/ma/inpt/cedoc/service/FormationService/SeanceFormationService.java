@@ -2,6 +2,7 @@ package ma.inpt.cedoc.service.FormationService;
 
 import java.util.List;
 
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 
@@ -21,4 +22,7 @@ public interface SeanceFormationService {
 
     Long getSumDureeByDeclarant(Long declarantId);
 
+    List<FormationResponseDTO> getValidatedFormationsByDoctorant(Long doctorantId);
+
+    Long getValidatedSumDureeByDeclarant(Long doctorantId);
 }

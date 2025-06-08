@@ -2,6 +2,7 @@ package ma.inpt.cedoc.web.FormationControllers;
 
 import java.util.List;
 
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -69,5 +70,20 @@ public class SeanceFormationController {
         Long sum = seanceFormationService.getSumDureeByDeclarant(declarantId);
         return ResponseEntity.ok(sum);
     }
+
+    @GetMapping("/validated-formations/by-doctorant")
+    @PreAuthorize("hasRole('DOCTORANT')")
+    public ResponseEntity<List<FormationResponseDTO>> getValidatedFormationsByDoctorant(@RequestParam Long doctorantId) {
+        List<FormationResponseDTO> formations = seanceFormationService.getValidatedFormationsByDoctorant(doctorantId);
+        return ResponseEntity.ok(formations);
+    }
+
+    @GetMapping("/validated-sum-duree/by-doctorant")
+    @PreAuthorize("hasRole('DOCTORANT')")
+    public ResponseEntity<Long> getValidatedSumDuree(@RequestParam Long doctorantId) {
+        Long sum = seanceFormationService.getValidatedSumDureeByDeclarant(doctorantId);
+        return ResponseEntity.ok(sum);
+    }
+
 
 }
