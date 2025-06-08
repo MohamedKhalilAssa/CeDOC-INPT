@@ -1,8 +1,8 @@
 package ma.inpt.cedoc.web.FormationControllers;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Formations.VacationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Formations.VacationResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Formations.VacationRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Formations.VacationResponseDTO;
 import ma.inpt.cedoc.service.FormationService.VacationService;
 import org.springframework.web.bind.annotation.*;
 

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.NationaliteRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.NationaliteResponseDTO;
 import ma.inpt.cedoc.service.utilisateurServices.NationaliteService;
 
 // TODO: Add security imports when implementing security annotations:

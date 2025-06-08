@@ -2,9 +2,9 @@ package ma.inpt.cedoc.web.AttestationControllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Attestation.*;
-import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
-import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
+import ma.inpt.cedoc.repositories.model.DTOs.Attestation.*;
+import ma.inpt.cedoc.repositories.model.enums.doctorant_enums.TypeAttestationAutoEnum;
+import ma.inpt.cedoc.repositories.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import ma.inpt.cedoc.service.AttestationService.AttestationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

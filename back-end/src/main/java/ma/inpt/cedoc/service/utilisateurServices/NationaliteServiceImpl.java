@@ -13,10 +13,10 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.NationaliteMapper;
-import ma.inpt.cedoc.model.entities.utilisateurs.Nationalite;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.NationaliteRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.NationaliteResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.utilisateursMapper.NationaliteMapper;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Nationalite;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.NationaliteRepository;
 
 @Service

@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ma.inpt.cedoc.model.entities.candidature.Candidature;
-import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
-import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
+import ma.inpt.cedoc.repositories.model.entities.candidature.Candidature;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Candidat;
+import ma.inpt.cedoc.repositories.model.enums.candidature_enums.CandidatureEnum;
 
 public interface CandidatureRepository extends JpaRepository<Candidature, Long> {
     // Toutes les candidatures d’un candidat donné

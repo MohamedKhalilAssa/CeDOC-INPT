@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Helpers.UtilFunctions;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.DTOs.auth.*;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.auth.*;
 import ma.inpt.cedoc.service.auth.AuthenticationService;
 import ma.inpt.cedoc.service.auth.EmailVerificationService;
 

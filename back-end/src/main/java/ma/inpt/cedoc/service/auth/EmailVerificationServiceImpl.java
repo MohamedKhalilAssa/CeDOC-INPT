@@ -10,9 +10,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository;
 import ma.inpt.cedoc.service.Global.EmailService;
 

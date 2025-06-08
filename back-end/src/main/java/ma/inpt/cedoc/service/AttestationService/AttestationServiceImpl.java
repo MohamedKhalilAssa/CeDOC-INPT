@@ -9,15 +9,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Attestation.*;
-import ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers.AttestationMapper;
-import ma.inpt.cedoc.model.entities.attestation.Attestation;
-import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
-import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
-import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
-import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAutomatiqueRepository;
 import ma.inpt.cedoc.repositories.AttestationRepositories.AttestationAvecValidationRepository;
+import ma.inpt.cedoc.repositories.model.DTOs.Attestation.*;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.AttestationsMappers.AttestationMapper;
+import ma.inpt.cedoc.repositories.model.entities.attestation.Attestation;
+import ma.inpt.cedoc.repositories.model.entities.attestation.AttestationAutomatique;
+import ma.inpt.cedoc.repositories.model.entities.attestation.AttestationAvecValidation;
+import ma.inpt.cedoc.repositories.model.enums.doctorant_enums.TypeAttestationAutoEnum;
+import ma.inpt.cedoc.repositories.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 
 @Service
 @RequiredArgsConstructor

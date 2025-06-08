@@ -1,9 +1,9 @@
 package ma.inpt.cedoc.service.Reinscription;
 
-import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionResponseDTO;
-
 import java.util.List;
+
+import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.AvisReinscriptionRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.AvisReinscriptionResponseDTO;
 
 public interface AvisReinscriptionService {
 

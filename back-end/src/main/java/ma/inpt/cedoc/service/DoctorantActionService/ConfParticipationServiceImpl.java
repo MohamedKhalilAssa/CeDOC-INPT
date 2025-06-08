@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.DoctorantActionsMappers.ConfParticipationMapper;
-import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
-import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
 import ma.inpt.cedoc.repositories.DoctorantActionsRepositories.ConfParticipationRepository;
+import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.DoctorantActionsMappers.ConfParticipationMapper;
+import ma.inpt.cedoc.repositories.model.entities.DoctorantActions.ConfParticipation;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.DirectionCedoc;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.repositories.model.enums.doctorant_enums.EtatEnum;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirectionCedocRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 

@@ -2,10 +2,10 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 
 import java.util.List;
 
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
-import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseSimpleDTO;
+import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
 
 public interface SujetService {
 

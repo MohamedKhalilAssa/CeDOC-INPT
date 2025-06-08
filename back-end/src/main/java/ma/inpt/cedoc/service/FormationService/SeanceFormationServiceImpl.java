@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.SeanceFormationMapper;
-import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
 import ma.inpt.cedoc.repositories.formationRepositories.SeanceFormationRepository;
+import ma.inpt.cedoc.repositories.model.DTOs.Formations.SeanceFormationRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Formations.SeanceFormationResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.formationsMappers.SeanceFormationMapper;
+import ma.inpt.cedoc.repositories.model.entities.formation.SeanceFormation;
 
 @Service
 @RequiredArgsConstructor

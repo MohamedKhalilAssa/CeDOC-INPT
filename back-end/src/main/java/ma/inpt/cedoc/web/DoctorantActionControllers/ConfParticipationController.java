@@ -1,8 +1,8 @@
 package ma.inpt.cedoc.web.DoctorantActionControllers;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 import ma.inpt.cedoc.service.DoctorantActionService.ConfParticipationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;

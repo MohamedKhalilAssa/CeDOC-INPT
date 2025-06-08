@@ -18,7 +18,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import ma.inpt.cedoc.model.DTOs.Generic.ErrorResponse;
+import ma.inpt.cedoc.repositories.model.DTOs.Generic.ErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

@@ -2,8 +2,8 @@ package ma.inpt.cedoc.service.utilisateurServices;
 
 import java.util.List;
 
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
-import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.CandidatResponseDTO;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Candidat;
 
 public interface CandidatService {
 

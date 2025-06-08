@@ -2,8 +2,8 @@ package ma.inpt.cedoc.service.DoctorantActionService;
 
 import java.util.List;
 
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationRequestDTO;
-import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.PublicationRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.PublicationResponseDTO;
 
 public interface PublicationService {
     public List<PublicationResponseDTO> getAllPublications();

@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
-import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseSimpleDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.CandidatureMappers.SujetMapper;
+import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Professeur;
 
 @Service
 @RequiredArgsConstructor

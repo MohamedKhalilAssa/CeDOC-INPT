@@ -158,9 +158,9 @@ const appConfig: AppConfig = {
     // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
     chefsSujets: {
-      name: "Chefs et leurs Sujets",
+      name: "Public sujets avec participants",
       path: "/chefs-equipe/chefs-sujets",
-      method: "GET",
+      method: "GET"
     },
     sujetsEquipes: {
       name: "Sujets et Équipes",

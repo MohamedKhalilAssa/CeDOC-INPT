@@ -8,10 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
-import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseSimpleDTO;
+import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.service.CandidatureSevices.SujetService;
 
 @RestController

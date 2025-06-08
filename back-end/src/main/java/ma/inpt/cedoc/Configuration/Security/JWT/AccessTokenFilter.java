@@ -20,7 +20,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.enums.auth.TokenEnum;
+import ma.inpt.cedoc.repositories.model.enums.auth.TokenEnum;
 import ma.inpt.cedoc.service.auth.TokenService;
 
 @Component

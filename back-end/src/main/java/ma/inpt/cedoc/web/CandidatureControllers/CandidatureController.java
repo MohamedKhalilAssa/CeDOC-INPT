@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Generic.ErrorResponse;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.CandidatureRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.CandidatureResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Generic.ErrorResponse;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 
 // @ModelAttribute -> Spring remplit automatiquement les DTOs à partir du formulaire frontend.

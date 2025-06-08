@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Professeur;
 
 public interface ProfesseurService {
     Professeur createProfesseur(Professeur professeur);

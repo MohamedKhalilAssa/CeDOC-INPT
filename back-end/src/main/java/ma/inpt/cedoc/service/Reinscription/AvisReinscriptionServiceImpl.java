@@ -9,15 +9,15 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.ReinscriptionMappers.AvisResinscriptionMapper;
-import ma.inpt.cedoc.model.entities.Reinscription.AvisReinscription;
-import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.ResinscriptionRepositories.AvisReinscriptionRepository;
 import ma.inpt.cedoc.repositories.ResinscriptionRepositories.DemandeReinscriptionRepository;
+import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.AvisReinscriptionRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.AvisReinscriptionResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.ReinscriptionMappers.AvisResinscriptionMapper;
+import ma.inpt.cedoc.repositories.model.entities.Reinscription.AvisReinscription;
+import ma.inpt.cedoc.repositories.model.entities.Reinscription.DemandeReinscription;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.DirecteurDeTheseRole;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleRepository;
 import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 

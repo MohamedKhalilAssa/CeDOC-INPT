@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Utilisateur;
 
 public interface UtilisateurService {
     public void assignRoleToUtilisateur(String email, String roleName);

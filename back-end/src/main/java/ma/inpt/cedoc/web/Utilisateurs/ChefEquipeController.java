@@ -1,20 +1,21 @@
 package ma.inpt.cedoc.web.Utilisateurs;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetEquipeDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.ChefSujetsResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ChefEquipeMapperImpl;
-import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
+import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetEquipeDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
+import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.service.CandidatureSevices.SujetService;
 import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
+import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @RestController
 @RequestMapping("/api/chefs-equipe")
@@ -22,19 +23,54 @@ import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
 public class ChefEquipeController {
 
     private final ChefEquipeService chefEquipeService;
-    private final ChefEquipeMapperImpl chefEquipeMapper;
     private final SujetService sujetService;
     private final SujetEquipeMapperImpl sujetEquipeMapper;
+    private final UtilisateurService utilisateurService;
 
     /**
      * GET /api/chefs-equipe/chefs-sujets
      * Renvoie la liste de tous les Chefs d’équipe avec leurs sujets (DTO).
      */
     @GetMapping("/chefs-sujets")
-    public ResponseEntity<List<ChefSujetsResponseDTO>> getChefsAvecLeursSujets() {
-        List<ChefEquipeRole> tousLesChefs = chefEquipeService.findAll();
-        List<ChefSujetsResponseDTO> dtoList = chefEquipeMapper.toDtoList(tousLesChefs);
-        return ResponseEntity.ok(dtoList);
+    public ResponseEntity<List<Map<String,Object>>> getPublicSujetsAvecParticipants() {
+        // 1) fetch all public sujets
+        List<Sujet> sujets = sujetService.getAllPublicSujetsEntities();
+
+        // 2) simple sysouts to inspect what comes back
+        System.out.println("=== getPublicSujetsAvecParticipants called ===");
+        System.out.println("Found " + sujets.size() + " public sujets");
+        for (Sujet s : sujets) {
+            System.out.println("→ Sujet ID=" + s.getId() + " intitule=\"" + s.getIntitule() + "\"");
+            System.out.println("Hi");
+            if (s.getChefEquipe() != null) {
+                System.out.println("   chefEquipeRoleId=" 
+                    + s.getChefEquipe().getId() 
+                    + " → ProfesseurId=" 
+                    + s.getChefEquipe().getProfesseur().getId());
+            } else {
+                System.out.println("   no chefEquipe assigned");
+            }
+
+            System.out.println("   professeurs=" + s.getProfesseurs());
+            System.out.println("   doctorants="  + s.getDoctorants());
+        }
+
+        // 3) now build your payload as before
+        List<Map<String,Object>> out = sujets.stream().map(sujet -> {
+            Map<String,Object> m = new HashMap<>();
+            m.put("sujet", sujet);
+            if (sujet.getChefEquipe() != null) {
+                Long profId = sujet.getChefEquipe().getProfesseur().getId();
+                m.put("chef", utilisateurService.getUtilisateurById(profId));
+            } else {
+                m.put("chef", null);
+            }
+            m.put("professeurs", sujet.getProfesseurs());
+            m.put("doctorants",  sujet.getDoctorants());
+            return m;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(out);
     }
 
     /**
@@ -126,8 +162,8 @@ public class ChefEquipeController {
      * Renvoie la liste brute des Candidatures associées aux sujets de ce chef.
      */
     @GetMapping("/{id}/candidatures")
-    public ResponseEntity<List<ma.inpt.cedoc.model.entities.candidature.Candidature>> getCandidaturesByChef(@PathVariable Long id) {
-        List<ma.inpt.cedoc.model.entities.candidature.Candidature> candidatures = chefEquipeService.findCandidaturesByChefEquipeId(id);
+    public ResponseEntity<List<ma.inpt.cedoc.repositories.model.entities.candidature.Candidature>> getCandidaturesByChef(@PathVariable Long id) {
+        List<ma.inpt.cedoc.repositories.model.entities.candidature.Candidature> candidatures = chefEquipeService.findCandidaturesByChefEquipeId(id);
         return ResponseEntity.ok(candidatures);
     }
 

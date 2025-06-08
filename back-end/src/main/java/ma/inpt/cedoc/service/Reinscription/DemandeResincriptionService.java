@@ -1,9 +1,9 @@
 package ma.inpt.cedoc.service.Reinscription;
 
-import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
-
 import java.util.List;
+
+import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 
 public interface DemandeResincriptionService {
 

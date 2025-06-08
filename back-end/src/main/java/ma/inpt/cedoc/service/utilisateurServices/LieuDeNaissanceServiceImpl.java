@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.MapperHelpers.utilisateurs.LieuDeNaissanceMapperHelper;
-import ma.inpt.cedoc.model.entities.utilisateurs.LieuDeNaissance;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.LieuDeNaissanceRequestDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
+import ma.inpt.cedoc.repositories.model.DTOs.mapper.MapperHelpers.utilisateurs.LieuDeNaissanceMapperHelper;
+import ma.inpt.cedoc.repositories.model.entities.utilisateurs.LieuDeNaissance;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.LieuDeNaissanceRepository;
 
 @Service
