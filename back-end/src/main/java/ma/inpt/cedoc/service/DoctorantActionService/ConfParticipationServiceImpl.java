@@ -3,6 +3,8 @@ package ma.inpt.cedoc.service.DoctorantActionService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -29,19 +31,15 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     private final DirectionCedocRepository directionCedocRepository;
 
     @Override
-    public List<ConfParticipationResponseDTO> getAllConfParticipations() {
-        List<ConfParticipation> confParticipations = confParticipationRepository.findAll();
-        return confParticipations.stream()
-                .map(confParticipationMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<ConfParticipationResponseDTO> getAllConfParticipations(Pageable pageable) {
+        Page<ConfParticipation> confParticipations = confParticipationRepository.findAll(pageable);
+        return confParticipations.map(confParticipationMapper::toResponseDTO);
     }
 
     @Override
-    public List<ConfParticipationResponseDTO> getConfParticipationsByDoctorantId(Long participantId) {
-        List<ConfParticipation> confParticipations = confParticipationRepository.findByParticipantId(participantId);
-        return confParticipations.stream()
-                .map(confParticipationMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<ConfParticipationResponseDTO> getConfParticipationsByDoctorantId(Long participantId, Pageable pageable) {
+        Page<ConfParticipation> confParticipations = confParticipationRepository.findByParticipantId(participantId, pageable);
+        return confParticipations.map(confParticipationMapper::toResponseDTO);
     }
 
     @Override

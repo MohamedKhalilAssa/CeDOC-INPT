@@ -3,6 +3,8 @@ package ma.inpt.cedoc.service.DoctorantActionService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -30,19 +32,15 @@ public class PublicationServiceImpl implements PublicationService {
     private final DirectionCedocRepository directionCedocRepository;
 
     @Override
-    public List<PublicationResponseDTO> getAllPublications() {
-        List<Publication> publications = publicationRepository.findAll();
-        return publications.stream()
-                .map(publicationMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<PublicationResponseDTO> getAllPublications(Pageable pageable) {
+        Page<Publication> publications = publicationRepository.findAll(pageable);
+        return publications.map(publicationMapper::toResponseDTO);
     }
 
     @Override
-    public List<PublicationResponseDTO> getPublicationsByDoctorantId(Long doctorantId) {
-        List<Publication> publications = publicationRepository.findByAuteurId(doctorantId);
-        return publications.stream()
-                .map(publicationMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<PublicationResponseDTO> getPublicationsByDoctorantId(Long doctorantId, Pageable pageable) {
+        Page<Publication> publications = publicationRepository.findByAuteurId(doctorantId, pageable);
+        return publications.map(publicationMapper::toResponseDTO);
     }
 
     @Override

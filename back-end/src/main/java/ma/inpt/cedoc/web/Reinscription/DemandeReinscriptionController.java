@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.service.Reinscription.DemandeResincriptionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,25 +22,42 @@ public class DemandeReinscriptionController {
     private final DemandeResincriptionService demandeResincriptionService;
 
     @GetMapping("/")
-    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getAllDemandes() {
-        return ResponseEntity.ok(demandeResincriptionService.getAllDemandes());
+    public Page<DemandeReinscriptionResponseDTO> getAllDemandes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return demandeResincriptionService.getAllDemandes(pageable);
     }
 
     @GetMapping("doctorant/{id}")
-    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByDoctorantId(@PathVariable Long id) {
-        return ResponseEntity.ok(demandeResincriptionService.getDemandesByDoctorantId(id));
+    public Page<DemandeReinscriptionResponseDTO> getDemandesByDoctorantId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return demandeResincriptionService.getDemandesByDoctorantId(id, pageable);
     }
 
     // avoir les demandes de réinscription aux quelle ce directeur de thèse est responsable de réviser
     @GetMapping("directeurthese/{id}")
-    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByDirecteurTheseId(@PathVariable Long id) {
-        return ResponseEntity.ok(demandeResincriptionService.getDemandesByDirecteurTheseId(id));
+    public Page<DemandeReinscriptionResponseDTO> getDemandesByDirecteurTheseId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return demandeResincriptionService.getDemandesByDirecteurTheseId(id, pageable);
     }
 
     // avoir les demandes de réinscription aux quelle ce chef d'équpie est responsable de réviser
     @GetMapping("chefequipe/{id}")
-    public ResponseEntity<List<DemandeReinscriptionResponseDTO>> getDemandesByChefEquipeId(@PathVariable Long id) {
-        return ResponseEntity.ok(demandeResincriptionService.getDemandesByChefEquipeId(id));
+    public Page<DemandeReinscriptionResponseDTO> getDemandesByChefEquipeId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return demandeResincriptionService.getDemandesByChefEquipeId(id,pageable);
     }
 
     @GetMapping("/{id}")

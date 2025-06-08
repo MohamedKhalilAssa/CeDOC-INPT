@@ -13,6 +13,9 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleR
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirectionCedocRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -39,19 +42,15 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     private final DirectionCedocRepository directionCedocRepository;
     private static final Logger logger = LoggerFactory.getLogger(DemandeResincriptionServiceImpl.class);
 
-    public List<DemandeReinscriptionResponseDTO> getAllDemandes() {
-        List<DemandeReinscription> demandes = demandeReinscriptionRepository.findAll();
-        return demandes.stream()
-                .map(demandeReinscriptionMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<DemandeReinscriptionResponseDTO> getAllDemandes(Pageable pageable) {
+        Page<DemandeReinscription> demandes = demandeReinscriptionRepository.findAll(pageable);
+        return demandes.map(demandeReinscriptionMapper::toResponseDTO);
     }
 
     @Override
-    public List<DemandeReinscriptionResponseDTO> getDemandesByDoctorantId(Long id) {
-        List<DemandeReinscription> demandes = demandeReinscriptionRepository.findByDemandeurId(id);
-        return demandes.stream()
-                .map(demandeReinscriptionMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<DemandeReinscriptionResponseDTO> getDemandesByDoctorantId(Long id, Pageable pageable) {
+        Page<DemandeReinscription> demandes = demandeReinscriptionRepository.findByDemandeurId(id, pageable);
+        return demandes.map(demandeReinscriptionMapper::toResponseDTO);
     }
 
     public List<DemandeReinscriptionResponseDTO> getDemandeBySujet(Long id) {
@@ -65,7 +64,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
     // de thèse est responsable
     @Override
     @Transactional
-    public List<DemandeReinscriptionResponseDTO> getDemandesByDirecteurTheseId(Long id) {
+    public Page<DemandeReinscriptionResponseDTO> getDemandesByDirecteurTheseId(Long id, Pageable pageable) {
         DirecteurDeTheseRole directeurDeThese = directeurDeTheseRoleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("directeur de thèse " + id + " n'est pas trouvé"));
 
@@ -76,13 +75,18 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
         for (Long sujetId : sujetIds) {
             demandes.addAll(getDemandeBySujet(sujetId));
         }
-        return demandes;
+        // manual pagination
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), demandes.size());
+        List<DemandeReinscriptionResponseDTO> pageContent = demandes.subList(start, end);
+
+        return new PageImpl<>(pageContent, pageable, demandes.size());
     }
 
     // cette méthode va récupérer les demandes de réinscriptions des membres de sont équipes
     @Override
     @Transactional
-    public List<DemandeReinscriptionResponseDTO> getDemandesByChefEquipeId(Long id) {
+    public Page<DemandeReinscriptionResponseDTO> getDemandesByChefEquipeId(Long id, Pageable pageable) {
         ChefEquipeRole chefEquipe = chefEquipeRoleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Chef d'équipe " + id + " n'est pas trouvé"));
         List<Doctorant> doctorants = chefEquipe.getEquipeDeRecherche().getDoctorants();
@@ -90,9 +94,16 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
         for (Doctorant doctorant : doctorants) {
             demandes.addAll(doctorant.getDemandesReinscription());
         }
-        return demandes.stream()
+        List<DemandeReinscriptionResponseDTO> demandesDTO = demandes.stream()
                 .map(demandeReinscriptionMapper::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
+
+        // manual pagination
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), demandesDTO.size());
+        List<DemandeReinscriptionResponseDTO> pageContent = demandesDTO.subList(start, end);
+
+        return new PageImpl<>(pageContent, pageable, demandes.size());
     }
 
     @Override

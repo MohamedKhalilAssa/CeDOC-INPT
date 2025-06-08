@@ -2,6 +2,9 @@ package ma.inpt.cedoc.web.DoctorantActionControllers;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,13 +23,21 @@ public class PublicationController {
     private final PublicationService publicationService;
 
     @GetMapping("/")
-    public ResponseEntity<List<PublicationResponseDTO>> getAllPublications() {
-        return ResponseEntity.ok(publicationService.getAllPublications());
+    public Page<PublicationResponseDTO> getAllPublications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return publicationService.getAllPublications(pageable);
     }
 
     @GetMapping("/doctorant/{id}")
-    public ResponseEntity<List<PublicationResponseDTO>> getPublicationsByDoctorantId(@PathVariable Long id) {
-        return ResponseEntity.ok(publicationService.getPublicationsByDoctorantId(id));
+    public Page<PublicationResponseDTO> getPublicationsByDoctorantId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return publicationService.getPublicationsByDoctorantId(id, pageable);
     }
 
     @GetMapping("/{id}")

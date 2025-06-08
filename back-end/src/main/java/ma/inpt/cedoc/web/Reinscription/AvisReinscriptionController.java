@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionResponseDTO;
 import ma.inpt.cedoc.service.Reinscription.AvisReinscriptionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,13 +22,21 @@ public class AvisReinscriptionController {
     private final AvisReinscriptionService avisReinscriptionService;
 
     @GetMapping("/")
-    public ResponseEntity<List<AvisReinscriptionResponseDTO>> getAll(){
-        return ResponseEntity.ok(avisReinscriptionService.getAllAvis());
+    public Page<AvisReinscriptionResponseDTO> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        return avisReinscriptionService.getAllAvis(pageable);
     }
 
     @GetMapping("/directeurthese/{id}")
-    public ResponseEntity<List<AvisReinscriptionResponseDTO>> getAvisByDirecteurTheseId(@PathVariable Long id){
-        return ResponseEntity.ok(avisReinscriptionService.getAvisByDirecteurThese(id));
+    public Page<AvisReinscriptionResponseDTO> getAvisByDirecteurTheseId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return avisReinscriptionService.getAvisByDirecteurThese(id, pageable);
     }
 
     @GetMapping("/{id}")

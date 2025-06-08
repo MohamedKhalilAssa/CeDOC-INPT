@@ -4,11 +4,13 @@ import java.util.List;
 
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ConfParticipationService {
-    public List<ConfParticipationResponseDTO> getAllConfParticipations();
+    public Page<ConfParticipationResponseDTO> getAllConfParticipations(Pageable pageable);
 
-    public List<ConfParticipationResponseDTO> getConfParticipationsByDoctorantId(Long id);
+    public Page<ConfParticipationResponseDTO> getConfParticipationsByDoctorantId(Long id, Pageable pageable);
 
     public ConfParticipationResponseDTO getConfParticipationById(Long id);
 
