@@ -7,6 +7,7 @@ import ma.inpt.cedoc.service.Reinscription.AvisReinscriptionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,9 +25,14 @@ public class AvisReinscriptionController {
     @GetMapping("/")
     public Page<AvisReinscriptionResponseDTO> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
     ){
-        Pageable pageable = PageRequest.of(page, size);
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
         return avisReinscriptionService.getAllAvis(pageable);
     }
 
@@ -34,8 +40,14 @@ public class AvisReinscriptionController {
     public Page<AvisReinscriptionResponseDTO> getAvisByDirecteurTheseId(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ){
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
         return avisReinscriptionService.getAvisByDirecteurThese(id, pageable);
     }
 

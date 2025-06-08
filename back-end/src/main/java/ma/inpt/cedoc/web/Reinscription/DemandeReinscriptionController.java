@@ -7,6 +7,7 @@ import ma.inpt.cedoc.service.Reinscription.DemandeResincriptionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,9 +25,14 @@ public class DemandeReinscriptionController {
     @GetMapping("/")
     public Page<DemandeReinscriptionResponseDTO> getAllDemandes(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
         return demandeResincriptionService.getAllDemandes(pageable);
     }
 
@@ -34,8 +40,14 @@ public class DemandeReinscriptionController {
     public Page<DemandeReinscriptionResponseDTO> getDemandesByDoctorantId(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
         return demandeResincriptionService.getDemandesByDoctorantId(id, pageable);
     }
 
@@ -44,8 +56,14 @@ public class DemandeReinscriptionController {
     public Page<DemandeReinscriptionResponseDTO> getDemandesByDirecteurTheseId(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
         return demandeResincriptionService.getDemandesByDirecteurTheseId(id, pageable);
     }
 
@@ -54,10 +72,15 @@ public class DemandeReinscriptionController {
     public Page<DemandeReinscriptionResponseDTO> getDemandesByChefEquipeId(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return demandeResincriptionService.getDemandesByChefEquipeId(id,pageable);
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return demandeResincriptionService.getDemandesByChefEquipeId(id, pageable);
     }
 
     @GetMapping("/{id}")
