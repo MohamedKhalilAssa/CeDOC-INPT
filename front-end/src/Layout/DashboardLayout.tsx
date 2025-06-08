@@ -17,7 +17,8 @@ const DashboardLayout = () => {
   const auth = useAuth();
   const swal = useAlert();
   const navigate = useNavigate();
-  const roles: RoleEnum[] = auth.roles || [RoleEnum.UTILISATEUR]; // Default to "UTILISATEUR" if roles are not defined
+  const roles: RoleEnum[] =
+    auth.roles.length == 0 ? [RoleEnum.UTILISATEUR] : auth.roles; // Default to "UTILISATEUR" if roles are not defined
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Check localStorage for saved theme preference
@@ -46,14 +47,17 @@ const DashboardLayout = () => {
   }, [isDarkMode]);
 
   useEffect(() => {
+    // Check if user is authenticated
     if (!auth.loading && !auth.isAuthenticated) {
-      const fromLogout = localStorage.getItem("userDirectedLogout") === "true";
-      if (!fromLogout) {
-        swal.toast("Accès refusé : Vous êtes non connecté", "error");
-      }
+      // Redirect to login page if not authenticated
       navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
+      swal.toast(
+        "Vous devez vous connecter pour accéder au tableau de bord.",
+        "error"
+      );
     }
-  }, [auth.loading, auth.isAuthenticated]);
+    console.log(roles);
+  }, [auth.isAuthenticated, auth.loading, navigate]);
 
   // Sidebar configuration
   const sidebarConfig = {

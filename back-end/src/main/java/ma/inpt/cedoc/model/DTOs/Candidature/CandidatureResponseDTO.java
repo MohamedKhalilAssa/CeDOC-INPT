@@ -8,10 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
-import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.DiplomeEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.EtablissementEnum;
-import ma.inpt.cedoc.model.enums.candidature_enums.MentionEnum;
+import ma.inpt.cedoc.model.enums.candidature_enums.*;
 
 @Data
 @SuperBuilder

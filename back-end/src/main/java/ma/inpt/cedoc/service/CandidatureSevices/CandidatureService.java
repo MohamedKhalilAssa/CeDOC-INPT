@@ -69,4 +69,5 @@ public interface CandidatureService {
     CandidatureResponseDTO getCandidatureById(Long candidatureId, UserDetails userDetails);
     void deleteCandidature(Long candidatureId, UserDetails userDetails);
 
+
 }
