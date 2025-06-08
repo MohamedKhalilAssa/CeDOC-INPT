@@ -17,11 +17,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import ma.inpt.cedoc.repositories.model.entities.auth.Token;
-import ma.inpt.cedoc.repositories.model.enums.candidature_enums.StatutProfessionnelEnum;
+import ma.inpt.cedoc.model.entities.auth.Token;
+import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
+import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
+import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 import ma.inpt.cedoc.repositories.model.enums.roles_enum.RoleEnum;
-import ma.inpt.cedoc.repositories.model.enums.utilisateur_enums.EtatCivilEnum;
-import ma.inpt.cedoc.repositories.model.enums.utilisateur_enums.GenreEnum;
 
 @Entity
 @NoArgsConstructor
