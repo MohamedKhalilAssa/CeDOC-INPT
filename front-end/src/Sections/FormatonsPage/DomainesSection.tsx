@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, Clock, Calendar, Users, Star, Award, Check, Brain, Network, Shield, Database, Cloud, Code, Link, Bot, Trophy, GraduationCap, CheckCircle, ArrowRight, Mail } from 'lucide-react';
+import  { useState, useEffect } from 'react';
+import {  Brain, Network, Shield, Database, Cloud, Code, Link, Bot,} from 'lucide-react';
 import { FormationResponseDTO } from '../../Types/FormationTypes/FormationResponse';
 import { getData } from "../../Helpers/CRUDFunctions"
 import appConfig from "../../public/config";
@@ -10,7 +10,6 @@ const DomainesSection = () => {
     const getFormations = async () => {
         return getData(appConfig.API_PATHS.FORMATION.getAll.path);
     };
-    const [formations, setFormations] = useState<FormationResponseDTO[]>([]);
     const [counts, setCounts] = useState<Record<string, number>>({});
 
       useEffect(() => {

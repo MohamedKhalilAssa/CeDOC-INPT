@@ -1,6 +1,5 @@
 // Hero Section Component
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, Clock, Calendar, Users, Star, Award, Check, Brain, Network, Shield, Database, Cloud, Code, Link, Bot, Trophy, GraduationCap, CheckCircle, ArrowRight, Mail } from 'lucide-react';
+import { ChevronRight, Trophy, GraduationCap} from 'lucide-react';
 
 const HeroSection = () => {
   return (

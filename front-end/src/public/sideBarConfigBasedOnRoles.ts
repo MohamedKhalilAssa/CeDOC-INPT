@@ -46,6 +46,11 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
         label: "Doctorant Profile",
         icon: "fas fa-user",
       },
+            {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path,
+        label: "Mes Formations,",
+        icon: "fas fa-graduation-cap",
+      },
     ],
   },
 ];

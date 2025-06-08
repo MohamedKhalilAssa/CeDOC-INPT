@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, Clock, Calendar, Users, Star, Award, Check, Mail, Trophy, GraduationCap, CheckCircle, ArrowRight } from 'lucide-react';
+import  { useState, useEffect } from 'react';
+import { Clock, Calendar, ArrowRight } from 'lucide-react';
 
 import { getData } from "../../Helpers/CRUDFunctions"
 import appConfig from "../../public/config";
 
 import { FormationResponseDTO } from '../../Types/FormationTypes/FormationResponse';
-import { ModuleEnum } from '@/Types/FormationTypes/FormationEnum';
 
 import { LucideIcon } from "lucide-react";
 
