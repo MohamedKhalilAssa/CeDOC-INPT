@@ -79,6 +79,14 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
         return demandes;
     }
 
+    // cette méthode va récupérer les demandes de réinscriptions dont le directeur
+    // de thèse est responsable
+    public List<DemandeReinscriptionResponseDTO> getDemandesByChefEquipeId(Long id) {
+        ChefEquipeRole chefEquipe = chefEquipeRoleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Chef d'équipe " + id + " n'est pas trouvé"));
+        List<Doctorant> doctorants = chefEquipe.get
+    }
+
     @Override
     public DemandeReinscriptionResponseDTO getDemandeById(Long id) {
         DemandeReinscription demande = demandeReinscriptionRepository.findById(id)
