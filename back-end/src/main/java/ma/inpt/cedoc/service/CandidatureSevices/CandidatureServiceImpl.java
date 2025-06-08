@@ -39,6 +39,7 @@ import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRefuserRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
+import ma.inpt.cedoc.repositories.model.enums.roles_enum.RoleEnum;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.*;
 import ma.inpt.cedoc.service.Global.EmailService;
 import ma.inpt.cedoc.service.Global.FileService;
@@ -64,6 +65,7 @@ public class CandidatureServiceImpl implements CandidatureService {
 
     private final CandidatService candidatService;
     private final CandidatMapper candidatMapper;
+    private final ChefEquipeRoleRepository chefEquipeRoleRepository;
 
     private final FileService fileService;
     private final EmailService emailService;
@@ -435,4 +437,23 @@ public class CandidatureServiceImpl implements CandidatureService {
             .filter(c -> c.getSujets().stream().anyMatch(sujets::contains))
             .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Candidature> getAccessibleCandidatures(Utilisateur utilisateur) {
+        Long userId = utilisateur.getId();
+
+        if (utilisateur.hasRole(RoleEnum.CHEF_EQUIPE)) {
+            Long chefRoleId = chefEquipeRoleRepository.findByProfesseurUtilisateurId(userId)
+                    .orElseThrow(() -> new RuntimeException("Pas de rôle chef trouvé"))
+                    .getId();
+            return findByChefEquipeRoleId(chefRoleId);
+
+        } else if (utilisateur.hasRole(RoleEnum.PROFESSEUR)) {
+            return findByProfesseurId(userId);
+
+        } else {
+            throw new AccessDeniedException("Accès non autorisé");
+        }
+    }
+
 }

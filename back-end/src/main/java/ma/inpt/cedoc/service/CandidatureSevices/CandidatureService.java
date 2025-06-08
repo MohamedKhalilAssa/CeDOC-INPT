@@ -13,6 +13,7 @@ import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
 public interface CandidatureService {
 
@@ -72,5 +73,6 @@ public interface CandidatureService {
 
     List<Candidature> findByChefEquipeRoleId(Long chefRoleId);
     List<Candidature> findByProfesseurId(Long professeurId);
+    List<Candidature> getAccessibleCandidatures(Utilisateur utilisateur);
 
 }

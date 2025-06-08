@@ -13,12 +13,10 @@ const ResearchTeamsTable: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    getData<PublicSujetWithParticipants[]>(
-      appConfig.API_PATHS.CHEFS_EQUIPES.chefsSujets.path
-    )
-      .then((data) => {
-        console.log("🎯 API /chefs-sujets returned:", data);
-        setItems(data || []);
+    getData<PublicSujetWithParticipants[]>(appConfig.API_PATHS.CHEFS_EQUIPES.chefsSujets.path)
+      .then(data => {
+        console.log('🎯 API /chefs-sujets returned:', data)
+        setItems(data || [])
       })
       .catch((err) => {
         console.error(err);
