@@ -19,6 +19,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.repositories.model.entities.auth.Token;
 import ma.inpt.cedoc.repositories.model.enums.candidature_enums.StatutProfessionnelEnum;
+import ma.inpt.cedoc.repositories.model.enums.roles_enum.RoleEnum;
 import ma.inpt.cedoc.repositories.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.repositories.model.enums.utilisateur_enums.GenreEnum;
 
@@ -107,8 +108,10 @@ public class Utilisateur implements UserDetails {
     @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
     private DirectionCedoc directionCedoc;
 
-
-
+    public boolean hasRole(RoleEnum role) {
+        return roles.stream()
+            .anyMatch(r -> r.getIntitule().equalsIgnoreCase(role.name()));
+    }
 
     
     // JWT CONFIGURATION

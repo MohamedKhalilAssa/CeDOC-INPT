@@ -33,6 +33,7 @@ public class Candidature {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut_candidature")
     private CandidatureEnum statutCandidature;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "mention_bac")
     private MentionEnum mentionBac;
@@ -55,6 +56,7 @@ public class Candidature {
 
     @Column(name = "specialite")
     private String specialite;
+    
     @Column(name = "intitule_pfe")
     private String intitulePFE;
 
