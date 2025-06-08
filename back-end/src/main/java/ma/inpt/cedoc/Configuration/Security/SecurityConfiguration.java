@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,7 +48,8 @@ public class SecurityConfiguration {
 
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
-                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**", "/api/formations/**")
+                                                .requestMatchers(HttpMethod.GET, "/api/formations/**").permitAll()
+                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**","/api/utilisateurs/assign-role","/api/utilisateurs/set-role")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session

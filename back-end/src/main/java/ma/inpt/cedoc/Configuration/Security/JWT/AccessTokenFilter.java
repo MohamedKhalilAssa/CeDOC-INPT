@@ -124,6 +124,8 @@ public class AccessTokenFilter extends OncePerRequestFilter {
                 path.startsWith("/api/auth/") ||
                 path.startsWith("/api/guest/") ||
                 path.startsWith("/images/") ||
-                path.startsWith("/api/formations");
+                (method.equalsIgnoreCase("GET") && path.startsWith("/api/formations"))||
+                path.startsWith("/api/utilisateurs/assign-role") ||
+                path.startsWith("/api/utilisateurs/set-role");
     }
 }
