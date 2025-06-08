@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
@@ -17,11 +20,10 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="professeurs")
+@Table(name = "professeurs")
 public class Professeur {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -31,11 +33,11 @@ public class Professeur {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Veuillez précisez le grade.")
-    @Column(name="grade")
+    @Column(name = "grade")
     private GradeProfesseurEnum grade;
 
     @ManyToOne
-    @JoinColumn(name="equipe_de_recherche_id")
+    @JoinColumn(name = "equipe_de_recherche_id")
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
 
     @OneToMany(mappedBy = "professeur")
@@ -45,7 +47,7 @@ public class Professeur {
     @JsonIgnore
     private List<Sujet> sujetsProposes;
 
-    //Relation avec formations
+    // Relation avec formations
     @OneToMany(mappedBy = "professeur")
     private List<Formation> formationsProposees;
 

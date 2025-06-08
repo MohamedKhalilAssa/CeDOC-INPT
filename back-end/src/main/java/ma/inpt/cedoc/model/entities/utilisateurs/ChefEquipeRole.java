@@ -18,8 +18,6 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 public class ChefEquipeRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
 
     @OneToOne
