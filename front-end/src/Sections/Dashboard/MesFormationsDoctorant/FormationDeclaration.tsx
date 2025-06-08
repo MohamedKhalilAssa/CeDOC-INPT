@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, Upload } from 'lucide-react';
+import { FormationResponseDTO } from "@/Types/FormationTypes/FormationResponse";
+import { SeanceFormationRequestDTO} from "@/Types/FormationTypes/SeanceFormationRequest";
+import { StatutFormationEnum } from "@/Types/FormationTypes/StatutFormationEnum";
+import { getData } from "@/Helpers/CRUDFunctions";
+import appConfig from "@/public/config";
+import { ModuleEnum } from '@/Types/FormationTypes/FormationEnum';
+
+
+
 
 // Types
 interface Formation {
@@ -18,30 +27,8 @@ interface SeanceFormationRequest {
   module: string;
 }
 
-// Mock data
-const mockFormations: Formation[] = [
-  { id: 1, name: "Machine Learning Fundamentals", module: "Intelligence Artificielle" },
-  { id: 2, name: "React Advanced Patterns", module: "Développement" },
-  { id: 3, name: "Network Security Protocols", module: "Réseaux & Télécoms" },
-  { id: 4, name: "Ethical Hacking Basics", module: "Cybersécurité" },
-  { id: 5, name: "Big Data Analytics", module: "Data Science" },
-  { id: 6, name: "AWS Cloud Architecture", module: "Cloud Computing" },
-  { id: 7, name: "Blockchain Development", module: "Blockchain" },
-  { id: 8, name: "IoT Security", module: "Robotique & IoT" },
-];
 
-;
-
-const modules = [
-  "Intelligence Artificielle",
-  "Développement",
-  "Réseaux & Télécoms",
-  "Cybersécurité",
-  "Data Science",
-  "Cloud Computing",
-  "Blockchain",
-  "Robotique & IoT",
-];
+const modules = Object.values(ModuleEnum);
 
 
 
@@ -49,36 +36,68 @@ const modules = [
 
 
 
+
+
+export const displayModuleLabel = (key: keyof typeof ModuleEnum): string => {
+  return ModuleEnum[key];
+};
 
 
 
 
 const FormationDeclaration: React.FC = () => {
-  const [formData, setFormData] = useState<SeanceFormationRequest>({
-    duree: 0,
-    justificatifPdf: '',
-    statut: 'Pending',
-    formationId: 0,
-    formationName: '',
-    module: ''
-  });
+
+const fetchFormations = async (): Promise<FormationResponseDTO[]> => {
+  return (await getData<FormationResponseDTO[]>(appConfig.API_PATHS.FORMATION.getAll.path)) || [];
+};
+
+const [formations, setFormations] = useState<FormationResponseDTO[]>([]);
+
+useEffect(() => {
+  const loadFormations = async () => {
+    const data = await fetchFormations();
+    setFormations(data);
+  };
+
+  loadFormations();
+}, []);
+
+
+
+const [formData, setFormData] = useState<SeanceFormationRequestDTO>({
+  duree: 0,
+  justificatifPdf: '',
+  statut: StatutFormationEnum.DECLARER,
+  formationName: '',
+  module: ''
+});
   
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormationDropdownOpen, setIsFormationDropdownOpen] = useState(false);
   const [isModuleDropdownOpen, setIsModuleDropdownOpen] = useState(false);
 
-  const filteredFormations = mockFormations.filter(formation =>
-    formation.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredFormations = formations.filter(formation =>
+    formation.formationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     formation.module.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // const handleSubmit = () => {
+  //   console.log('Formation declared:', formData);
+  //   setFormData({
+  //     duree: 0,
+  //     justificatifPdf: '',
+  //     statut: 'Pending',
+  //     formationId: 0,
+  //     formationName: '',
+  //     module: ''
+  //   });
+  // };
   const handleSubmit = () => {
     console.log('Formation declared:', formData);
     setFormData({
       duree: 0,
       justificatifPdf: '',
-      statut: 'Pending',
-      formationId: 0,
+      statut: StatutFormationEnum.DECLARER,
       formationName: '',
       module: ''
     });
@@ -156,16 +175,16 @@ const FormationDeclaration: React.FC = () => {
                         onClick={() => {
                           setFormData({ 
                             ...formData, 
-                            formationId: formation.id,
-                            formationName: formation.name,
-                            module: formation.module
+                            formationName: formation.formationName,
+                            module: displayModuleLabel(formation.module as unknown as keyof typeof ModuleEnum)
                           });
+                          console.log('Selected formation:', formation.module);
                           setIsFormationDropdownOpen(false);
                           setSearchTerm('');
                         }}
                         className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
                       >
-                        <div className="font-medium">{formation.name}</div>
+                        <div className="font-medium">{formation.formationName}</div>
                         <div className="text-sm text-gray-500">{formation.module}</div>
                       </button>
                     ))}
