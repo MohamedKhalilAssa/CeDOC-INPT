@@ -19,7 +19,6 @@ public class SujetRequestDTO {
     @Size(min = 10, message = "La description doit contenir au moins 10 caractères")
     private String description;
 
-    @NotBlank(message = "Le champ chefEquipeId est obligatoire")
     private Long chefEquipeId;
 
     private Long directeurDeTheseId;

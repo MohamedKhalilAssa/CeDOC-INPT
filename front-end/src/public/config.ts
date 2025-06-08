@@ -29,6 +29,7 @@ interface AppConfig {
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
     CHEFS_EQUIPES: ApiPathsMap;
+    PROFESSEUR: ApiPathsMap;
   };
 
   FRONTEND_PATHS: {
@@ -131,9 +132,14 @@ const appConfig: AppConfig = {
         path: "/sujets/:id",
         method: "GET",
       },
-      createSujet: {
+      proposerSujet: {
         name: "Proposer un Sujet",
-        path: "/sujets/",
+        path: "/sujets",
+        method: "POST",
+      },
+      createSujet: {
+        name: "Créer un Sujet",
+        path: "/sujets",
         method: "POST",
       },
       deleteSujet: {
@@ -149,9 +155,7 @@ const appConfig: AppConfig = {
         path: "/candidatures/postuler",
         method: "POST",
       },
-    },
-
-    // ── THE TWO NEW TOP‐LEVEL KEYS ──
+    }, // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
     CHEFS_EQUIPES: {
       chefsSujets: {
@@ -162,6 +166,24 @@ const appConfig: AppConfig = {
       sujetsEquipes: {
         name: "Sujets et Équipes",
         path: "/chefs-equipe/sujets-equipes",
+        method: "GET",
+      },
+    },
+
+    PROFESSEUR: {
+      getAll: {
+        name: "Get All Professeurs",
+        path: "/professeurs",
+        method: "GET",
+      },
+      getById: {
+        name: "Get Professeur by ID",
+        path: "/professeurs/:id",
+        method: "GET",
+      },
+      search: {
+        name: "Search Professeurs",
+        path: "/professeurs/search",
         method: "GET",
       },
     },

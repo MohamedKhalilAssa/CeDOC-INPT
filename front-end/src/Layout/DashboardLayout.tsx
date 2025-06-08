@@ -265,7 +265,7 @@ const DashboardLayout = () => {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex items-center justify-center"
+                className="p-2  cursor-pointer text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex items-center justify-center"
                 title={
                   isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
                 }
