@@ -38,6 +38,16 @@ export const candidatsSidebarConfig: NavigationGroup[] = [
 ];
 export const doctorantsSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
+    {
+    title: "Doctorant",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path,
+        label: "Doctorant Profile",
+        icon: "fas fa-user",
+      },
+    ],
+  },
 ];
 
 export const professeursSidebarConfig: NavigationGroup[] = [
