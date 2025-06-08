@@ -13,8 +13,6 @@ import ma.inpt.cedoc.model.entities.candidature.Candidature;
 public class Candidat {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
 
     @OneToOne
