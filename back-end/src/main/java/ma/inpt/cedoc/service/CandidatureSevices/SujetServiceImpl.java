@@ -1,10 +1,13 @@
 package ma.inpt.cedoc.service.CandidatureSevices;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -204,16 +207,33 @@ public class SujetServiceImpl implements SujetService {
     public SujetResponseDTO proposerSujet(SujetRequestDTO dto) {
         // Récupération de l'entité Sujet depuis le DTO
         Sujet sujet = sujetMapper.toEntity(dto);
+
+        // Get current authenticated user
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Professeur currentProfesseur = professeurService.getProfesseurByEmail(currentUserEmail);
+
+        // Ensure professeurs list is mutable and not null
         List<Professeur> professeurs = sujet.getProfesseurs();
-        professeurs.add(
-                professeurService
-                        .getProfesseurByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
+        if (professeurs == null) {
+            professeurs = new ArrayList<>();
+            sujet.setProfesseurs(professeurs);
+        } else {
+            // Create a new mutable list to avoid potential UnsupportedOperationException
+            professeurs = new ArrayList<>(professeurs);
+            sujet.setProfesseurs(professeurs);
+        }
+
+        // Add current user if not already in the list (avoid duplicates)
+        if (professeurs.contains(currentProfesseur)) {
+            professeurs.remove(currentProfesseur);
+        }
 
         // Sécurité : vérifier que les professeurs ont une équipe
         for (Professeur professeur : professeurs) {
             if (professeur.getEquipeDeRechercheAcceuillante() == null) {
-                throw new IllegalArgumentException("Le professeur avec l'ID " + professeur.getId()
-                        + " n'appartient à aucune équipe.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Pr. " + professeur.getUtilisateur().getPrenom()
+                                + " n'appartient à aucune équipe.");
             }
         }
 
@@ -225,7 +245,9 @@ public class SujetServiceImpl implements SujetService {
 
         // Le sujet est invisible jusqu'à validation (future logique)
         sujet.setValide(false);
-        sujet.setEstPublic(false); // Persistance
+        sujet.setEstPublic(false);
+
+        // Persistance
         Sujet saved = sujetRepository.save(sujet);
         return sujetMapper.toResponseDTO(saved);
     }

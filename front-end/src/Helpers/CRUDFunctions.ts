@@ -3,7 +3,7 @@ import { getExternalAuthHandlers } from "@/Context/Auth/index";
 import appConfig from "@/public/config";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
-const API = axios.create({
+export const API = axios.create({
   baseURL: appConfig.API_URL || "http://localhost:8080/api",
   withCredentials: true,
 });
@@ -19,6 +19,7 @@ API.interceptors.response.use(
     const auth = getExternalAuthHandlers();
     const newAccessToken = response.headers["authorization"];
     if (newAccessToken && newAccessToken.startsWith("Bearer ")) {
+      console.log("New access token received:", newAccessToken);
       const token = newAccessToken.replace("Bearer ", "");
       localStorage.setItem("token", token);
       auth.login();
@@ -26,11 +27,12 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle authentication errors - but don't use React hooks here
+    // Handle authentication errors
     // if (
     //   error.response &&
     //   (error.response.data?.error === "authentication_error" ||
-    //     error.response.status === 401)
+    //     error.response.status === 401 ||
+    //     error.response.status === 403)
     // ) {
     //   // Clear token and redirect to login
     //   localStorage.removeItem("token");
