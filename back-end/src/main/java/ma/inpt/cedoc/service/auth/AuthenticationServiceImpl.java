@@ -25,11 +25,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
-import ma.inpt.cedoc.repositories.model.DTOs.auth.*;
-import ma.inpt.cedoc.repositories.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
-import ma.inpt.cedoc.repositories.model.entities.auth.Token;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Utilisateur;
-import ma.inpt.cedoc.repositories.model.enums.auth.TokenEnum;
+import ma.inpt.cedoc.model.DTOs.auth.*;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
+import ma.inpt.cedoc.model.entities.auth.Token;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.enums.auth.TokenEnum;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository;
 import ma.inpt.cedoc.service.Global.EmailService;
 

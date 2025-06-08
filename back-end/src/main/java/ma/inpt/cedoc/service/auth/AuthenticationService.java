@@ -6,8 +6,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import jakarta.servlet.http.HttpServletResponse;
-import ma.inpt.cedoc.repositories.model.DTOs.auth.*;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.DTOs.auth.*;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
 public interface AuthenticationService {
 

@@ -2,10 +2,10 @@ package ma.inpt.cedoc.service.AttestationService;
 
 import java.util.List;
 
-import ma.inpt.cedoc.repositories.model.DTOs.Attestation.*;
-import ma.inpt.cedoc.repositories.model.entities.attestation.Attestation;
-import ma.inpt.cedoc.repositories.model.enums.doctorant_enums.TypeAttestationAutoEnum;
-import ma.inpt.cedoc.repositories.model.enums.doctorant_enums.TypeAttestationValidationEnum;
+import ma.inpt.cedoc.model.DTOs.Attestation.*;
+import ma.inpt.cedoc.model.entities.attestation.Attestation;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
+import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 
 public interface AttestationService {
 

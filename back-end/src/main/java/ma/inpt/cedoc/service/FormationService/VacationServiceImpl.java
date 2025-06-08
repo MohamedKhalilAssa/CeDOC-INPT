@@ -3,12 +3,12 @@ package ma.inpt.cedoc.service.FormationService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Formations.VacationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.VacationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.VacationMapper;
+import ma.inpt.cedoc.model.entities.formation.Vacation;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.repositories.formationRepositories.VacationRepository;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.VacationRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.VacationResponseDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.mapper.formationsMappers.VacationMapper;
-import ma.inpt.cedoc.repositories.model.entities.formation.Vacation;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 import org.springframework.stereotype.Service;
 

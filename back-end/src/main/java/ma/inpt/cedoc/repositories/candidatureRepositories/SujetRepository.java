@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.ChefEquipeRole;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 
 public interface SujetRepository extends JpaRepository<Sujet, Long> {
     List<Sujet> findByChefEquipe(ChefEquipeRole chefEquipe);

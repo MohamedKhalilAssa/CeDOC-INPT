@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
 public interface ProfesseurRepository extends JpaRepository<Professeur, Long> {
     List<Professeur> findByUtilisateurNomContainingIgnoreCaseOrUtilisateurPrenomContainingIgnoreCaseOrUtilisateurEmailContainingIgnoreCase(

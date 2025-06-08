@@ -1,8 +1,8 @@
 package ma.inpt.cedoc.web.Reinscription;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.service.Reinscription.DemandeResincriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;

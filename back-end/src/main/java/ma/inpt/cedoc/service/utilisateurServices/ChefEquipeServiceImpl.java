@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.entities.candidature.Candidature;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
-import ma.inpt.cedoc.repositories.model.entities.candidature.Candidature;
-import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
 
 @Service

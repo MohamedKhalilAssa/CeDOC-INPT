@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> {
     Optional<Utilisateur> findByEmail(String email);

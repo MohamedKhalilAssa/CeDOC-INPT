@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.LieuDeNaissanceRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
 import ma.inpt.cedoc.service.utilisateurServices.LieuDeNaissanceService;
 
 @RestController

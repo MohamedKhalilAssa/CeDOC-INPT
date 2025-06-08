@@ -1,45 +1,41 @@
 // src/Pages/EquipesDeRecherchePage.tsx
-import { getData } from '@/Helpers/CRUDFunctions';
-import appConfig from '@/public/config';
-import { PublicSujetWithParticipants } from '@/Types/CandidatureTypes.ts';
-import { Search } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { getData } from "@/Helpers/CRUDFunctions";
+import appConfig from "@/public/config";
+import { PublicSujetWithParticipants } from "@/Types/CandidatureTypes.ts";
+import { Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 const ResearchTeamsTable: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [items, setItems] = useState<PublicSujetWithParticipants[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    getData<PublicSujetWithParticipants[]>(appConfig.API_PATHS.chefsSujets.path)
-      .then(data => {
-        console.log('🎯 API /chefs-sujets returned:', data)
-        setItems(data || [])
+    getData<PublicSujetWithParticipants[]>(
+      appConfig.API_PATHS.CHEFS_EQUIPES.chefsSujets.path
+    )
+      .then((data) => {
+        console.log("🎯 API /chefs-sujets returned:", data);
+        setItems(data || []);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
-        setError('Impossible de charger les données.');
+        setError("Impossible de charger les données.");
       })
       .finally(() => {
         setLoading(false);
       });
   }, []);
-  
 
-  const filtered = items.filter(item =>
-    // match on sujet title
-    item.sujet.intitule
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-    ||
-    // match on chef name (if any)—we default to empty‐string here
-    ( (item.chef?.nom ?? '')
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    )
-  );  
+  const filtered = items.filter(
+    (item) =>
+      // match on sujet title
+      item.sujet.intitule.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      // match on chef name (if any)—we default to empty‐string here
+      (item.chef?.nom ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -68,15 +64,25 @@ const ResearchTeamsTable: React.FC = () => {
                 <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">INPT</span>
                 </div>
-                <span className="text-xl font-semibold text-gray-900">CEDoc</span>
+                <span className="text-xl font-semibold text-gray-900">
+                  CEDoc
+                </span>
               </div>
             </div>
             <div className="flex items-center space-x-6">
               <nav className="flex space-x-6">
-                <a href="#" className="text-gray-600 hover:text-gray-900">Accueil</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">Recherche</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">Admission</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">Pages</a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">
+                  Accueil
+                </a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">
+                  Recherche
+                </a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">
+                  Admission
+                </a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">
+                  Pages
+                </a>
               </nav>
               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold text-sm">LO</span>
@@ -93,7 +99,9 @@ const ResearchTeamsTable: React.FC = () => {
             ÉQUIPES ET SUJETS DE RECHERCHE
           </h1>
           <p className="text-gray-600 mb-6">
-            RECHERCHE ACTIVITIES SUPPORTED BY INPT CEDOC INCLUDING BASIC RESEARCH, APPLIED RESEARCH, NETWORKS AND APPLIED TECHNOLOGY LABORATORIES.
+            RECHERCHE ACTIVITIES SUPPORTED BY INPT CEDOC INCLUDING BASIC
+            RESEARCH, APPLIED RESEARCH, NETWORKS AND APPLIED TECHNOLOGY
+            LABORATORIES.
           </p>
 
           {/* Search */}
@@ -105,7 +113,7 @@ const ResearchTeamsTable: React.FC = () => {
                 placeholder="Rechercher…"
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-80"
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
@@ -132,20 +140,27 @@ const ResearchTeamsTable: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filtered.map((item, idx) => (
-                <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                <tr
+                  key={idx}
+                  className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                >
                   <td className="px-6 py-4 align-top">
-                    <div className="text-sm text-gray-900">{item.sujet.intitule}</div>
+                    <div className="text-sm text-gray-900">
+                      {item.sujet.intitule}
+                    </div>
                   </td>
                   <td className="px-6 py-4 align-top">
-                    {item.chef
-                      ? `${item.chef.prenom} ${item.chef.nom}`
-                      : '—'}
+                    {item.chef ? `${item.chef.prenom} ${item.chef.nom}` : "—"}
                   </td>
                   <td className="px-6 py-4 align-top">
-                    {item.professeurs.map(p => `${p.prenom} ${p.nom}`).join(', ') || '—'}
+                    {item.professeurs
+                      .map((p) => `${p.prenom} ${p.nom}`)
+                      .join(", ") || "—"}
                   </td>
                   <td className="px-6 py-4 align-top">
-                    {item.doctorants.map(d => `${d.prenom} ${d.nom}`).join(', ') || '—'}
+                    {item.doctorants
+                      .map((d) => `${d.prenom} ${d.nom}`)
+                      .join(", ") || "—"}
                   </td>
                 </tr>
               ))}
@@ -156,11 +171,10 @@ const ResearchTeamsTable: React.FC = () => {
         {/* Footer stats */}
         <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
           <div>
-            Affichage de {filtered.length} sujet{filtered.length > 1 ? 's' : ''} de recherche
+            Affichage de {filtered.length} sujet{filtered.length > 1 ? "s" : ""}{" "}
+            de recherche
           </div>
-          <div>
-            Total: {items.length} sujets publics
-          </div>
+          <div>Total: {items.length} sujets publics</div>
         </div>
       </div>
     </div>

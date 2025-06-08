@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.SeanceFormationRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.SeanceFormationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 import ma.inpt.cedoc.service.FormationService.SeanceFormationService;
 
 @RestController

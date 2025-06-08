@@ -8,10 +8,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.entities.auth.Token;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.enums.auth.TokenEnum;
 import ma.inpt.cedoc.repositories.authRepositories.TokenRepository;
-import ma.inpt.cedoc.repositories.model.entities.auth.Token;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Utilisateur;
-import ma.inpt.cedoc.repositories.model.enums.auth.TokenEnum;
 
 @RequiredArgsConstructor
 @Transactional

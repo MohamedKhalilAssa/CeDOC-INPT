@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.DirecteurDeTheseRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleRepository;
 
 @Service

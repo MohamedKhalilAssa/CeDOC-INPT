@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.DirectionCedoc;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 
 public interface DirectionCedocRepository extends JpaRepository<DirectionCedoc, Long> {
     Optional<DirectionCedoc> findByUtilisateurEmail(String email);

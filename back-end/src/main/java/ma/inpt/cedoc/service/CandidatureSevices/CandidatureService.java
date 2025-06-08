@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
-import ma.inpt.cedoc.repositories.model.DTOs.Candidature.CandidatureRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Candidature.CandidatureResponseDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.CandidatRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.CandidatResponseDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 
 public interface CandidatureService {
 

@@ -1,7 +1,7 @@
 package ma.inpt.cedoc.repositories.formationRepositories;
 
 import io.lettuce.core.dynamic.annotation.Param;
-import ma.inpt.cedoc.repositories.model.entities.formation.SeanceFormation;
+import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -9,11 +9,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.FormationMapper;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.repositories.formationRepositories.FormationRepository;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.FormationRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.FormationResponseDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.mapper.formationsMappers.FormationMapper;
-import ma.inpt.cedoc.repositories.model.entities.formation.Formation;
 
 @Service
 @RequiredArgsConstructor

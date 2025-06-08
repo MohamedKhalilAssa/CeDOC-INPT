@@ -2,9 +2,9 @@ package ma.inpt.cedoc.service.FormationService;
 
 import java.util.List;
 
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.FormationRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.FormationResponseDTO;
-import ma.inpt.cedoc.repositories.model.entities.formation.Formation;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 
 public interface FormationService {
 

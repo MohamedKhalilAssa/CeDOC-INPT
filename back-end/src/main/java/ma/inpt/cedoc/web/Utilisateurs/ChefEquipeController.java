@@ -6,13 +6,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.DTOs.Candidature.SujetEquipeDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
-import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.ChefEquipeRole;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetEquipeDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.service.CandidatureSevices.SujetService;
 import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
 import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
@@ -32,6 +33,7 @@ public class ChefEquipeController {
      * Renvoie la liste de tous les Chefs d’équipe avec leurs sujets (DTO).
      */
     @GetMapping("/chefs-sujets")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<Map<String,Object>>> getPublicSujetsAvecParticipants() {
         // 1) fetch all public sujets
         List<Sujet> sujets = sujetService.getAllPublicSujetsEntities();
@@ -162,8 +164,8 @@ public class ChefEquipeController {
      * Renvoie la liste brute des Candidatures associées aux sujets de ce chef.
      */
     @GetMapping("/{id}/candidatures")
-    public ResponseEntity<List<ma.inpt.cedoc.repositories.model.entities.candidature.Candidature>> getCandidaturesByChef(@PathVariable Long id) {
-        List<ma.inpt.cedoc.repositories.model.entities.candidature.Candidature> candidatures = chefEquipeService.findCandidaturesByChefEquipeId(id);
+    public ResponseEntity<List<ma.inpt.cedoc.model.entities.candidature.Candidature>> getCandidaturesByChef(@PathVariable Long id) {
+        List<ma.inpt.cedoc.model.entities.candidature.Candidature> candidatures = chefEquipeService.findCandidaturesByChefEquipeId(id);
         return ResponseEntity.ok(candidatures);
     }
 

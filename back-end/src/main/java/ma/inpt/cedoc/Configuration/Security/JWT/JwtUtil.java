@@ -20,8 +20,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.repositories.authRepositories.TokenRepository;
-import ma.inpt.cedoc.repositories.model.entities.auth.Token;
 
 /*This class contains all the basic and utility JWT functions that will be used multiple times throughout the application  */
 @Component

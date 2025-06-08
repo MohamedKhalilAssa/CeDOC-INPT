@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.ReinscriptionMappers.DemandeReinscriptionMapper;
+import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.repositories.ResinscriptionRepositories.DemandeReinscriptionRepository;
-import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.mapper.ReinscriptionMappers.DemandeReinscriptionMapper;
-import ma.inpt.cedoc.repositories.model.entities.Reinscription.DemandeReinscription;
-import ma.inpt.cedoc.repositories.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.DirecteurDeTheseRole;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DirecteurDeTheseRoleRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 

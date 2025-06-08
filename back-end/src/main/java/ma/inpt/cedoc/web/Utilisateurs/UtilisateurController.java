@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @RestController

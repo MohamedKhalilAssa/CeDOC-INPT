@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
 @Service
 @RequiredArgsConstructor

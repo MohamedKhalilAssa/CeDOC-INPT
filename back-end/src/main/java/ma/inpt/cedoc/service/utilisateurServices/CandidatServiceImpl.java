@@ -9,8 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.CandidatResponseDTO;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Candidat;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
+import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.CandidatRepository;
 
 @Service

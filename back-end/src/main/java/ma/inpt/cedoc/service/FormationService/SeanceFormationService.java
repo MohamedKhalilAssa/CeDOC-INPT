@@ -2,8 +2,8 @@ package ma.inpt.cedoc.service.FormationService;
 
 import java.util.List;
 
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.SeanceFormationRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Formations.SeanceFormationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 
 public interface SeanceFormationService {
 

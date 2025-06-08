@@ -2,8 +2,8 @@ package ma.inpt.cedoc.service.DoctorantActionService;
 
 import java.util.List;
 
-import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 
 public interface ConfParticipationService {
     public List<ConfParticipationResponseDTO> getAllConfParticipations();

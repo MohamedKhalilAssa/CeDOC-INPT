@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ProfesseurMapper;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 
 @RestController

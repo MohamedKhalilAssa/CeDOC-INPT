@@ -2,9 +2,9 @@ package ma.inpt.cedoc.service.utilisateurServices;
 
 import java.util.List;
 
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.LieuDeNaissanceRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.LieuDeNaissance;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.LieuDeNaissanceResponseDTO;
+import ma.inpt.cedoc.model.entities.utilisateurs.LieuDeNaissance;
 
 public interface LieuDeNaissanceService {
 

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import io.lettuce.core.dynamic.annotation.Param;
-import ma.inpt.cedoc.repositories.model.entities.formation.Formation;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 
 public interface FormationRepository extends JpaRepository<Formation, Long> {
     List<Formation> findAllByFormationNameContaining(String formationName);

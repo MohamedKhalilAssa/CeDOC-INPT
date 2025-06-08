@@ -2,9 +2,9 @@ package ma.inpt.cedoc.service.utilisateurServices;
 
 import java.util.List;
 
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.NationaliteRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.Utilisateurs.NationaliteResponseDTO;
-import ma.inpt.cedoc.repositories.model.entities.utilisateurs.Nationalite;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.NationaliteResponseDTO;
+import ma.inpt.cedoc.model.entities.utilisateurs.Nationalite;
 
 public interface NationaliteService {
 

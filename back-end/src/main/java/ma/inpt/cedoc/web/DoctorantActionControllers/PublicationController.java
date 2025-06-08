@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.PublicationRequestDTO;
-import ma.inpt.cedoc.repositories.model.DTOs.DoctorantActions.PublicationResponseDTO;
+import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationRequestDTO;
+import ma.inpt.cedoc.model.DTOs.DoctorantActions.PublicationResponseDTO;
 import ma.inpt.cedoc.service.DoctorantActionService.PublicationService;
 
 @RestController
