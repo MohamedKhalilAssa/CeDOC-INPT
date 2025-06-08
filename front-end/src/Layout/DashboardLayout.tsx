@@ -45,15 +45,6 @@ const DashboardLayout = () => {
     }
   }, [isDarkMode]);
 
-  useEffect(() => {
-    if (!auth.loading && !auth.isAuthenticated) {
-      const fromLogout = localStorage.getItem("userDirectedLogout") === "true";
-      if (!fromLogout) {
-        swal.toast("Accès refusé : Vous êtes non connecté", "error");
-      }
-      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
-    }
-  }, [auth.loading, auth.isAuthenticated]);
 
   // Sidebar configuration
   const sidebarConfig = {
