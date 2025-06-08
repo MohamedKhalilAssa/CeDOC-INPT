@@ -74,5 +74,4 @@ public interface CandidatureService {
     List<Candidature> findByChefEquipeRoleId(Long chefRoleId);
     List<Candidature> findByProfesseurId(Long professeurId);
     List<Candidature> getAccessibleCandidatures(Utilisateur utilisateur);
-
 }

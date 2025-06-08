@@ -455,5 +455,4 @@ public class CandidatureServiceImpl implements CandidatureService {
             throw new AccessDeniedException("Accès non autorisé");
         }
     }
-
 }
