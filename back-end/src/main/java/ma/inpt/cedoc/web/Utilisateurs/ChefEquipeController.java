@@ -34,32 +34,14 @@ public class ChefEquipeController {
      */
     @GetMapping("/chefs-sujets")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<Map<String,Object>>> getPublicSujetsAvecParticipants() {
-        // 1) fetch all public sujets
+    public ResponseEntity<List<Map<String, Object>>> getPublicSujetsAvecParticipants() {
+        // 1) fetch all public sujets with eagerly loaded collections to avoid lazy
+        // loading issues
         List<Sujet> sujets = sujetService.getAllPublicSujetsEntities();
 
-        // 2) simple sysouts to inspect what comes back
-        System.out.println("=== getPublicSujetsAvecParticipants called ===");
-        System.out.println("Found " + sujets.size() + " public sujets");
-        for (Sujet s : sujets) {
-            System.out.println("→ Sujet ID=" + s.getId() + " intitule=\"" + s.getIntitule() + "\"");
-            System.out.println("Hi");
-            if (s.getChefEquipe() != null) {
-                System.out.println("   chefEquipeRoleId=" 
-                    + s.getChefEquipe().getId() 
-                    + " → ProfesseurId=" 
-                    + s.getChefEquipe().getProfesseur().getId());
-            } else {
-                System.out.println("   no chefEquipe assigned");
-            }
-
-            System.out.println("   professeurs=" + s.getProfesseurs());
-            System.out.println("   doctorants="  + s.getDoctorants());
-        }
-
-        // 3) now build your payload as before
-        List<Map<String,Object>> out = sujets.stream().map(sujet -> {
-            Map<String,Object> m = new HashMap<>();
+        // 2) build response payload
+        List<Map<String, Object>> out = sujets.stream().map(sujet -> {
+            Map<String, Object> m = new HashMap<>();
             m.put("sujet", sujet);
             if (sujet.getChefEquipe() != null) {
                 Long profId = sujet.getChefEquipe().getProfesseur().getId();
@@ -68,7 +50,7 @@ public class ChefEquipeController {
                 m.put("chef", null);
             }
             m.put("professeurs", sujet.getProfesseurs());
-            m.put("doctorants",  sujet.getDoctorants());
+            m.put("doctorants", sujet.getDoctorants());
             return m;
         }).collect(Collectors.toList());
 
@@ -83,14 +65,13 @@ public class ChefEquipeController {
     public ResponseEntity<List<SujetEquipeDTO>> getAllSujetsAvecEquipe() {
         // directly fetch all public Sujet entities
         List<Sujet> entities = sujetService.getAllPublicSujetsEntities();
-    
+
         List<SujetEquipeDTO> dtoList = entities.stream()
-            .map(sujetEquipeMapper::toDto)
-            .collect(Collectors.toList());
-    
+                .map(sujetEquipeMapper::toDto)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(dtoList);
     }
-    
 
     // ───–──── CRUD “tout brut” pour ChefEquipeRole ───–────
 
@@ -126,20 +107,21 @@ public class ChefEquipeController {
 
     /**
      * PUT /api/chefs-equipe/{id}
-     * Met à jour le ChefEquipeRole d’identifiant {id}, avec les valeurs fournies dans le JSON.
+     * Met à jour le ChefEquipeRole d’identifiant {id}, avec les valeurs fournies
+     * dans le JSON.
      */
     @PutMapping("/{id}")
     public ResponseEntity<ChefEquipeRole> updateChef(
             @PathVariable Long id,
-            @RequestBody ChefEquipeRole chefEquipeRole
-    ) {
+            @RequestBody ChefEquipeRole chefEquipeRole) {
         ChefEquipeRole updated = chefEquipeService.updateChefEquipe(id, chefEquipeRole);
         return ResponseEntity.ok(updated);
     }
 
     /**
      * DELETE /api/chefs-equipe/{id}
-     * Supprime le ChefEquipeRole d’identifiant {id}. Retourne 204 si la suppression réussit.
+     * Supprime le ChefEquipeRole d’identifiant {id}. Retourne 204 si la suppression
+     * réussit.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteChef(@PathVariable Long id) {
@@ -164,20 +146,22 @@ public class ChefEquipeController {
      * Renvoie la liste brute des Candidatures associées aux sujets de ce chef.
      */
     @GetMapping("/{id}/candidatures")
-    public ResponseEntity<List<ma.inpt.cedoc.model.entities.candidature.Candidature>> getCandidaturesByChef(@PathVariable Long id) {
-        List<ma.inpt.cedoc.model.entities.candidature.Candidature> candidatures = chefEquipeService.findCandidaturesByChefEquipeId(id);
+    public ResponseEntity<List<ma.inpt.cedoc.model.entities.candidature.Candidature>> getCandidaturesByChef(
+            @PathVariable Long id) {
+        List<ma.inpt.cedoc.model.entities.candidature.Candidature> candidatures = chefEquipeService
+                .findCandidaturesByChefEquipeId(id);
         return ResponseEntity.ok(candidatures);
     }
 
     /**
      * POST /api/chefs-equipe/{chefId}/valider-sujet/{sujetId}
-     * Valide le sujet sujetId pour le chef chefId. Renvoie l’entité Sujet mise à jour.
+     * Valide le sujet sujetId pour le chef chefId. Renvoie l’entité Sujet mise à
+     * jour.
      */
     @PostMapping("/{chefId}/valider-sujet/{sujetId}")
     public ResponseEntity<Sujet> validerSujet(
             @PathVariable Long chefId,
-            @PathVariable Long sujetId
-    ) {
+            @PathVariable Long sujetId) {
         Sujet validated = chefEquipeService.validerSujet(chefId, sujetId);
         return ResponseEntity.ok(validated);
     }
@@ -189,8 +173,7 @@ public class ChefEquipeController {
     @GetMapping("/{chefId}/can-access/{candidatureId}")
     public ResponseEntity<Boolean> canAccess(
             @PathVariable Long chefId,
-            @PathVariable Long candidatureId
-    ) {
+            @PathVariable Long candidatureId) {
         boolean result = chefEquipeService.canAccessCandidature(chefId, candidatureId);
         return ResponseEntity.ok(result);
     }

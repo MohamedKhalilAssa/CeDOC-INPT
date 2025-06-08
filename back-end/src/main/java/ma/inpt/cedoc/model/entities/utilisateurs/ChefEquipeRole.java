@@ -23,9 +23,11 @@ public class ChefEquipeRole {
     @OneToOne
     @MapsId
     @JoinColumn(name = "professeur_id")
+    @JsonIgnore
     private Professeur professeur;
 
     @OneToMany(mappedBy = "chefEquipe")
+    @JsonIgnore
     private List<EquipeDeRecherche> equipesDeRecherche;
 
     @OneToMany(mappedBy = "chefEquipe")

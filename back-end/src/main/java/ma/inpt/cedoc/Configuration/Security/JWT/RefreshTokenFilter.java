@@ -92,9 +92,8 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
             response.getWriter().write("{\"error\":\"authentication_error\",\"message\":\"Access denied\"}");
             return;
         }
-    }
+    } // HELPER METHODS
 
-    // HELPER METHODS
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         String method = request.getMethod();
@@ -102,7 +101,8 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 path.startsWith("/api/auth/") ||
                 path.startsWith("/api/guest/") ||
                 path.startsWith("/images/") ||
-                (method.equalsIgnoreCase("GET") && path.startsWith("/api/formations"))||
+                (method.equalsIgnoreCase("GET") && path.startsWith("/api/formations")) ||
+                (method.equalsIgnoreCase("GET") && path.equals("/api/chefs-equipe/chefs-sujets")) ||
                 path.startsWith("/api/utilisateurs/assign-role") ||
                 path.startsWith("/api/utilisateurs/set-role");
     }
