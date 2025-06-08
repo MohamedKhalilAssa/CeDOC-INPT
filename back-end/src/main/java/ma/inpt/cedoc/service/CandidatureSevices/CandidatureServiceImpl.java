@@ -421,7 +421,7 @@ public class CandidatureServiceImpl implements CandidatureService {
     @Override
     public List<Candidature> findByChefEquipeRoleId(Long chefRoleId) {
         // 1) Extraire tous les sujets validés par ce chef
-        List<Sujet> sujets = sujetRepository.findByChefEquipeRoleId(chefRoleId);
+        List<Sujet> sujets = sujetRepository.findByChefEquipeId(chefRoleId);
         // 2) Filtrer les candidatures qui contiennent l’un de ces sujets
         return candidatureRepository.findAll().stream()
             .filter(c -> c.getSujets().stream().anyMatch(sujets::contains))

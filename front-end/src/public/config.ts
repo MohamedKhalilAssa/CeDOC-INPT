@@ -155,6 +155,11 @@ const appConfig: AppConfig = {
         path: "/candidatures/postuler",
         method: "POST",
       },
+      accessible: {
+        name: "Candidatures Accessibles",
+        path: "/candidatures/accessible",
+        method: "GET",
+      },      
     }, // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
     CHEFS_EQUIPES: {

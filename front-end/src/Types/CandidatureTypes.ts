@@ -4,6 +4,22 @@ export interface ProfesseurResponseDTO extends UtilisateurResponseDTO {
   grade: string;
 }
 
+export interface CandidatureAccessible {
+  id: number;
+  statutCandidature: string;
+  dossierCandidature: string;
+  diplome: string;
+  mentionBac: string;
+  mentionDiplome: string;
+  specialite: string;
+  intitulePFE: string;
+  typeEtablissement: string;
+  createdAt: string;
+  updatedAt: string;
+  candidat: UtilisateurResponseDTO;
+  sujets: SujetResponseDTO[];
+}
+
 export interface SujetResponseDTO {
   id: number;
   intitule: string;

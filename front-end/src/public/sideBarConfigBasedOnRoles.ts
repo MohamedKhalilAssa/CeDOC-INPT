@@ -52,15 +52,45 @@ export const professeursSidebarConfig: NavigationGroup[] = [
       },
     ],
   },
+  {
+    title: "Applications",
+    items: [
+      {
+        href: "/dashboard/candidatures",
+        label: "Candidatures",
+        icon: "fas fa-file-alt",
+      },
+    ],
+  },
 ];
 export const chefsEquipesSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
+  {
+    title: "Applications",
+    items: [
+      {
+        href: "/dashboard/candidatures",
+        label: "Candidatures",
+        icon: "fas fa-file-alt",
+      },
+    ],
+  },
 ];
 export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
 ];
 export const directionCedocSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
+  {
+    title: "Applications",
+    items: [
+      {
+        href: "/dashboard/candidatures",
+        label: "Candidatures",
+        icon: "fas fa-file-alt",
+      },
+    ],
+  },
 ];
 export const responsableFormationSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
