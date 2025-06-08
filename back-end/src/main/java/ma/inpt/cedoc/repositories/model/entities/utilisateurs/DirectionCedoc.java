@@ -23,8 +23,6 @@ import ma.inpt.cedoc.repositories.model.enums.utilisateur_enums.CEDocEnum;
 public class DirectionCedoc {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
 
     @OneToOne

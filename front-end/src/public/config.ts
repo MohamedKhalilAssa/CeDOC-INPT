@@ -28,14 +28,19 @@ interface AppConfig {
     LIEU_DE_NAISSANCE: ApiPathsMap;
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
-    verifyEmail: ApiPathsMap;
-    chefsSujets: ApiPaths;
-    sujetsEquipes: ApiPaths;
+    CHEFS_EQUIPES: ApiPathsMap;
+    PROFESSEUR: ApiPathsMap;
   };
 
   FRONTEND_PATHS: {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
+    FORMATION: FrontendPathsMap;
+    DASHBOARD: {
+      homePage: FrontendPaths;
+      utilisateurs: FrontendPathsMap;
+      sujets: FrontendPathsMap;
+    };
   };
 }
 
@@ -51,8 +56,8 @@ const appConfig: AppConfig = {
   API_PATHS: {
     AUTH: {
       register: { name: "Register", path: "/auth/register", method: "POST" },
-      login:    { name: "Login", path: "/auth/login", method: "POST" },
-      logout:   { name: "Logout", path: "/auth/logout", method: "POST" },
+      login: { name: "Login", path: "/auth/login", method: "POST" },
+      logout: { name: "Logout", path: "/auth/logout", method: "POST" },
       sendVerificationEmail: {
         name: "Send Verification Email",
         path: "/auth/send-verification",
@@ -127,9 +132,14 @@ const appConfig: AppConfig = {
         path: "/sujets/:id",
         method: "GET",
       },
-      createSujet: {
+      proposerSujet: {
         name: "Proposer un Sujet",
-        path: "/sujets/",
+        path: "/sujets",
+        method: "POST",
+      },
+      createSujet: {
+        name: "Créer un Sujet",
+        path: "/sujets",
         method: "POST",
       },
       deleteSujet: {
@@ -145,43 +155,68 @@ const appConfig: AppConfig = {
         path: "/candidatures/postuler",
         method: "POST",
       },
-    },
+    }, // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
-    verifyEmail: {
-      verify: {
-        name: "Verify Email",
-        path: "/auth/verify-email",
-        method: "POST",
+    CHEFS_EQUIPES: {
+      chefsSujets: {
+        name: "Chefs et leurs Sujets",
+        path: "/chefs-equipe/chefs-sujets",
+        method: "GET",
+      },
+      sujetsEquipes: {
+        name: "Sujets et Équipes",
+        path: "/chefs-equipe/sujets-equipes",
+        method: "GET",
       },
     },
 
-    // ── THE TWO NEW TOP‐LEVEL KEYS ──
-
-    chefsSujets: {
-      name: "Public sujets avec participants",
-      path: "/chefs-equipe/chefs-sujets",
-      method: "GET"
-    },
-    sujetsEquipes: {
-      name: "Sujets et Équipes",
-      path: "/chefs-equipe/sujets-equipes",
-      method: "GET",
+    PROFESSEUR: {
+      getAll: {
+        name: "Get All Professeurs",
+        path: "/professeurs",
+        method: "GET",
+      },
+      getById: {
+        name: "Get Professeur by ID",
+        path: "/professeurs/:id",
+        method: "GET",
+      },
+      search: {
+        name: "Search Professeurs",
+        path: "/professeurs/search",
+        method: "GET",
+      },
     },
   },
 
   FRONTEND_PATHS: {
     GLOBAL: {
       landingPage: { name: "Landing Page", path: "/" },
-      postuler:     { name: "Postuler", path: "/postuler" },
-      dashboard:    { name: "Dashboard", path: "/dashboard" },
-      recherche:    { name: "Recherche", path: "/recherche" },
+      postuler: { name: "Postuler", path: "/postuler" },
+      recherche: { name: "Recherche", path: "/recherche" },
+      contact: { name: "Contact", path: "/contact" },
     },
     AUTH: {
-      register:     { name: "Register", path: "/auth/register" },
-      login:        { name: "Login", path: "/auth/login" },
-      verifyEmail:  { name: "Email Verification", path: "/auth/verify-email" },
-      forgotPassword: { name: "Forgot Password", path: "/auth/forgot-password" },
-      resetPassword:  { name: "Reset Password", path: "/auth/reset-password" },
+      register: { name: "Register", path: "/auth/register" },
+      login: { name: "Login", path: "/auth/login" },
+      verifyEmail: { name: "Email Verification", path: "/auth/verify-email" },
+      forgotPassword: {
+        name: "Forgot Password",
+        path: "/auth/forgot-password",
+      },
+      resetPassword: { name: "Reset Password", path: "/auth/reset-password" },
+    },
+    FORMATION: {
+      formations: { name: "Formations", path: "/formations" },
+    },
+    DASHBOARD: {
+      homePage: { name: "Dashboard Home", path: "/dashboard" },
+      utilisateurs: {
+        profile: { name: "Profil", path: "utilisateurs/profile" },
+      },
+      sujets: {
+        proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
+      },
     },
   },
 };

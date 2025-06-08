@@ -1,8 +1,8 @@
+import PageBreadcrumb from "@/Components/DashComps/common/PageBreadCrumb";
+import Badge from "@/Components/DashComps/ui/badge/Badge";
 import { PlusIcon } from "@/Dashicons";
-import ComponentCard from "../../components/common/ComponentCard";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import PageMeta from "../../components/common/PageMeta";
-import Badge from "../../components/ui/badge/Badge";
+import PageMeta from "@/Components/DashComps/common/PageMeta";
+import ComponentCard from "@/Components/DashComps/common/ComponentCard";
 
 export default function Badges() {
   return (

@@ -1,8 +1,8 @@
-import { useModal } from "../../Hooks/useModal";
-import { Modal } from "../ui/modal";
-import Button from "../ui/button/Button";
-import Input from "../form/input/InputField";
-import Label from "../form/Label";
+import { Label } from "@/Components/DashComps";
+import {Modal} from "@/Components/DashComps/ui/modal/index";
+import { useModal } from "@/Hooks/DashHooks/useModal";
+import Button from "@/Components/DashComps/ui/button/Button";
+import Input from "@mui/material/Input";
 
 export default function UserAddressCard() {
   const { isOpen, openModal, closeModal } = useModal();

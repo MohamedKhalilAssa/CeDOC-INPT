@@ -34,6 +34,7 @@ export enum CandidatureEnum {
   REFUSER,
 }
 export enum RoleEnum {
+  UTILISATEUR = "UTILISATEUR",
   CANDIDAT = "CANDIDAT",
   PROFESSEUR = "PROFESSEUR",
   DOCTORANT = "DOCTORANT",

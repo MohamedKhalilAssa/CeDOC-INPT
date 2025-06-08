@@ -21,8 +21,6 @@ import ma.inpt.cedoc.repositories.model.entities.soutenance.Jury;
 public class DirecteurDeTheseRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
 
     @OneToOne

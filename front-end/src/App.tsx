@@ -17,12 +17,10 @@ import ResearchTeamsTable from "@/Pages/EquipesDeRecherchePage";
 import FormationPage from "@/Pages/FormationPage";
 import LandingPage from "@/Pages/LandingPage";
 
-import DashBarChart from "@/Pages/DashPages/Charts/BarChart";
-import DashLineChart from "@/Pages/DashPages/Charts/LineChart";
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
-import DashFormElements from "@/Pages/DashPages/Forms/FormElements";
-import DashTables from "@/Pages/DashPages/Tables/BasicTables";
+import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 
+import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
 
 function App() {
@@ -31,7 +29,7 @@ function App() {
       {/**────────────────────────────────────────────────── */}
       {/** All “public” pages live under GeneralLayout → Outlet */}
       <Route element={<GeneralLayout />}>
-        {/** Landing page ("/") */}  
+        {/** Landing page ("/") */}
         <Route
           path={appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}
           element={<LandingPage />}
@@ -80,21 +78,39 @@ function App() {
 
         {/** ──────────────────────────────────────────────── */}
         {/** Other public‐quality pages (no guard) */}
-        <Route path="/contact"    element={<ContactPage />} />
-        <Route path="/formations" element={<FormationPage />} />
+        <Route
+          path={appConfig.FRONTEND_PATHS.GLOBAL.contact.path}
+          element={<ContactPage />}
+        />
+        <Route
+          path={appConfig.FRONTEND_PATHS.FORMATION.formations.path}
+          element={<FormationPage />}
+        />
       </Route>
       {/**────────────────────────────────────────────────── */}
 
       {/**────────────────────────────────────────────────── */}
       {/** Dashboard / Admin‐style routes live at “/dashboard/*”  */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<DashboardHomePage />} />
-        <Route path="form-elements" element={<DashFormElements />} />
-        <Route path="charts/bar"    element={<DashBarChart />} />
-        <Route path="charts/line"   element={<DashLineChart />} />
-        <Route path="tables"        element={<DashTables />} />
+      <Route
+        path={appConfig.FRONTEND_PATHS.DASHBOARD.homePage.path}
+        element={<DashboardLayout />}
+      >
+        <Route index element={<DashboardHomePage />} /> {/* Utilisateur */}
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path}
+          element={<UserProfiles />}
+        />
+        {/* Sujets */}
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path}
+          element={<ProposerSujet />}
+        />
       </Route>
+
       {/**────────────────────────────────────────────────── */}
+      {/** ──────────────────────────────────────────────── */}
+      {/** Catch‐all route for 404 Not Found */}
+      {/* <Route path="*" element={<NotFoundPage />} /> */}
     </Routes>
   );
 }

@@ -17,11 +17,10 @@ import ma.inpt.cedoc.repositories.model.enums.utilisateur_enums.GradeProfesseurE
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="professeurs")
+@Table(name = "professeurs")
 public class Professeur {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -31,11 +30,11 @@ public class Professeur {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Veuillez précisez le grade.")
-    @Column(name="grade")
+    @Column(name = "grade")
     private GradeProfesseurEnum grade;
 
     @ManyToOne
-    @JoinColumn(name="equipe_de_recherche_id")
+    @JoinColumn(name = "equipe_de_recherche_id")
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
 
     @OneToMany(mappedBy = "professeur")
@@ -45,7 +44,7 @@ public class Professeur {
     @JsonIgnore
     private List<Sujet> sujetsProposes;
 
-    //Relation avec formations
+    // Relation avec formations
     @OneToMany(mappedBy = "professeur")
     private List<Formation> formationsProposees;
 

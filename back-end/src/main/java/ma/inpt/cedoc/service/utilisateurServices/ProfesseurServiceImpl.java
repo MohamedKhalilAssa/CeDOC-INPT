@@ -62,5 +62,22 @@ public class ProfesseurServiceImpl implements ProfesseurService {
     public List<Professeur> findAllByIds(List<Long> ids) {
         return professeurRepository.findAllById(ids);
     }
-    
+
+    @Override
+    public List<Professeur> searchForProfesseurs(String query) {
+        // TODO Auto-generated method stub
+        return professeurRepository
+                .findByUtilisateurNomContainingIgnoreCaseOrUtilisateurPrenomContainingIgnoreCaseOrUtilisateurEmailContainingIgnoreCase(
+                        query,
+                        query, query);
+    }
+
+    @Override
+    public Professeur getProfesseurByEmail(String email) {
+        // TODO Auto-generated method stub
+        return professeurRepository.findByUtilisateurEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Professeur introuvable avec l'email : " + email));
+    }
+
 }

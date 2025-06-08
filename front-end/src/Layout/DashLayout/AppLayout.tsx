@@ -1,11 +1,11 @@
-import {
-  SidebarProvider,
-  useSidebar,
-} from "@/Context/DashContext/SidebarContext";
 import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import AppSidebar from "./AppSidebar";
 import Backdrop from "./Backdrop";
+import {
+  useSidebar,
+  SidebarProvider,
+} from "@/Context/DashContext/SidebarContext";
 
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
