@@ -45,6 +45,17 @@ const DashboardLayout = () => {
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    // Check if user is authenticated
+    if (!auth.loading && !auth.isAuthenticated) {
+      // Redirect to login page if not authenticated
+      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
+      swal.toast(
+        "Vous devez vous connecter pour accéder au tableau de bord.",
+        "error"
+      );
+    }
+  }, [auth.isAuthenticated, auth.loading, navigate]);
 
   // Sidebar configuration
   const sidebarConfig = {
