@@ -34,9 +34,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Role role = roleRepository.findByIntitule(roleName).orElse(null);
 
         if (utilisateur != null && role != null) {
-            utilisateur.getRoles().add(role);
-            utilisateurRepository.save(utilisateur);
-            System.out.println("Role " + roleName + " assigné à l'utilisateur " + email);
+            if (!utilisateur.getRoles().contains(role)) {
+                utilisateur.getRoles().add(role);
+                utilisateurRepository.save(utilisateur);
+                System.out.println("Role " + roleName + " assigné à l'utilisateur " + email);
+            } else {
+                System.out.println("L'utilisateur " + email + " a déjà le rôle " + roleName);
+            }
             return;
         }
 
