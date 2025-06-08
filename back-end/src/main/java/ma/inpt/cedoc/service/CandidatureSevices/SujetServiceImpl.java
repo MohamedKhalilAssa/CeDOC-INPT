@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -198,9 +200,7 @@ public class SujetServiceImpl implements SujetService {
 
     @Override
     public List<Sujet> getAllPublicSujetsEntities() {
-        return sujetRepository.findAll().stream()
-                .filter(Sujet::isEstPublic)
-                .collect(Collectors.toList());
+        return sujetRepository.findByEstPublic(true);
     }
 
     @Override
@@ -267,5 +267,27 @@ public class SujetServiceImpl implements SujetService {
         return sujetRepository.findAll().stream()
                 .map(sujetMapper::toSimpleResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    /* PAGINATION METHODS --------------------------------------------- */
+    @Override
+    public Page<SujetResponseDTO> getAllSujetsPaginated(Pageable pageable) {
+        Page<Sujet> sujetsPage = sujetRepository.findAll(pageable);
+        return sujetsPage.map(sujetMapper::toResponseDTO);
+    }
+
+    @Override
+    public Page<SujetResponseDTO> getAllPublicSujetsPaginated(Pageable pageable) {
+        // First get all sujets, then filter public ones
+        Page<Sujet> publicSujets = sujetRepository.findByEstPublic(true, pageable);
+
+        return publicSujets.map(sujetMapper::toResponseDTO);
+
+    }
+
+    @Override
+    public Page<SujetResponseSimpleDTO> getAllSimplePaginated(Pageable pageable) {
+        Page<Sujet> sujetsPage = sujetRepository.findAll(pageable);
+        return sujetsPage.map(sujetMapper::toSimpleResponseDTO);
     }
 }

@@ -2,6 +2,8 @@ package ma.inpt.cedoc.repositories.candidatureRepositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
@@ -17,5 +19,9 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
     List<Sujet> findByDirecteurDeTheseId(Long directeurDeTheseRoleId);
 
     Sujet findByDoctorantsId(Long id);
+
+    List<Sujet> findByEstPublic(boolean estPublic);
+
+    Page<Sujet> findByEstPublic(boolean estPublic, Pageable pageable);
 
 }
