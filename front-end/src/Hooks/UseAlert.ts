@@ -8,7 +8,11 @@ export type UseAlert = {
   error: (title: string, text?: string) => void;
   info: (title: string, text?: string) => void;
   toast: (message: string, type?: "success" | "error" | "info") => void;
-  confirm: (title: string, text: string, confirmButtonText?: string) => void;
+  confirm: (
+    title: string,
+    text: string,
+    confirmButtonText?: string
+  ) => Promise<boolean>;
 };
 
 export const useAlert = (): UseAlert => {
@@ -35,8 +39,12 @@ export const useAlert = (): UseAlert => {
       timerProgressBar: true,
     });
 
-  const confirm = (title: string, text: string, confirmButtonText = "OK") =>
-    MySwal.fire({
+  const confirm = async (
+    title: string,
+    text: string,
+    confirmButtonText = "OK"
+  ): Promise<boolean> => {
+    const result = await MySwal.fire({
       title,
       text,
       icon: "warning",
@@ -44,6 +52,9 @@ export const useAlert = (): UseAlert => {
       confirmButtonText,
       cancelButtonText: "Annuler",
     });
+
+    return result.isConfirmed;
+  };
 
   return { success, error, info, toast, confirm };
 };

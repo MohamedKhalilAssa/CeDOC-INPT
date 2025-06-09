@@ -21,6 +21,7 @@ public interface TokenService {
     boolean findAndRevokeToken(String token);
 
     boolean revokeToken(Token token);
+
     // SAVING
 
     List<Token> saveAll(List<Token> tokens);

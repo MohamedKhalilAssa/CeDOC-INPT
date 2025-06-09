@@ -189,7 +189,8 @@ public class ChefEquipeController {
     public ResponseEntity<PaginatedResponseDTO<SujetResponseDTO>> getSujetsByMembres(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sort) {
+            @RequestParam(defaultValue = "asc") String sort,
+            @RequestParam(required = false) String search) {
         ChefEquipeRole chefEquipeRole = chefEquipeService.findByEmailWithMembers(SecurityContextHolder.getContext()
                 .getAuthentication().getName());
         sort = sort.toLowerCase();
@@ -198,7 +199,7 @@ public class ChefEquipeController {
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sort), sortBy));
         PaginatedResponseDTO<SujetResponseDTO> paginatedSujets = chefEquipeService
-                .findSujetsMembreEquipesPaginated(chefEquipeRole, pageable);
+                .findSujetsMembreEquipesPaginated(chefEquipeRole, pageable, search);
         return ResponseEntity.ok(paginatedSujets);
     }
 
