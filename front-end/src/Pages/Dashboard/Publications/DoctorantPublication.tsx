@@ -12,6 +12,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
 interface ArticleFormData {
   title: string;
   abstract: string;
@@ -35,6 +37,7 @@ const PublierPublication = () => {
   const [contentFile, setContentFile] = useState<File | null>(null);
   const [indexingProofFile, setIndexingProofFile] = useState<File | null>(null);
   const [awardsProofFile, setAwardsProofFile] = useState<File | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string>("");
   const navigate = useNavigate();
   const swal = useAlert();
   const {
@@ -63,23 +66,56 @@ const PublierPublication = () => {
   });
 
   const isIndexedJournal = watch("isIndexedJournal");
+  const awardsValue = watch("awards");
+
+  const isValidPdf = (file: File): boolean => {
+    return file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf');
+  };
 
   const handleFileUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
     type: 'content' | 'indexing' | 'awards'
   ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      if (type === 'content') {
-        setContentFile(file);
-        setValue("contentFile", file);
-      } else if (type === 'indexing') {
-        setIndexingProofFile(file);
-        setValue("indexingProofFile", file);
-      } else {
-        setAwardsProofFile(file);
-        setValue("awardsProofFile", file);
-      }
+    if (!file) return;
+
+    // Clear previous file input value to allow re-uploading the same file
+    event.target.value = '';
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      swal.toast(`Le fichier est trop volumineux (max 10MB)`, "error");
+      return;
+    }
+
+    // Validate file type for PDF
+    if (!isValidPdf(file)) {
+      swal.toast("Seuls les fichiers PDF sont acceptés", "error");
+      return;
+    }
+
+    if (type === 'content') {
+      setContentFile(file);
+      setValue("contentFile", file);
+    } else if (type === 'indexing') {
+      setIndexingProofFile(file);
+      setValue("indexingProofFile", file);
+    } else {
+      setAwardsProofFile(file);
+      setValue("awardsProofFile", file);
+    }
+  };
+
+  const removeFile = (type: 'content' | 'indexing' | 'awards'): void => {
+    if (type === 'content') {
+      setContentFile(null);
+      setValue("contentFile", null);
+    } else if (type === 'indexing') {
+      setIndexingProofFile(null);
+      setValue("indexingProofFile", null);
+    } else {
+      setAwardsProofFile(null);
+      setValue("awardsProofFile", null);
     }
   };
 
@@ -130,15 +166,15 @@ const PublierPublication = () => {
       );
 
       if (response) {
+        setSuccessMessage("Article publié avec succès! Il est maintenant visible dans la bibliothèque.");
         swal.toast(
           "Article publié avec succès! Il est maintenant visible dans la bibliothèque.",
           "success"
         );
-        reset();
-        setContentFile(null);
-        setIndexingProofFile(null);
-        setAwardsProofFile(null);
+        resetForm();
+        // Clear success message after 3 seconds
         setTimeout(() => {
+          setSuccessMessage("");
           navigate("/publications");
         }, 1500);
       }
@@ -153,6 +189,14 @@ const PublierPublication = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const resetForm = (): void => {
+    reset();
+    setContentFile(null);
+    setIndexingProofFile(null);
+    setAwardsProofFile(null);
+    setSuccessMessage("");
   };
 
   return (
@@ -171,133 +215,162 @@ const PublierPublication = () => {
           description="Partagez vos recherches et découvertes avec la communauté académique. Votre article sera disponible dans la bibliothèque après soumission."
           icon="fa-file-alt"
         />
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            <div className="flex items-center">
+              <i className="fas fa-check-circle mr-2"></i>
+              {successMessage}
+            </div>
+          </div>
+        )}
         
         {/* Form Card */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Article Title */}
-            <div>
-              <InputField
-                label="Titre de l'Article"
-                name="title"
-                type="text"
-                placeholder="Saisissez le titre de votre article"
-                required={true}
-                control={control}
-                errors={errors}
-                validation={{
-                  required: "Le titre de l'article est requis",
-                  minLength: {
-                    value: 10,
-                    message: "Le titre doit contenir au moins 10 caractères",
-                  },
-                  maxLength: {
-                    value: 200,
-                    message: "Le titre ne peut pas dépasser 200 caractères",
-                  },
-                }}
-              />
-            </div>
+            {/* Basic Information Section */}
+            <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+              <h3 className="flex items-center font-medium text-blue-800 mb-4">
+                <i className="fas fa-file-alt mr-2"></i>
+                Informations de Base
+              </h3>
 
-            {/* Keywords */}
-            <div>
-              <InputField
-                label="Mots-clés (séparés par des virgules)"
-                name="keywords"
-                type="text"
-                placeholder="Ex: intelligence artificielle, apprentissage automatique, réseaux de neurones"
-                required={true}
-                control={control}
-                errors={errors}
-                validation={{
-                  required: "Les mots-clés sont requis",
-                }}
-              />
-            </div>
+              <div className="space-y-4">
+                {/* Article Title */}
+                <div>
+                  <InputField
+                    label="Titre de l'Article"
+                    name="title"
+                    type="text"
+                    placeholder="Saisissez le titre de votre article"
+                    required={true}
+                    control={control}
+                    errors={errors}
+                    validation={{
+                      required: "Le titre de l'article est requis",
+                      minLength: {
+                        value: 10,
+                        message: "Le titre doit contenir au moins 10 caractères",
+                      },
+                      maxLength: {
+                        value: 200,
+                        message: "Le titre ne peut pas dépasser 200 caractères",
+                      },
+                    }}
+                  />
+                </div>
 
-            {/* Abstract */}
-            <div>
-              <TextArea
-                label="Résumé"
-                name="abstract"
-                placeholder="Fournissez un résumé concis de votre article (150-250 mots)..."
-                required={true}
-                control={control}
-                errors={errors}
-                rows={4}
-                validation={{
-                  required: "Le résumé est requis",
-                  minLength: {
-                    value: 150,
-                    message: "Le résumé doit contenir au moins 150 caractères",
-                  },
-                  maxLength: {
-                    value: 500,
-                    message: "Le résumé ne peut pas dépasser 500 caractères",
-                  },
-                }}
-              />
-            </div>
+                {/* Keywords */}
+                <div>
+                  <InputField
+                    label="Mots-clés (séparés par des virgules)"
+                    name="keywords"
+                    type="text"
+                    placeholder="Ex: intelligence artificielle, apprentissage automatique, réseaux de neurones"
+                    required={true}
+                    control={control}
+                    errors={errors}
+                    validation={{
+                      required: "Les mots-clés sont requis",
+                    }}
+                  />
+                </div>
 
-            {/* Content PDF Upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contenu de l'Article (PDF) <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="file"
-                  accept=".pdf"
-                  required
-                  onChange={(e) => handleFileUpload(e, 'content')}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-green-400 transition-colors"
-                />
-                {contentFile ? (
-                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
-                    <p className="text-sm text-green-700 flex items-center">
-                      <i className="fas fa-file-pdf mr-2"></i>
-                      <span className="font-medium">Fichier sélectionné:</span>
-                      <span className="ml-1">{contentFile.name}</span>
-                      <span className="ml-2 text-xs text-green-600">
-                        ({(contentFile.size / 1024 / 1024).toFixed(2)} MB)
-                      </span>
-                    </p>
+                {/* Abstract */}
+                <div>
+                  <TextArea
+                    label="Résumé"
+                    name="abstract"
+                    placeholder="Fournissez un résumé concis de votre article (150-250 mots)..."
+                    required={true}
+                    control={control}
+                    errors={errors}
+                    rows={4}
+                    validation={{
+                      required: "Le résumé est requis",
+                      minLength: {
+                        value: 150,
+                        message: "Le résumé doit contenir au moins 150 caractères",
+                      },
+                      maxLength: {
+                        value: 500,
+                        message: "Le résumé ne peut pas dépasser 500 caractères",
+                      },
+                    }}
+                  />
+                </div>
+
+                {/* Content PDF Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Contenu de l'Article (PDF) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex items-center">
+                    <label
+                      htmlFor="contentUpload"
+                      className="cursor-pointer bg-green-50 hover:bg-green-100 px-4 py-2 rounded border border-green-300 text-green-700"
+                    >
+                      <span>{contentFile ? contentFile.name : "Choisir un fichier PDF"}</span>
+                      <input
+                        id="contentUpload"
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => handleFileUpload(e, 'content')}
+                        className="hidden"
+                      />
+                    </label>
+                    {contentFile && (
+                      <button
+                        type="button"
+                        onClick={() => removeFile('content')}
+                        className="ml-2 text-red-500 hover:text-red-700"
+                        aria-label="Supprimer le fichier"
+                      >
+                        Supprimer
+                      </button>
+                    )}
                   </div>
-                ) : (
-                  <div className="mt-2 text-center">
-                    <i className="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
-                    <p className="text-sm text-gray-500">
-                      Glissez votre fichier PDF ici ou cliquez pour parcourir
+                  {contentFile && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                      <p className="text-sm text-green-700 flex items-center">
+                        <i className="fas fa-file-pdf mr-2"></i>
+                        <span className="font-medium">Fichier sélectionné:</span>
+                        <span className="ml-1">{contentFile.name}</span>
+                        <span className="ml-2 text-xs text-green-600">
+                          ({(contentFile.size / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                  {!contentFile && (
+                    <p className="mt-2 text-sm text-red-600">
+                      <i className="fas fa-exclamation-circle mr-1"></i>
+                      Le fichier PDF du contenu est obligatoire
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Taille maximale: 10MB
-                    </p>
-                  </div>
-                )}
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Taille maximale : 10MB (PDF uniquement)
+                  </p>
+                </div>
+
+                {/* Co-authors Search */}
+                <div>
+                  <ProfesseurSearch
+                    control={control}
+                    errors={errors}
+                    name="coAuthors"
+                    label="Co-auteurs"
+                    placeholder="Rechercher des co-auteurs par nom ou email..."
+                  />
+                </div>
               </div>
-              {!contentFile && (
-                <p className="mt-2 text-sm text-red-600">
-                  <i className="fas fa-exclamation-circle mr-1"></i>
-                  Le fichier PDF du contenu est obligatoire
-                </p>
-              )}
-            </div>
-
-            {/* Co-authors Search */}
-            <div>
-              <ProfesseurSearch
-                control={control}
-                errors={errors}
-                name="coAuthors"
-                label="Co-auteurs"
-                placeholder="Rechercher des co-auteurs par nom ou email..."
-              />
             </div>
 
             {/* Journal Indexation Section */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <i className="fas fa-journal-whills mr-2 text-blue-600"></i>
+            <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
+              <h3 className="flex items-center font-medium text-purple-800 mb-4">
+                <i className="fas fa-journal-whills mr-2"></i>
                 Publication dans un Journal Indexé
               </h3>
               
@@ -306,7 +379,7 @@ const PublierPublication = () => {
                 <label className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                     {...control.register("isIndexedJournal")}
                   />
                   <span className="text-sm font-medium text-gray-700">
@@ -316,7 +389,7 @@ const PublierPublication = () => {
               </div>
 
               {isIndexedJournal && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+                <div className="space-y-4">
                   {/* Journal Name */}
                   <div>
                     <InputField
@@ -365,34 +438,51 @@ const PublierPublication = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Ou télécharger un justificatif PDF
                     </label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileUpload(e, 'indexing')}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-md"
-                      />
+                    <div className="flex items-center">
+                      <label
+                        htmlFor="indexingUpload"
+                        className="cursor-pointer bg-purple-50 hover:bg-purple-100 px-4 py-2 rounded border border-purple-300 text-purple-700"
+                      >
+                        <span>{indexingProofFile ? indexingProofFile.name : "Choisir un fichier"}</span>
+                        <input
+                          id="indexingUpload"
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => handleFileUpload(e, 'indexing')}
+                          className="hidden"
+                        />
+                      </label>
                       {indexingProofFile && (
-                        <p className="mt-2 text-sm text-green-600">
-                          <i className="fas fa-check-circle mr-1"></i>
-                          Fichier sélectionné: {indexingProofFile.name}
-                        </p>
+                        <button
+                          type="button"
+                          onClick={() => removeFile('indexing')}
+                          className="ml-2 text-red-500 hover:text-red-700"
+                          aria-label="Supprimer le fichier d'indexation"
+                        >
+                          Supprimer
+                        </button>
                       )}
                     </div>
+                    {indexingProofFile && (
+                      <p className="mt-2 text-sm text-green-600">
+                        <i className="fas fa-check-circle mr-1"></i>
+                        Fichier sélectionné: {indexingProofFile.name}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
             </div>
 
             {/* Awards and Distinctions Section */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <i className="fas fa-trophy mr-2 text-yellow-600"></i>
+            <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+              <h3 className="flex items-center font-medium text-yellow-800 mb-4">
+                <i className="fas fa-trophy mr-2"></i>
                 Prix et Distinctions
               </h3>
               
               {/* Awards Description */}
-              <div>
+              <div className="mb-4">
                 <TextArea
                   label="Description des Prix et Distinctions"
                   name="awards"
@@ -403,38 +493,60 @@ const PublierPublication = () => {
                 />
               </div>
 
-              {/* Awards Proof URL */}
-              <div className="mt-4">
-                <InputField
-                  label="Lien de Justification (URL)"
-                  name="awardsProof"
-                  type="url"
-                  placeholder="https://example.com/award-link"
-                  control={control}
-                  errors={errors}
-                />
-              </div>
+              {/* Show proof fields only if awards are filled */}
+              {awardsValue && (
+                <div className="space-y-4">
+                  {/* Awards Proof URL */}
+                  <div>
+                    <InputField
+                      label="Lien de Justification (URL)"
+                      name="awardsProof"
+                      type="url"
+                      placeholder="https://example.com/award-link"
+                      control={control}
+                      errors={errors}
+                    />
+                  </div>
 
-              {/* Awards Proof File Upload */}
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ou télécharger un justificatif PDF
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={(e) => handleFileUpload(e, 'awards')}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 border border-gray-300 rounded-md"
-                  />
-                  {awardsProofFile && (
-                    <p className="mt-2 text-sm text-green-600">
-                      <i className="fas fa-check-circle mr-1"></i>
-                      Fichier sélectionné: {awardsProofFile.name}
-                    </p>
-                  )}
+                  {/* Awards Proof File Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ou télécharger un justificatif PDF
+                    </label>
+                    <div className="flex items-center">
+                      <label
+                        htmlFor="awardsUpload"
+                        className="cursor-pointer bg-yellow-50 hover:bg-yellow-100 px-4 py-2 rounded border border-yellow-300 text-yellow-700"
+                      >
+                        <span>{awardsProofFile ? awardsProofFile.name : "Choisir un fichier"}</span>
+                        <input
+                          id="awardsUpload"
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => handleFileUpload(e, 'awards')}
+                          className="hidden"
+                        />
+                      </label>
+                      {awardsProofFile && (
+                        <button
+                          type="button"
+                          onClick={() => removeFile('awards')}
+                          className="ml-2 text-red-500 hover:text-red-700"
+                          aria-label="Supprimer le fichier de prix"
+                        >
+                          Supprimer
+                        </button>
+                      )}
+                    </div>
+                    {awardsProofFile && (
+                      <p className="mt-2 text-sm text-green-600">
+                        <i className="fas fa-check-circle mr-1"></i>
+                        Fichier sélectionné: {awardsProofFile.name}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Guidelines */}
@@ -485,10 +597,7 @@ const PublierPublication = () => {
                 disabled={isSubmitting}
                 className="flex-1 sm:flex-none"
                 onClick={() => {
-                  reset();
-                  setContentFile(null);
-                  setIndexingProofFile(null);
-                  setAwardsProofFile(null);
+                  resetForm();
                   swal.toast("Formulaire réinitialisé", "info");
                 }}
               >

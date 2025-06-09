@@ -48,7 +48,7 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
       },
       {
         href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path,
-        label: "Mes Formations,",
+        label: "Mes Formations",
         icon: "fas fa-graduation-cap",
       },
       {
@@ -58,8 +58,8 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
       },
       {
         href: appConfig.FRONTEND_PATHS.DASHBOARD.vacations.vacation.path,
-        label: "Mes Distinctions",
-        icon: "fas fa-award",
+        label: "Mes Vacations",
+        icon: "fas fa-book",
       },
       {
         href: appConfig.FRONTEND_PATHS.DASHBOARD.conferences.participer.path,
@@ -68,7 +68,7 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
       },
       {
         href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.reinscrire.path,
-        label: "Réinscription",
+        label: "Demande de Réinscription",
         icon: "fas fa-undo",
       },
     ],
