@@ -18,13 +18,13 @@ import FormationPage from "@/Pages/FormationPage";
 import LandingPage from "@/Pages/LandingPage";
 
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
-import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
 import Publications from "@/Pages/Dashboard/Publications/DoctorantPublication";
+import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
+import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
+
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
-
-
 
 function App() {
   return (
@@ -102,12 +102,13 @@ function App() {
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path}
           element={<UserProfiles />}
-        />
+        />{" "}
         {/* Sujets */}
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path}
           element={<ProposerSujet />}
         />
+        <Route path="sujets/membres-equipe" element={<SujetsMembreEquipes />} />
         {/* Formations */}
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}

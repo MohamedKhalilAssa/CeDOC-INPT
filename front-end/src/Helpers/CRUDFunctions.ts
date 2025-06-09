@@ -28,23 +28,23 @@ API.interceptors.response.use(
   },
   (error) => {
     // Handle authentication errors
-    if (
-      error.response &&
-      (error.response.data?.error === "authentication_error" ||
-        error.response.status === 401 ||
-        error.response.status === 403)
-    ) {
-      // Clear token and redirect to login
-      localStorage.removeItem("token");
-      const auth = getExternalAuthHandlers();
-      auth.logout();
+    // if (
+    //   error.response &&
+    //   (error.response.data?.error === "authentication_error" ||
+    //     error.response.status === 401 ||
+    //     error.response.status === 403)
+    // ) {
+    //   // Clear token and redirect to login
+    //   localStorage.removeItem("token");
+    //   const auth = getExternalAuthHandlers();
+    //   auth.logout();
 
-      // Redirect to login page
-      if (typeof window !== "undefined") {
-        window.location.href =
-          appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
-      }
-    }
+    //   // Redirect to login page
+    //   if (typeof window !== "undefined") {
+    //     window.location.href =
+    //       appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+    //   }
+    // }
 
     // Re-throw the error so it can be handled by the calling component
     return Promise.reject(error);

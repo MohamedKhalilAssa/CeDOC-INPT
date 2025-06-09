@@ -14,7 +14,7 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="chef_equipe_roles")
+@Table(name = "chef_equipe_roles")
 public class ChefEquipeRole {
 
     @Id
@@ -26,9 +26,9 @@ public class ChefEquipeRole {
     @JsonIgnore
     private Professeur professeur;
 
-    @OneToMany(mappedBy = "chefEquipe")
+    @OneToOne(mappedBy = "chefEquipe")
     @JsonIgnore
-    private List<EquipeDeRecherche> equipesDeRecherche;
+    private EquipeDeRecherche equipeDeRecherche;
 
     @OneToMany(mappedBy = "chefEquipe")
     @JsonIgnore
