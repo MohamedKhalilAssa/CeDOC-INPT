@@ -17,13 +17,13 @@ public class VacationController {
     private final VacationService vacationService;
 
     @PostMapping
-    @PreAuthorize("hasRole('DOCTORANT')")
+    @PreAuthorize("hasAuthority('DOCTORANT')")
     public VacationResponseDTO create(@RequestBody VacationRequestDTO vacationRequestDTO) {
         return vacationService.create(vacationRequestDTO);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
+    @PreAuthorize("hasAuthority('RESPONSABLE_FORMATION')")
     public VacationResponseDTO update(@PathVariable Long id, @RequestBody VacationRequestDTO vacationRequestDTO) {
         return vacationService.update(id, vacationRequestDTO);
     }

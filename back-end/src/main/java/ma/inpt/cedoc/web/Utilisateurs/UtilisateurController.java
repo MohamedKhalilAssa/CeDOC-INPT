@@ -45,6 +45,12 @@ public class UtilisateurController {
         utilisateurService.setSingleRoleToUtilisateur(request.getEmail(), request.getRoleName());
         return ResponseEntity.ok("Le rôle de l'utilisateur a été mis à jour avec succès.");
     }
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UtilisateurResponseDTO> getUtilisateurByEmail(@PathVariable String email) {
+        UtilisateurResponseDTO response = utilisateurService.getUtilisateurByEmail(email);
+        return ResponseEntity.ok(response);
+    }
+
 
 
 }

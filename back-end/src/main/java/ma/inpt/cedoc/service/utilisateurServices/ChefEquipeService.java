@@ -73,15 +73,11 @@ public interface ChefEquipeService {
      */
     void deleteChefEquipe(Long id);
 
-    /**
-     * Trouve les sujets des membres de l'équipe de recherche du chef donné.
-     * Retourne les entités brutes avec pagination.
-     */
-    Page<Sujet> findSujetsMembreEquipes(ChefEquipeRole chef, Pageable pageable);
 
     /**
      * Trouve les sujets des membres de l'équipe de recherche du chef donné.
      * Retourne une réponse paginée avec DTOs pour l'API REST.
      */
-    PaginatedResponseDTO<SujetResponseDTO> findSujetsMembreEquipesPaginated(ChefEquipeRole chef, Pageable pageable);
+    PaginatedResponseDTO<SujetResponseDTO> findSujetsMembreEquipesPaginated(ChefEquipeRole chef, Pageable pageable,
+            String search);
 }

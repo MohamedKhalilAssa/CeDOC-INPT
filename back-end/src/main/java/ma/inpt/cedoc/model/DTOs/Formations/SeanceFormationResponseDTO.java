@@ -22,9 +22,9 @@ public class SeanceFormationResponseDTO extends BaseResponseDTO {
 
     private StatutFormationEnum statut;
 
-    private Long formationId;
+    private String formation;
 
     private Long declarantId;
 
-    private Long valideParId;
+    private String validePar;
 }

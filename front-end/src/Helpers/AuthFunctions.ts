@@ -20,7 +20,16 @@ export const checkAuth = async (
     const decoded = jwtDecode<decodedJWT>(token);
     onSuccess(decoded);
     return res;
-  } catch (error) {
+  } catch (error: any) {
+    // Handle specific token expiration errors
+    if (
+      error?.response?.status === 401 &&
+      error?.response?.data?.requiresLogin
+    ) {
+      console.warn("Token validation failed:", error.response.data.message);
+      localStorage.setItem("tokenExpired", "true");
+    }
+
     onFailure();
     return null;
   }

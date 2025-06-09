@@ -113,6 +113,10 @@ function App() {
           element={<CandidaturesPage />}
           />
         <Route path="sujets/membres-equipe" element={<SujetsMembreEquipes />} />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.MembresEquipe.path}
+          element={<SujetsMembreEquipes />}
+        />
         {/* Formations */}
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}

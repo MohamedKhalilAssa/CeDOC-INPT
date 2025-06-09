@@ -27,24 +27,82 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle authentication errors
-    // if (
-    //   error.response &&
-    //   (error.response.data?.error === "authentication_error" ||
-    //     error.response.status === 401 ||
-    //     error.response.status === 403)
-    // ) {
-    //   // Clear token and redirect to login
-    //   localStorage.removeItem("token");
-    //   const auth = getExternalAuthHandlers();
-    //   auth.logout();
+    // Handle authentication errors with enhanced token status communication
+    if (error.response && error.response.status === 401) {
+      const errorData = error.response.data;
 
-    //   // Redirect to login page
-    //   if (typeof window !== "undefined") {
-    //     window.location.href =
-    //       appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
-    //   }
-    // }
+      // Check for specific token-related errors that require login
+      if (
+        errorData?.requiresLogin === true ||
+        errorData?.error === "token_expired" ||
+        errorData?.error === "refresh_token_expired" ||
+        errorData?.error === "invalid_refresh_token"
+      ) {
+        console.warn(
+          "Authentication failed:",
+          errorData?.message || "Token expired or invalid"
+        );
+
+        // Clear all authentication data
+        localStorage.removeItem("token");
+        localStorage.setItem("isAuthenticated", "false");
+
+        // Get auth handlers and logout
+        const auth = getExternalAuthHandlers();
+        auth.logout();
+
+        // Set a flag to indicate this was due to token expiration
+        localStorage.setItem("tokenExpired", "true");
+
+        // Redirect to login page
+        // if (typeof window !== "undefined") {
+        //   window.location.href =
+        //     appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+        // }
+
+        // Return a rejected promise with a clear message
+        return Promise.reject({
+          ...error,
+          isTokenExpired: true,
+          message:
+            errorData?.message ||
+            "Your session has expired. Please log in again.",
+        });
+      }
+    }
+
+    // Handle 403 errors (forbidden but not token-related)
+    if (error.response && error.response.status === 403) {
+      const errorData = error.response.data;
+
+      // Only handle 403 if it's token-related
+      if (errorData?.requiresLogin === true) {
+        console.warn(
+          "Access forbidden due to invalid tokens:",
+          errorData?.message
+        );
+
+        // Clear authentication data
+        localStorage.removeItem("token");
+        localStorage.setItem("isAuthenticated", "false");
+
+        const auth = getExternalAuthHandlers();
+        auth.logout();
+
+        localStorage.setItem("tokenExpired", "true");
+
+        if (typeof window !== "undefined") {
+          window.location.href =
+            appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+        }
+
+        return Promise.reject({
+          ...error,
+          isTokenExpired: true,
+          message: errorData?.message || "Access denied. Please log in again.",
+        });
+      }
+    }
 
     // Re-throw the error so it can be handled by the calling component
     return Promise.reject(error);
@@ -56,7 +114,7 @@ interface FieldError {
   message: string;
 }
 
-interface APIError {
+export interface APIError {
   status: number;
   errors: FieldError[] | string;
 }

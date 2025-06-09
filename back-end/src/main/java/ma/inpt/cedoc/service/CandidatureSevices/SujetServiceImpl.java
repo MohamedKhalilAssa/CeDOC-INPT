@@ -73,8 +73,10 @@ public class SujetServiceImpl implements SujetService {
         if (!sujetRepository.existsById(id)) {
             throw new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id);
         }
-        Sujet sujet = sujetMapper.toEntity(dto);
-        sujet.setId(id);
+        Sujet toUpdate = sujetRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id));
+        Sujet sujet = sujetMapper.updateFromRequestDTO(toUpdate, dto);
+
         return sujetMapper.toResponseDTO(sujetRepository.save(sujet));
     }
 

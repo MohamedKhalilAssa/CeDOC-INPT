@@ -27,8 +27,9 @@ interface AppConfig {
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
 
-    //Formation API paths
+    //Formations API paths
     FORMATION: ApiPathsMap;
+    SEANCEFORMATION: ApiPathsMap;
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
@@ -146,9 +147,14 @@ const appConfig: AppConfig = {
         path: "/sujets",
         method: "POST",
       },
+      updateSujet: {
+        name: "Mettre à jour un Sujet",
+        path: "/sujets/",
+        method: "PUT",
+      },
       deleteSujet: {
         name: "Supprimer un Sujet",
-        path: "/sujets/:id",
+        path: "/sujets/",
         method: "DELETE",
       },
     },
@@ -181,6 +187,38 @@ const appConfig: AppConfig = {
       getAll: {
         name: "Get All Formations",
         path: "/formations",
+        method: "GET",
+      },
+    },
+    SEANCEFORMATION: {
+      getAll: {
+        name: "Get All Formations",
+        path: "/formations",
+        method: "GET",
+      },
+      postSeanceFormation: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations",
+        method: "POST",
+      },
+      getValidatedFormationsByDoctorant: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/validated/doctorant",
+        method: "GET",
+      },
+      getTotalValidatedDuree: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/validated/duree/total",
+        method: "GET",
+      },
+      getValidatedFormationDuree: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/validated/duree",
+        method: "GET",
+      },
+      getDeclaredSeances: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/doctorant",
         method: "GET",
       },
     },
@@ -250,6 +288,10 @@ const appConfig: AppConfig = {
       },
       sujets: {
         proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
+        MembresEquipe: {
+          name: "Sujets des Membres de l'Équipe",
+          path: "sujets/membres-equipe",
+        },
       },
       formations: {
         proposer: { name: "Mes Formations", path: "formations/mesformations" },

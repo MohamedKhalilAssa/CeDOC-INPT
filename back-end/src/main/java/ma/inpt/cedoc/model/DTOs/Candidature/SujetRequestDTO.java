@@ -19,5 +19,8 @@ public class SujetRequestDTO {
     @Size(min = 10, message = "La description doit contenir entre 10 et 500 caractères", max = 500)
     private String description;
 
+    private boolean estPublic;
+    private boolean valide;
+
     private List<Long> professeursIds;
 }

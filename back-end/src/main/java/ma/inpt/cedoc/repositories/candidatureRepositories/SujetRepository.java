@@ -33,4 +33,18 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
     Page<Sujet> findByProfesseursOrDirecteurDeTheseIdIn(@Param("professeurIds") List<Long> professeurIds,
             Pageable pageable);
 
+    @Query("SELECT DISTINCT s FROM Sujet s " +
+            "LEFT JOIN s.professeurs p " +
+            "LEFT JOIN s.directeurDeThese dt " +
+            "LEFT JOIN dt.professeur dtp " +
+            "LEFT JOIN dtp.utilisateur dtu " +
+            "WHERE (p.id IN :professeurIds OR s.directeurDeThese.id IN :professeurIds) " +
+            "AND (:search IS NULL OR :search = '' OR " +
+            "LOWER(s.intitule) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(s.description) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(dtu.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(dtu.prenom) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Sujet> findByProfesseursOrDirecteurDeTheseIdInWithSearch(@Param("professeurIds") List<Long> professeurIds,
+            @Param("search") String search, Pageable pageable);
+
 }
