@@ -23,8 +23,6 @@ public class DemandeReinscriptionMapper {
         entity.setAttestationHonneur(dto.getAttestationHonneur());
         entity.setCertificatTravail(dto.getCertificatTravail());
         entity.setDemandeDerogation(dto.getDemandeDerogation());
-        entity.setSujet(sujetRepository.findById(dto.getSujetId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sujet non trouvé")));
         return entity;
     }
 
@@ -36,8 +34,6 @@ public class DemandeReinscriptionMapper {
         entity.setAttestationHonneur(dto.getAttestationHonneur());
         entity.setCertificatTravail(dto.getCertificatTravail());
         entity.setDemandeDerogation(dto.getDemandeDerogation());
-        entity.setSujet(sujetRepository.findById(dto.getSujetId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sujet non trouvé")));
     }
 
     public DemandeReinscriptionResponseDTO toResponseDTO(DemandeReinscription entity){

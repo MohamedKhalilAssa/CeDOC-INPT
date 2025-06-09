@@ -56,7 +56,6 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.getAvisById(id));
     }
 
-//    @Secured("DIRECTION_CEDOC")
     @PostMapping("/")
     public ResponseEntity<AvisReinscriptionResponseDTO> createAvis(@AuthenticationPrincipal UserDetails userDetails,
                                                                    @RequestBody AvisReinscriptionRequestDTO requestDTO){
@@ -64,7 +63,6 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.createAvis(requestDTO, email));
     }
 
-//    @Secured("DIRECTION_CEDOC")
     @PutMapping("/{id}")
     public ResponseEntity<AvisReinscriptionResponseDTO> editAvis(@AuthenticationPrincipal UserDetails userDetails,
                                                                  @RequestBody AvisReinscriptionRequestDTO requestDTO,
@@ -73,7 +71,6 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.editAvis(requestDTO, id, email));
     }
 
-//    @Secured("DIRECTION_CEDOC")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAvis(@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable Long id){

@@ -88,7 +88,6 @@ public class DemandeReinscriptionController {
         return ResponseEntity.ok(demandeResincriptionService.getDemandeById(id));
     }
 
-    @Secured("DOCTORANT")
     @PostMapping("/")
     public ResponseEntity<DemandeReinscriptionResponseDTO> createDemande(@AuthenticationPrincipal UserDetails userDetails,
                                                                          @RequestBody DemandeReinscriptionRequestDTO demandeDTO) {
@@ -140,6 +139,4 @@ public class DemandeReinscriptionController {
 
         return ResponseEntity.ok(demandeResincriptionService.refuserdirection(id, email));
     }
-
-
 }

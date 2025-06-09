@@ -121,6 +121,7 @@ public class DemandeResincriptionServiceImpl implements DemandeResincriptionServ
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found!"));
         newDemande.setDemandeur(doctorant); // parceque le personne qui crée cette demande là et le doctorant
                                             // authentifié à la platforme
+        newDemande.setSujet(doctorant.getSujet());
         return demandeReinscriptionMapper.toResponseDTO(demandeReinscriptionRepository.save(newDemande));
     }
 
