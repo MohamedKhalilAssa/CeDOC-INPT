@@ -1,7 +1,7 @@
 import appConfig from "@/public/config";
 
 export type NavigationGroup = {
-  title?: String;
+  title?: string;
   items: NavigationItem[];
 };
 
@@ -38,6 +38,21 @@ export const candidatsSidebarConfig: NavigationGroup[] = [
 ];
 export const doctorantsSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
+  {
+    title: "Doctorant",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.utilisateurs.profile.path,
+        label: "Doctorant Profile",
+        icon: "fas fa-user",
+      },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path,
+        label: "Mes Formations,",
+        icon: "fas fa-graduation-cap",
+      },
+    ],
+  },
 ];
 
 export const professeursSidebarConfig: NavigationGroup[] = [
@@ -55,6 +70,16 @@ export const professeursSidebarConfig: NavigationGroup[] = [
 ];
 export const chefsEquipesSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
+  {
+    title: "Gestion d'Équipe",
+    items: [
+      {
+        href: "/dashboard/sujets/membres-equipe",
+        label: "Sujets des Membres",
+        icon: "fas fa-users",
+      },
+    ],
+  },
 ];
 export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,

@@ -1,11 +1,11 @@
 package ma.inpt.cedoc.service.Reinscription;
 
+import java.util.List;
+
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface DemandeResincriptionService {
 

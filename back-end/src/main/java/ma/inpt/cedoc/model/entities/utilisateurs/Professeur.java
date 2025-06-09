@@ -29,6 +29,7 @@ public class Professeur {
     @OneToOne
     @MapsId
     @JoinColumn(name = "utilisateur_id")
+    @JsonIgnore
     private Utilisateur utilisateur;
 
     @Enumerated(EnumType.STRING)
@@ -38,6 +39,7 @@ public class Professeur {
 
     @ManyToOne
     @JoinColumn(name = "equipe_de_recherche_id")
+    @JsonIgnore
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
 
     @OneToMany(mappedBy = "professeur")

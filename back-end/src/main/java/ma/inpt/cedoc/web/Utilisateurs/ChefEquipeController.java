@@ -1,20 +1,28 @@
 package ma.inpt.cedoc.web.Utilisateurs;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetEquipeDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.ChefSujetsResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
-import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ChefEquipeMapperImpl;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.service.CandidatureSevices.SujetService;
 import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
+import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @RestController
 @RequestMapping("/api/chefs-equipe")
@@ -22,19 +30,37 @@ import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
 public class ChefEquipeController {
 
     private final ChefEquipeService chefEquipeService;
-    private final ChefEquipeMapperImpl chefEquipeMapper;
     private final SujetService sujetService;
     private final SujetEquipeMapperImpl sujetEquipeMapper;
+    private final UtilisateurService utilisateurService;
 
     /**
      * GET /api/chefs-equipe/chefs-sujets
      * Renvoie la liste de tous les Chefs d’équipe avec leurs sujets (DTO).
      */
     @GetMapping("/chefs-sujets")
-    public ResponseEntity<List<ChefSujetsResponseDTO>> getChefsAvecLeursSujets() {
-        List<ChefEquipeRole> tousLesChefs = chefEquipeService.findAll();
-        List<ChefSujetsResponseDTO> dtoList = chefEquipeMapper.toDtoList(tousLesChefs);
-        return ResponseEntity.ok(dtoList);
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<Map<String, Object>>> getPublicSujetsAvecParticipants() {
+        // 1) fetch all public sujets with eagerly loaded collections to avoid lazy
+        // loading issues
+        List<Sujet> sujets = sujetService.getAllPublicSujetsEntities();
+
+        // 2) build response payload
+        List<Map<String, Object>> out = sujets.stream().map(sujet -> {
+            Map<String, Object> m = new HashMap<>();
+            m.put("sujet", sujet);
+            if (sujet.getChefEquipe() != null) {
+                Long profId = sujet.getChefEquipe().getProfesseur().getId();
+                m.put("chef", utilisateurService.getUtilisateurById(profId));
+            } else {
+                m.put("chef", null);
+            }
+            m.put("professeurs", sujet.getProfesseurs());
+            m.put("doctorants", sujet.getDoctorants());
+            return m;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(out);
     }
 
     /**
@@ -45,14 +71,13 @@ public class ChefEquipeController {
     public ResponseEntity<List<SujetEquipeDTO>> getAllSujetsAvecEquipe() {
         // directly fetch all public Sujet entities
         List<Sujet> entities = sujetService.getAllPublicSujetsEntities();
-    
+
         List<SujetEquipeDTO> dtoList = entities.stream()
-            .map(sujetEquipeMapper::toDto)
-            .collect(Collectors.toList());
-    
+                .map(sujetEquipeMapper::toDto)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(dtoList);
     }
-    
 
     // ───–──── CRUD “tout brut” pour ChefEquipeRole ───–────
 
@@ -88,20 +113,21 @@ public class ChefEquipeController {
 
     /**
      * PUT /api/chefs-equipe/{id}
-     * Met à jour le ChefEquipeRole d’identifiant {id}, avec les valeurs fournies dans le JSON.
+     * Met à jour le ChefEquipeRole d’identifiant {id}, avec les valeurs fournies
+     * dans le JSON.
      */
     @PutMapping("/{id}")
     public ResponseEntity<ChefEquipeRole> updateChef(
             @PathVariable Long id,
-            @RequestBody ChefEquipeRole chefEquipeRole
-    ) {
+            @RequestBody ChefEquipeRole chefEquipeRole) {
         ChefEquipeRole updated = chefEquipeService.updateChefEquipe(id, chefEquipeRole);
         return ResponseEntity.ok(updated);
     }
 
     /**
      * DELETE /api/chefs-equipe/{id}
-     * Supprime le ChefEquipeRole d’identifiant {id}. Retourne 204 si la suppression réussit.
+     * Supprime le ChefEquipeRole d’identifiant {id}. Retourne 204 si la suppression
+     * réussit.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteChef(@PathVariable Long id) {
@@ -126,20 +152,22 @@ public class ChefEquipeController {
      * Renvoie la liste brute des Candidatures associées aux sujets de ce chef.
      */
     @GetMapping("/{id}/candidatures")
-    public ResponseEntity<List<ma.inpt.cedoc.model.entities.candidature.Candidature>> getCandidaturesByChef(@PathVariable Long id) {
-        List<ma.inpt.cedoc.model.entities.candidature.Candidature> candidatures = chefEquipeService.findCandidaturesByChefEquipeId(id);
+    public ResponseEntity<List<ma.inpt.cedoc.model.entities.candidature.Candidature>> getCandidaturesByChef(
+            @PathVariable Long id) {
+        List<ma.inpt.cedoc.model.entities.candidature.Candidature> candidatures = chefEquipeService
+                .findCandidaturesByChefEquipeId(id);
         return ResponseEntity.ok(candidatures);
     }
 
     /**
      * POST /api/chefs-equipe/{chefId}/valider-sujet/{sujetId}
-     * Valide le sujet sujetId pour le chef chefId. Renvoie l’entité Sujet mise à jour.
+     * Valide le sujet sujetId pour le chef chefId. Renvoie l’entité Sujet mise à
+     * jour.
      */
     @PostMapping("/{chefId}/valider-sujet/{sujetId}")
     public ResponseEntity<Sujet> validerSujet(
             @PathVariable Long chefId,
-            @PathVariable Long sujetId
-    ) {
+            @PathVariable Long sujetId) {
         Sujet validated = chefEquipeService.validerSujet(chefId, sujetId);
         return ResponseEntity.ok(validated);
     }
@@ -151,9 +179,27 @@ public class ChefEquipeController {
     @GetMapping("/{chefId}/can-access/{candidatureId}")
     public ResponseEntity<Boolean> canAccess(
             @PathVariable Long chefId,
-            @PathVariable Long candidatureId
-    ) {
+            @PathVariable Long candidatureId) {
         boolean result = chefEquipeService.canAccessCandidature(chefId, candidatureId);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/sujets/membres-equipe")
+    @PreAuthorize("hasAuthority('CHEF_EQUIPE')")
+    public ResponseEntity<PaginatedResponseDTO<SujetResponseDTO>> getSujetsByMembres(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sort) {
+        ChefEquipeRole chefEquipeRole = chefEquipeService.findByEmailWithMembers(SecurityContextHolder.getContext()
+                .getAuthentication().getName());
+        sort = sort.toLowerCase();
+        if (!(sort.equals("asc") || sort.equals("desc"))) {
+            sort = "asc"; // default to ascending if invalid
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sort), sortBy));
+        PaginatedResponseDTO<SujetResponseDTO> paginatedSujets = chefEquipeService
+                .findSujetsMembreEquipesPaginated(chefEquipeRole, pageable);
+        return ResponseEntity.ok(paginatedSujets);
+    }
+
 }

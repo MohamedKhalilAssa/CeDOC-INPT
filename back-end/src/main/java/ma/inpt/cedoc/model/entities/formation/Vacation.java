@@ -8,10 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
+import ma.inpt.cedoc.model.enums.formation_enums.StatutVacationEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -34,7 +37,7 @@ public class Vacation {
     private String etablissement;
 
     @NotNull
-    private Date date;      // diagram: Date
+    private LocalDate date;      // diagram: Date
 
     @NotBlank
     private String niveau;
@@ -46,15 +49,15 @@ public class Vacation {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private StatutFormationEnum statut;    // DÉCLARÉE | VALIDÉE | REFUSÉE
+    private StatutVacationEnum statut;    // DÉCLARÉE | VALIDÉE | REFUSÉE
 
     /*Audit*/
     @CreatedDate
     @Column(updatable = false)
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     // ---------------------- Relations ----------------------------
     @ManyToOne(optional = false)                 // 1 doctorant → * vacations optional = false ⇢ la vacation doit toujours être rattachée à un doctorant.

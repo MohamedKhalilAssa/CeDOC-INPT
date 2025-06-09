@@ -1,17 +1,24 @@
 package ma.inpt.cedoc.service.FormationService;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.formationsMappers.SeanceFormationMapper;
+import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.formation.SeanceFormation;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormationRole;
+import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
+import ma.inpt.cedoc.repositories.formationRepositories.FormationRepository;
 import ma.inpt.cedoc.repositories.formationRepositories.SeanceFormationRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.ResponsableDeFormationRoleRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,13 +27,34 @@ public class SeanceFormationServiceImpl implements SeanceFormationService {
 
     private final SeanceFormationRepository seanceFormationRepository;
     private final SeanceFormationMapper seanceFormationMapper;
+    private final DoctorantRepository doctorantRepository;
+    private final FormationRepository formationRepository;
+    private final ResponsableDeFormationRoleRepository responsableDeFormationRepository;
 
     @Override
     public SeanceFormationResponseDTO createSeanceFormation(SeanceFormationRequestDTO dto) {
         SeanceFormation seanceFormation = seanceFormationMapper.seanceFormationRequestDTOToSeanceFormation(dto);
+
+        // Fetch related entities
+        Formation formation = formationRepository.findById(dto.getFormationId())
+                .orElseThrow(() -> new RuntimeException("Formation not found with id " + dto.getFormationId()));
+        Doctorant declarant = doctorantRepository.findById(dto.getDeclarantId())
+                .orElseThrow(() -> new RuntimeException("Doctorant not found with id " + dto.getDeclarantId()));
+        ResponsableDeFormationRole responsable = responsableDeFormationRepository.findById(dto.getValideParId())
+                .orElseThrow(() -> new RuntimeException("ResponsableDeFormation not found with id " + dto.getValideParId()));
+
+        // Set them manually
+        seanceFormation.setFormation(formation);
+        seanceFormation.setDeclarant(declarant);
+        seanceFormation.setValidePar(responsable);
+
+        // Save
         SeanceFormation savedSeanceFormation = seanceFormationRepository.save(seanceFormation);
+
+        // Return response
         return seanceFormationMapper.seanceFormationToSeanceFormationResponseDTO(savedSeanceFormation);
     }
+
 
     @Override
     public SeanceFormationResponseDTO updateSeanceFormation(Long id, SeanceFormationRequestDTO dto) {
@@ -55,9 +83,13 @@ public class SeanceFormationServiceImpl implements SeanceFormationService {
 
     @Override
     public void deleteSeanceFormation(Long id) {
-        if (!seanceFormationRepository.existsById(id)) {
-            throw new RuntimeException("SeanceFormation not found with id " + id);
+        SeanceFormation seance = seanceFormationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("SeanceFormation not found"));
+
+        if (seance.getStatut() != StatutFormationEnum.DECLARER) {
+            throw new IllegalStateException("La séance de formation ne peut être supprimée que si son statut est DECLARER.");
         }
+
         seanceFormationRepository.deleteById(id);
     }
 

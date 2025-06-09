@@ -1,9 +1,12 @@
 package ma.inpt.cedoc.model.DTOs.Formations;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
+import ma.inpt.cedoc.model.enums.formation_enums.StatutVacationEnum;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -19,7 +22,8 @@ public class VacationRequestDTO {
 
     @NotNull(message = "La date est obligatoire")
     @FutureOrPresent(message = "La date doit être aujourd'hui ou dans le futur")
-    private Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
     @NotBlank(message = "Le niveau est obligatoire")
     @Size(max = 255, message = "Le niveau ne doit pas dépasser 255 caractères")
@@ -32,7 +36,7 @@ public class VacationRequestDTO {
     private String justificatif; // lien ou nom de fichier
 
     @NotNull(message = "Le statut est obligatoire")
-    private StatutFormationEnum statut;
+    private StatutVacationEnum statut;
 
     @NotNull(message = "L'identifiant du doctorant est obligatoire")
     private Long doctorantId;

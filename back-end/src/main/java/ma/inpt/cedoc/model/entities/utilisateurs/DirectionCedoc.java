@@ -20,7 +20,7 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.CEDocEnum;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="direction_cedoc")
+@Table(name = "direction_cedoc")
 public class DirectionCedoc {
 
     @Id
@@ -29,13 +29,14 @@ public class DirectionCedoc {
     @OneToOne
     @MapsId
     @JoinColumn(name = "utilisateur_id")
+    @JsonIgnore
     private Utilisateur utilisateur;
 
-    @Column(name="role_administrative")
+    @Column(name = "role_administrative")
     @NotNull(message = "Veuillez précisez le rôle administrative.")
     @Enumerated(EnumType.STRING)
     private CEDocEnum roleAdministrative;
-    
+
     // ---------------------- Relations ----------------------------
 
     @OneToMany(mappedBy = "directionCedoc")

@@ -1,5 +1,7 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
@@ -18,6 +20,7 @@ public class Candidat {
     @OneToOne
     @MapsId
     @JoinColumn(name = "utilisateur_id")
+    @JsonIgnore
     private Utilisateur utilisateur;
 
     @Builder.Default
