@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Attestation d'Inscription</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            margin: 50px;
+            font-size: 14px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            width: 120px;
+        }
+        .center-title {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .info-table td {
+            border: 1px solid black;
+            padding: 6px;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+        }
+        .signature {
+            text-align: right;
+            margin-top: 60px;
+        }
+        .seal {
+            position: absolute;
+            left: 60px;
+            bottom: 120px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div style="text-align: left;">
+        <!-- INPT Logo at the top left -->
+        <img class="logo" src="images/Logo_inpt.png" alt="Logo"/>
+
+        <!-- Header text below the logo -->
+        <div style="font-size: 14px; line-height: 1.5;">
+            <strong>DIRECTION ADJOINTE DE LA RECHERCHE<br>
+                CENTRE DES ETUDES DOCTORALES (CEDOC-2TI)<br>
+                N/RÉF. : ANRT/INPT/DAR/CEDOC/2025/096</strong><br>
+        </div>
+    </div>
+    Rabat, le <strong>../../....</strong>
+</div>
+</div>
+
+<div class="center-title">
+    <h2 style="margin-bottom: 0;">ATTESTATION D’INSCRIPTION</h2>
+    <h3 style="margin-top: 5px;">EN THESE DE DOCTORAT</h3>
+</div>
+
+<p>L’Institut National des Postes et Télécommunications atteste que :</p>
+
+<table class="info-table">
+    <tr>
+        <td><strong>Nom et Prénoms</strong></td>
+        <td th:text="${fullName}"></td>
+    </tr>
+    <tr>
+        <td><strong>CINE / Carte de séjour</strong></td>
+        <td th:text="${cin}"></td>
+    </tr>
+    <tr>
+        <td><strong>Date de naissance</strong></td>
+        <td th:text="${birthDate}"></td>
+    </tr>
+    <tr>
+        <td><strong>Lieu de naissance</strong></td>
+        <td th:text="${birthPlace}"></td>
+    </tr>
+    <tr>
+        <td><strong>Numéro du CNE<sup>1</sup></strong></td>
+        <td th:text="${cne}"></td>
+    </tr>
+    <tr>
+        <td><strong>Date de 1<sup>ère</sup> inscription</strong></td>
+        <td th:text="${firstEnrollmentDate}"></td>
+    </tr>
+    <tr>
+        <td><strong>Cycle doctoral</strong></td>
+        <td th:text="${cycle}"><sup>2,3</sup></td>
+    </tr>
+    <tr>
+        <td><strong>Équipe de recherche</strong></td>
+        <td th:text="${researchTeam}"></td>
+    </tr>
+    <tr>
+        <td><strong>Année universitaire de l'inscription en cours</strong></td>
+        <td th:text="${currentYear}"></td>
+    </tr>
+    <tr>
+        <td><strong>Niveau actuel d’inscription</strong></td>
+        <td th:text="${currentLevel}"></td>
+    </tr>
+</table>
+
+<p>
+    Est inscrit(e) en thèse au Centre d’Études Doctorales en Télécommunications et Technologies de l’Information (CEDoc2TI) de l’Institut National des Postes et Télécommunications (INPT).
+</p>
+
+<p>
+    La présente attestation est délivrée pour servir et valoir ce que de droit.
+</p>
+
+<div style="margin-top: 40px; text-align: center;">
+    <img class="signature" src="images/signature.jpg" alt="Signature"/>
+</div>
+
+<div class="footer">
+    <p><sup>1</sup> : Code MASSAR le cas échéant.<br>
+        <sup>2</sup> : Cette date peut être prorogée conformément à la réglementation en vigueur.<br>
+        <sup>3</sup> : Sauf prorogation accordée par l’Administration de l’INPT, il est rappelé que le rapport de thèse devra être déposé au plus tard trois (3) années après la date de 1<sup>ère</sup> inscription. À défaut, l’INPT se réserve le droit de ne pas donner suite à la tenue de la soutenance de thèse et à l’achèvement de la thèse y afférente et de déclarer sa suspension définitive.</p>
+</div>
+
+</body>
+</html>
