@@ -415,24 +415,4 @@ public class CandidatureServiceImpl implements CandidatureService {
 
         candidatureRepository.delete(candidature);
     }
-
-    @Override
-    public List<Candidature> findByChefEquipeRoleId(Long chefRoleId) {
-        // 1) Extraire tous les sujets validés par ce chef
-        List<Sujet> sujets = sujetRepository.findByChefEquipeRoleId(chefRoleId);
-        // 2) Filtrer les candidatures qui contiennent l’un de ces sujets
-        return candidatureRepository.findAll().stream()
-            .filter(c -> c.getSujets().stream().anyMatch(sujets::contains))
-            .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Candidature> findByProfesseurId(Long professeurId) {
-        // 1) Extraire tous les sujets où ce professeur apparaît
-        List<Sujet> sujets = sujetRepository.findByProfesseursId(professeurId);
-        // 2) Filtrer les candidatures qui contiennent l’un de ces sujets
-        return candidatureRepository.findAll().stream()
-            .filter(c -> c.getSujets().stream().anyMatch(sujets::contains))
-            .collect(Collectors.toList());
-    }
 }

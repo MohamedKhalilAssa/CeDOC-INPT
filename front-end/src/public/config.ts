@@ -1,5 +1,3 @@
-// ─── Types ────────────────────────────────────────────────────────────
-
 interface ApiPaths {
   name: string;
   path: string;
@@ -28,6 +26,10 @@ interface AppConfig {
     LIEU_DE_NAISSANCE: ApiPathsMap;
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
+
+    //Formation API paths
+    FORMATION: ApiPathsMap;
+    // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
   };
@@ -40,6 +42,7 @@ interface AppConfig {
       homePage: FrontendPaths;
       utilisateurs: FrontendPathsMap;
       sujets: FrontendPathsMap;
+      formations: FrontendPathsMap;
     };
   };
 }
@@ -122,9 +125,9 @@ const appConfig: AppConfig = {
         path: "/chefs-equipe/sujets-equipes",
         method: "GET",
       },
-      sujetsList: {
+      sujetsListPublic: {
         name: "Liste des Sujets",
-        path: "/sujets/",
+        path: "/sujets/public",
         method: "GET",
       },
       sujetById: {
@@ -155,7 +158,18 @@ const appConfig: AppConfig = {
         path: "/candidatures/postuler",
         method: "POST",
       },
-    }, // ── THE TWO NEW TOP‐LEVEL KEYS ──
+    },
+
+    // Formation API paths
+    FORMATION: {
+      getAll: {
+        name: "Get All Formations",
+        path: "/formations",
+        method: "GET",
+      },
+    },
+
+    // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
     CHEFS_EQUIPES: {
       chefsSujets: {
@@ -168,8 +182,12 @@ const appConfig: AppConfig = {
         path: "/chefs-equipe/sujets-equipes",
         method: "GET",
       },
+      sujetsDesMembresEquipe: {
+        name: "Sujets des Membres de l'Équipe",
+        path: "/chefs-equipe/sujets/membres-equipe",
+        method: "GET",
+      },
     },
-
     PROFESSEUR: {
       getAll: {
         name: "Get All Professeurs",
@@ -216,6 +234,9 @@ const appConfig: AppConfig = {
       },
       sujets: {
         proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
+      },
+      formations: {
+        proposer: { name: "Mes Formations", path: "formations/mesformations" },
       },
     },
   },

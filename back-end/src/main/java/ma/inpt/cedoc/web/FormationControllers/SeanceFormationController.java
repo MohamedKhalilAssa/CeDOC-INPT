@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
@@ -12,13 +13,15 @@ import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
 import ma.inpt.cedoc.service.FormationService.SeanceFormationService;
 
 @RestController
-@RequestMapping("/api/seances-formations")
+@RequestMapping("/api/formations/seances-formations")
 @RequiredArgsConstructor
 public class SeanceFormationController {
 
     private final SeanceFormationService seanceFormationService;
 
+
     @PostMapping
+    @PreAuthorize("hasRole('DOCTORANT')")
     public ResponseEntity<SeanceFormationResponseDTO> createSeanceFormation(
             @RequestBody SeanceFormationRequestDTO dto) {
         SeanceFormationResponseDTO created = seanceFormationService.createSeanceFormation(dto);
@@ -26,6 +29,7 @@ public class SeanceFormationController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
     public ResponseEntity<SeanceFormationResponseDTO> updateSeanceFormation(@PathVariable Long id,
             @RequestBody SeanceFormationRequestDTO dto) {
         SeanceFormationResponseDTO updated = seanceFormationService.updateSeanceFormation(id, dto);
@@ -45,6 +49,7 @@ public class SeanceFormationController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
     public ResponseEntity<Void> deleteSeanceFormation(@PathVariable Long id) {
         seanceFormationService.deleteSeanceFormation(id);
         return ResponseEntity.noContent().build();

@@ -6,6 +6,7 @@ import { UseAlert, useAlert } from "@/Hooks/UseAlert";
 import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
 import { AnimatePresence, motion } from "framer-motion";
+import path from "path";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
 
@@ -43,8 +44,9 @@ const Navbar = (): JSX.Element => {
   ];
   // Other pages for dropdown
   const otherPages = [
-    { label: "Formations", path: "/formations" },
-    { label: "Contact", path: "/contact" },
+    { label: "Formations", path: appConfig.FRONTEND_PATHS.FORMATION.formations.path },
+    { label: "Contact", path: appConfig.FRONTEND_PATHS.GLOBAL.contact.path },
+    { label: "Sujets de Recherches", path: appConfig.FRONTEND_PATHS.GLOBAL.recherche.path },
   ];
 
   return (
@@ -68,17 +70,17 @@ const Navbar = (): JSX.Element => {
           {/* Desktop Navigation - Centered */}
           <div className="hidden lg:flex flex-1 justify-center">
             <div className="flex space-x-4">
+              {" "}
               {/* Landing Page Sections as direct links */}
               {landingPageSections.map((section) => (
-                <a
+                <Link
                   key={section.label}
-                  href={section.anchor}
+                  to={`${appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}${section.anchor}`}
                   className="px-3 py-2 text-gray-700 hover:text-blue-600 font-medium text-sm"
                 >
                   {section.label}
-                </a>
+                </Link>
               ))}
-
               {/* Pages Dropdown */}
               <Dropdown
                 triggerLabel="Pages"
@@ -155,37 +157,33 @@ const Navbar = (): JSX.Element => {
               {/* Sections Heading */}
               <div className="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Sections
-              </div>
-
+              </div>{" "}
               {/* Landing Page Sections */}
               {landingPageSections.map((section) => (
-                <a
+                <Link
                   key={section.label}
-                  href={section.anchor}
+                  to={`${appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}${section.anchor}`}
                   className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600"
                   onClick={() => setMenuOpen(false)}
                 >
                   {section.label}
-                </a>
+                </Link>
               ))}
-
               {/* Divider */}
               <div className="border-t border-gray-200 my-2"></div>
-
               {/* Pages Links */}
               <div className="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Pages
               </div>
-
               {otherPages.map((page) => (
-                <a
+                <Link
                   key={page.label}
-                  href={page.path}
+                  to={page.path}
                   className="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600"
                   onClick={() => setMenuOpen(false)}
                 >
                   {page.label}
-                </a>
+                </Link>
               ))}
             </div>
           </motion.div>

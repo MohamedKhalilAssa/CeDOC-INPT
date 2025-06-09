@@ -12,7 +12,6 @@ import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
-import ma.inpt.cedoc.model.entities.candidature.Candidature;
 
 public interface CandidatureService {
 
@@ -70,7 +69,5 @@ public interface CandidatureService {
     CandidatureResponseDTO getCandidatureById(Long candidatureId, UserDetails userDetails);
     void deleteCandidature(Long candidatureId, UserDetails userDetails);
 
-    List<Candidature> findByChefEquipeRoleId(Long chefRoleId);
-    List<Candidature> findByProfesseurId(Long professeurId);
 
 }

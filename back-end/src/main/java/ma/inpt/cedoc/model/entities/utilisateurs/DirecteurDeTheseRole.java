@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +18,7 @@ import ma.inpt.cedoc.model.entities.soutenance.Jury;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="directeur_de_these_roles")
+@Table(name = "directeur_de_these_roles")
 public class DirecteurDeTheseRole {
 
     @Id
@@ -26,6 +27,7 @@ public class DirecteurDeTheseRole {
     @OneToOne
     @MapsId
     @JoinColumn(name = "professeur_id")
+    @JsonIgnore
     private Professeur professeur;
 
     @OneToMany(mappedBy = "directeurDeThese")
@@ -42,7 +44,7 @@ public class DirecteurDeTheseRole {
 
     @OneToMany(mappedBy = "directeurDeThese")
     @JsonIgnore
-    private List<Sujet> sujets;
+    private List<Sujet> sujets = new ArrayList<>();
 
     @OneToMany(mappedBy = "directeurDeThese", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

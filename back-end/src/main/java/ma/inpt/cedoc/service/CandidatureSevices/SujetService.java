@@ -2,6 +2,9 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
@@ -56,6 +59,14 @@ public interface SujetService {
     SujetResponseSimpleDTO getSimple(Long id);
 
     List<SujetResponseSimpleDTO> getAllSimple();
+
+    /* PAGINATION METHODS */
+    // Paginated DTO-based methods
+    Page<SujetResponseDTO> getAllSujetsPaginated(Pageable pageable);
+
+    Page<SujetResponseDTO> getAllPublicSujetsPaginated(Pageable pageable);
+
+    Page<SujetResponseSimpleDTO> getAllSimplePaginated(Pageable pageable);
 
     // Entity-based methods
     Sujet getSujetEntityById(Long id);

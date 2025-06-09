@@ -17,7 +17,8 @@ const DashboardLayout = () => {
   const auth = useAuth();
   const swal = useAlert();
   const navigate = useNavigate();
-  const roles: RoleEnum[] = auth.roles || [RoleEnum.UTILISATEUR]; // Default to "UTILISATEUR" if roles are not defined
+  const roles: RoleEnum[] =
+    auth.roles.length == 0 ? [RoleEnum.UTILISATEUR] : auth.roles; // Default to "UTILISATEUR" if roles are not defined
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Check localStorage for saved theme preference
@@ -45,6 +46,23 @@ const DashboardLayout = () => {
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    // Check if user is authenticated
+    if (!auth.loading && !auth.isAuthenticated) {
+      // Redirect to login page if not authenticated
+      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
+
+      if (
+        !localStorage.getItem("userDirectedLogout") ||
+        localStorage.getItem("userDirectedLogout") == "false"
+      )
+        swal.toast(
+          "Vous devez vous connecter pour accéder au tableau de bord.",
+          "error"
+        );
+    }
+    console.log(roles);
+  }, [auth.isAuthenticated, auth.loading, navigate]);
 
   // Sidebar configuration
   const sidebarConfig = {
@@ -163,7 +181,6 @@ const DashboardLayout = () => {
       },
     },
   };
-
   //  YOU SHOULD ADD YOUR OWN SIDEBAR CONFIGURATION BASED ON ROLES LIKE THIS FOR EXAMPLE
   // CHANGE THE SIDEBAR CONFIGURATION BASED ON THE USER ROLES ON sideBarConfigBasedOnRoles.ts
   // and import it here for links in the side
@@ -172,35 +189,62 @@ const DashboardLayout = () => {
       ...sideBarConfig.utilisateursSidebarConfig
     );
   } else {
-    let set = new Set<sideBarConfig.NavigationGroup[]>();
+    // Collect all navigation groups from different roles
+    const allNavigationGroups: sideBarConfig.NavigationGroup[] = [];
+
     roles.forEach((role) => {
       switch (role) {
         case RoleEnum.CANDIDAT:
-          set.add(sideBarConfig.candidatsSidebarConfig);
+          allNavigationGroups.push(...sideBarConfig.candidatsSidebarConfig);
           break;
         case RoleEnum.DOCTORANT:
-          set.add(sideBarConfig.doctorantsSidebarConfig);
+          allNavigationGroups.push(...sideBarConfig.doctorantsSidebarConfig);
           break;
         case RoleEnum.PROFESSEUR:
-          set.add(sideBarConfig.professeursSidebarConfig);
+          allNavigationGroups.push(...sideBarConfig.professeursSidebarConfig);
           break;
         case RoleEnum.CHEF_EQUIPE:
-          set.add(sideBarConfig.chefsEquipesSidebarConfig);
+          allNavigationGroups.push(...sideBarConfig.chefsEquipesSidebarConfig);
           break;
         case RoleEnum.DIRECTEUR_DE_THESE:
-          set.add(sideBarConfig.directeurDeTheseSidebarConfig);
+          allNavigationGroups.push(
+            ...sideBarConfig.directeurDeTheseSidebarConfig
+          );
           break;
         case RoleEnum.DIRECTION_CEDOC:
-          set.add(sideBarConfig.directionCedocSidebarConfig);
+          allNavigationGroups.push(
+            ...sideBarConfig.directionCedocSidebarConfig
+          );
           break;
         case RoleEnum.RESPONSABLE_FORMATION:
-          set.add(sideBarConfig.responsableFormationSidebarConfig);
+          allNavigationGroups.push(
+            ...sideBarConfig.responsableFormationSidebarConfig
+          );
           break;
         default:
           break;
       }
+    }); // Remove duplicates by grouping navigation items by title
+    const groupMap = new Map<string, sideBarConfig.NavigationGroup>();
+
+    allNavigationGroups.forEach((group) => {
+      const key = (group.title as string) || "untitled";
+      if (groupMap.has(key)) {
+        // Merge items and remove duplicates based on href
+        const existingGroup = groupMap.get(key)!;
+        const existingHrefs = new Set(
+          existingGroup.items.map((item) => item.href)
+        );
+        const newItems = group.items.filter(
+          (item) => !existingHrefs.has(item.href)
+        );
+        existingGroup.items.push(...newItems);
+      } else {
+        groupMap.set(key, { ...group });
+      }
     });
-    sidebarConfig.navigationSections.push(...Array.from(set).flat());
+
+    sidebarConfig.navigationSections.push(...Array.from(groupMap.values()));
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">

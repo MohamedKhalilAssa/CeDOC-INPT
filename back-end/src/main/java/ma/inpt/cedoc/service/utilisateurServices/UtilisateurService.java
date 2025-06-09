@@ -10,6 +10,8 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 public interface UtilisateurService {
     public void assignRoleToUtilisateur(String email, String roleName);
 
+    public void setSingleRoleToUtilisateur(String email, String newRoleName);
+
     public UtilisateurResponseDTO saveUtilisateur(Utilisateur utilisateurRequestDTO);
 
     public List<UtilisateurResponseDTO> saveAllUtilisateurs(List<Utilisateur> utilisateurs);

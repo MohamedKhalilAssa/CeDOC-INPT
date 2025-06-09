@@ -2,7 +2,6 @@ package ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers;
 
 import java.util.List;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 
@@ -24,30 +22,6 @@ public class SujetMapperImpl implements SujetMapper {
 
         public Sujet toEntity(SujetRequestDTO dto) {
 
-                String chefEquipeEmail = SecurityContextHolder.getContext()
-                                .getAuthentication()
-                                .getName(); // Récupérer l'email du professeur connecté
-
-                // Récupérer le professeur qui sera chef d'équipe
-                Professeur professeurChef = professeurService.getProfesseurByEmail(chefEquipeEmail);
-                if (professeurChef.getChefEquipeRole() == null) {
-                        throw new IllegalArgumentException("Le professeur avec l'email " + chefEquipeEmail
-                                        + " n'a pas le rôle de chef d'équipe.");
-                }
-
-                // Récupérer le directeur de thèse (facultatif)
-                DirecteurDeTheseRole directeurRole = null;
-                if (dto.getDirecteurDeTheseId() != null) {
-                        Professeur professeurDirecteur = professeurService
-                                        .getProfesseurById(dto.getDirecteurDeTheseId());
-                        if (professeurDirecteur.getDirecteurDeTheseRole() == null) {
-                                throw new IllegalArgumentException(
-                                                "Le professeur avec l'ID " + dto.getDirecteurDeTheseId()
-                                                                + " n'a pas le rôle de directeur de thèse.");
-                        }
-                        directeurRole = professeurDirecteur.getDirecteurDeTheseRole();
-                }
-
                 // Récupérer les professeurs qui proposent le sujet
                 List<Professeur> professeurs = professeurService.findAllByIds(dto.getProfesseursIds());
 
@@ -57,8 +31,6 @@ public class SujetMapperImpl implements SujetMapper {
                                 .description(dto.getDescription())
                                 .valide(false) // Validation par le chef d'équipe attendue
                                 .estPublic(false) // Affichage public seulement après validation
-                                .chefEquipe(professeurChef.getChefEquipeRole())
-                                .directeurDeThese(directeurRole)
                                 .professeurs(professeurs)
                                 .build();
         }

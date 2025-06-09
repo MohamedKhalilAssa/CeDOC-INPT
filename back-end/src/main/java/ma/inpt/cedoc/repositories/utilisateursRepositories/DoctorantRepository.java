@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.repositories.utilisateursRepositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ public interface DoctorantRepository extends JpaRepository<Doctorant, Long> {
     Optional<Doctorant> findByUtilisateurEmail(String username);
 
     public Optional<Long> getIdByUtilisateurEmail(String email);
+
+    List<Doctorant> findByDirecteurDeTheseId(Long directeurDeTheseId);
 }

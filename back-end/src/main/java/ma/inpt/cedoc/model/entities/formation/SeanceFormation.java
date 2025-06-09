@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.model.entities.formation;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -29,7 +30,7 @@ public class SeanceFormation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer duree; // durée en minutes ou heures ? (INT in diagram)
+    private Integer duree; // durée en minutes ou heures? (INT in diagram)
 
     /*lien du justificatif PDF */
     @NotBlank
@@ -43,10 +44,10 @@ public class SeanceFormation {
     /* Audit */
     @CreatedDate
     @Column(updatable = false)
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     // ---------------------- Relations ----------------------------
 
