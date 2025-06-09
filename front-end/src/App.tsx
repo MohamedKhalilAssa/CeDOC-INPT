@@ -13,7 +13,7 @@ import SignUpPage from "@/Pages/Authentication/SignUpPage";
 
 import PostulerPage from "@/Pages/Candidature/PostulerPage";
 import ContactPage from "@/Pages/ContactPage";
-import EquipeDeRecherchePage from "@/Pages/EquipeDeRecherchePage";
+import EquipeDeRecherchePage from "@/Pages/Equipe/EquipeDeRecherchePage";
 import FormationPage from "@/Pages/FormationPage";
 import LandingPage from "@/Pages/LandingPage";
 import SujetDeRecherchePage from "@/Pages/SujetDeRecherchePage";
