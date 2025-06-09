@@ -258,7 +258,7 @@ export default function CandidaturesPage() {
                         </button>
                       </>
                     )}
-                  </TableCell>
+                  </TableCell>  
                 </TableRow>
               ))}
             </TableBody>
