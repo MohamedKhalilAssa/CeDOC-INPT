@@ -37,7 +37,7 @@ export const candidatsSidebarConfig: NavigationGroup[] = [
   },
 ];
 export const doctorantsSidebarConfig: NavigationGroup[] = [
-  ...utilisateursSidebarConfig,
+
   {
     title: "Doctorant",
     items: [
@@ -57,7 +57,7 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
         icon: "fas fa-pen",
       },
       {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.honors.distinctions.path,
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.vacations.vacation.path,
         label: "Mes Distinctions",
         icon: "fas fa-award",
       },
@@ -68,7 +68,7 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
       },
       {
         href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.reinscrire.path,
-        label: "Mes Réinscriptions",
+        label: "Réinscription",
         icon: "fas fa-undo",
       },
     ],

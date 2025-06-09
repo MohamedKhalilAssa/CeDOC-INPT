@@ -20,9 +20,9 @@ import LandingPage from "@/Pages/LandingPage";
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
 import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
 import DoctorantPublication from "@/Pages/Dashboard/Publications/DoctorantPublication";
-import DoctorantHonors from "@/Pages/Dashboard/Honors/DoctorantHonors";
 import DoctorantConferences from "@/Pages/Dashboard/Conferences/DoctorantConferences";
 import DoctorantReinscriptions from "@/Pages/Dashboard/Reinscriptions/DoctorantReinscriptions";
+import DoctorantVacations from "@/Pages/Dashboard/Vacations/DoctorantVacations";
 import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
 
@@ -123,8 +123,8 @@ function App() {
           element={<DoctorantPublication />}
         />
         <Route
-          path={appConfig.FRONTEND_PATHS.DASHBOARD.honors.distinctions.path}
-          element={<DoctorantHonors />}
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.vacations.vacation.path}
+          element={<DoctorantVacations />}
         />
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.conferences.participer.path}

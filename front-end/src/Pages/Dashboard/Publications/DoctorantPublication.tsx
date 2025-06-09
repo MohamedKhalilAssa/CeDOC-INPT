@@ -15,13 +15,26 @@ import { useNavigate } from "react-router-dom";
 interface ArticleFormData {
   title: string;
   abstract: string;
-  content: string;
+  contentFile: File | null; // PDF file for publication content
   keywords: string;
   coAuthors: number[];
+  // Journal indexation fields
+  isIndexedJournal: boolean;
+  journalName: string;
+  publicationDate: string;
+  indexingProof: string; // URL or file path
+  indexingProofFile: File | null;
+  // Awards and distinctions
+  awards: string;
+  awardsProof: string; // URL or file path
+  awardsProofFile: File | null;
 }
 
 const PublierPublication = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contentFile, setContentFile] = useState<File | null>(null);
+  const [indexingProofFile, setIndexingProofFile] = useState<File | null>(null);
+  const [awardsProofFile, setAwardsProofFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const swal = useAlert();
   const {
@@ -29,15 +42,46 @@ const PublierPublication = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<ArticleFormData>({
     defaultValues: {
       title: "",
       abstract: "",
-      content: "",
+      contentFile: null,
       keywords: "",
       coAuthors: [],
+      isIndexedJournal: false,
+      journalName: "",
+      publicationDate: "",
+      indexingProof: "",
+      indexingProofFile: null,
+      awards: "",
+      awardsProof: "",
+      awardsProofFile: null,
     },
   });
+
+  const isIndexedJournal = watch("isIndexedJournal");
+
+  const handleFileUpload = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: 'content' | 'indexing' | 'awards'
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (type === 'content') {
+        setContentFile(file);
+        setValue("contentFile", file);
+      } else if (type === 'indexing') {
+        setIndexingProofFile(file);
+        setValue("indexingProofFile", file);
+      } else {
+        setAwardsProofFile(file);
+        setValue("awardsProofFile", file);
+      }
+    }
+  };
 
   const onSubmit = async (data: ArticleFormData) => {
     setIsSubmitting(true);
@@ -45,14 +89,43 @@ const PublierPublication = () => {
     try {
       console.log("Submitting article data:", data);
 
+      // Create FormData for file uploads
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("abstract", data.abstract);
+      formData.append("keywords", JSON.stringify(data.keywords.split(',').map(k => k.trim())));
+      formData.append("coAuthorsIds", JSON.stringify(data.coAuthors || []));
+      formData.append("isIndexedJournal", data.isIndexedJournal.toString());
+      
+      // Add content PDF file
+      if (contentFile) {
+        formData.append("contentFile", contentFile);
+      }
+      
+      if (data.isIndexedJournal) {
+        formData.append("journalName", data.journalName);
+        formData.append("publicationDate", data.publicationDate);
+        formData.append("indexingProof", data.indexingProof);
+        if (indexingProofFile) {
+          formData.append("indexingProofFile", indexingProofFile);
+        }
+      }
+
+      if (data.awards) {
+        formData.append("awards", data.awards);
+        formData.append("awardsProof", data.awardsProof);
+        if (awardsProofFile) {
+          formData.append("awardsProofFile", awardsProofFile);
+        }
+      }
+
       const response = await postData(
         appConfig.API_PATHS.PUBLICATIONS.publierPublication.path,
+        formData,
         {
-          title: data.title,
-          abstract: data.abstract,
-          content: data.content,
-          keywords: data.keywords.split(',').map(k => k.trim()),
-          coAuthorsIds: data.coAuthors || [],
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         }
       );
 
@@ -62,6 +135,9 @@ const PublierPublication = () => {
           "success"
         );
         reset();
+        setContentFile(null);
+        setIndexingProofFile(null);
+        setAwardsProofFile(null);
         setTimeout(() => {
           navigate("/publications");
         }, 1500);
@@ -163,24 +239,48 @@ const PublierPublication = () => {
               />
             </div>
 
-            {/* Content */}
+            {/* Content PDF Upload */}
             <div>
-              <TextArea
-                label="Contenu de l'Article"
-                name="content"
-                placeholder="Rédigez votre article complet ici. Vous pouvez utiliser Markdown pour la mise en forme..."
-                required={true}
-                control={control}
-                errors={errors}
-                rows={12}
-                validation={{
-                  required: "Le contenu de l'article est requis",
-                  minLength: {
-                    value: 1000,
-                    message: "L'article doit contenir au moins 1000 caractères",
-                  },
-                }}
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Contenu de l'Article (PDF) <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  required
+                  onChange={(e) => handleFileUpload(e, 'content')}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-green-400 transition-colors"
+                />
+                {contentFile ? (
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                    <p className="text-sm text-green-700 flex items-center">
+                      <i className="fas fa-file-pdf mr-2"></i>
+                      <span className="font-medium">Fichier sélectionné:</span>
+                      <span className="ml-1">{contentFile.name}</span>
+                      <span className="ml-2 text-xs text-green-600">
+                        ({(contentFile.size / 1024 / 1024).toFixed(2)} MB)
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-2 text-center">
+                    <i className="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                    <p className="text-sm text-gray-500">
+                      Glissez votre fichier PDF ici ou cliquez pour parcourir
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Taille maximale: 10MB
+                    </p>
+                  </div>
+                )}
+              </div>
+              {!contentFile && (
+                <p className="mt-2 text-sm text-red-600">
+                  <i className="fas fa-exclamation-circle mr-1"></i>
+                  Le fichier PDF du contenu est obligatoire
+                </p>
+              )}
             </div>
 
             {/* Co-authors Search */}
@@ -194,6 +294,149 @@ const PublierPublication = () => {
               />
             </div>
 
+            {/* Journal Indexation Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i className="fas fa-journal-whills mr-2 text-blue-600"></i>
+                Publication dans un Journal Indexé
+              </h3>
+              
+              {/* Checkbox for indexed journal */}
+              <div className="mb-4">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    {...control.register("isIndexedJournal")}
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Cette publication est réalisée dans un journal indexé (référencé)
+                  </span>
+                </label>
+              </div>
+
+              {isIndexedJournal && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+                  {/* Journal Name */}
+                  <div>
+                    <InputField
+                      label="Nom du Journal"
+                      name="journalName"
+                      type="text"
+                      placeholder="Ex: Nature, Science, IEEE Transactions..."
+                      required={isIndexedJournal}
+                      control={control}
+                      errors={errors}
+                      validation={{
+                        required: isIndexedJournal ? "Le nom du journal est requis" : false,
+                      }}
+                    />
+                  </div>
+
+                  {/* Publication Date */}
+                  <div>
+                    <InputField
+                      label="Date de Publication"
+                      name="publicationDate"
+                      type="date"
+                      required={isIndexedJournal}
+                      control={control}
+                      errors={errors}
+                      validation={{
+                        required: isIndexedJournal ? "La date de publication est requise" : false,
+                      }}
+                    />
+                  </div>
+
+                  {/* Indexing Proof URL */}
+                  <div>
+                    <InputField
+                      label="Lien de Justification (URL)"
+                      name="indexingProof"
+                      type="url"
+                      placeholder="https://example.com/article-link"
+                      control={control}
+                      errors={errors}
+                    />
+                  </div>
+
+                  {/* Indexing Proof File Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ou télécharger un justificatif PDF
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) => handleFileUpload(e, 'indexing')}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-md"
+                      />
+                      {indexingProofFile && (
+                        <p className="mt-2 text-sm text-green-600">
+                          <i className="fas fa-check-circle mr-1"></i>
+                          Fichier sélectionné: {indexingProofFile.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Awards and Distinctions Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i className="fas fa-trophy mr-2 text-yellow-600"></i>
+                Prix et Distinctions
+              </h3>
+              
+              {/* Awards Description */}
+              <div>
+                <TextArea
+                  label="Description des Prix et Distinctions"
+                  name="awards"
+                  placeholder="Décrivez les prix, distinctions ou reconnaissances reçues en relation avec cette publication..."
+                  control={control}
+                  errors={errors}
+                  rows={3}
+                />
+              </div>
+
+              {/* Awards Proof URL */}
+              <div className="mt-4">
+                <InputField
+                  label="Lien de Justification (URL)"
+                  name="awardsProof"
+                  type="url"
+                  placeholder="https://example.com/award-link"
+                  control={control}
+                  errors={errors}
+                />
+              </div>
+
+              {/* Awards Proof File Upload */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Ou télécharger un justificatif PDF
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => handleFileUpload(e, 'awards')}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-yellow-50 file:text-yellow-700 hover:file:bg-yellow-100 border border-gray-300 rounded-md"
+                  />
+                  {awardsProofFile && (
+                    <p className="mt-2 text-sm text-green-600">
+                      <i className="fas fa-check-circle mr-1"></i>
+                      Fichier sélectionné: {awardsProofFile.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Guidelines */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h3 className="font-semibold text-blue-900 mb-2 flex items-center">
@@ -201,6 +444,7 @@ const PublierPublication = () => {
                 Conseils pour une bonne publication
               </h3>
               <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Assurez-vous que votre PDF est de haute qualité et lisible</li>
                 <li>• Structurez votre article clairement (introduction, méthode, résultats, discussion)</li>
                 <li>• Utilisez un langage académique précis</li>
                 <li>• Citez vos sources correctement</li>
@@ -208,26 +452,17 @@ const PublierPublication = () => {
                 <li>• Incluez des figures et tableaux si nécessaire</li>
                 <li>• Obtenez l'accord de tous les co-auteurs</li>
                 <li>• Respectez les directives éthiques de publication</li>
+                <li>• Pour les journaux indexés, vérifiez le facteur d'impact et l'indexation</li>
+                <li>• Conservez tous les justificatifs de publication et prix</li>
               </ul>
             </div>
-
-            {/* File Upload (you might want to add this later) */}
-            {/* <div>
-              <FileUpload 
-                label="Fichier PDF (optionnel)"
-                name="pdfFile"
-                accept=".pdf"
-                control={control}
-                errors={errors}
-              />
-            </div> */}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
               <Button
                 variant="primary"
                 size="md"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !contentFile}
                 className="flex-1 sm:flex-none"
                 onClick={handleSubmit(onSubmit)}
               >
@@ -251,6 +486,9 @@ const PublierPublication = () => {
                 className="flex-1 sm:flex-none"
                 onClick={() => {
                   reset();
+                  setContentFile(null);
+                  setIndexingProofFile(null);
+                  setAwardsProofFile(null);
                   swal.toast("Formulaire réinitialisé", "info");
                 }}
               >
@@ -267,27 +505,21 @@ const PublierPublication = () => {
               <div className="text-sm text-gray-600 space-y-2">
                 <div className="flex items-center">
                   <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-blue-600 font-semibold text-xs">
-                      1
-                    </span>
+                    <span className="text-blue-600 font-semibold text-xs">1</span>
                   </div>
-                  <span>Soumission de votre article</span>
+                  <span>Soumission de votre article avec justificatifs</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-blue-600 font-semibold text-xs">
-                      2
-                    </span>
+                    <span className="text-blue-600 font-semibold text-xs">2</span>
                   </div>
-                  <span>Vérification automatique du format</span>
+                  <span>Vérification automatique du format et des justificatifs</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-green-600 font-semibold text-xs">
-                      3
-                    </span>
+                    <span className="text-green-600 font-semibold text-xs">3</span>
                   </div>
-                  <span>Publication immédiate dans la bibliothèque</span>
+                  <span>Publication avec badges de qualité (journal indexé, prix)</span>
                 </div>
               </div>
             </div>

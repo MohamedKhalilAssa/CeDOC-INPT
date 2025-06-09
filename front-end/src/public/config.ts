@@ -30,6 +30,8 @@ interface AppConfig {
     //Formation API paths
     FORMATION: ApiPathsMap;
     PUBLICATIONS: ApiPathsMap;
+    CONFERENCES: ApiPathsMap;
+    REINSCRIPTIONS: ApiPathsMap;
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
@@ -45,7 +47,7 @@ interface AppConfig {
       sujets: FrontendPathsMap;
       formations: FrontendPathsMap;
       publications: FrontendPathsMap;
-      honors: FrontendPathsMap;
+      vacations: FrontendPathsMap;
       conferences: FrontendPathsMap;
       reinscriptions: FrontendPathsMap;
     };
@@ -180,6 +182,30 @@ const appConfig: AppConfig = {
         method: "GET",
       },
     },
+    CONFERENCES: {
+      getAll: {
+        name: "Get All Conferences",
+        path: "/conferences",
+        method: "GET",
+      },
+      create: {
+        name: "Create Conference",
+        path: "/conferences",
+        method: "POST",
+      },
+      delete: {
+        name: "Delete Conference",
+        path: "/conferences/:id",
+        method: "DELETE",
+      },
+    },
+    REINSCRIPTIONS: {
+      getAll: {
+        name: "Get All Reinscriptions",
+        path: "/reinscriptions",
+        method: "GET",
+      },
+    },
 
     // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
@@ -251,16 +277,22 @@ const appConfig: AppConfig = {
         proposer: { name: "Mes Formations", path: "formations/mesformations" },
       },
       publications: {
-        publier: { name: "Mes Publications", path: "publications/mespublications" },
+        publier: {
+          name: "Mes Publications",
+          path: "publications/mespublications",
+        },
       },
-      honors: {
-        distinctions: { name: "Mes Distinctions", path: "honors/distinctions" },
+      vacations: {
+        vacation: { name: "Mes vacation", path: "vacations/vacation" },
       },
       conferences: {
         participer: { name: "Mes Conférences", path: "conferences/participer" },
       },
       reinscriptions: {
-        reinscrire: { name: "Mes Réinscriptions", path: "reinscriptions/reinscrire" },
+        reinscrire: {
+          name: "Mes Réinscriptions",
+          path: "reinscriptions/reinscrire",
+        },
       },
     },
   },
