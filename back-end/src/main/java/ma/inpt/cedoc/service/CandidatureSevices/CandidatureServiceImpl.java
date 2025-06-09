@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
@@ -489,6 +492,36 @@ public class CandidatureServiceImpl implements CandidatureService {
         else {
             throw new AccessDeniedException("Accès non autorisé");
         }
+    }
+
+    @Override
+    public Page<Candidature> getAccessibleCandidatures(UserDetails userDetails, Pageable pageable) {
+        Utilisateur user = utilisateurRepository
+            .findByEmail(userDetails.getUsername())
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Long userId = user.getId();
+
+        List<Candidature> allAllowed;
+        if (user.hasRole(RoleEnum.DIRECTION_CEDOC)) {
+            // whole table
+            allAllowed = candidatureRepository.findAll();
+        } else if (user.hasRole(RoleEnum.CHEF_EQUIPE)) {
+            Long chefRoleId = chefEquipeRoleRepository
+                .findByProfesseurUtilisateurId(userId)
+                .orElseThrow(() -> new RuntimeException("No chef role"))
+                .getId();
+            allAllowed = findByChefEquipeRoleId(chefRoleId);
+        } else if (user.hasRole(RoleEnum.PROFESSEUR)) {
+            allAllowed = findByProfesseurId(userId);
+        } else {
+            throw new AccessDeniedException("Accès non autorisé");
+        }
+
+        // Manually slice into a Page:
+        int start = (int)pageable.getOffset();
+        int end   = Math.min(start + pageable.getPageSize(), allAllowed.size());
+        List<Candidature> sub = allAllowed.subList(start, end);
+        return new PageImpl<>(sub, pageable, allAllowed.size());
     }
 
 }

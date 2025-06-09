@@ -2,6 +2,7 @@ package ma.inpt.cedoc.web.CandidatureControllers;
 
 import java.util.List;
 
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +16,7 @@ import ma.inpt.cedoc.model.DTOs.Candidature.*;
 import ma.inpt.cedoc.model.DTOs.Generic.ErrorResponse;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 
@@ -26,6 +28,7 @@ import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 @Validated
 public class CandidatureController {
 
+    private final CandidatureMapper candidatureMapper;
     private final CandidatureService candidatureService;
 
     // 1) Création d’une nouvelle candidature (multipart/form-data pour inclure le champ MultipartFile)
@@ -109,11 +112,7 @@ public class CandidatureController {
             return ResponseEntity.noContent().build();
         }
 
-        @GetMapping("/accessible")
-        public ResponseEntity<List<Candidature>> getAccessibleCandidatures(@AuthenticationPrincipal UserDetails userDetails) {
-            List<Candidature> list = candidatureService.getAccessibleCandidatures(userDetails);
-            return ResponseEntity.ok(list);
-        }
+        
 
         // 9) Chef d’équipe : accepter une candidature
         @PostMapping("/{id}/accepter")
@@ -139,5 +138,24 @@ public class CandidatureController {
                 candidatureService.refuserCandidature(candidatureId, dto.getMotif());
             return ResponseEntity.ok(saved);
         }
+
+        @GetMapping("/accessible")
+        public ResponseEntity<Page<CandidatureResponseDTO>> getAccessibleCandidatures(
+                @AuthenticationPrincipal UserDetails userDetails,
+                @RequestParam(defaultValue = "0")   int page,
+                @RequestParam(defaultValue = "10")  int size,
+                @RequestParam(defaultValue = "id")  String sortBy,
+                @RequestParam(defaultValue = "asc") String direction
+        ) {
+            Sort sort = direction.equalsIgnoreCase("asc")
+                        ? Sort.by(sortBy).ascending()
+                        : Sort.by(sortBy).descending();
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            Page<Candidature> slice = candidatureService.getAccessibleCandidatures(userDetails, pageable);
+            Page<CandidatureResponseDTO> dtoPage = slice.map(candidatureMapper::toResponseDTO);
+            return ResponseEntity.ok(dtoPage);
+        }
+
     
 }
