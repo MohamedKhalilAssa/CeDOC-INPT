@@ -3,7 +3,7 @@ import { getExternalAuthHandlers } from "@/Context/Auth/index";
 import appConfig from "@/public/config";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
-const API = axios.create({
+export const API = axios.create({
   baseURL: appConfig.API_URL || "http://localhost:8080/api",
   withCredentials: true,
 });
@@ -17,10 +17,9 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => {
     const auth = getExternalAuthHandlers();
-    console.log("FROM CRUDFFUNTIONS, LOGGING RESPONSE: ");
-    console.log(response);
     const newAccessToken = response.headers["authorization"];
     if (newAccessToken && newAccessToken.startsWith("Bearer ")) {
+      console.log("New access token received:", newAccessToken);
       const token = newAccessToken.replace("Bearer ", "");
       localStorage.setItem("token", token);
       auth.login();
@@ -28,7 +27,84 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle 401 here too if refresh logic is needed
+    // Handle authentication errors with enhanced token status communication
+    if (error.response && error.response.status === 401) {
+      const errorData = error.response.data;
+
+      // Check for specific token-related errors that require login
+      if (
+        errorData?.requiresLogin === true ||
+        errorData?.error === "token_expired" ||
+        errorData?.error === "refresh_token_expired" ||
+        errorData?.error === "invalid_refresh_token"
+      ) {
+        console.warn(
+          "Authentication failed:",
+          errorData?.message || "Token expired or invalid"
+        );
+
+        // Clear all authentication data
+        localStorage.removeItem("token");
+        localStorage.setItem("isAuthenticated", "false");
+
+        // Get auth handlers and logout
+        const auth = getExternalAuthHandlers();
+        auth.logout();
+
+        // Set a flag to indicate this was due to token expiration
+        localStorage.setItem("tokenExpired", "true");
+
+        // Redirect to login page
+        if (typeof window !== "undefined") {
+          window.location.href =
+            appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+        }
+
+        // Return a rejected promise with a clear message
+        return Promise.reject({
+          ...error,
+          isTokenExpired: true,
+          message:
+            errorData?.message ||
+            "Your session has expired. Please log in again.",
+        });
+      }
+    }
+
+    // Handle 403 errors (forbidden but not token-related)
+    if (error.response && error.response.status === 403) {
+      const errorData = error.response.data;
+
+      // Only handle 403 if it's token-related
+      if (errorData?.requiresLogin === true) {
+        console.warn(
+          "Access forbidden due to invalid tokens:",
+          errorData?.message
+        );
+
+        // Clear authentication data
+        localStorage.removeItem("token");
+        localStorage.setItem("isAuthenticated", "false");
+
+        const auth = getExternalAuthHandlers();
+        auth.logout();
+
+        localStorage.setItem("tokenExpired", "true");
+
+        if (typeof window !== "undefined") {
+          window.location.href =
+            appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+        }
+
+        return Promise.reject({
+          ...error,
+          isTokenExpired: true,
+          message: errorData?.message || "Access denied. Please log in again.",
+        });
+      }
+    }
+
+    // Re-throw the error so it can be handled by the calling component
     return Promise.reject(error);
   }
 );
@@ -38,33 +114,88 @@ interface FieldError {
   message: string;
 }
 
-interface APIError {
+export interface APIError {
   status: number;
   errors: FieldError[] | string;
 }
 
 const handleError = (error: AxiosError): never => {
-  if (error.response) {
+  // Check if response exists first
+  if (error.response && error.response.data) {
     const data = error.response.data as any;
 
-    if (data?.errors) {
-      // Structured error from your backend
+    // Handle your backend's structured error format
+    if (data?.statusCode && data?.message) {
+      throw {
+        status: data.statusCode,
+        errors: data.message,
+      } as APIError;
+    }
+
+    // Handle validation errors (if your backend sends field errors)
+    if (data?.errors && Array.isArray(data.errors)) {
       throw {
         status: error.response.status,
         errors: data.errors,
       } as APIError;
     }
 
-    // Unstructured or simple message
+    // Handle other structured errors
+    if (data?.message) {
+      throw {
+        status: error.response.status,
+        errors: data.message,
+      } as APIError;
+    }
+
+    // Fallback for unstructured errors
     throw {
       status: error.response.status,
-      errors: data.message || "An unknown error occurred",
+      errors: data || "An unknown error occurred",
     } as APIError;
   }
 
+  // Handle response without data
+  if (error.response) {
+    throw {
+      status: error.response.status,
+      errors: `HTTP Error ${error.response.status}: ${
+        error.response.statusText || "Unknown error"
+      }`,
+    } as APIError;
+  }
+
+  // Network error or request timeout
+  if (error.code === "ECONNABORTED") {
+    throw {
+      status: 408,
+      errors: "Request timeout - please try again",
+    } as APIError;
+  }
+
+  // Network error
+  if (
+    error.code === "ERR_NETWORK" ||
+    error.message?.includes("Network Error")
+  ) {
+    throw {
+      status: 0,
+      errors: "Network error - please check your connection",
+    } as APIError;
+  }
+
+  // Other Axios error
+  if (error?.message) {
+    throw {
+      status: error.status || 500,
+      errors: error.message,
+    } as APIError;
+  }
+
+  // Final fallback
   throw {
     status: 500,
-    errors: "Something went wrong. Try again.",
+    errors: "An unexpected error occurred",
   } as APIError;
 };
 
@@ -165,4 +296,91 @@ export const setFormDataWithFiles = (formData: FormData, data: any): void => {
 export const getQueryParam = (search: string, key: string): string | null => {
   const params = new URLSearchParams(search);
   return params.get(key);
+};
+
+/**
+ * Transforms form data to FormData for multipart/form-data requests
+ * Handles files, arrays, and regular form fields automatically
+ */
+export const transformToFormData = (data: any): FormData => {
+  const formData = new FormData();
+
+  Object.keys(data).forEach((key) => {
+    const value = data[key];
+
+    // Skip null, undefined, or empty string values
+    if (value === null || value === undefined || value === "") {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      // Handle arrays by appending each item
+      value.forEach((item) => {
+        if (item !== null && item !== undefined && item !== "") {
+          formData.append(key, item.toString());
+        }
+      });
+    } else if (value instanceof File) {
+      // Handle file uploads
+      formData.append(key, value);
+    } else if (value instanceof FileList) {
+      // Handle FileList objects
+      Array.from(value).forEach((file) => {
+        formData.append(key, file);
+      });
+    } else {
+      // Handle other values (strings, numbers, booleans, etc.)
+      formData.append(key, value.toString());
+    }
+  });
+
+  return formData;
+};
+
+/**
+ * POST request with automatic multipart/form-data handling
+ * Use this when your backend expects @ModelAttribute or has MultipartFile fields
+ */
+export const postFormData = async <T>(
+  url: string,
+  data: any,
+  config?: AxiosRequestConfig
+): Promise<T | undefined> => {
+  try {
+    const formData = transformToFormData(data);
+    const res = await API.post<T>(url, formData, {
+      ...config,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...config?.headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    handleError(error as AxiosError);
+  }
+};
+
+/**
+ * PUT request with automatic multipart/form-data handling
+ * Use this when your backend expects @ModelAttribute or has MultipartFile fields
+ */
+export const putFormData = async <T>(
+  url: string,
+  data: any,
+  config?: AxiosRequestConfig
+): Promise<T | undefined> => {
+  try {
+    const formData = transformToFormData(data);
+    const res = await API.put<T>(url, formData, {
+      ...config,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...config?.headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    handleError(error as AxiosError);
+  }
 };

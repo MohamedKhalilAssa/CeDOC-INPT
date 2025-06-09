@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeThese;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
 import ma.inpt.cedoc.model.enums.doctorant_enums.DemandeSoutenanceEnum;
 
@@ -47,8 +47,8 @@ public class DemandeSoutenance {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name = "directeur_de_these_id")
-    private DirecteurDeThese directeurDeThese;
+    @JoinColumn(name = "directeur_role_id")
+    private DirecteurDeTheseRole directeurDeThese;
 
     @OneToOne
     @JoinColumn(name = "soutenance_id")

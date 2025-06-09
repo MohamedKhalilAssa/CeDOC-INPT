@@ -1,53 +1,87 @@
 // context/AuthContext.tsx
 import { AuthContext } from "@/Context/Auth/AuthContext";
+import { checkAuth } from "@/Helpers/AuthFunctions"; // your function that validates token
 import { type decodedJWT } from "@/Types/GlobalTypes";
+import { RoleEnum } from "@/Types/UtilisateursEnums";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem("isAuthenticated") === "true";
-  });
-  const [utilisateur, setUtilisateur] = useState<decodedJWT | null>(() => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [utilisateur, setUtilisateur] = useState<decodedJWT | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState<RoleEnum[]>([]);
+
+  const syncStateFromToken = () => {
     const token = localStorage.getItem("token");
-    if (!token) return null;
-    try {
-      return jwtDecode<decodedJWT>(token);
-    } catch {
-      return null;
+    if (!token) {
+      setIsAuthenticated(false);
+      setUtilisateur(null);
+      return;
     }
-  });
+
+    try {
+      const decoded = jwtDecode<decodedJWT>(token);
+      setUtilisateur(decoded);
+      setRoles(decoded.roles);
+      setIsAuthenticated(true);
+    } catch {
+      setUtilisateur(null);
+      setIsAuthenticated(false);
+    }
+  };
 
   const login = () => {
     localStorage.setItem("isAuthenticated", "true");
-
-    setIsAuthenticated(true);
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        setUtilisateur(jwtDecode<decodedJWT>(token));
-      } catch {
-        setUtilisateur(null);
-      }
-    } else {
-      setUtilisateur(null);
-    }
+    syncStateFromToken();
   };
-
   const logout = () => {
     localStorage.setItem("isAuthenticated", "false");
     localStorage.removeItem("token");
+    // Check if logout was due to token expiration
+    const wasTokenExpired = localStorage.getItem("tokenExpired") === "true";
+    if (wasTokenExpired) {
+      localStorage.removeItem("tokenExpired");
+      // You could show a toast message here about session expiration
+      console.log("Session expired, user logged out");
+    }
     setIsAuthenticated(false);
+    setRoles([]);
     setUtilisateur(null);
   };
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token");
 
-  // Handle storage changes across tabs or manually
+        const result = await checkAuth(login, logout);
+        if (result) {
+          syncStateFromToken();
+        } else {
+          logout();
+        }
+      } catch (err) {
+        // Check if this was due to token expiration
+        const tokenExpired = localStorage.getItem("tokenExpired");
+        if (tokenExpired === "true") {
+          localStorage.removeItem("tokenExpired");
+          console.warn("Authentication failed due to expired tokens");
+        }
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyAuth();
+  }, []);
+
   useEffect(() => {
     const syncAuthState = () => {
-      const storedState = localStorage.getItem("isAuthenticated") === "true";
-      setIsAuthenticated(storedState);
+      syncStateFromToken();
     };
     window.addEventListener("storage", syncAuthState);
     return () => window.removeEventListener("storage", syncAuthState);
@@ -55,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, utilisateur }}
+      value={{ isAuthenticated, utilisateur, login, logout, loading, roles }}
     >
       {children}
     </AuthContext.Provider>

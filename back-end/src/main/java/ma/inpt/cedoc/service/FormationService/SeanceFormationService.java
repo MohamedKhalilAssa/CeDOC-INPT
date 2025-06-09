@@ -1,9 +1,10 @@
 package ma.inpt.cedoc.service.FormationService;
 
+import java.util.List;
+
+import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.SeanceFormationResponseDTO;
-
-import java.util.List;
 
 public interface SeanceFormationService {
 
@@ -17,8 +18,13 @@ public interface SeanceFormationService {
 
     void deleteSeanceFormation(Long id);
 
-    Long getSumDureeByFormationAndDeclarant(Long formationId, Long declarantId);
+    Long getValidatedDureeByFormationAndDoctorant(Long formationId, Long declarantId);
 
     Long getSumDureeByDeclarant(Long declarantId);
 
+    List<FormationResponseDTO> getValidatedFormationsByDoctorant(Long doctorantId);
+
+    Long getValidatedSumDureeByDeclarant(Long doctorantId);
+
+    List<SeanceFormationResponseDTO> getDeclaredSeancesByDoctorantUtilisateurId(Long utilisateurId);
 }

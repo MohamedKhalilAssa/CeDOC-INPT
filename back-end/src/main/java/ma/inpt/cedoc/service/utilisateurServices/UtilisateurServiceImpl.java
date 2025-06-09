@@ -34,14 +34,39 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Role role = roleRepository.findByIntitule(roleName).orElse(null);
 
         if (utilisateur != null && role != null) {
-            utilisateur.getRoles().add(role);
-            utilisateurRepository.save(utilisateur);
-            System.out.println("Role " + roleName + " assigné à l'utilisateur " + email);
+            if (!utilisateur.getRoles().contains(role)) {
+                utilisateur.getRoles().add(role);
+                utilisateurRepository.save(utilisateur);
+                System.out.println("Role " + roleName + " assigné à l'utilisateur " + email);
+            } else {
+                System.out.println("L'utilisateur " + email + " a déjà le rôle " + roleName);
+            }
             return;
         }
 
         System.out.println("Utilisateur ou rôle introuvable");
     }
+
+    @Override
+    public void setSingleRoleToUtilisateur(String email, String newRoleName) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+        Role role = roleRepository.findByIntitule(newRoleName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rôle introuvable"));
+
+        // Clear existing roles
+        utilisateur.getRoles().clear();
+
+        // Assign the new role
+        utilisateur.getRoles().add(role);
+
+        // Save changes
+        utilisateurRepository.save(utilisateur);
+
+        System.out.println("Les anciens rôles ont été supprimés et le rôle " + newRoleName + " a été attribué à " + email);
+    }
+
 
     /*-----------------Delete----------------- */
     @Override
@@ -63,47 +88,47 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public List<UtilisateurResponseDTO> findAllUtilisateurs() {
+    public List<UtilisateurResponseDTO> getAllUtilisateurs() {
         return utilisateurRepository.findAll().stream()
                 .map(utilisateurMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UtilisateurResponseDTO findUtilisateurByEmail(String email) {
+    public UtilisateurResponseDTO getUtilisateurByEmail(String email) {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
         return utilisateurMapper.toResponseWithRoles(utilisateur);
     }
 
     @Override
-    public UtilisateurResponseDTO findUtilisateurById(Long id) {
+    public UtilisateurResponseDTO getUtilisateurById(Long id) {
         Utilisateur utilisateur = utilisateurRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
         return utilisateurMapper.toResponseWithRoles(utilisateur);
     }
 
     @Override
-    public UtilisateurResponseDTO findUtilisateurByTelephone(String telephone) {
+    public UtilisateurResponseDTO getUtilisateurByTelephone(String telephone) {
         Utilisateur utilisateur = utilisateurRepository.findByTelephone(telephone)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
         return utilisateurMapper.toResponseWithRoles(utilisateur);
     }
 
     @Override
-    public Utilisateur findFullUtilisateurByEmail(String email) {
+    public Utilisateur getFullUtilisateurByEmail(String email) {
         return utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
     }
 
     @Override
-    public Utilisateur findFullUtilisateurById(Long id) {
+    public Utilisateur getFullUtilisateurById(Long id) {
         return utilisateurRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
     }
 
     @Override
-    public Utilisateur findFullUtilisateurByTelephone(String telephone) {
+    public Utilisateur getFullUtilisateurByTelephone(String telephone) {
         return utilisateurRepository.findByTelephone(telephone)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
     }

@@ -2,10 +2,7 @@ package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -21,15 +18,16 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.entities.auth.Token;
+import ma.inpt.cedoc.model.enums.candidature_enums.StatutProfessionnelEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.EtatCivilEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
+import ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum;
 
 @Entity
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
 @Table(name = "utilisateurs")
-@Inheritance(strategy = InheritanceType.JOINED)
 @EntityListeners(AuditingEntityListener.class)
 @SuperBuilder
 public class Utilisateur implements UserDetails {
@@ -60,10 +58,13 @@ public class Utilisateur implements UserDetails {
     @Column(name = "etat_civil", nullable = true)
     @Enumerated(EnumType.STRING)
     private EtatCivilEnum etatCivilEnum;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "genre", nullable = true)
     private GenreEnum genre;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "statut_professionnel", nullable = true)
+    private StatutProfessionnelEnum statutProfessionnel;
 
     @Column(name = "email_valider", nullable = false)
     @Builder.Default
@@ -79,7 +80,9 @@ public class Utilisateur implements UserDetails {
     private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "utilisateur_roles", joinColumns = @JoinColumn(name = "utilisateur_id"), inverseJoinColumns = @JoinColumn(name = "role_id"),
+    uniqueConstraints = @UniqueConstraint(columnNames = {"utilisateur_id", "role_id"})
+    )
     @Builder.Default
     private List<Role> roles = new ArrayList<>();
 
@@ -91,12 +94,31 @@ public class Utilisateur implements UserDetails {
     @JoinColumn(name = "lieu_naissance_id", nullable = true)
     private LieuDeNaissance lieuDeNaissance;
 
+    /*ROLES - STATES OF USER */
+
+    @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Candidat candidat;
+
+    @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Professeur professeur;
+
+    @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Doctorant doctorant;
+
+    @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private DirectionCedoc directionCedoc;
+
+    public boolean hasRole(RoleEnum role) {
+        return roles.stream()
+            .anyMatch(r -> r.getIntitule().equalsIgnoreCase(role.name()));
+    }
+
+    
+    // JWT CONFIGURATION
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @JsonIgnore
     private Set<Token> tokens;
-
-    // JWT CONFIGURATION
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()

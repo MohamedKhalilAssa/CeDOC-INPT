@@ -1,32 +1,64 @@
 package ma.inpt.cedoc.model.DTOs.mapper.formationsMappers;
 
-import org.mapstruct.*;
-
 import ma.inpt.cedoc.model.DTOs.Formations.VacationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.VacationResponseDTO;
 import ma.inpt.cedoc.model.entities.formation.Vacation;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface VacationMapper {
+@Component
+public class VacationMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "doctorant", ignore = true) // Set manually in Service
-    Vacation vacationRequestDTOToVacation(VacationRequestDTO dto);
+    public Vacation vacationRequestDTOToVacation(VacationRequestDTO dto) {
+        if (dto == null) return null;
 
-    @Mapping(target = "doctorantId", expression = "java(mapDoctorantId(vacation))")
-    VacationResponseDTO vacationToVacationResponseDTO(Vacation vacation);
+        Vacation vacation = new Vacation();
+        vacation.setTitreDuCours(dto.getTitreDuCours());
+        vacation.setEtablissement(dto.getEtablissement());
+        vacation.setDate(dto.getDate());
+        vacation.setNiveau(dto.getNiveau());
+        vacation.setDuree(dto.getDuree());
+        vacation.setJustificatif(dto.getJustificatif());
+        vacation.setStatut(dto.getStatut());
+        // doctorant is set manually in the service
+        return vacation;
+    }
 
-    @Mapping(target = "id", ignore = true)
-    void updateVacationFromDTO(VacationRequestDTO dto, @MappingTarget Vacation vacation);
+    public VacationResponseDTO vacationToVacationResponseDTO(Vacation vacation) {
+        if (vacation == null) return null;
 
-    /* --------------------------HELPERS-------------------------------- */
+        return VacationResponseDTO.builder()
+                .id(vacation.getId())
+                .titreDuCours(vacation.getTitreDuCours())
+                .etablissement(vacation.getEtablissement())
+                .date(vacation.getDate())
+                .niveau(vacation.getNiveau())
+                .duree(vacation.getDuree())
+                .justificatif(vacation.getJustificatif())
+                .statut(vacation.getStatut())
+                .createdAt(vacation.getCreatedAt())
+                .updatedAt(vacation.getUpdatedAt())
+                .doctorantId(mapDoctorantId(vacation))
+                .build();
+    }
 
-    default Long mapDoctorantId(Vacation vacation) {
-        if (vacation.getDoctorant() == null) {
-            return null;
-        }
-        return vacation.getDoctorant().getId();
+    public void updateVacationFromDTO(VacationRequestDTO dto, Vacation vacation) {
+        if (dto == null || vacation == null) return;
+
+        vacation.setTitreDuCours(dto.getTitreDuCours());
+        vacation.setEtablissement(dto.getEtablissement());
+        vacation.setDate(dto.getDate());
+        vacation.setNiveau(dto.getNiveau());
+        vacation.setDuree(dto.getDuree());
+        vacation.setJustificatif(dto.getJustificatif());
+        vacation.setStatut(dto.getStatut());
+        // doctorant is left unchanged
+    }
+
+    /* -------------------------- HELPERS -------------------------- */
+
+    private Long mapDoctorantId(Vacation vacation) {
+        Doctorant doctorant = vacation.getDoctorant();
+        return doctorant != null ? doctorant.getId() : null;
     }
 }

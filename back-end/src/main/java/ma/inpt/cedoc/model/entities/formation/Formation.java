@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.model.enums.formation_enums.ModuleEnum;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -40,21 +43,27 @@ public class Formation {
         @NotBlank
         private String nomFormateur;
 
-        @NotBlank
-        private Date dateDebut;          // ISO‑8601 preferred; change to LocalDate if you can
+        @NotNull
+        private LocalDate dateDebut;          // ISO‑8601 preferred; change to LocalDate if you can
 
         private Integer duree; // en heures
 
         private String lieu; // peut etre distanciel
 
+        @Column(length = 1000)
+        private String details;
+
+        private String image; // store image URL or path
+
+
         // for logging and administration purposes it will be filled by the system
         @Column(name = "created_at", updatable = false)
         @CreatedDate
-        private ZonedDateTime createdAt;
+        private LocalDateTime createdAt;
 
         @Column(name = "updated_at")
         @LastModifiedDate
-        private ZonedDateTime updatedAt;
+        private LocalDateTime updatedAt;
 
         // ---------------------- Relations ----------------------------
         @OneToMany(mappedBy = "formation", cascade = CascadeType.ALL, orphanRemoval = true)

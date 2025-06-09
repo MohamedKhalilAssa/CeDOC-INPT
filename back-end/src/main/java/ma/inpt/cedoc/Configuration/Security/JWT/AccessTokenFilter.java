@@ -38,12 +38,9 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        // Log the incoming request path
-        logger.debug("Processing request: {} {}", request.getMethod(), request.getServletPath());
 
         // Skip filter for paths that don't require authentication
         if (shouldSkipFilter(request)) {
-            System.out.println("Skipping filter for path: " + request.getServletPath());
             filterChain.doFilter(request, response);
             return;
         }
@@ -55,13 +52,14 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             if (accessToken != null) {
                 processAccessToken(accessToken, request);
             }
-
+            request.setAttribute("isAccessTokenValid", true);
             filterChain.doFilter(request, response);
 
         } catch (JwtException e) {
             logger.error("JWT validation error: {}", e.getMessage());
             SecurityContextHolder.clearContext();
             // Continue to refresh token filter
+
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             logger.error("Authentication error: {}", e.getMessage());
@@ -96,14 +94,11 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         var dbToken = tokenService.findByTokenAndNonExpiredOrRevoked(accessToken);
         boolean isTokenValid = dbToken != null && dbToken.getTokenType() == TokenEnum.BEARER
                 && jwtUtil.isTokenValid(accessToken, user);
-
         if (!isTokenValid) {
-            logger.debug("Token not found in database or is revoked/expired/invalid");
             return;
         }
 
         // Load user details and validate token
-
         if (jwtUtil.isTokenValid(accessToken, user)) {
             // Create authentication token and set in security context
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -119,9 +114,14 @@ public class AccessTokenFilter extends OncePerRequestFilter {
 
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        // Skip authentication endpoints except logout and check
-        return (path.contains("/images") || path.contains("/api/auth") &&
-                !(path.contains("/api/auth/logout") || path.contains("/api/auth/check"))) ||
-                path.contains("/api/guest");
+        String method = request.getMethod();
+        return (!path.contains("/api/auth/logout") && !path.contains("/api/auth/check")) &&
+                (method.equalsIgnoreCase("OPTIONS") ||
+                        path.startsWith("/api/auth/") ||
+                        path.startsWith("/api/guest/") ||
+                        path.startsWith("/images/") ||
+                        (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||
+                        path.startsWith("/api/utilisateurs/assign-role") ||
+                        path.startsWith("/api/utilisateurs/set-role"));
     }
 }

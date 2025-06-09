@@ -16,6 +16,7 @@ public class SeanceFormationRequestDTO {
     @Pattern(regexp = "^.+\\.pdf$", message = "Le justificatif doit être un fichier PDF")
     private String justificatifPdf;
 
+    //par defaut c'est DECLARER
     @NotNull(message = "Le statut est obligatoire")
     private StatutFormationEnum statut;
 
@@ -25,7 +26,6 @@ public class SeanceFormationRequestDTO {
     @NotNull(message = "L'identifiant du doctorant déclarant est obligatoire")
     private Long declarantId;
 
-    @NotNull(message = "L'identifiant du responsable valideur est obligatoire")
     private Long valideParId;
 }
 

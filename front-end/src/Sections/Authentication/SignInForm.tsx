@@ -1,13 +1,14 @@
 import Inpt_Illustration_1 from "@/assets/images/Inpt_Illustration_1.png";
 import InputField from "@/Components/Form/InputField";
 import { AuthContextType, useAuth } from "@/Context/Auth/index";
+import { userDirectedLoginStorage } from "@/Helpers/AuthFunctions";
 import { postData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import appConfig from "@/public/config";
 import {
   AuthenticationFormValues,
   AuthenticationResponseValues,
-} from "@/Types/RegisterTypes";
+} from "@/Types/AuthTypes";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,14 +31,14 @@ const SignInForm = () => {
     setLoading(true);
     try {
       const res: AuthenticationResponseValues | undefined = await postData(
-        appConfig.API_PATHS.login.path,
+        appConfig.API_PATHS.AUTH.login.path,
         data
       );
-
       auth.login();
+      userDirectedLoginStorage();
       alert.toast(res?.message || "Authentication réussie", "success");
       setTimeout(() => {
-        navigate(appConfig.FRONTEND_PATHS.landingPage.path);
+        navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
       }, 200);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -128,7 +129,7 @@ const SignInForm = () => {
             <p className="text-sm text-center mt-4 text-gray-600">
               Vous n'avez pas de compte?{" "}
               <Link
-                to={`${appConfig.FRONTEND_PATHS.register.path}`}
+                to={`${appConfig.FRONTEND_PATHS.AUTH.register.path}`}
                 className="text-blue-600 hover:underline"
               >
                 Creer un compte
@@ -137,13 +138,12 @@ const SignInForm = () => {
             <p className="text-sm text-center mt-4 text-gray-600">
               Mot de passe oublié?{" "}
               <Link
-                to={`${appConfig.FRONTEND_PATHS.forgotPassword.path}`}
+                to={`${appConfig.FRONTEND_PATHS.AUTH.forgotPassword.path}`}
                 className="text-blue-600 hover:underline"
               >
                 Recuperer le mot de passe
               </Link>
             </p>
-         
           </form>
         </div>
       </div>

@@ -32,20 +32,18 @@ const ResetPasswordForm = () => {
   useEffect(() => {
     const t = getQueryParam(location.search, "t");
     const e = getQueryParam(location.search, "email");
-
     if (!t || !e) {
       alert.toast("Acces interdit!", "error");
-      navigate(appConfig.FRONTEND_PATHS.forgotPassword.path);
+      navigate(appConfig.FRONTEND_PATHS.AUTH.forgotPassword.path);
       return;
     }
 
     const decoded: decodedJWT = jwtDecode(t);
     console.log("decoded.exp:", decoded?.exp);
     console.log("now:", Math.floor(Date.now() / 1000));
-
     if (!decoded || decoded.exp < Math.floor(Date.now() / 1000)) {
       alert.toast("Token expiré ou invalide!", "error");
-      navigate(appConfig.FRONTEND_PATHS.forgotPassword.path);
+      navigate(appConfig.FRONTEND_PATHS.AUTH.forgotPassword.path);
       return;
     }
 
@@ -64,20 +62,20 @@ const ResetPasswordForm = () => {
 
     if (!token || !email) {
       alert.error("Erreur", "Token ou email manquant.");
-      navigate(appConfig.FRONTEND_PATHS.forgotPassword.path);
+      navigate(appConfig.FRONTEND_PATHS.AUTH.forgotPassword.path);
       return;
     }
 
     setLoading(true);
     try {
-      await postData(appConfig.API_PATHS.resetPassword.path, {
+      await postData(appConfig.API_PATHS.AUTH.resetPassword.path, {
         token,
         email,
         newPassword: data.newPassword,
         newPasswordConfirmation: data.newPasswordConfirmation,
       });
       alert.success("Succès", "Votre mot de passe a été réinitialisé.");
-      navigate(appConfig.FRONTEND_PATHS.login.path);
+      navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
     } catch (err: any) {
       alert.error(
         "Erreur",

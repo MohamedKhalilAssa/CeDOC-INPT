@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.model.entities.formation;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -14,7 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
-import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormation;
+import ma.inpt.cedoc.model.entities.utilisateurs.ResponsableDeFormationRole;
 import ma.inpt.cedoc.model.enums.formation_enums.StatutFormationEnum;
 
 @Data
@@ -29,7 +30,7 @@ public class SeanceFormation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer duree; // durée en minutes ou heures ? (INT in diagram)
+    private Integer duree; // durée en minutes ou heures? (INT in diagram)
 
     /*lien du justificatif PDF */
     @NotBlank
@@ -43,10 +44,10 @@ public class SeanceFormation {
     /* Audit */
     @CreatedDate
     @Column(updatable = false)
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private ZonedDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     // ---------------------- Relations ----------------------------
 
@@ -59,7 +60,7 @@ public class SeanceFormation {
     private Doctorant declarant; // 1 doctorant → * séances
 
     @ManyToOne(optional = false) // valide
-    @JoinColumn(name = "responsable_id")
-    private ResponsableDeFormation validePar; // 1 resp.→ * séances
+    @JoinColumn(name = "responsable_id", nullable = true)
+    private ResponsableDeFormationRole validePar; // 1 resp.→ * séances
 
 }

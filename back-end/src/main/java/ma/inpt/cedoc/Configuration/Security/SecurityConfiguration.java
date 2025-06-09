@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,14 +41,18 @@ public class SecurityConfiguration {
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                                 .csrf(csrf -> csrf.disable())
-//                                .addFilterBefore(
-//                                                AccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
-//                                .addFilterAfter(refreshTokenFilter,
-//                                                AccessTokenFilter.class)
-
+                                .addFilterBefore(
+                                                AccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                                .addFilterAfter(refreshTokenFilter,
+                                                AccessTokenFilter.class)
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
-                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**", "/api/attestations/**")
+                                                .requestMatchers(HttpMethod.GET, "/api/formations").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/chefs-equipe/chefs-sujets")
+                                                .permitAll()
+                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**",
+                                                                "/api/utilisateurs/assign-role",
+                                                                "/api/utilisateurs/set-role")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session

@@ -3,12 +3,15 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
+import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
-import ma.inpt.cedoc.model.entities.candidature.Candidature;
-import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.EquipeDeRecherche;
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 
 public interface CandidatureService {
 
@@ -18,20 +21,53 @@ public interface CandidatureService {
     CandidatResponseDTO registerCandidat(CandidatRequestDTO dto);
 
     // PUBLIC ACCESS
-    List<EquipeDeRecherche> getAllEquipes();
+    List<EquipeSimpleDTO> getAllEquipes();
 
-    List<Professeur> getProfesseursByEquipeId(Long equipeId);
+    List<ProfesseurResponseDTO> getProfesseursByEquipeId(Long equipeId);
 
-    List<Sujet> getSujetsByEquipeId(Long equipeId); // sujets publiés
+    List<SujetResponseDTO> getSujetsByEquipeId(Long equipeId); // sujets publiés
 
-    List<Sujet> getAllPublicSujets(); // sujets affichés publiquement
+    List<SujetResponseDTO> getAllPublicSujets(); // sujets affichés publiquement
 
     // CHEF D EQUIPE ONLY
-    Candidature accepterCandidature(Long candidatureId, LocalDate entretien); // notification + date
-
-    Candidature refuserCandidature(Long candidatureId, String motif); // notification + fermeture compte
+    CandidatureResponseDTO accepterCandidature(Long candidatureId, LocalDate entretien); // notification + date
+    CandidatureResponseDTO refuserCandidature(Long candidatureId, String motif); // notification + fermeture compte
 
     // AUTO APRES 1 MOIS DE REFUS
     void fermerEtArchiverCompteCandidat(Long candidatId); // après un mois du refus
+
+    /**
+     * Création d'une nouvelle candidature (statut forcé à SOUMISE)
+     */
+    CandidatureResponseDTO createCandidature(CandidatureRequestDTO dto, UserDetails userDetails);
+
+    /**
+     * Modification d'une candidature existante, avant la date limite.
+     */
+    CandidatureResponseDTO updateCandidature(Long candidatureId, CandidatureRequestDTO dto, UserDetails userDetails);
+
+    /**
+     * Récupérer la liste des candidatures du candidat authentifié.
+     */
+    List<CandidatureResponseDTO> getMyCandidatures(UserDetails userDetails);
+
+    /**
+     * Basculer quotidiennement le statut SOUMISE → EN_COURS_DE_TRAITEMENT si on a atteint la date limite.
+     */
+    void basculerStatutEnCoursTraitement();
+
+    /**
+     * Archiver les candidats dont la candidature a été REJETÉE depuis ≥ 1 mois.
+     */
+    void archiverCandidatsRefuses();
+
+    /**
+     * Exposer les candidatures au chef d'équipe (par ID de chef d'équipe).
+     */
+    List<CandidatureResponseDTO> getCandidaturesByChefEquipeId(Long chefEquipeId);
+
+    CandidatureResponseDTO getCandidatureById(Long candidatureId, UserDetails userDetails);
+    void deleteCandidature(Long candidatureId, UserDetails userDetails);
+
 
 }

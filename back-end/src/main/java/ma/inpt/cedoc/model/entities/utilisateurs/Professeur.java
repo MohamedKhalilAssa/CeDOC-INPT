@@ -1,37 +1,45 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.GradeProfesseurEnum;
 
-import java.util.List;
-
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="professeurs")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="type_professeur", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("PROFESSEUR")
-public class Professeur extends Utilisateur {
+@Builder
+@Table(name = "professeurs")
+public class Professeur {
+
+    @Id
+    private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "utilisateur_id")
+    @JsonIgnore
+    private Utilisateur utilisateur;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Veuillez précisez le grade.")
-    @Column(name="grade")
+    @Column(name = "grade")
     private GradeProfesseurEnum grade;
 
     @ManyToOne
-    @JoinColumn(name="equipe_de_recherche_id")
+    @JoinColumn(name = "equipe_de_recherche_id")
+    @JsonIgnore
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
 
     @OneToMany(mappedBy = "professeur")
@@ -41,9 +49,31 @@ public class Professeur extends Utilisateur {
     @JsonIgnore
     private List<Sujet> sujetsProposes;
 
-    //Relation avec formations
+    // Relation avec formations
     @OneToMany(mappedBy = "professeur")
     private List<Formation> formationsProposees;
 
+    // Roles - composition instead of inheritance
+    @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ChefEquipeRole chefEquipeRole;
+
+    @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private DirecteurDeTheseRole directeurDeTheseRole;
+
+    @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ResponsableDeFormationRole responsableDeFormationRole;
+
+    // Helper methods to check roles
+    public boolean isChefEquipe() {
+        return chefEquipeRole != null;
+    }
+
+    public boolean isDirecteurDeThese() {
+        return directeurDeTheseRole != null;
+    }
+
+    public boolean isResponsableDeFormation() {
+        return responsableDeFormationRole != null;
+    }
 
 }

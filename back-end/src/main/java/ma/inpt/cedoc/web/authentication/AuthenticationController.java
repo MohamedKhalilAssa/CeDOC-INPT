@@ -1,6 +1,7 @@
 package ma.inpt.cedoc.web.authentication;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -40,7 +41,7 @@ public class AuthenticationController {
                 !authentication.getPrincipal().equals("anonymousUser")) {
             return alreadyLoggedIn();
         }
-        
+
         try {
             AuthenticationResponse authResponse = authenticationService.register(request, response);
             return ResponseEntity.ok(authResponse);
@@ -212,10 +213,16 @@ public class AuthenticationController {
 
         if (authentication != null && authentication.isAuthenticated() &&
                 !authentication.getPrincipal().equals("anonymousUser")) {
-            return ResponseEntity.ok().body(true);
+            return ResponseEntity.ok().body(Map.of(
+                    "authenticated", true,
+                    "message", "User is authenticated"));
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                "authenticated", false,
+                "error", "unauthenticated",
+                "message", "User is not authenticated",
+                "requiresLogin", true));
     }
 
     // helper

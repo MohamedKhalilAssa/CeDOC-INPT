@@ -1,11 +1,16 @@
+import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
+
 export interface InputFieldProps {
   label: string;
   name: string;
   type: string;
   placeholder?: string;
   required?: boolean;
-  register: any;
+  register?: any;
+  control?: Control<any>;
   errors: any;
+  defaultValue?: string | null;
+  disabled?: boolean;
   validation?: any;
   classes?: string;
   isPassword?: boolean;
@@ -15,15 +20,20 @@ export interface SelectFieldProps {
   name: string;
   options: { value: string | number; label: string | number }[];
   required?: boolean;
-  register: any;
+  register?: any;
+  control?: Control<any>;
   errors: any;
+  disabled?: boolean;
+  defaultValue?: string | number | null;
   classes?: string;
 }
 export interface DatePickerProps {
   label: string;
   name: string;
   required?: boolean;
-  register: any;
+  register?: any;
+  control?: Control<any>;
+  defaultValue?: Date | null;
   errors: any;
   classes?: string;
 }
@@ -60,9 +70,22 @@ export interface TextAreaProps {
   name: string;
   placeholder?: string;
   required?: boolean;
-  register: any;
+  register?: any;
+  control?: Control<any>;
   errors: any;
   validation?: any;
   classes?: string;
   rows?: number;
+}
+export interface CheckboxFieldProps {
+  label: string;
+  name: string;
+  register?: UseFormRegister<any>;
+  control?: Control<any>;
+  errors: FieldErrors;
+  required?: boolean;
+  disabled?: boolean;
+  description?: string;
+  onChange?: (checked: boolean) => void;
+  className?: string;
 }

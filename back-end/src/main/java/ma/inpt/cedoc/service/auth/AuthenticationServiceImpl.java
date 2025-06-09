@@ -25,7 +25,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.Configuration.Security.JWT.JwtUtil;
-import ma.inpt.cedoc.model.DTOs.auth.*;
+import ma.inpt.cedoc.model.DTOs.auth.AuthenticationResponse;
+import ma.inpt.cedoc.model.DTOs.auth.LoginRequest;
+import ma.inpt.cedoc.model.DTOs.auth.RegisterRequestDTO;
+import ma.inpt.cedoc.model.DTOs.auth.TokenRefreshRequest;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
 import ma.inpt.cedoc.model.entities.auth.Token;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
@@ -170,6 +173,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         @Override
+        @Transactional
         public AuthenticationResponse refreshToken(TokenRefreshRequest request, HttpServletResponse response)
                         throws IOException {
                 final String userEmail;
@@ -186,23 +190,57 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         return AuthenticationResponse.builder().status(401).message("Refresh token invalide")
                                         .build();
                 }
+
                 if (userEmail != null) {
                         var user = utilisateurRepository.findByEmail(userEmail)
-                                        .orElseThrow();
-                        if (jwtUtil.isTokenValid(refreshToken, user)) {
-                                var accessToken = jwtUtil.generateAccessToken(user);
-                                revokeAllUserAccessTokens(user);
-                                saveUserToken(user, accessToken, TokenEnum.BEARER);
-                                AuthenticationResponse authResponse = AuthenticationResponse.builder()
-                                                .accessToken(accessToken)
-                                                .status(200)
-                                                .message("Utilisateur Authentifier avec success")
-                                                .build();
-                                return authResponse;
+                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                                                        "Utilisateur introuvable"));
+
+                        // Use synchronized block per user to prevent race conditions for the same user
+                        synchronized (("refresh_" + userEmail).intern()) {
+                                // Verify refresh token is still valid in database
+                                Token refreshTokenEntity;
+                                try {
+                                        refreshTokenEntity = tokenService.findByTokenAndTokenType(refreshToken,
+                                                        TokenEnum.REFRESH);
+                                } catch (Exception e) {
+                                        return AuthenticationResponse.builder()
+                                                        .status(401)
+                                                        .message("Refresh token introuvable")
+                                                        .build();
+                                }
+
+                                if (refreshTokenEntity.isExpired() || refreshTokenEntity.isRevoked()) {
+                                        return AuthenticationResponse.builder()
+                                                        .status(401)
+                                                        .message("Refresh token expiré ou révoqué")
+                                                        .build();
+                                }
+
+                                if (jwtUtil.isTokenValid(refreshToken, user)) {
+                                        var accessToken = jwtUtil.generateAccessToken(user);
+                                        // Revoke only access tokens, not refresh tokens
+                                        revokeAllUserAccessTokens(user);
+                                        // Save new access token
+                                        saveUserToken(user, accessToken, TokenEnum.BEARER);
+                                        AuthenticationResponse authResponse = AuthenticationResponse.builder()
+                                                        .accessToken(accessToken)
+                                                        .status(200)
+                                                        .message("Token rafraichi avec succès")
+                                                        .build();
+                                        return authResponse;
+                                } else {
+                                        return AuthenticationResponse.builder()
+                                                        .status(401)
+                                                        .message("Refresh token invalide")
+                                                        .build();
+                                }
                         }
                 }
-                return AuthenticationResponse.builder().status(401).message("Refresh token process failed").build();
-
+                return AuthenticationResponse.builder()
+                                .status(401)
+                                .message("Token refresh échoué - veuillez vous reconnecter")
+                                .build();
         }
 
         @Override
@@ -257,7 +295,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                         """;
 
                         content = String.format(content, utilisateur.getEmail(), verificationUrl);
-                        return emailService.sendMailToUtilisateur(utilisateur,"Changement de mot de passe" ,"Demande de changement de mot de passe",
+                        return emailService.sendMailToUtilisateur(utilisateur, "Changement de mot de passe",
+                                        "Demande de changement de mot de passe",
                                         content);
                 } catch (Exception e) {
                         return CompletableFuture.failedFuture(e);
@@ -273,8 +312,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                         .build();
                 }
                 Utilisateur utilisateur = resetToken.getUtilisateur();
-                if(passwordEncoder.matches(password, utilisateur.getPassword())) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il est impossible de mettre le meme mot de passe que l'ancien");
+                if (passwordEncoder.matches(password, utilisateur.getPassword())) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        "Il est impossible de mettre le meme mot de passe que l'ancien");
                 }
                 tokenService.revokeToken(resetToken);
                 utilisateur.setPassword(passwordEncoder.encode(password));

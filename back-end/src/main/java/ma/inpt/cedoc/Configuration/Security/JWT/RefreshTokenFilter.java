@@ -67,29 +67,29 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
             // Extract refresh token from cookies
             String refreshToken = extractRefreshToken(request);
-
             if (refreshToken != null) {
                 boolean refreshSuccessful = handleRefreshToken(refreshToken, request, response);
                 if (refreshSuccessful) {
-
+                    logger.debug("Token refresh successful");
                     filterChain.doFilter(request, response);
                     return;
                 }
-            }
-
-            // If we get here, both access token and refresh token failed
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("{\"error\":\"authentication_error\",\"message\":\"Access denied\"}");
+            } // If we get here, both access token and refresh token failed
+            logger.debug("Authentication failed - no valid tokens");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write(
+                    "{\"error\":\"token_expired\",\"message\":\"Both access and refresh tokens are expired or invalid\",\"requiresLogin\":true}");
             return;
-
         } catch (Exception e) {
-            logger.error("Error during token refresh: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("{\"error\":\"authentication_error\",\"message\":\"Access denied\"}");
+            logger.error("Token refresh error: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write(
+                    "{\"error\":\"token_error\",\"message\":\"Token processing failed\",\"requiresLogin\":true}");
             return;
         }
     }
@@ -97,10 +97,16 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     // HELPER METHODS
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        // Skip authentication endpoints except logout and check
-        return (path.contains("/images") || path.contains("/api/auth") &&
-                !(path.contains("/api/auth/logout") || path.contains("/api/auth/check"))) ||
-                path.contains("/api/guest");
+        String method = request.getMethod();
+        return (!path.contains("/api/auth/logout") && !path.contains("/api/auth/check")) &&
+                (method.equalsIgnoreCase("OPTIONS") ||
+                        path.startsWith("/api/auth/") ||
+                        path.startsWith("/api/guest/") ||
+                        path.startsWith("/images/") ||
+                        (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||
+                        (method.equalsIgnoreCase("GET") && path.equals("/api/chefs-equipe/chefs-sujets")) ||
+                        path.startsWith("/api/utilisateurs/assign-role") ||
+                        path.startsWith("/api/utilisateurs/set-role"));
     }
 
     private String extractRefreshToken(HttpServletRequest request) {
@@ -111,21 +117,40 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
     private boolean handleRefreshToken(String refreshToken, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        Token refreshTokenEntity = tokenService.findByToken(refreshToken);
-        refreshTokenEntity = refreshTokenEntity.getTokenType() == TokenEnum.REFRESH ? refreshTokenEntity : null;
-
-        if (refreshTokenEntity == null) {
-            logger.debug("Refresh token not found in database");
-            return false;
-        }
-
         try {
-            // Validate the refresh token
-            jwtUtil.validate(refreshTokenEntity.getToken());
+            Token refreshTokenEntity = tokenService.findByToken(refreshToken);
 
-            // Check if token is valid in our database
+            // Check if refresh token exists and is of correct type
+            if (refreshTokenEntity == null || refreshTokenEntity.getTokenType() != TokenEnum.REFRESH) {
+                logger.debug("Refresh token not found or invalid type");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"error\":\"invalid_refresh_token\",\"message\":\"Refresh token not found or invalid\",\"requiresLogin\":true}");
+                return false;
+            }
+
+            // Check if token is expired or revoked in database
             if (refreshTokenEntity.isExpired() || refreshTokenEntity.isRevoked()) {
                 logger.debug("Refresh token is expired or revoked");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"error\":\"refresh_token_expired\",\"message\":\"Refresh token is expired or revoked\",\"requiresLogin\":true}");
+                return false;
+            }
+
+            // Validate the refresh token with JWT
+            try {
+                jwtUtil.validate(refreshTokenEntity.getToken());
+            } catch (JwtException e) {
+                logger.warn("Invalid refresh token JWT: {}", e.getMessage());
+                // Revoke the invalid token
+                tokenService.revokeToken(refreshTokenEntity);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"error\":\"invalid_refresh_token\",\"message\":\"Refresh token is malformed or invalid\",\"requiresLogin\":true}");
                 return false;
             }
 
@@ -148,14 +173,21 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 logger.debug("Authentication successful for user: {}", user.getUsername());
-                logger.debug("Token refresh successful");
                 return true;
+            } else {
+                logger.debug("Failed to generate new access token");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"error\":\"token_refresh_failed\",\"message\":\"Failed to refresh tokens\",\"requiresLogin\":true}");
+                return false;
             }
-            return false;
-        } catch (JwtException e) {
-            logger.warn("Invalid refresh token: {}", e.getMessage());
-            // Revoke the invalid token
-            tokenService.revokeToken(refreshTokenEntity);
+        } catch (Exception e) {
+            logger.error("Unexpected error during token refresh: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.getWriter().write(
+                    "{\"error\":\"server_error\",\"message\":\"Internal server error during token refresh\",\"requiresLogin\":true}");
             return false;
         }
     }

@@ -9,7 +9,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.enums.candidature_enums.*;
 
@@ -36,6 +39,10 @@ public class Candidature {
     private MentionEnum mentionBac;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "diplome")
+    private DiplomeEnum diplome;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "mention_diplome")
     private MentionEnum mentionDiplome;
 
@@ -49,13 +56,9 @@ public class Candidature {
 
     @Column(name = "specialite")
     private String specialite;
-
+    
     @Column(name = "intitule_pfe")
     private String intitulePFE;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "statut_professionnel")
-    private StatutProfessionnelEnum statutProfessionnel;
 
     // for logging and administration purposes it will be filled by the system
     @Column(name = "created_at", updatable = false)

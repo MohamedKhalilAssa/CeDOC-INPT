@@ -19,11 +19,13 @@ import lombok.NoArgsConstructor;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "equipes_de_recherches")
 public class EquipeDeRecherche {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
-    @Column(name = "nom_de_equipe")
+    @Column(name = "nom_de_equipe", nullable = false, unique = true)
     private String nomDeLequipe;
 
     // for logging and administration purposes it will be filled by the system
@@ -35,9 +37,9 @@ public class EquipeDeRecherche {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "chef_equipe_id")
-    private ChefEquipe chefEquipe;
+    @OneToOne
+    @JoinColumn(name = "chef_equipe_id", nullable = false)
+    private ChefEquipeRole chefEquipe;
 
     @OneToMany(mappedBy = "equipeDeRechercheAcceuillante")
     private List<Professeur> membres;
