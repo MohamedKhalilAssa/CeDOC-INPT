@@ -1,95 +1,74 @@
+// filepath: d:\Programming\CeDOC - INPT\front-end\src\Pages\Dashboard\Sujets\SujetsMembreEquipes.tsx
 import Badge from "@/Components/DashComps/ui/badge/Badge";
 import type { Column } from "@/Components/Table/ServerSideTable";
 import ServerSideTable from "@/Components/Table/ServerSideTable";
-import { getData } from "@/Helpers/CRUDFunctions";
+import { deleteData, getData } from "@/Helpers/CRUDFunctions";
+import { useAlert } from "@/Hooks/UseAlert";
+import { useServerSideTable } from "@/Hooks/useServerSideTable";
 import appConfig from "@/public/config";
 import { SujetResponseDTO } from "@/Types/CandidatureTypes";
-import { PaginatedResponse } from "@/Types/GlobalTypes";
+import { PaginatedResponse, TableConfig } from "@/Types/GlobalTypes";
 import { CheckCircle, Eye, EyeOff, XCircle } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 
 interface SujetMembreEquipe extends SujetResponseDTO {
   // Extending the base type with team member specific fields if needed
 }
 
 const SujetsMembreEquipes: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [paginatedResponse, setPaginatedResponse] =
-    useState<PaginatedResponse<SujetMembreEquipe> | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState<{
-    sortBy: string;
-    sort: "asc" | "desc";
-  } | null>(null);
-
-  // Fetch data from API with pagination, search, and sorting
-  const fetchData = useCallback(
+  // Fetcher function for the table hook - moved outside to be completely stable
+  const swal = useAlert();
+  const fetchSujets = useCallback(
     async (
-      page: number = 1,
-      search: string = "",
-      sort?: { sortBy: string; sort: "asc" | "desc" }
-    ) => {
-      setLoading(true);
-      setError(null);
+      config: TableConfig
+    ): Promise<PaginatedResponse<SujetMembreEquipe>> => {
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append("page", (config.page - 1).toString()); // Backend uses 0-based indexing
+      params.append("size", config.pageSize.toString());
 
-      try {
-        // Build query parameters
-        const params = new URLSearchParams();
-        params.append("page", (page - 1).toString()); // Backend uses 0-based indexing
-        params.append("size", "10");
-
-        if (search.trim()) {
-          params.append("search", search.trim());
-        }
-
-        if (sort && sort.sortBy) {
-          params.append("sortBy", sort.sortBy);
-          params.append("sort", sort.sort);
-        }
-
-        const url = `${
-          appConfig.API_PATHS.CHEFS_EQUIPES.sujetsDesMembresEquipe.path
-        }?${params.toString()}`;
-        const response = await getData<PaginatedResponse<SujetMembreEquipe>>(
-          url
-        );
-
-        if (response) {
-          setPaginatedResponse(response);
-        } else {
-          setPaginatedResponse({
-            content: [],
-            currentPage: 1,
-            totalPages: 1,
-            totalItems: 0,
-            pageSize: 10,
-            isLast: true,
-          });
-        }
-      } catch (err) {
-        console.error("Erreur lors du chargement des sujets:", err);
-        setError("Impossible de charger les sujets des membres de l'équipe");
-        setPaginatedResponse({
-          content: [],
-          currentPage: 1,
-          totalPages: 1,
-          totalItems: 0,
-          pageSize: 10,
-          isLast: true,
-        });
-      } finally {
-        setLoading(false);
+      if (config.search.trim()) {
+        params.append("search", config.search.trim());
       }
-    },
-    []
-  );
 
-  // Initial data fetch
-  useEffect(() => {
-    fetchData(currentPage, searchTerm, sortConfig || undefined);
-  }, [currentPage, searchTerm, sortConfig, fetchData]); // Status badge component for validation status
+      if (config.sortBy && config.sort) {
+        params.append("sortBy", config.sortBy);
+        params.append("sort", config.sort);
+      }
+
+      // Add filters if any
+      Object.entries(config.filters).forEach(([key, value]) => {
+        if (value) {
+          params.append(key, value);
+        }
+      });
+      const url = `${
+        appConfig.API_PATHS.CHEFS_EQUIPES.sujetsDesMembresEquipe.path
+      }?${params.toString()}`;
+
+      const response = await getData<PaginatedResponse<SujetMembreEquipe>>(url);
+
+      if (!response) {
+        throw new Error("No data received from server");
+      }
+
+      return response;
+    },
+    [] // Empty dependency array - this function should be stable
+  );
+  // Use the table hook
+  const { config, data, loading, error, setConfig, refetch } =
+    useServerSideTable<SujetMembreEquipe>({
+      initialConfig: {
+        pageSize: 10,
+      },
+      fetcher: fetchSujets,
+      onError: (err) => {
+        console.error("Error fetching sujets:", err);
+      },
+    });
+
+  // Status badge component for validation status
   const StatusBadge: React.FC<{ isValid: boolean; label: string }> = ({
     isValid,
     label,
@@ -119,6 +98,7 @@ const SujetsMembreEquipes: React.FC = () => {
       {isPublic ? "Public" : "Privé"}
     </Badge>
   );
+
   // Define table columns
   const columns: Column[] = [
     {
@@ -132,7 +112,7 @@ const SujetsMembreEquipes: React.FC = () => {
             title={sujet.intitule}
           >
             {sujet.intitule}
-          </div>{" "}
+          </div>
           {sujet.description && (
             <div
               className="text-sm text-gray-500 truncate mt-1"
@@ -166,24 +146,6 @@ const SujetsMembreEquipes: React.FC = () => {
         </div>
       ),
     },
-    // {
-    //   key: "chefEquipe",
-    //   label: "Chef d'Équipe",
-    //   render: (_: any, sujet: SujetMembreEquipe) => (
-    //     <div className="text-sm">
-    //       {sujet.chefEquipe ? (
-    //         <>
-    //           <div className="font-medium text-gray-900">
-    //             {sujet.chefEquipe.prenom} {sujet.chefEquipe.nom}
-    //           </div>
-    //           <div className="text-gray-500">{sujet.chefEquipe.email}</div>
-    //         </>
-    //       ) : (
-    //         <span className="text-gray-400 italic">Non assigné</span>
-    //       )}
-    //     </div>
-    //   ),
-    // },
     {
       key: "valide",
       label: "Statut de Validation",
@@ -217,29 +179,7 @@ const SujetsMembreEquipes: React.FC = () => {
         </div>
       ),
     },
-  ]; // Handle page changes
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-  }, []);
-
-  // Handle search changes
-  const handleSearchChange = useCallback((search: string) => {
-    setSearchTerm(search);
-    setCurrentPage(1); // Reset to first page when searching
-  }, []);
-
-  // Handle sort changes
-  const handleSortChange = useCallback(
-    (sortBy: string, sortDirection: "asc" | "desc") => {
-      if (sortBy) {
-        setSortConfig({ sortBy, sort: sortDirection });
-      } else {
-        setSortConfig(null); // Clear sort
-      }
-      setCurrentPage(1); // Reset to first page when sorting
-    },
-    []
-  );
+  ];
 
   if (error) {
     return (
@@ -260,30 +200,46 @@ const SujetsMembreEquipes: React.FC = () => {
       </div>
     );
   }
+
   return (
     <div className="container mx-auto px-4 py-6">
       <ServerSideTable
         title="Sujets des Membres de l'Équipe"
         subtitle="Gestion et supervision des sujets de thèse proposés par les membres de votre équipe de recherche"
         columns={columns}
-        paginatedResponse={
-          paginatedResponse || {
-            content: [],
-            currentPage: 1,
-            totalPages: 1,
-            totalItems: 0,
-            pageSize: 10,
-            isLast: true,
-          }
-        }
+        data={data}
         loading={loading}
-        onPageChange={handlePageChange}
-        onSearchChange={handleSearchChange}
-        onSortChange={handleSortChange}
+        config={config}
+        onConfigChange={setConfig}
         searchPlaceholder="Rechercher par intitulé, description ou directeur de thèse..."
         emptyMessage="Aucun sujet trouvé pour les membres de l'équipe"
-        currentSearch={searchTerm}
-        currentSort={sortConfig}
+        dataStability={true}
+        onDelete={async (row) => {
+          const isConfirmed: boolean = await swal.confirm(
+            "Confirmer la suppression",
+            "Êtes-vous sûr de vouloir supprimer ce sujet ?",
+            "Supprimer"
+          );
+          if (isConfirmed) {
+            try {
+              await deleteData(
+                `${appConfig.API_PATHS.SUJET.deleteSujet.path}${row.id}`
+              );
+
+              // Show success message
+              swal.toast("Sujet supprimé avec succès", "success");
+
+              // Refetch data to update the table
+              refetch();
+            } catch (error) {
+              console.error("Delete error:", error);
+              swal.error(
+                "Erreur de suppression",
+                "Suppression du sujet a échoué."
+              );
+            }
+          }
+        }}
       />
     </div>
   );

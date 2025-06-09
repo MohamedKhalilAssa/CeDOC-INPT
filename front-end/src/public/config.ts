@@ -147,7 +147,7 @@ const appConfig: AppConfig = {
       },
       deleteSujet: {
         name: "Supprimer un Sujet",
-        path: "/sujets/:id",
+        path: "/sujets/",
         method: "DELETE",
       },
     },

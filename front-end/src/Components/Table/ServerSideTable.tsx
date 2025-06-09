@@ -1,4 +1,4 @@
-import { PaginatedResponse } from "@/Types/GlobalTypes";
+import { PaginatedResponse, TableConfig } from "@/Types/GlobalTypes";
 import {
   ArrowDown,
   ArrowUp,
@@ -8,8 +8,15 @@ import {
   Edit3,
   Eye,
   Search,
+  TrashIcon,
 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 interface Column {
   key: string;
@@ -21,7 +28,7 @@ interface Column {
 
 interface ServerSideTableProps {
   columns: Column[];
-  paginatedResponse: PaginatedResponse<any>;
+  data: PaginatedResponse<any>;
   loading?: boolean;
   searchable?: boolean;
   searchPlaceholder?: string;
@@ -29,22 +36,18 @@ interface ServerSideTableProps {
   subtitle?: string;
   emptyMessage?: string;
   actions?: boolean;
-  onPageChange: (page: number) => void;
-  onSearchChange: (search: string) => void;
-  onSortChange: (sortBy: string, sortDirection: "asc" | "desc") => void;
+  config: TableConfig;
+  onConfigChange: (config: Partial<TableConfig>) => void;
   onRowClick?: (row: any) => void;
   onEdit?: (row: any) => void;
   onView?: (row: any) => void;
-  currentSearch?: string;
-  currentSort?: {
-    sortBy: string;
-    sort: "asc" | "desc";
-  } | null;
+  onDelete?: (row: any) => void;
+  dataStability?: boolean; // Enable data stability during loading
 }
 
 const ServerSideTable: React.FC<ServerSideTableProps> = ({
   columns,
-  paginatedResponse,
+  data,
   loading = false,
   searchable = true,
   searchPlaceholder = "Search...",
@@ -52,59 +55,83 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
   subtitle,
   emptyMessage = "No data available",
   actions = true,
-  onPageChange,
-  onSearchChange,
-  onSortChange,
+  config,
+  onConfigChange,
   onRowClick,
   onEdit,
+  onDelete,
   onView,
-  currentSearch = "",
-  currentSort = null,
+  dataStability = true,
 }) => {
-  const [searchTerm, setSearchTerm] = useState(currentSearch);
+  const [searchTerm, setSearchTerm] = useState(config.search);
+  const stableDataRef = useRef<PaginatedResponse<any> | null>(null);
+  const prevDataRef = useRef<PaginatedResponse<any> | null>(null);
+
+  // Data stability logic - keep previous data during loading if dataStability is enabled
+  const displayData = useMemo(() => {
+    if (!dataStability) {
+      return data;
+    }
+
+    // If we're loading and have stable data, use stable data
+    if (loading && stableDataRef.current) {
+      return stableDataRef.current;
+    }
+
+    // If we're not loading and data is different from previous, update stable data
+    if (
+      !loading &&
+      JSON.stringify(data) !== JSON.stringify(prevDataRef.current)
+    ) {
+      stableDataRef.current = data;
+      prevDataRef.current = data;
+    }
+
+    return data;
+  }, [data, loading, dataStability]);
 
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchTerm !== currentSearch) {
-        onSearchChange(searchTerm);
+      if (searchTerm !== config.search) {
+        onConfigChange({ search: searchTerm, page: 1 }); // Reset to page 1 on search
       }
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchTerm, onSearchChange, currentSearch]);
+  }, [searchTerm, config.search, onConfigChange]);
 
-  // Update local search when controlled value changes
+  // Update local search when config changes externally
   useEffect(() => {
-    setSearchTerm(currentSearch);
-  }, [currentSearch]);
+    setSearchTerm(config.search);
+  }, [config.search]);
 
   const handleSort = useCallback(
     (key: string) => {
       const column = columns.find((col) => col.key === key);
       if (!column?.sortable) return;
 
-      let newDirection: "asc" | "desc" = "asc";
-      if (currentSort?.sortBy === key) {
-        if (currentSort.sort === "asc") {
-          newDirection = "desc";
+      let newSort: "asc" | "desc" | "" = "asc";
+      if (config.sortBy === key) {
+        if (config.sort === "asc") {
+          newSort = "desc";
         } else {
-          // Remove sort by passing empty sortBy
-          onSortChange("", "asc");
+          // Remove sort
+          onConfigChange({ sortBy: "", sort: "", page: 1 });
           return;
         }
       }
 
-      onSortChange(key, newDirection);
+      onConfigChange({ sortBy: key, sort: newSort, page: 1 });
     },
-    [columns, currentSort, onSortChange]
+    [columns, config.sortBy, config.sort, onConfigChange]
   );
 
   const getSortIcon = useCallback(
     (key: string) => {
       const column = columns.find((col) => col.key === key);
       if (!column?.sortable) return null;
-      if (currentSort?.sortBy === key) {
-        return currentSort.sort === "asc" ? (
+      if (config.sortBy === key) {
+        return config.sort === "asc" ? (
           <ArrowUp className="w-4 h-4" />
         ) : (
           <ArrowDown className="w-4 h-4" />
@@ -112,18 +139,25 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
       }
       return <ArrowUpDown className="w-4 h-4 opacity-50" />;
     },
-    [currentSort, columns]
+    [config.sortBy, config.sort, columns]
   );
 
-  const {
-    content = [],
-    currentPage,
-    totalPages,
-    totalItems,
-    pageSize,
-  } = paginatedResponse;
-  const startIndex = (currentPage - 1) * pageSize + 1;
-  const endIndex = Math.min(currentPage * pageSize, totalItems);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      onConfigChange({ page });
+    },
+    [onConfigChange]
+  );
+  const { content = [], totalPages, totalItems, pageSize } = displayData;
+  // Use config.page for pagination button state (not affected by data stability)
+  const activePage = config.page;
+
+  // Calculate display values using activePage and actual content for accuracy
+  const startIndex = totalItems > 0 ? (activePage - 1) * pageSize + 1 : 0;
+  const endIndex = totalItems > 0 ? startIndex + content.length - 1 : 0;
+  // Check if we can navigate (use config.page but validate against stable data bounds)
+  const canGoPrevious = activePage > 1;
+  const canGoNext = activePage < totalPages;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -192,7 +226,7 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {loading ? (
+            {loading && !dataStability ? (
               <tr>
                 <td
                   colSpan={columns.length + (actions ? 1 : 0)}
@@ -214,12 +248,12 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
                 </td>
               </tr>
             ) : (
-              content.map((row, index) => (
+              content.map((row: any, index: number) => (
                 <tr
                   key={row.id || index}
                   className={`hover:bg-gray-50 ${
                     onRowClick ? "cursor-pointer" : ""
-                  }`}
+                  } ${loading && dataStability ? "opacity-75" : ""}`} // Slightly fade during loading if data stability is on
                   onClick={() => onRowClick && onRowClick(row)}
                 >
                   {columns.map((column) => (
@@ -241,10 +275,10 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
                               e.stopPropagation();
                               onView(row);
                             }}
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
+                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 cursor-pointer  hover:scale-110  transition"
                             title="View"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-5 h-5 text-green-500 hover:text-green-700 transition" />
                           </button>
                         )}
                         {onEdit && (
@@ -253,10 +287,22 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
                               e.stopPropagation();
                               onEdit(row);
                             }}
-                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
+                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50 cursor-pointer  hover:scale-110  transition"
                             title="Edit"
                           >
-                            <Edit3 className="w-4 h-4" />
+                            <Edit3 className="w-5 h-5 text-blue-500 hover:text-blue-700 transition" />
+                          </button>
+                        )}
+                        {onDelete && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(row);
+                            }}
+                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50 cursor-pointer  hover:scale-110  transition"
+                            title="Delete"
+                          >
+                            <TrashIcon className="w-5 h-5 text-red-500 hover:text-red-700 transition" />
                           </button>
                         )}
                       </div>
@@ -269,19 +315,30 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
         </table>
       </div>
 
+      {/* Loading indicator for data stability mode */}
+      {loading && dataStability && (
+        <div className="px-6 py-2 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+            <span className="text-sm text-gray-600">Updating...</span>
+          </div>
+        </div>
+      )}
+
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="px-6 py-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-700">
               Showing {startIndex} to {endIndex} of {totalItems} results
-            </div>
-
+            </div>{" "}
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => handlePageChange(activePage - 1)}
+                disabled={!canGoPrevious}
+                className={`p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  canGoPrevious ? "cursor-pointer" : ""
+                }`}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -292,20 +349,20 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
                   let pageNum;
                   if (totalPages <= 5) {
                     pageNum = i + 1;
-                  } else if (currentPage <= 3) {
+                  } else if (activePage <= 3) {
                     pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
+                  } else if (activePage >= totalPages - 2) {
                     pageNum = totalPages - 4 + i;
                   } else {
-                    pageNum = currentPage - 2 + i;
+                    pageNum = activePage - 2 + i;
                   }
 
                   return (
                     <button
                       key={pageNum}
-                      onClick={() => onPageChange(pageNum)}
-                      className={`px-3 py-1 rounded-lg text-sm ${
-                        currentPage === pageNum
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1 rounded-lg text-sm cursor-pointer ${
+                        activePage === pageNum
                           ? "bg-blue-600 text-white"
                           : "text-gray-600 hover:bg-gray-50"
                       }`}
@@ -317,9 +374,11 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
               </div>
 
               <button
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => handlePageChange(activePage + 1)}
+                disabled={!canGoNext}
+                className={`p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  canGoNext ? "cursor-pointer" : ""
+                }`}
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
