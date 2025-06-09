@@ -25,16 +25,6 @@ export const utilisateursSidebarConfig: NavigationGroup[] = [
 export const candidatsSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
   //TEST ONLY
-  {
-    title: "Sujets",
-    items: [
-      {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path,
-        label: "Proposer un sujet",
-        icon: "fas fa-book",
-      },
-    ],
-  },
 ];
 export const doctorantsSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,

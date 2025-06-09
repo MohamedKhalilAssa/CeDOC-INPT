@@ -5,11 +5,13 @@ import ServerSideTable from "@/Components/Table/ServerSideTable";
 import { deleteData, getData } from "@/Helpers/CRUDFunctions";
 import { useAlert } from "@/Hooks/UseAlert";
 import { useServerSideTable } from "@/Hooks/useServerSideTable";
+import EditSujetModal from "@/Pages/Dashboard/Sujets/EditSujetsModal";
+import ViewSujetsModal from "@/Pages/Dashboard/Sujets/ViewSujetsModal";
 import appConfig from "@/public/config";
 import { SujetResponseDTO } from "@/Types/CandidatureTypes";
 import { PaginatedResponse, TableConfig } from "@/Types/GlobalTypes";
 import { CheckCircle, Eye, EyeOff, XCircle } from "lucide-react";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
 interface SujetMembreEquipe extends SujetResponseDTO {
   // Extending the base type with team member specific fields if needed
@@ -55,8 +57,7 @@ const SujetsMembreEquipes: React.FC = () => {
       return response;
     },
     [] // Empty dependency array - this function should be stable
-  );
-  // Use the table hook
+  ); // Use the table hook
   const { config, data, loading, error, setConfig, refetch } =
     useServerSideTable<SujetMembreEquipe>({
       initialConfig: {
@@ -67,17 +68,46 @@ const SujetsMembreEquipes: React.FC = () => {
         console.error("Error fetching sujets:", err);
       },
     });
+  // Modal state management
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedSujet, setSelectedSujet] = useState<SujetMembreEquipe | null>(
+    null
+  );
+  // Modal handlers
+  const handleEditSujet = (sujet: SujetMembreEquipe) => {
+    setSelectedSujet(sujet);
+    setIsEditModalOpen(true);
+  };
+
+  const handleViewSujet = (sujet: SujetMembreEquipe) => {
+    setSelectedSujet(sujet);
+    setIsViewModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setIsViewModalOpen(false);
+    setSelectedSujet(null);
+  };
+
+  const handleSaveSuccess = () => {
+    refetch(); // Refresh the table data
+  };
+
+  const handleError = (message: string) => {
+    swal.toast(message, "error");
+  };
+  const handleSuccess = (message: string) => {
+    swal.toast(message, "success");
+  };
 
   // Status badge component for validation status
   const StatusBadge: React.FC<{ isValid: boolean; label: string }> = ({
     isValid,
     label,
   }) => (
-    <Badge
-      variant={isValid ? "solid" : "light"}
-      color={isValid ? "success" : "warning"}
-      size="sm"
-    >
+    <Badge variant="solid" color={isValid ? "success" : "light"} size="sm">
       {isValid ? (
         <CheckCircle className="w-3 h-3" />
       ) : (
@@ -89,11 +119,7 @@ const SujetsMembreEquipes: React.FC = () => {
 
   // Public status badge component
   const PublicStatusBadge: React.FC<{ isPublic: boolean }> = ({ isPublic }) => (
-    <Badge
-      variant={isPublic ? "solid" : "light"}
-      color={isPublic ? "primary" : "light"}
-      size="sm"
-    >
+    <Badge variant="solid" color={isPublic ? "success" : "light"} size="sm">
       {isPublic ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
       {isPublic ? "Public" : "Privé"}
     </Badge>
@@ -151,10 +177,12 @@ const SujetsMembreEquipes: React.FC = () => {
       label: "Statut de Validation",
       sortable: true,
       render: (_: any, sujet: SujetMembreEquipe) => (
-        <StatusBadge
-          isValid={sujet.valide}
-          label={sujet.valide ? "Validé" : "En attente"}
-        />
+        <div className="flex justify-center">
+          <StatusBadge
+            isValid={sujet.valide}
+            label={sujet.valide ? "Validé" : "Non Validé"}
+          />
+        </div>
       ),
     },
     {
@@ -162,7 +190,9 @@ const SujetsMembreEquipes: React.FC = () => {
       label: "Visibilité",
       sortable: true,
       render: (_: any, sujet: SujetMembreEquipe) => (
-        <PublicStatusBadge isPublic={sujet.estPublic} />
+        <div className="flex justify-center">
+          <PublicStatusBadge isPublic={sujet.estPublic} />
+        </div>
       ),
     },
     {
@@ -203,6 +233,7 @@ const SujetsMembreEquipes: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      {" "}
       <ServerSideTable
         title="Sujets des Membres de l'Équipe"
         subtitle="Gestion et supervision des sujets de thèse proposés par les membres de votre équipe de recherche"
@@ -214,6 +245,8 @@ const SujetsMembreEquipes: React.FC = () => {
         searchPlaceholder="Rechercher par intitulé, description ou directeur de thèse..."
         emptyMessage="Aucun sujet trouvé pour les membres de l'équipe"
         dataStability={true}
+        onView={(row) => handleViewSujet(row as SujetMembreEquipe)}
+        onEdit={(row) => handleEditSujet(row as SujetMembreEquipe)}
         onDelete={async (row) => {
           const isConfirmed: boolean = await swal.confirm(
             "Confirmer la suppression",
@@ -240,6 +273,21 @@ const SujetsMembreEquipes: React.FC = () => {
             }
           }
         }}
+      />{" "}
+      {/* Edit Sujet Modal */}
+      <EditSujetModal
+        sujet={selectedSujet}
+        isOpen={isEditModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveSuccess}
+        onError={handleError}
+        onSuccess={handleSuccess}
+      />
+      {/* View Sujet Modal */}
+      <ViewSujetsModal
+        sujet={selectedSujet}
+        isOpen={isViewModalOpen}
+        onClose={handleCloseModal}
       />
     </div>
   );

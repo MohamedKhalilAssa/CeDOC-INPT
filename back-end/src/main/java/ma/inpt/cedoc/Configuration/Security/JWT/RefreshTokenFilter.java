@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -34,7 +33,6 @@ import ma.inpt.cedoc.service.auth.TokenService;
 
 @RequiredArgsConstructor
 @Component
-
 public class RefreshTokenFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(RefreshTokenFilter.class);
 
@@ -67,18 +65,30 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
         try {
             // Extract refresh token from cookies
             String refreshToken = extractRefreshToken(request);
             if (refreshToken != null) {
-                boolean refreshSuccessful = handleRefreshToken(refreshToken, request, response);
-                if (refreshSuccessful) {
+                RefreshResult result = handleRefreshToken(refreshToken, request, response);
+                if (result.success) {
                     logger.debug("Token refresh successful");
                     filterChain.doFilter(request, response);
                     return;
+                } else {
+                    // Send specific error response based on failure type
+                    logger.debug("Token refresh failed: {}", result.errorMessage);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write(String.format(
+                            "{\"error\":\"%s\",\"message\":\"%s\",\"requiresLogin\":true}",
+                            result.errorType, result.errorMessage));
+                    return;
                 }
-            } // If we get here, both access token and refresh token failed
-            logger.debug("Authentication failed - no valid tokens");
+            }
+
+            // If no refresh token available, send token expired error
+            logger.debug("No refresh token available - sending token expired error");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write(
@@ -94,7 +104,6 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
         }
     }
 
-    // HELPER METHODS
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         String method = request.getMethod();
@@ -115,43 +124,29 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
-    private boolean handleRefreshToken(String refreshToken, HttpServletRequest request, HttpServletResponse response)
+    private RefreshResult handleRefreshToken(String refreshToken, HttpServletRequest request,
+            HttpServletResponse response)
             throws IOException {
         try {
-            Token refreshTokenEntity = tokenService.findByToken(refreshToken);
+            // Find the refresh token entity in the database
+            Token refreshTokenEntity = tokenService.findByTokenSafe(refreshToken);
 
             // Check if refresh token exists and is of correct type
             if (refreshTokenEntity == null || refreshTokenEntity.getTokenType() != TokenEnum.REFRESH) {
                 logger.debug("Refresh token not found or invalid type");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(
-                        "{\"error\":\"invalid_refresh_token\",\"message\":\"Refresh token not found or invalid\",\"requiresLogin\":true}");
-                return false;
+                return RefreshResult.failure("invalid_refresh_token", "Refresh token not found or invalid");
             }
 
             // Check if token is expired or revoked in database
             if (refreshTokenEntity.isExpired() || refreshTokenEntity.isRevoked()) {
                 logger.debug("Refresh token is expired or revoked");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(
-                        "{\"error\":\"refresh_token_expired\",\"message\":\"Refresh token is expired or revoked\",\"requiresLogin\":true}");
-                return false;
+                return RefreshResult.failure("refresh_token_expired", "Refresh token is expired or revoked");
             }
 
             // Validate the refresh token with JWT
-            try {
-                jwtUtil.validate(refreshTokenEntity.getToken());
-            } catch (JwtException e) {
-                logger.warn("Invalid refresh token JWT: {}", e.getMessage());
-                // Revoke the invalid token
-                tokenService.revokeToken(refreshTokenEntity);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(
-                        "{\"error\":\"invalid_refresh_token\",\"message\":\"Refresh token is malformed or invalid\",\"requiresLogin\":true}");
-                return false;
+            if (!jwtUtil.isRefreshTokenValid(refreshTokenEntity.getToken())) {
+                logger.warn("Invalid refresh token JWT - token is malformed or expired");
+                return RefreshResult.failure("invalid_refresh_token", "Refresh token is malformed or invalid");
             }
 
             // Generate new tokens
@@ -162,8 +157,10 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 // Add the new access token to the response
                 response.addHeader(HttpHeaders.AUTHORIZATION,
                         JwtUtil.AUTHORIZATION_PREFIX + authResponse.getAccessToken());
+
                 UserDetails user = userDetailsService
                         .loadUserByUsername(jwtUtil.extractSubject(authResponse.getAccessToken()));
+
                 // Create authentication token and set in security context
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         user,
@@ -173,22 +170,35 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 logger.debug("Authentication successful for user: {}", user.getUsername());
-                return true;
+                return RefreshResult.success();
             } else {
                 logger.debug("Failed to generate new access token");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(
-                        "{\"error\":\"token_refresh_failed\",\"message\":\"Failed to refresh tokens\",\"requiresLogin\":true}");
-                return false;
+                return RefreshResult.failure("token_refresh_failed", "Failed to refresh tokens");
             }
         } catch (Exception e) {
             logger.error("Unexpected error during token refresh: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.setContentType("application/json");
-            response.getWriter().write(
-                    "{\"error\":\"server_error\",\"message\":\"Internal server error during token refresh\",\"requiresLogin\":true}");
-            return false;
+            return RefreshResult.failure("server_error", "Internal server error during token refresh");
+        }
+    }
+
+    // Helper class to hold refresh result
+    private static class RefreshResult {
+        final boolean success;
+        final String errorType;
+        final String errorMessage;
+
+        RefreshResult(boolean success, String errorType, String errorMessage) {
+            this.success = success;
+            this.errorType = errorType;
+            this.errorMessage = errorMessage;
+        }
+
+        static RefreshResult success() {
+            return new RefreshResult(true, null, null);
+        }
+
+        static RefreshResult failure(String errorType, String errorMessage) {
+            return new RefreshResult(false, errorType, errorMessage);
         }
     }
 }
