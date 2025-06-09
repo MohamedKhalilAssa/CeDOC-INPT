@@ -70,3 +70,11 @@ export interface PublicSujetWithParticipants {
   professeurs: ProfesseurResponseDTO[];
   doctorants: DoctorantResponseDTO[];
 }
+
+export interface AccepterCandidatureRequest {
+  dateEntretien: string;  // ISO date, e.g. "2025-06-10"
+}
+
+export interface RefuserCandidatureRequest {
+  motif: string;
+}

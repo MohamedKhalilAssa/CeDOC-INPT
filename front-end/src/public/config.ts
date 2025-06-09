@@ -163,7 +163,17 @@ const appConfig: AppConfig = {
         name: "Candidatures Accessibles",
         path: "/candidatures/accessible",
         method: "GET",
-      },  
+      },
+      accepter: {
+        name: "Accepter candidature",
+        path: "/candidatures/{id}/accepter",
+        method: "POST",
+      },
+      refuser: {
+        name: "Refuser candidature",
+        path: "/candidatures/{id}/refuser",
+        method: "POST",
+      },
     },
 
     // Formation API paths

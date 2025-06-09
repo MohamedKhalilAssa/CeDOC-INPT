@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -31,16 +32,13 @@ import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.CandidatMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ProfesseurMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
-import ma.inpt.cedoc.model.entities.candidature.Candidature;
-import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.candidature.*;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum;
-import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRefuserRepository;
-import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
-import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
+import ma.inpt.cedoc.repositories.candidatureRepositories.*;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.*;
 import ma.inpt.cedoc.service.Global.EmailService;
 import ma.inpt.cedoc.service.Global.FileService;
@@ -52,7 +50,6 @@ import ma.inpt.cedoc.service.utilisateurServices.CandidatService;
 public class CandidatureServiceImpl implements CandidatureService {
 
     private final CandidatureRepository candidatureRepository;
-    private final CandidatureRefuserRepository candidatureRefuserRepository;
     private final CandidatRepository candidatRepository;
     private final CandidatureMapper candidatureMapper;
 
@@ -70,6 +67,9 @@ public class CandidatureServiceImpl implements CandidatureService {
 
     private final FileService fileService;
     private final EmailService emailService;
+    private final CandidatureAccepterRepository candidatureAccepterRepository;
+    private final CandidatureRefuserRepository  candidatureRefuserRepository;
+
 
     private final UtilisateurRepository utilisateurRepository;
     private final UtilisateurMapper utilisateurMapper;
@@ -85,25 +85,44 @@ public class CandidatureServiceImpl implements CandidatureService {
     // TO BE FIXED: save entretien date somewhere if needed
     @Override
     public CandidatureResponseDTO accepterCandidature(Long candidatureId, LocalDate entretien) {
-        Candidature candidature = candidatureRepository.findById(candidatureId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidature introuvable"));
+        // 1) Load the parent
+        Candidature parent = candidatureRepository.findById(candidatureId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Candidature introuvable"));
 
-        candidature.setStatutCandidature(CandidatureEnum.ACCEPTER);
-        // TODO: save entretien date into candidature if entity has a field for it
-        Candidature saved = candidatureRepository.save(candidature);
+        // 2) Create the subclass instance
+        CandidatureAccepter child = new CandidatureAccepter();
+        BeanUtils.copyProperties(parent, child);            // copy all common fields
+        child.setStatutCandidature(CandidatureEnum.ACCEPTER);
+        child.setDateEntretien((int) entretien.toEpochDay());
+
+        // 3) Save the subclass → inserts into candidatures + candidatures_accepter
+        CandidatureAccepter saved = candidatureAccepterRepository.save(child);
+
+        // 4) Map to DTO
         return candidatureMapper.toResponseDTO(saved);
     }
 
     @Override
     public CandidatureResponseDTO refuserCandidature(Long candidatureId, String motif) {
-        Candidature candidature = candidatureRepository.findById(candidatureId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidature introuvable"));
+        // 1) Load the parent
+        Candidature parent = candidatureRepository.findById(candidatureId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Candidature introuvable"));
 
-        candidature.setStatutCandidature(CandidatureEnum.REFUSER);
-        // TODO: if you add a "motifRefus" field on Candidature, set it here
-        Candidature saved = candidatureRepository.save(candidature);
+        // 2) Create the subclass instance
+        CandidatureRefuser child = new CandidatureRefuser();
+        BeanUtils.copyProperties(parent, child);
+        child.setStatutCandidature(CandidatureEnum.REFUSER);
+        child.setMotif(motif);
+
+        // 3) Save the subclass → inserts into candidatures + candidatures_refuser
+        CandidatureRefuser saved = candidatureRefuserRepository.save(child);
+
+        // 4) Map to DTO
         return candidatureMapper.toResponseDTO(saved);
     }
+
 
     @Override
     public void fermerEtArchiverCompteCandidat(Long candidatId) {

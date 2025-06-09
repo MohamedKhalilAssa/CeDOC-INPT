@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.*;
 import ma.inpt.cedoc.model.DTOs.Generic.ErrorResponse;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
@@ -115,6 +113,31 @@ public class CandidatureController {
         public ResponseEntity<List<Candidature>> getAccessibleCandidatures(@AuthenticationPrincipal UserDetails userDetails) {
             List<Candidature> list = candidatureService.getAccessibleCandidatures(userDetails);
             return ResponseEntity.ok(list);
+        }
+
+        // 9) Chef d’équipe : accepter une candidature
+        @PostMapping("/{id}/accepter")
+        public ResponseEntity<CandidatureResponseDTO> accepterCandidature(
+            @PathVariable("id") Long candidatureId,
+            @RequestBody AccepterCandidatureRequest dto,
+            @AuthenticationPrincipal UserDetails userDetails
+        ) {
+            // délégué à votre service
+            CandidatureResponseDTO saved = 
+                candidatureService.accepterCandidature(candidatureId, dto.getDateEntretien());
+            return ResponseEntity.ok(saved);
+        }
+
+        // 10) Chef d’équipe : refuser une candidature
+        @PostMapping("/{id}/refuser")
+        public ResponseEntity<CandidatureResponseDTO> refuserCandidature(
+            @PathVariable("id") Long candidatureId,
+            @RequestBody RefuserCandidatureRequest dto,
+            @AuthenticationPrincipal UserDetails userDetails
+        ) {
+            CandidatureResponseDTO saved =
+                candidatureService.refuserCandidature(candidatureId, dto.getMotif());
+            return ResponseEntity.ok(saved);
         }
     
 }
