@@ -11,4 +11,6 @@ public interface SujetMapper {
     SujetResponseDTO toResponseDTO(Sujet sujet);
 
     SujetResponseSimpleDTO toSimpleResponseDTO(Sujet sujet);
+
+    Sujet updateFromRequestDTO(Sujet sujet, SujetRequestDTO dto);
 }

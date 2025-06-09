@@ -33,7 +33,6 @@ interface AppConfig {
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
-  
   };
 
   FRONTEND_PATHS: {
@@ -147,6 +146,11 @@ const appConfig: AppConfig = {
         path: "/sujets",
         method: "POST",
       },
+      updateSujet: {
+        name: "Mettre à jour un Sujet",
+        path: "/sujets/",
+        method: "PUT",
+      },
       deleteSujet: {
         name: "Supprimer un Sujet",
         path: "/sujets/",
@@ -181,7 +185,7 @@ const appConfig: AppConfig = {
         path: "/formations/seances-formations",
         method: "POST",
       },
-        getValidatedFormationsByDoctorant: {
+      getValidatedFormationsByDoctorant: {
         name: "Post Seance Formation",
         path: "/formations/seances-formations/validated/doctorant",
         method: "GET",
@@ -200,7 +204,7 @@ const appConfig: AppConfig = {
         name: "Post Seance Formation",
         path: "/formations/seances-formations/doctorant",
         method: "GET",
-      }  
+      },
     },
 
     // ── THE TWO NEW TOP‐LEVEL KEYS ──
@@ -268,6 +272,10 @@ const appConfig: AppConfig = {
       },
       sujets: {
         proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
+        MembresEquipe: {
+          name: "Sujets des Membres de l'Équipe",
+          path: "sujets/membres-equipe",
+        },
       },
       formations: {
         proposer: { name: "Mes Formations", path: "formations/mesformations" },

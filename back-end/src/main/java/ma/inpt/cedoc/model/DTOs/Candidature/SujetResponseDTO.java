@@ -28,6 +28,5 @@ public class SujetResponseDTO {
             this.professeurs = professeurs;
             return this;
         }
-    }    
+    }
 }
-

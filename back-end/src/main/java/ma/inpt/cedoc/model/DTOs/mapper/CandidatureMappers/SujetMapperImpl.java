@@ -20,6 +20,8 @@ public class SujetMapperImpl implements SujetMapper {
 
         private final ProfesseurService professeurService;
 
+
+        @Override
         public Sujet toEntity(SujetRequestDTO dto) {
 
                 // Récupérer les professeurs qui proposent le sujet
@@ -34,6 +36,16 @@ public class SujetMapperImpl implements SujetMapper {
                                 .professeurs(professeurs)
                                 .build();
         }
+
+        @Override
+        public Sujet updateFromRequestDTO (Sujet sujet, SujetRequestDTO dto) {
+                sujet.setIntitule(dto.getIntitule());
+                sujet.setDescription(dto.getDescription());
+                sujet.setValide(dto.isValide());
+                sujet.setEstPublic(dto.isEstPublic());
+                return sujet;
+        }
+
 
         @Override
         public SujetResponseDTO toResponseDTO(Sujet sujet) {

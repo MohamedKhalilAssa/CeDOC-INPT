@@ -107,7 +107,10 @@ function App() {
           path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path}
           element={<ProposerSujet />}
         />
-        <Route path="sujets/membres-equipe" element={<SujetsMembreEquipes />} />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.MembresEquipe.path}
+          element={<SujetsMembreEquipes />}
+        />
         {/* Formations */}
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}

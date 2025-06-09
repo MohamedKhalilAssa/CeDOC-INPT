@@ -55,10 +55,10 @@ API.interceptors.response.use(
         localStorage.setItem("tokenExpired", "true");
 
         // Redirect to login page
-        if (typeof window !== "undefined") {
-          window.location.href =
-            appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
-        }
+        // if (typeof window !== "undefined") {
+        //   window.location.href =
+        //     appConfig.FRONTEND_URL + appConfig.FRONTEND_PATHS.AUTH.login.path;
+        // }
 
         // Return a rejected promise with a clear message
         return Promise.reject({

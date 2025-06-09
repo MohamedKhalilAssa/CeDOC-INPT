@@ -7,8 +7,9 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.auth.TokenEnum;
 
 public interface TokenService {
-
     Token findByToken(String token);
+
+    Token findByTokenSafe(String token);
 
     Token findByTokenAndNonExpiredOrRevoked(String token);
 

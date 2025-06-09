@@ -55,6 +55,11 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    public Token findByTokenSafe(String token) {
+        return tokenRepository.findByToken(token).orElse(null);
+    }
+
+    @Override
     public Token findByTokenAndNonExpiredOrRevoked(String token) {
         return tokenRepository.findByTokenAndExpiredFalseAndRevokedFalse(token).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,

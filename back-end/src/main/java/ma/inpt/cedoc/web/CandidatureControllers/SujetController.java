@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
@@ -64,6 +65,14 @@ public class SujetController {
         Sujet sujet = sujetService.getSujetEntityById(id);
         sujetService.deleteSujet(sujet);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SujetResponseDTO> updateSujet(@PathVariable Long id,
+            @RequestBody @Valid SujetRequestDTO requestDTO) {
+        System.out.println(id);
+        SujetResponseDTO updated = sujetService.updateSujet(requestDTO, id);
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/{id}/simple")
