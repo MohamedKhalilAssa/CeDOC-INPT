@@ -33,6 +33,7 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DemandeResincriptionServiceImpl implements DemandeResincriptionService {
     private final DemandeReinscriptionMapper demandeReinscriptionMapper;
     private final DemandeReinscriptionRepository demandeReinscriptionRepository;

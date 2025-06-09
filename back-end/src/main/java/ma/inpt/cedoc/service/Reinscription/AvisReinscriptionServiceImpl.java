@@ -30,6 +30,7 @@ import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AvisReinscriptionServiceImpl implements AvisReinscriptionService {
     private final AvisReinscriptionRepository avisReinscriptionRepo;
     private final AvisResinscriptionMapper avisResinscriptionMapper;

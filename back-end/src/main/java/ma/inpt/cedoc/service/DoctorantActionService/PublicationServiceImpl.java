@@ -63,6 +63,10 @@ public class PublicationServiceImpl implements PublicationService {
     public PublicationResponseDTO updatePublication(PublicationRequestDTO requestDTO, Long id, String email) {
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));
+
+        if (!publication.getStatus().equals(EtatEnum.DECLAREE)){
+            throw new RuntimeException("Vous ne pouvez plus modifier cette publication");
+        }
         Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found"));
         if (!publication.getAuteur().getId().equals(doctorant.getId())) {
@@ -76,6 +80,11 @@ public class PublicationServiceImpl implements PublicationService {
     public void deletePublication(Long id, String email) {
         Publication publication = publicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication " + id + " n'est pas trouvé"));
+
+        if (!publication.getStatus().equals(EtatEnum.DECLAREE)){
+            throw new RuntimeException("Vous ne pouvez plus modifier cette publication");
+        }
+
         Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctorant " + email + " not found"));
         if (!publication.getAuteur().getId().equals(doctorant.getId())) {

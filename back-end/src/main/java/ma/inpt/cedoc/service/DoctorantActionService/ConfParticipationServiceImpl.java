@@ -24,6 +24,7 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ConfParticipationServiceImpl implements ConfParticipationService {
     private final ConfParticipationRepository confParticipationRepository;
     private final ConfParticipationMapper confParticipationMapper;
@@ -66,6 +67,11 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
             String email) {
         ConfParticipation confParticipation = confParticipationRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
+
+        if (!confParticipation.getStatus().equals(EtatEnum.DECLAREE)){
+            throw new RuntimeException("Vous ne pouvez plus modifier cette participation à conférence");
+        }
+
         Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
         if (!doctorant.getId().equals(confParticipation.getParticipant().getId())) {
@@ -80,6 +86,11 @@ public class ConfParticipationServiceImpl implements ConfParticipationService {
     public void deleteConfParticipation(Long id, String email) {
         ConfParticipation confParticipation = confParticipationRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("participation à conférence " + id + " n'est pas trouvé"));
+
+        if (!confParticipation.getStatus().equals(EtatEnum.DECLAREE)){
+            throw new RuntimeException("Vous ne pouvez plus modifier cette participation à conférence");
+        }
+
         Doctorant doctorant = doctorantRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("doctorant " + email + " n'est pas trouvé"));
         if (!doctorant.getId().equals(confParticipation.getParticipant().getId())) {
