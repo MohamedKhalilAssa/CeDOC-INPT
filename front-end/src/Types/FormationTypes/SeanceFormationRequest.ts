@@ -4,6 +4,6 @@ export interface SeanceFormationRequestDTO {
   duree: number;
   justificatifPdf: string;
   statut: StatutFormationEnum;
-  formationName: string;
-  module: string;
+  formationId: number;
+  declarantId: number;
 }

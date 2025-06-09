@@ -27,11 +27,13 @@ interface AppConfig {
     SUJET: ApiPathsMap;
     CANDIDATURE: ApiPathsMap;
 
-    //Formation API paths
+    //Formations API paths
     FORMATION: ApiPathsMap;
+    SEANCEFORMATION: ApiPathsMap;
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
+  
   };
 
   FRONTEND_PATHS: {
@@ -167,6 +169,38 @@ const appConfig: AppConfig = {
         path: "/formations",
         method: "GET",
       }
+    },
+    SEANCEFORMATION: {
+      getAll: {
+        name: "Get All Formations",
+        path: "/formations",
+        method: "GET",
+      },
+      postSeanceFormation: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations",
+        method: "POST",
+      },
+        getValidatedFormationsByDoctorant: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/validated/doctorant",
+        method: "GET",
+      },
+      getTotalValidatedDuree: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/validated/duree/total",
+        method: "GET",
+      },
+      getValidatedFormationDuree: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/validated/duree",
+        method: "GET",
+      },
+      getDeclaredSeances: {
+        name: "Post Seance Formation",
+        path: "/formations/seances-formations/doctorant",
+        method: "GET",
+      }  
     },
 
     // ── THE TWO NEW TOP‐LEVEL KEYS ──
