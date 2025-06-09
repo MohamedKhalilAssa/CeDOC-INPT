@@ -14,10 +14,14 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Candidature.ChefSujetsEquipeResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.ChefSujetsEquipeMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.Global.PaginatedMapper;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
@@ -35,6 +39,7 @@ public class SujetServiceImpl implements SujetService {
 
     private final SujetRepository sujetRepository;
     private final SujetMapper sujetMapper;
+    private final ChefSujetsEquipeMapper chefSujetsEquipeMapper;
     private final DirecteurDeTheseService directeurDeTheseService;
 
     /* CREATE --------------------------------------------- */
@@ -311,5 +316,25 @@ public class SujetServiceImpl implements SujetService {
     public Page<SujetResponseSimpleDTO> getAllSimplePaginated(Pageable pageable) {
         Page<Sujet> sujetsPage = sujetRepository.findAll(pageable);
         return sujetsPage.map(sujetMapper::toSimpleResponseDTO);
+    }
+
+    @Override
+    public PaginatedResponseDTO<ChefSujetsEquipeResponseDTO> findPublicValideSujetsWithSearchPaginated(
+            Pageable pageable, String search) {
+        // Use the repository method to get paginated results with search
+        Page<Sujet> sujetsPage = sujetRepository.findPublicValideSujetsWithSearch(search, pageable);
+
+        // Convert Page<Sujet> to List<ChefSujetsEquipeResponseDTO>
+        List<ChefSujetsEquipeResponseDTO> content = chefSujetsEquipeMapper
+                .mapFromSujetEntities(sujetsPage.getContent());
+
+        // Create and return PaginatedResponseDTO
+        return PaginatedMapper.mapToDTO(
+                content,
+                sujetsPage.getNumber(),
+                sujetsPage.getTotalPages(),
+                sujetsPage.getTotalElements(),
+                sujetsPage.getSize(),
+                sujetsPage.isLast());
     }
 }

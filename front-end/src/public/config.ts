@@ -39,6 +39,7 @@ interface AppConfig {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
     FORMATION: FrontendPathsMap;
+    EQUIPE: FrontendPathsMap;
     DASHBOARD: {
       homePage: FrontendPaths;
       utilisateurs: FrontendPathsMap;
@@ -121,9 +122,9 @@ const appConfig: AppConfig = {
         path: "/chefs-equipe/chefs-sujets",
         method: "GET",
       },
-      sujetsEquipes: {
-        name: "Sujets et Équipes",
-        path: "/chefs-equipe/sujets-equipes",
+      sujetsChefEquipes: {
+        name: "Sujets et chef et Équipes",
+        path: "/sujets/chefs-sujets-equipes",
         method: "GET",
       },
       sujetsListPublic: {
@@ -264,6 +265,10 @@ const appConfig: AppConfig = {
     },
     FORMATION: {
       formations: { name: "Formations", path: "/formations" },
+    },
+    EQUIPE: {
+      Listings: { name: "Équipes de Recherche", path: "/equipes" },
+      // Details: { name: "Détails de l'Équipe", path: "/equipes/:id" },
     },
     DASHBOARD: {
       homePage: { name: "Dashboard Home", path: "/dashboard" },

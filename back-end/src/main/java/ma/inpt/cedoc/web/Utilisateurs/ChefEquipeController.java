@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetEquipeDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.ChefSujetsEquipeMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
@@ -79,11 +80,15 @@ public class ChefEquipeController {
         return ResponseEntity.ok(dtoList);
     }
 
-    // ───–──── CRUD “tout brut” pour ChefEquipeRole ───–────
-
     /**
-     * POST /api/chefs-equipe
-     * Crée un nouveau ChefEquipeRole (JSON correspondant à ChefEquipeRole).
+  
+     * 
+     * 
+     * 
+     * 
+     *  * POST /api/chefs-equipe
+     * 
+     * rée un nouveau ChefEquipeRole (JSON correspondant à ChefEquipeRole).
      */
     @PostMapping
     public ResponseEntity<ChefEquipeRole> createChef(@RequestBody ChefEquipeRole chefEquipeRole) {

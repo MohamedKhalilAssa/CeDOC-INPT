@@ -47,4 +47,16 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
     Page<Sujet> findByProfesseursOrDirecteurDeTheseIdInWithSearch(@Param("professeurIds") List<Long> professeurIds,
             @Param("search") String search, Pageable pageable);
 
+    @Query("SELECT s FROM Sujet s " +
+            "LEFT JOIN s.chefEquipe ce " +
+            "LEFT JOIN ce.professeur cp " +
+            "LEFT JOIN cp.utilisateur cu " +
+            "LEFT JOIN ce.equipeDeRecherche er " +
+            "WHERE s.estPublic = true AND s.valide = true " +
+            "AND (:search IS NULL OR :search = '' OR " +
+            "LOWER(s.intitule) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(CONCAT(cu.prenom, ' ', cu.nom)) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(er.nomDeLequipe) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Sujet> findPublicValideSujetsWithSearch(@Param("search") String search, Pageable pageable);
+
 }

@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import ma.inpt.cedoc.model.DTOs.Candidature.ChefSujetsEquipeResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 
 public interface SujetService {
@@ -67,6 +69,13 @@ public interface SujetService {
     Page<SujetResponseDTO> getAllPublicSujetsPaginated(Pageable pageable);
 
     Page<SujetResponseSimpleDTO> getAllSimplePaginated(Pageable pageable);
+
+    /**
+     * Finds public subjects with search functionality and pagination.
+     * Searches by subject title, chef full name, and team name.
+     */
+    PaginatedResponseDTO<ChefSujetsEquipeResponseDTO> findPublicValideSujetsWithSearchPaginated(
+            Pageable pageable, String search);
 
     // Entity-based methods
     Sujet getSujetEntityById(Long id);
