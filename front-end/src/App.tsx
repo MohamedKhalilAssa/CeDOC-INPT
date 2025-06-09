@@ -19,7 +19,10 @@ import LandingPage from "@/Pages/LandingPage";
 
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
 import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
-import Publications from "@/Pages/Dashboard/Publications/DoctorantPublication";
+import DoctorantPublication from "@/Pages/Dashboard/Publications/DoctorantPublication";
+import DoctorantHonors from "@/Pages/Dashboard/Honors/DoctorantHonors";
+import DoctorantConferences from "@/Pages/Dashboard/Conferences/DoctorantConferences";
+import DoctorantReinscriptions from "@/Pages/Dashboard/Reinscriptions/DoctorantReinscriptions";
 import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
 
@@ -117,7 +120,21 @@ function App() {
         {/* Publications */}
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.publications.publier.path}
-          element={<Publications />}
+          element={<DoctorantPublication />}
+        />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.honors.distinctions.path}
+          element={<DoctorantHonors />}
+        />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.conferences.participer.path}
+          element={<DoctorantConferences />}
+        />
+        <Route
+          path={
+            appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.reinscrire.path
+          }
+          element={<DoctorantReinscriptions />}
         />
       </Route>
 

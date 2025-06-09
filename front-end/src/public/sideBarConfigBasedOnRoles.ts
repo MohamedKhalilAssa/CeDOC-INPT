@@ -19,11 +19,6 @@ export const utilisateursSidebarConfig: NavigationGroup[] = [
         label: "Profile",
         icon: "fas fa-user",
       },
-      {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.publications.publier.path,
-        label: "Mes Publications",
-        icon: "fas fa-pen",
-      },
     ],
   },
 ];
@@ -55,6 +50,26 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
         href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path,
         label: "Mes Formations,",
         icon: "fas fa-graduation-cap",
+      },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.publications.publier.path,
+        label: "Mes Publications",
+        icon: "fas fa-pen",
+      },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.honors.distinctions.path,
+        label: "Mes Distinctions",
+        icon: "fas fa-award",
+      },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.conferences.participer.path,
+        label: "Mes Conférences",
+        icon: "fas fa-microphone",
+      },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.reinscrire.path,
+        label: "Mes Réinscriptions",
+        icon: "fas fa-undo",
       },
     ],
   },

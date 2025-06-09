@@ -29,6 +29,7 @@ interface AppConfig {
 
     //Formation API paths
     FORMATION: ApiPathsMap;
+    PUBLICATIONS: ApiPathsMap;
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
@@ -44,6 +45,9 @@ interface AppConfig {
       sujets: FrontendPathsMap;
       formations: FrontendPathsMap;
       publications: FrontendPathsMap;
+      honors: FrontendPathsMap;
+      conferences: FrontendPathsMap;
+      reinscriptions: FrontendPathsMap;
     };
   };
 }
@@ -169,6 +173,13 @@ const appConfig: AppConfig = {
         method: "GET",
       },
     },
+    PUBLICATIONS: {
+      getAll: {
+        name: "Get All Publications",
+        path: "/publications",
+        method: "GET",
+      },
+    },
 
     // ── THE TWO NEW TOP‐LEVEL KEYS ──
 
@@ -241,6 +252,15 @@ const appConfig: AppConfig = {
       },
       publications: {
         publier: { name: "Mes Publications", path: "publications/mespublications" },
+      },
+      honors: {
+        distinctions: { name: "Mes Distinctions", path: "honors/distinctions" },
+      },
+      conferences: {
+        participer: { name: "Mes Conférences", path: "conferences/participer" },
+      },
+      reinscriptions: {
+        reinscrire: { name: "Mes Réinscriptions", path: "reinscriptions/reinscrire" },
       },
     },
   },
