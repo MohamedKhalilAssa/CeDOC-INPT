@@ -27,6 +27,7 @@ import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
 import ma.inpt.cedoc.service.utilisateurServices.DirecteurDeTheseService;
 import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 
@@ -34,10 +35,10 @@ import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 @RequiredArgsConstructor
 @Transactional
 public class SujetServiceImpl implements SujetService {
-
     private final ProfesseurService professeurService;
 
     private final SujetRepository sujetRepository;
+    private final ChefEquipeRoleRepository chefEquipeRoleRepository;
     private final SujetMapper sujetMapper;
     private final ChefSujetsEquipeMapper chefSujetsEquipeMapper;
     private final DirecteurDeTheseService directeurDeTheseService;
@@ -336,5 +337,35 @@ public class SujetServiceImpl implements SujetService {
                 sujetsPage.getTotalElements(),
                 sujetsPage.getSize(),
                 sujetsPage.isLast());
+    }
+
+    @Override
+    public SujetResponseDTO createSujetByChefEquipe(SujetRequestDTO dto, Long chefEquipeId) {
+        // Récupérer le chef d'équipe par son ID
+        ChefEquipeRole chefEquipe = chefEquipeRoleRepository.findById(chefEquipeId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Chef d'équipe introuvable avec l'identifiant : " + chefEquipeId));
+        DirecteurDeTheseRole directeurDeThese = chefEquipe.getProfesseur().getDirecteurDeTheseRole();
+        if (directeurDeThese == null) {
+            directeurDeThese = directeurDeTheseService.createDirecteurDeTheseWithProfesseur(chefEquipe.getProfesseur());
+        }
+
+        // Créer l'entité Sujet depuis le DTO
+        Sujet sujet = sujetMapper.toEntity(dto);
+
+        // Assigner le chef d'équipe au sujet
+        sujet.setChefEquipe(chefEquipe);
+        sujet.setDirecteurDeThese(directeurDeThese);
+
+        // Marquer le sujet comme validé et public automatiquement (privilège chef
+        // d'équipe)
+        sujet.setValide(true);
+        sujet.setEstPublic(true);
+
+        // Sauvegarder le sujet
+        Sujet savedSujet = sujetRepository.save(sujet);
+
+        // Retourner le DTO de réponse
+        return sujetMapper.toResponseDTO(savedSujet);
     }
 }

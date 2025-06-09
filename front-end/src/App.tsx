@@ -20,6 +20,7 @@ import SujetDeRecherchePage from "@/Pages/SujetDeRecherchePage";
 
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
 import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
+import CreateSujetsChefEquipe from "@/Pages/Dashboard/Sujets/CreateSujetsChefEquipe";
 import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
 
@@ -107,6 +108,10 @@ function App() {
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path}
           element={<ProposerSujet />}
+        />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.creer.path}
+          element={<CreateSujetsChefEquipe />}
         />
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.MembresEquipe.path}

@@ -226,6 +226,11 @@ const appConfig: AppConfig = {
         path: "/chefs-equipe/sujets/membres-equipe",
         method: "GET",
       },
+      createSujet: {
+        name: "Créer un Sujet par Chef d'Équipe",
+        path: "/chefs-equipe/sujets",
+        method: "POST",
+      },
     },
     PROFESSEUR: {
       getAll: {
@@ -295,17 +300,24 @@ const appConfig: AppConfig = {
     DASHBOARD: {
       homePage: { name: "Dashboard Home", path: "/dashboard" },
       utilisateurs: {
-        profile: { name: "Profil", path: "utilisateurs/profile" },
+        profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
       },
       sujets: {
-        proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
+        proposer: {
+          name: "Proposer un Sujet",
+          path: "/dashboard/sujets/proposer",
+        },
+        creer: { name: "Créer un Sujet", path: "/dashboard/sujets/creer" },
         MembresEquipe: {
           name: "Sujets des Membres de l'Équipe",
-          path: "sujets/membres-equipe",
+          path: "/dashboard/sujets/membres-equipe",
         },
       },
       formations: {
-        proposer: { name: "Mes Formations", path: "formations/mesformations" },
+        proposer: {
+          name: "Mes Formations",
+          path: "/dashboard/formations/mesformations",
+        },
       },
     },
   },

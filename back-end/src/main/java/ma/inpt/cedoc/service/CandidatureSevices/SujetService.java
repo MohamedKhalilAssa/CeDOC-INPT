@@ -16,6 +16,12 @@ public interface SujetService {
 
     SujetResponseDTO proposerSujet(SujetRequestDTO dto);
 
+    /**
+     * Crée un sujet directement validé par un chef d'équipe
+     * Le sujet sera automatiquement assigné au chef d'équipe et validé
+     */
+    SujetResponseDTO createSujetByChefEquipe(SujetRequestDTO dto, Long chefEquipeId);
+
     /* CREATE METHODS */
     // DTO-based methods
     SujetResponseDTO saveSujet(SujetRequestDTO dto);
