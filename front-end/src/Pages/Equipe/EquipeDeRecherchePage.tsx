@@ -1,3 +1,4 @@
+import EquipeViewModal from "@/Pages/Equipe/EquipeViewModal";
 import type { Column } from "@/Components/Table/ServerSideTable";
 import ServerSideTable from "@/Components/Table/ServerSideTable";
 import { getData } from "@/Helpers/CRUDFunctions";
@@ -5,9 +6,14 @@ import { useServerSideTable } from "@/Hooks/useServerSideTable";
 import appConfig from "@/public/config";
 import { PaginatedResponse, TableConfig } from "@/Types/GlobalTypes";
 import { EquipeResponseDTO } from "@/Types/UtilisateursTypes";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
 const EquipeDeRecherchePage: React.FC = () => {
+  // Modal state
+  const [selectedEquipe, setSelectedEquipe] =
+    useState<EquipeResponseDTO | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
   // Fetcher function for the table hook
   const fetchEquipes = useCallback(
     async (
@@ -48,7 +54,6 @@ const EquipeDeRecherchePage: React.FC = () => {
     },
     []
   );
-
   // Use the table hook
   const { config, data, loading, setConfig } =
     useServerSideTable<EquipeResponseDTO>({
@@ -59,8 +64,27 @@ const EquipeDeRecherchePage: React.FC = () => {
       onError: (err) => {
         console.error("Error fetching équipes:", err);
       },
-    });
+    }); // Handle view équipe details
+  const handleViewEquipe = async (row: EquipeResponseDTO) => {
+    try {
+      const url = `${appConfig.API_PATHS.EQUIPE.getById.path.replace(
+        ":id",
+        row.id.toString()
+      )}`;
+      const equipeDetails = await getData<EquipeResponseDTO>(url);
+      if (equipeDetails) {
+        setSelectedEquipe(equipeDetails);
+        setIsViewModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Error fetching équipe details:", error);
+    }
+  };
 
+  const handleCloseModal = () => {
+    setIsViewModalOpen(false);
+    setSelectedEquipe(null);
+  };
   // Define table columns
   const columns: Column[] = [
     {
@@ -114,7 +138,6 @@ const EquipeDeRecherchePage: React.FC = () => {
       ),
     },
   ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -126,8 +149,7 @@ const EquipeDeRecherchePage: React.FC = () => {
           <p className="text-gray-600">
             Découvrez les équipes de recherche et leurs domaines d'expertise
           </p>
-        </div>
-
+        </div>{" "}
         {/* Server Side Table */}
         <div className="bg-white rounded-lg shadow-sm border">
           <ServerSideTable
@@ -138,15 +160,23 @@ const EquipeDeRecherchePage: React.FC = () => {
             loading={loading}
             config={config}
             onConfigChange={setConfig}
+            onView={handleViewEquipe}
+            actions={true}
             searchPlaceholder="Rechercher par nom d'équipe, chef ou nombre de membres..."
             title="Équipes de recherche"
             subtitle="Liste des équipes de recherche et leurs informations"
             searchable={true}
             emptyMessage="Aucune équipe de recherche trouvée"
-            actions={false}
           />
         </div>
       </div>
+
+      {/* View Modal */}
+      <EquipeViewModal
+        isOpen={isViewModalOpen}
+        onClose={handleCloseModal}
+        equipe={selectedEquipe}
+      />
     </div>
   );
 };

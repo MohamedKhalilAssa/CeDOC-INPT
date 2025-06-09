@@ -35,18 +35,30 @@ export interface UtilisateurResponseDTO extends baseResponse {
   nationalite?: Nationalite;
   lieuDeNaissance?: LieuDeNaissance;
 }
+
+// Professeur response DTO
+export interface ProfesseurResponseDTO extends UtilisateurResponseDTO {
+  grade: string;
+}
+
+// Doctorant response DTO
+export interface DoctorantResponseDTO extends UtilisateurResponseDTO {
+  dateInscription?: string;
+  statutDoctorant?: string;
+  nombreHeuresLabo?: number;
+  draftDiplomeUrl?: string;
+  archiver?: boolean;
+}
+
 // Équipe de recherche response DTO
 export interface EquipeResponseDTO extends baseResponse {
   nomDeLequipe: string;
   nomCompletChef?: string;
   chefEquipeId?: number;
   membres: ProfesseurResponseDTO[];
+  doctorants?: DoctorantResponseDTO[]; // Add doctorants list for detailed view
   nombreMembres: number;
   nombreDoctorants: number;
-}
-
-export interface ProfesseurResponseDTO extends UtilisateurResponseDTO {
-  grade: string;
 }
 
 export interface CandidatureRequestDTO extends UtilisateurResponseDTO {
