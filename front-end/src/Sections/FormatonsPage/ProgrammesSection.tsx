@@ -79,6 +79,11 @@ const getFormations = async (): Promise<FormationResponseDTO[]> => {
     const fetchFormations = async () => {
       try {
         const data = await getFormations();
+        data.forEach((course: FormationResponseDTO) => {
+          if (!course.image?.startsWith("https://images.unsplash.com")) {
+            course.image = "http://localhost:8080" + course.image;
+          }
+        });
         setCourses(data as FormationResponseDTO[]);
       } catch (err) {
         console.error("Erreur lors du chargement des formations", err);

@@ -169,6 +169,16 @@ const appConfig: AppConfig = {
         path: "/formations",
         method: "GET",
       },
+      postFormation: {
+        name: "Post Formation",
+        path: "/formations",
+        method: "POST",
+      },
+      image: {
+        name: "Post Formation",
+        path: "/formations/upload-image",
+        method: "POST",
+      },
     },
     SEANCEFORMATION: {
       getAll: {
@@ -270,7 +280,9 @@ const appConfig: AppConfig = {
         proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
       },
       formations: {
-        proposer: { name: "Mes Formations", path: "formations/mesformations" },
+        declarerSeance: { name: "Mes Formations", path: "formations/mesformations" },
+        validerSeance: { name: "Mes Formations", path: "formations/validerSeance" },
+        proposer: { name: "Mes Formations", path: "formations/proposerFormation" }
       },
     },
   },

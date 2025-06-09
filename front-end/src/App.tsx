@@ -21,9 +21,11 @@ import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
 import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
 import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
+import ProposerFormation from "@/Pages/Dashboard/Formations/ProposerFormation";
 
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
+import ValiderSeance from "./Pages/Dashboard/Formations/ValiderSeance";
 
 function App() {
   return (
@@ -110,8 +112,16 @@ function App() {
         <Route path="sujets/membres-equipe" element={<SujetsMembreEquipes />} />
         {/* Formations */}
         <Route
-          path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.declarerSeance.path}
           element={<DoctorantFormation />}
+        />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}
+          element={<ProposerFormation />}
+        />
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.validerSeance.path}
+          element={<ValiderSeance />}
         />
       </Route>
 

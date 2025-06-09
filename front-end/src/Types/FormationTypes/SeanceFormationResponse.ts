@@ -7,5 +7,6 @@ export interface SeanceFormationResponseDTO extends baseResponse {
   statut: StatutFormationEnum;
   formation: string;         // This is the formation name or title
   declarantId: number;
-  validePar: string;         // This is likely the full name or email of the validator
+  validePar: string; 
+  email: string;        // This is likely the full name or email of the validator
 }

@@ -47,7 +47,7 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
         icon: "fas fa-user",
       },
       {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path,
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.declarerSeance.path,
         label: "Mes Formations,",
         icon: "fas fa-graduation-cap",
       },
@@ -89,4 +89,19 @@ export const directionCedocSidebarConfig: NavigationGroup[] = [
 ];
 export const responsableFormationSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
+  {
+    title: "Formations",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path,
+        label: "Ajouter Formation",
+        icon: "fas fa-graduation-cap",
+      },
+            {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.formations.validerSeance.path,
+        label: "Valider les seances",
+        icon: "fas fa-check-circle",
+      },
+    ],
+  },
 ];
