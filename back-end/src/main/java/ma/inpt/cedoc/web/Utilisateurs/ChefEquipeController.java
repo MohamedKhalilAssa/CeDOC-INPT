@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetEquipeDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
@@ -182,12 +185,21 @@ public class ChefEquipeController {
     }
 
     @GetMapping("/sujets/membres-equipe")
-    @PreAuthorize("hasRole('CHEF_EQUIPE')")
-    public ResponseEntity<List<Sujet>> getSujetsByMembres(@RequestParam List<Long> membreIds, Pageable pageable) {
-        ChefEquipeRole chefEquipeRole = chefEquipeService.findByEmail(SecurityContextHolder.getContext()
+    @PreAuthorize("hasAuthority('CHEF_EQUIPE')")
+    public ResponseEntity<PaginatedResponseDTO<SujetResponseDTO>> getSujetsByMembres(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sort) {
+        ChefEquipeRole chefEquipeRole = chefEquipeService.findByEmailWithMembers(SecurityContextHolder.getContext()
                 .getAuthentication().getName());
-        Page<Sujet> sujets = chefEquipeService.findSujetsMembreEquipes(chefEquipeRole, pageable);
-        return ResponseEntity.ok(sujets.getContent());
+        sort = sort.toLowerCase();
+        if (!(sort.equals("asc") || sort.equals("desc"))) {
+            sort = "asc"; // default to ascending if invalid
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sort), sortBy));
+        PaginatedResponseDTO<SujetResponseDTO> paginatedSujets = chefEquipeService
+                .findSujetsMembreEquipesPaginated(chefEquipeRole, pageable);
+        return ResponseEntity.ok(paginatedSujets);
     }
 
 }

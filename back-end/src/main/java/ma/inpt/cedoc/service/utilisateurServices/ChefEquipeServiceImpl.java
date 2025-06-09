@@ -1,8 +1,11 @@
 package ma.inpt.cedoc.service.utilisateurServices;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -11,6 +14,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
+import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.Global.PaginatedMapper;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
@@ -25,10 +32,13 @@ import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleReposit
 @Transactional
 public class ChefEquipeServiceImpl implements ChefEquipeService {
 
+    private static final Logger log = LoggerFactory.getLogger(ChefEquipeServiceImpl.class);
+
     private final ChefEquipeRoleRepository chefEquipeRoleRepository;
     private final SujetRepository sujetRepository;
     private final CandidatureRepository candidatureRepository;
     private final ProfesseurService professeurService;
+    private final SujetMapper sujetMapper;
 
     // ───–──── READ BASIQUES ───–────
 
@@ -45,7 +55,15 @@ public class ChefEquipeServiceImpl implements ChefEquipeService {
         return chefEquipeRoleRepository.findByProfesseurUtilisateurEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Chef d’équipe introuvable avec l’email : " + email));
+                        "Chef d'équipe introuvable avec l'email : " + email));
+    }
+
+    @Override
+    public ChefEquipeRole findByEmailWithMembers(String email) {
+        return chefEquipeRoleRepository.findByProfesseurUtilisateurEmailWithMembers(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Chef d'équipe introuvable avec l'email : " + email));
     }
 
     @Override
@@ -193,29 +211,67 @@ public class ChefEquipeServiceImpl implements ChefEquipeService {
 
     @Override
     public Page<Sujet> findSujetsMembreEquipes(ChefEquipeRole chef, Pageable pageable) {
+        // Validate input parameters
+        if (chef == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Chef d'équipe ne peut pas être null.");
+        }
+
+        if (pageable == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Les paramètres de pagination ne peuvent pas être null.");
+        }
 
         EquipeDeRecherche equipe = chef.getEquipeDeRecherche();
-
         if (equipe == null) {
-            // ERREUR LOGIQUE
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Aucune équipe de recherche associée à ce chef d'équipe.");
         }
+
         List<Professeur> membres = equipe.getMembres();
         if (membres == null || membres.isEmpty()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Aucun membre trouvé dans l'équipe de recherche associée à ce chef d'équipe.");
+            // Return empty page instead of throwing exception for better UX
+            return Page.empty(pageable);
         }
-        // Get member IDs for the many-to-many query
+
+        // Extract member IDs, excluding the chef themselves to avoid conflicts
         List<Long> membreIds = membres.stream()
                 .map(Professeur::getId)
+                .filter(Objects::nonNull) // Safety check for null IDs
+                .filter(id -> !id.equals(chef.getProfesseur().getId())) // Use proper comparison
                 .collect(Collectors.toList());
 
-        // Use the corrected repository method for many-to-many relationship
-        return sujetRepository.findByProfesseursIdIn(membreIds, pageable);
+        if (membreIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
 
+        // Use proper logging instead of System.out.println
+        log.debug("Recherche de sujets pour les membres de l'équipe avec IDs : {}", membreIds);
+
+        try {
+            return sujetRepository.findByProfesseursOrDirecteurDeTheseIdIn(membreIds, pageable);
+        } catch (Exception e) {
+            log.error("Erreur lors de la recherche des sujets pour les membres de l'équipe : {}", e.getMessage(), e);
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erreur lors de la récupération des sujets des membres de l'équipe.");
+        }
+    }
+
+    @Override
+    public PaginatedResponseDTO<SujetResponseDTO> findSujetsMembreEquipesPaginated(ChefEquipeRole chef,
+            Pageable pageable) {
+        // Reuse the existing logic from findSujetsMembreEquipes
+        Page<Sujet> sujetsPage = findSujetsMembreEquipes(chef, pageable);
+
+        // Convert entities to DTOs
+        Page<SujetResponseDTO> sujetsDTOPage = sujetsPage.map(sujetMapper::toResponseDTO);
+
+        // Map to paginated response DTO
+        return PaginatedMapper.mapToDTO(sujetsDTOPage);
     }
 
 }

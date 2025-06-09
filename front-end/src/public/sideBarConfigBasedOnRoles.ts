@@ -70,6 +70,16 @@ export const professeursSidebarConfig: NavigationGroup[] = [
 ];
 export const chefsEquipesSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
+  {
+    title: "Gestion d'Équipe",
+    items: [
+      {
+        href: "/dashboard/sujets/membres-equipe",
+        label: "Sujets des Membres",
+        icon: "fas fa-users",
+      },
+    ],
+  },
 ];
 export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,

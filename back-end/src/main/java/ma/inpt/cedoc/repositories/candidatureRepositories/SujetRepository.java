@@ -26,6 +26,11 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
 
     Page<Sujet> findByEstPublic(boolean estPublic, Pageable pageable);
 
-    @Query("SELECT DISTINCT s FROM Sujet s JOIN s.professeurs p WHERE p.id IN :professeurIds")
+    @Query("SELECT DISTINCT s FROM Sujet s LEFT JOIN s.professeurs p WHERE p.id IN :professeurIds")
     Page<Sujet> findByProfesseursIdIn(@Param("professeurIds") List<Long> professeurIds, Pageable pageable);
+
+    @Query("SELECT DISTINCT s FROM Sujet s LEFT JOIN s.professeurs p WHERE p.id IN :professeurIds OR s.directeurDeThese.id IN :professeurIds")
+    Page<Sujet> findByProfesseursOrDirecteurDeTheseIdIn(@Param("professeurIds") List<Long> professeurIds,
+            Pageable pageable);
+
 }

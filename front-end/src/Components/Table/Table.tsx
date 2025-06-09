@@ -195,23 +195,27 @@ const DataTable: React.FC<DataTableProps> = ({
       {/* Header */}
       {(title || subtitle || searchable || Object.keys(filters).length > 0) && (
         <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+          <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
             {/* Title Section */}
-            <div className="flex-shrink-0">
-              {title && (
-                <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-              )}
-              {subtitle && (
-                <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
-              )}
-            </div>
+            {(title || subtitle) && (
+              <div className="flex-shrink-0">
+                {title && (
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {title}
+                  </h2>
+                )}
+                {subtitle && (
+                  <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+                )}
+              </div>
+            )}
 
-            {/* Controls Section - Always on the right */}
+            {/* Controls Section - Right aligned on larger screens */}
             {(searchable || Object.keys(filters).length > 0) && (
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 lg:ml-auto">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 xl:ml-auto">
                 {/* Search */}
                 {searchable && (
-                  <div className="relative">
+                  <div className="relative flex-1 sm:flex-none">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
@@ -227,7 +231,7 @@ const DataTable: React.FC<DataTableProps> = ({
                 {Object.keys(filters).length > 0 && (
                   <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`flex items-center justify-center space-x-2 px-3 py-2 border rounded-lg text-sm transition-colors whitespace-nowrap ${
+                    className={`flex items-center justify-center space-x-2 px-3 py-2 border rounded-lg text-sm transition-colors whitespace-nowrap flex-shrink-0 ${
                       hasActiveFilters
                         ? "border-blue-500 text-blue-600 bg-blue-50"
                         : "border-gray-300 text-gray-700 hover:bg-gray-50"

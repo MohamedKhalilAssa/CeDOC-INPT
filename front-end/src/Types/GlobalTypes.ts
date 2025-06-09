@@ -17,3 +17,12 @@ export type APIResponse = {
   message: string;
   statusCode: number;
 };
+
+export type PaginatedResponse<T> = {
+  content: T[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+  isLast: boolean;
+};
