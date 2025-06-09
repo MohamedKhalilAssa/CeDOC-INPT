@@ -19,6 +19,11 @@ export const utilisateursSidebarConfig: NavigationGroup[] = [
         label: "Profile",
         icon: "fas fa-user",
       },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.publications.publier.path,
+        label: "Mes Publications",
+        icon: "fas fa-pen",
+      },
     ],
   },
 ];

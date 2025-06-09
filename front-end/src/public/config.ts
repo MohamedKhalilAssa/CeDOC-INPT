@@ -43,6 +43,7 @@ interface AppConfig {
       utilisateurs: FrontendPathsMap;
       sujets: FrontendPathsMap;
       formations: FrontendPathsMap;
+      publications: FrontendPathsMap;
     };
   };
 }
@@ -233,6 +234,9 @@ const appConfig: AppConfig = {
       },
       formations: {
         proposer: { name: "Mes Formations", path: "formations/mesformations" },
+      },
+      publications: {
+        publier: { name: "Mes Publications", path: "publications/mespublications" },
       },
     },
   },

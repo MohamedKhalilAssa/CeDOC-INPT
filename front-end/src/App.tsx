@@ -20,7 +20,7 @@ import LandingPage from "@/Pages/LandingPage";
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
 import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
-
+import Publications from "@/Pages/Dashboard/Publications/DoctorantPublication";
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
 
@@ -112,6 +112,11 @@ function App() {
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}
           element={<DoctorantFormation />}
+        />
+        {/* Publications */}
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.publications.publier.path}
+          element={<Publications />}
         />
       </Route>
 
