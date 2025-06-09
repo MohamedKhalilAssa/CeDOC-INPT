@@ -22,7 +22,7 @@ public class SeanceFormationController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('DOCTORANT')")
+    @PreAuthorize("hasAuthority('DOCTORANT')")
     public ResponseEntity<SeanceFormationResponseDTO> createSeanceFormation(
             @RequestBody SeanceFormationRequestDTO dto) {
         SeanceFormationResponseDTO created = seanceFormationService.createSeanceFormation(dto);
@@ -30,7 +30,7 @@ public class SeanceFormationController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
+    @PreAuthorize("hasAuthority('RESPONSABLE_FORMATION')")
     public ResponseEntity<SeanceFormationResponseDTO> updateSeanceFormation(@PathVariable Long id,
             @RequestBody SeanceFormationRequestDTO dto) {
         SeanceFormationResponseDTO updated = seanceFormationService.updateSeanceFormation(id, dto);
@@ -38,31 +38,36 @@ public class SeanceFormationController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('DOCTORANT')")
     public ResponseEntity<SeanceFormationResponseDTO> getSeanceFormationById(@PathVariable Long id) {
         SeanceFormationResponseDTO response = seanceFormationService.getSeanceFormationById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('DOCTORANT')")
     public ResponseEntity<List<SeanceFormationResponseDTO>> getAllSeanceFormations() {
         List<SeanceFormationResponseDTO> list = seanceFormationService.getAllSeanceFormations();
         return ResponseEntity.ok(list);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('RESPONSABLE_FORMATION')")
+    @PreAuthorize("hasAuthority('RESPONSABLE_FORMATION')")
     public ResponseEntity<Void> deleteSeanceFormation(@PathVariable Long id) {
         seanceFormationService.deleteSeanceFormation(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/sum-duree/by-formation-and-declarant")
-    public ResponseEntity<Long> getSumDureeByFormationAndDeclarant(
+
+    @GetMapping("/validated/duree")
+    public ResponseEntity<Long> getValidatedDureeByFormationAndDoctorant(
             @RequestParam Long formationId,
-            @RequestParam Long declarantId) {
-        Long sum = seanceFormationService.getSumDureeByFormationAndDeclarant(formationId, declarantId);
+            @RequestParam Long doctorantUtilisateurId
+    ) {
+        Long sum = seanceFormationService.getValidatedDureeByFormationAndDoctorant(formationId, doctorantUtilisateurId);
         return ResponseEntity.ok(sum);
     }
+
 
     @GetMapping("/sum-duree/by-declarant")
     public ResponseEntity<Long> getSumDureeByDeclarant(
@@ -71,18 +76,24 @@ public class SeanceFormationController {
         return ResponseEntity.ok(sum);
     }
 
-    @GetMapping("/validated-formations/by-doctorant")
-    @PreAuthorize("hasRole('DOCTORANT')")
-    public ResponseEntity<List<FormationResponseDTO>> getValidatedFormationsByDoctorant(@RequestParam Long doctorantId) {
-        List<FormationResponseDTO> formations = seanceFormationService.getValidatedFormationsByDoctorant(doctorantId);
-        return ResponseEntity.ok(formations);
+    @PreAuthorize("hasAuthority('DOCTORANT')")
+    @GetMapping("/validated/doctorant/{doctorantUtilisateurId}")
+    public List<FormationResponseDTO> getValidatedFormations(@PathVariable Long doctorantUtilisateurId) {
+        return seanceFormationService.getValidatedFormationsByDoctorant(doctorantUtilisateurId);
     }
 
-    @GetMapping("/validated-sum-duree/by-doctorant")
-    @PreAuthorize("hasRole('DOCTORANT')")
-    public ResponseEntity<Long> getValidatedSumDuree(@RequestParam Long doctorantId) {
-        Long sum = seanceFormationService.getValidatedSumDureeByDeclarant(doctorantId);
+    @GetMapping("/validated/duree/total")
+    @PreAuthorize("hasAuthority('DOCTORANT')")
+    public ResponseEntity<Long> getValidatedSumDuree(@RequestParam Long doctorantUtilisateurId) {
+        Long sum = seanceFormationService.getValidatedSumDureeByDeclarant(doctorantUtilisateurId);
         return ResponseEntity.ok(sum);
+    }
+
+    @GetMapping("/doctorant/{doctorantUtilisateurId}")
+    @PreAuthorize("hasAuthority('DOCTORANT')")
+    public ResponseEntity<List<SeanceFormationResponseDTO>> getSeanceFormationByDoctorantUtilisateurId(@PathVariable Long doctorantUtilisateurId) {
+        List<SeanceFormationResponseDTO> response = seanceFormationService.getDeclaredSeancesByDoctorantUtilisateurId(doctorantUtilisateurId);
+        return ResponseEntity.ok(response);
     }
 
 

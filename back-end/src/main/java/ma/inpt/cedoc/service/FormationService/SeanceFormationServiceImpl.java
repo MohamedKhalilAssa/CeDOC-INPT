@@ -39,19 +39,6 @@ public class SeanceFormationServiceImpl implements SeanceFormationService {
     public SeanceFormationResponseDTO createSeanceFormation(SeanceFormationRequestDTO dto) {
         SeanceFormation seanceFormation = seanceFormationMapper.seanceFormationRequestDTOToSeanceFormation(dto);
 
-        // Fetch related entities
-        Formation formation = formationRepository.findById(dto.getFormationId())
-                .orElseThrow(() -> new RuntimeException("Formation not found with id " + dto.getFormationId()));
-        Doctorant declarant = doctorantRepository.findById(dto.getDeclarantId())
-                .orElseThrow(() -> new RuntimeException("Doctorant not found with id " + dto.getDeclarantId()));
-        ResponsableDeFormationRole responsable = responsableDeFormationRepository.findById(dto.getValideParId())
-                .orElseThrow(() -> new RuntimeException("ResponsableDeFormation not found with id " + dto.getValideParId()));
-
-        // Set them manually
-        seanceFormation.setFormation(formation);
-        seanceFormation.setDeclarant(declarant);
-        seanceFormation.setValidePar(responsable);
-
         // Save
         SeanceFormation savedSeanceFormation = seanceFormationRepository.save(seanceFormation);
 
@@ -98,8 +85,8 @@ public class SeanceFormationServiceImpl implements SeanceFormationService {
     }
 
     @Override
-    public Long getSumDureeByFormationAndDeclarant(Long formationId, Long declarantId) {
-        return seanceFormationRepository.findSumDureeByFormationIdAndDeclarantId(formationId, declarantId)
+    public Long getValidatedDureeByFormationAndDoctorant(Long formationId, Long doctorantUtilisateurId) {
+        return seanceFormationRepository.findSumDureeForValidatedByFormationIdAndDoctorantUtilisateurId(formationId, doctorantUtilisateurId)
                 .orElse(0L);
     }
 
@@ -110,17 +97,26 @@ public class SeanceFormationServiceImpl implements SeanceFormationService {
     }
 
     @Override
-    public List<FormationResponseDTO> getValidatedFormationsByDoctorant(Long doctorantId) {
-        List<Formation> formations = seanceFormationRepository.findDistinctValidatedFormationsByDoctorantId(doctorantId);
+    public List<FormationResponseDTO> getValidatedFormationsByDoctorant(Long doctorantUtilisateurId) {
+        List<Formation> formations = seanceFormationRepository.findDistinctValidatedFormationsByDoctorantUtilisateurId(doctorantUtilisateurId);
         return formations.stream()
                 .map(formationMapper::formationToFormationResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Long getValidatedSumDureeByDeclarant(Long doctorantId) {
-        return seanceFormationRepository.findSumDureeByDeclarantIdWhereFormationValidee(doctorantId).orElse(0L);
+    public Long getValidatedSumDureeByDeclarant(Long doctorantUtilisateurId) {
+        return seanceFormationRepository.findSumDureeByDeclarantUtilisateurIdWhereFormationValidee(doctorantUtilisateurId).orElse(0L);
     }
+
+    @Override
+    public List<SeanceFormationResponseDTO> getDeclaredSeancesByDoctorantUtilisateurId(Long utilisateurId) {
+        List<SeanceFormation> seances = seanceFormationRepository.findByDeclarantUtilisateurId(utilisateurId);
+        return seances.stream()
+                .map(seanceFormationMapper::seanceFormationToSeanceFormationResponseDTO)
+                .collect(Collectors.toList());
+    }
+
 
 
 }

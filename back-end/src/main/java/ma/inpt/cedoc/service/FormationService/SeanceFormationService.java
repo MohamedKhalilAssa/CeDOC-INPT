@@ -18,11 +18,13 @@ public interface SeanceFormationService {
 
     void deleteSeanceFormation(Long id);
 
-    Long getSumDureeByFormationAndDeclarant(Long formationId, Long declarantId);
+    Long getValidatedDureeByFormationAndDoctorant(Long formationId, Long declarantId);
 
     Long getSumDureeByDeclarant(Long declarantId);
 
     List<FormationResponseDTO> getValidatedFormationsByDoctorant(Long doctorantId);
 
     Long getValidatedSumDureeByDeclarant(Long doctorantId);
+
+    List<SeanceFormationResponseDTO> getDeclaredSeancesByDoctorantUtilisateurId(Long utilisateurId);
 }
