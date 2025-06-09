@@ -1,0 +1,65 @@
+.
+├── PROJECT_STRUCTURE.md
+├── StartApp.cmd
+├── StartApp.sh
+├── back-end
+│   ├── README.md
+│   ├── TO_READ_BEFORE_STARTING.txt
+│   ├── backend.md
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   ├── pom.xml
+│   ├── setup-secrets.sh
+│   ├── setup.cmd
+│   ├── src
+│   │   ├── Uploads
+│   │   ├── main
+│   │   └── test
+│   └── target
+│       ├── cedoc-0.0.1-SNAPSHOT.jar
+│       ├── cedoc-0.0.1-SNAPSHOT.jar.original
+│       ├── classes
+│       ├── generated-sources
+│       ├── generated-test-sources
+│       ├── maven-archiver
+│       ├── maven-status
+│       ├── surefire-reports
+│       └── test-classes
+├── front-end
+│   ├── README.md
+│   ├── env.d.ts
+│   ├── eslint.config.js
+│   ├── frontend.md
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   │   └── vite.svg
+│   ├── src
+│   │   ├── App.tsx
+│   │   ├── Components
+│   │   ├── Context
+│   │   ├── Dashicons
+│   │   ├── Helpers
+│   │   ├── Hooks
+│   │   ├── Layout
+│   │   ├── Pages
+│   │   ├── Sections
+│   │   ├── Types
+│   │   ├── assets
+│   │   ├── main.tsx
+│   │   ├── public
+│   │   └── vite-env.d.ts
+│   ├── tmp
+│   │   ├── DashApp.tsx
+│   │   ├── DashMain.tsx
+│   │   └── sDashindex.tmp
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── install.cmd
+├── install.sh
+└── structure.txt
+
+29 directories, 34 files
