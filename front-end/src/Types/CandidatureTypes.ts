@@ -1,7 +1,13 @@
 import { UtilisateurResponseDTO } from "@/Types/UtilisateursTypes";
 
+export enum GradeProfesseurEnum {
+  ASSISTANT = "ASSISTANT",
+  HABILITE = "HABILITE",
+  PES = "PES",
+}
+
 export interface ProfesseurResponseDTO extends UtilisateurResponseDTO {
-  grade: string;
+  grade: GradeProfesseurEnum;
 }
 
 export interface SujetResponseDTO {

@@ -19,7 +19,6 @@ interface AppConfig {
   BACKEND_URL: string;
   FRONTEND_URL: string;
   IMAGES_RESSOURCES: string;
-
   API_PATHS: {
     AUTH: ApiPathsMap;
     NATIONALITE: ApiPathsMap;
@@ -33,6 +32,7 @@ interface AppConfig {
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
+    EQUIPE: ApiPathsMap;
   };
 
   FRONTEND_PATHS: {
@@ -241,6 +241,28 @@ const appConfig: AppConfig = {
       search: {
         name: "Search Professeurs",
         path: "/professeurs/search",
+        method: "GET",
+      },
+    },
+    EQUIPE: {
+      getAllPublic: {
+        name: "Get All Public Équipes",
+        path: "/equipes/public",
+        method: "GET",
+      },
+      getAllSimple: {
+        name: "Get All Simple Équipes",
+        path: "/equipes/public/simple",
+        method: "GET",
+      },
+      getPublicPaginated: {
+        name: "Get Public Équipes Paginated",
+        path: "/equipes/public/paginated",
+        method: "GET",
+      },
+      getById: {
+        name: "Get Équipe by ID",
+        path: "/equipes/public/:id",
         method: "GET",
       },
     },

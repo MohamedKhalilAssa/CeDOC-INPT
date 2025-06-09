@@ -1,6 +1,13 @@
 // Main Utilisateur interface
 import { baseResponse } from "@/Types/GlobalTypes";
-import { CandidatureEnum, DiplomeEnum, EtablissementEnum, EtatCivilEnum, GenreEnum, MentionEnum } from "@/Types/UtilisateursEnums";
+import {
+  CandidatureEnum,
+  DiplomeEnum,
+  EtablissementEnum,
+  EtatCivilEnum,
+  GenreEnum,
+  MentionEnum,
+} from "@/Types/UtilisateursEnums";
 // Supporting interfaces
 export interface Role extends baseResponse {
   id: number;
@@ -21,13 +28,27 @@ export interface UtilisateurResponseDTO extends baseResponse {
   dateNaissance?: Date;
   etatCivilEnum?: EtatCivilEnum;
   statutProfessionnel?: string;
-  
+
   genre?: GenreEnum;
   emailValider: boolean;
   roles: Role[];
   nationalite?: Nationalite;
   lieuDeNaissance?: LieuDeNaissance;
 }
+// Équipe de recherche response DTO
+export interface EquipeResponseDTO extends baseResponse {
+  nomDeLequipe: string;
+  nomCompletChef?: string;
+  chefEquipeId?: number;
+  membres: ProfesseurResponseDTO[];
+  nombreMembres: number;
+  nombreDoctorants: number;
+}
+
+export interface ProfesseurResponseDTO extends UtilisateurResponseDTO {
+  grade: string;
+}
+
 export interface CandidatureRequestDTO extends UtilisateurResponseDTO {
   // On conserve le champ statutCandidature (même si on forcera en SOUMISE)
   statutCandidature: CandidatureEnum;
@@ -51,6 +72,3 @@ export interface CandidatureRequestDTO extends UtilisateurResponseDTO {
    */
   sujetsIds: number[];
 }
-
-
-

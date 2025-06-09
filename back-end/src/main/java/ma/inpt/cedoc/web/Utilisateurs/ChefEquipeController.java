@@ -91,6 +91,7 @@ public class ChefEquipeController {
      * rée un nouveau ChefEquipeRole (JSON correspondant à ChefEquipeRole).
      */
     @PostMapping
+    @PreAuthorize("hasAuthority('DIRECTION_CEDOC')")
     public ResponseEntity<ChefEquipeRole> createChef(@RequestBody ChefEquipeRole chefEquipeRole) {
         ChefEquipeRole saved = chefEquipeService.createChefEquipe(chefEquipeRole);
         return ResponseEntity.status(201).body(saved);
@@ -122,6 +123,8 @@ public class ChefEquipeController {
      * dans le JSON.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('DIRECTION_CEDOC')")
+
     public ResponseEntity<ChefEquipeRole> updateChef(
             @PathVariable Long id,
             @RequestBody ChefEquipeRole chefEquipeRole) {
@@ -135,6 +138,7 @@ public class ChefEquipeController {
      * réussit.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DIRECTION_CEDOC')")
     public ResponseEntity<Void> deleteChef(@PathVariable Long id) {
         chefEquipeService.deleteChefEquipe(id);
         return ResponseEntity.noContent().build();
@@ -163,20 +167,6 @@ public class ChefEquipeController {
                 .findCandidaturesByChefEquipeId(id);
         return ResponseEntity.ok(candidatures);
     }
-
-    /**
-     * POST /api/chefs-equipe/{chefId}/valider-sujet/{sujetId}
-     * Valide le sujet sujetId pour le chef chefId. Renvoie l’entité Sujet mise à
-     * jour.
-     */
-    @PostMapping("/{chefId}/valider-sujet/{sujetId}")
-    public ResponseEntity<Sujet> validerSujet(
-            @PathVariable Long chefId,
-            @PathVariable Long sujetId) {
-        Sujet validated = chefEquipeService.validerSujet(chefId, sujetId);
-        return ResponseEntity.ok(validated);
-    }
-
     /**
      * GET /api/chefs-equipe/{chefId}/can-access/{candidatureId}
      * Renvoie true si le chef chefId peut accéder à la candidature candidatureId.

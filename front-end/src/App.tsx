@@ -13,9 +13,10 @@ import SignUpPage from "@/Pages/Authentication/SignUpPage";
 
 import PostulerPage from "@/Pages/Candidature/PostulerPage";
 import ContactPage from "@/Pages/ContactPage";
-import ResearchTeamsTable from "@/Pages/EquipesDeRecherchePage";
+import EquipeDeRecherchePage from "@/Pages/EquipeDeRecherchePage";
 import FormationPage from "@/Pages/FormationPage";
 import LandingPage from "@/Pages/LandingPage";
+import SujetDeRecherchePage from "@/Pages/SujetDeRecherchePage";
 
 import DashboardHomePage from "@/Pages/DashPages/Dashboard/Home";
 import DoctorantFormation from "@/Pages/Dashboard/Formations/DoctorantFormations";
@@ -35,15 +36,17 @@ function App() {
         <Route
           path={appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path}
           element={<LandingPage />}
-        />
-
+        />{" "}
         {/** ──────────────────────────────────────────────── */}
         {/** MOVED /recherche out from GuestOnlyLayout so it always renders */}
         <Route
           path={appConfig.FRONTEND_PATHS.GLOBAL.recherche.path}
-          element={<ResearchTeamsTable />}
+          element={<SujetDeRecherchePage />}
         />
-
+        <Route
+          path={appConfig.FRONTEND_PATHS.EQUIPE.Listings.path}
+          element={<EquipeDeRecherchePage />}
+        />
         {/** ──────────────────────────────────────────────── */}
         {/** Routes that should only be seen by *unauthenticated* (guests) */}
         <Route element={<GuestOnlyLayout />}>
@@ -68,7 +71,6 @@ function App() {
             element={<ResetPasswordPage />}
           />
         </Route>
-
         {/** ──────────────────────────────────────────────── */}
         {/** Routes that should only be seen by *authenticated* users */}
         <Route element={<AuthOnlyLayout />}>
@@ -77,7 +79,6 @@ function App() {
             element={<PostulerPage />}
           />
         </Route>
-
         {/** ──────────────────────────────────────────────── */}
         {/** Other public‐quality pages (no guard) */}
         <Route

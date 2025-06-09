@@ -124,6 +124,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
         // Skip these public endpoints and auth paths
         return method.equalsIgnoreCase("OPTIONS") ||
                 path.startsWith("/api/auth/") ||
+                path.contains("/public") ||
                 path.startsWith("/api/guest/") ||
                 path.startsWith("/images/") ||
                 (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||

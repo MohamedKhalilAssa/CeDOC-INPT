@@ -17,7 +17,8 @@ public class ProfesseurMapperImpl implements ProfesseurMapper {
                 .nom(p.getUtilisateur().getNom())
                 .prenom(p.getUtilisateur().getPrenom())
                 .email(p.getUtilisateur().getEmail())
-                .grade(p.getGrade().name())
+                .telephone(p.getUtilisateur().getTelephone())
+                .grade(p.getGrade())
                 .build();
     }
 

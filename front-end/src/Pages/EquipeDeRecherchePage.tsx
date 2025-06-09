@@ -1,20 +1,18 @@
-// src/Pages/EquipesDeRecherchePage.tsx
 import type { Column } from "@/Components/Table/ServerSideTable";
 import ServerSideTable from "@/Components/Table/ServerSideTable";
 import { getData } from "@/Helpers/CRUDFunctions";
 import { useServerSideTable } from "@/Hooks/useServerSideTable";
 import appConfig from "@/public/config";
-import { ChefSujetsEquipeResponseDTO } from "@/Types/CandidatureTypes";
 import { PaginatedResponse, TableConfig } from "@/Types/GlobalTypes";
+import { EquipeResponseDTO } from "@/Types/UtilisateursTypes";
 import React, { useCallback } from "react";
-import { Link } from "react-router-dom";
 
-const EquipesDeRecherchePage: React.FC = () => {
+const EquipeDeRecherchePage: React.FC = () => {
   // Fetcher function for the table hook
-  const fetchSujets = useCallback(
+  const fetchEquipes = useCallback(
     async (
       config: TableConfig
-    ): Promise<PaginatedResponse<ChefSujetsEquipeResponseDTO>> => {
+    ): Promise<PaginatedResponse<EquipeResponseDTO>> => {
       // Build query parameters
       const params = new URLSearchParams();
       params.append("page", (config.page - 1).toString()); // Backend uses 0-based indexing
@@ -37,12 +35,10 @@ const EquipesDeRecherchePage: React.FC = () => {
       });
 
       const url = `${
-        appConfig.API_PATHS.SUJET.sujetsChefEquipes.path
+        appConfig.API_PATHS.EQUIPE.getPublicPaginated.path
       }?${params.toString()}`;
 
-      const response = await getData<
-        PaginatedResponse<ChefSujetsEquipeResponseDTO>
-      >(url);
+      const response = await getData<PaginatedResponse<EquipeResponseDTO>>(url);
 
       if (!response) {
         throw new Error("No data received from server");
@@ -55,21 +51,21 @@ const EquipesDeRecherchePage: React.FC = () => {
 
   // Use the table hook
   const { config, data, loading, setConfig } =
-    useServerSideTable<ChefSujetsEquipeResponseDTO>({
+    useServerSideTable<EquipeResponseDTO>({
       initialConfig: {
         pageSize: 10,
       },
-      fetcher: fetchSujets,
+      fetcher: fetchEquipes,
       onError: (err) => {
-        console.error("Error fetching sujets:", err);
+        console.error("Error fetching équipes:", err);
       },
     });
 
   // Define table columns
   const columns: Column[] = [
     {
-      key: "intituleSujet",
-      label: "Sujet",
+      key: "nomDeLequipe",
+      label: "Nom de l'équipe",
       sortable: true,
       render: (value: string) => (
         <div className="text-sm text-gray-900 font-medium">{value}</div>
@@ -84,21 +80,36 @@ const EquipesDeRecherchePage: React.FC = () => {
       ),
     },
     {
-      key: "equipeIntitule",
-      label: "Équipe de recherche",
+      key: "nombreMembres",
+      label: "Membres",
+      sortable: true,
+      render: (value: number) => (
+        <div className="text-sm text-gray-700">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            {value} membre{value !== 1 ? "s" : ""}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "nombreDoctorants",
+      label: "Doctorants",
+      sortable: true,
+      render: (value: number) => (
+        <div className="text-sm text-gray-700">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            {value} doctorant{value !== 1 ? "s" : ""}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Date de création",
       sortable: true,
       render: (value: string) => (
         <div className="text-sm text-gray-700">
-          {value ? (
-            <Link
-              className="text-blue-500 hover:underline transition hover:text-blue-700"
-              to={appConfig.FRONTEND_PATHS.EQUIPE.Listings.path}
-            >
-              {value}
-            </Link>
-          ) : (
-            "—"
-          )}
+          {new Date(value).toLocaleDateString("fr-FR")}
         </div>
       ),
     },
@@ -110,11 +121,10 @@ const EquipesDeRecherchePage: React.FC = () => {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            ÉQUIPES ET SUJETS DE RECHERCHE
+            ÉQUIPES DE RECHERCHE
           </h1>
           <p className="text-gray-600">
-            Découvrez les sujets de recherche disponibles et leurs équipes
-            associées
+            Découvrez les équipes de recherche et leurs domaines d'expertise
           </p>
         </div>
 
@@ -128,11 +138,11 @@ const EquipesDeRecherchePage: React.FC = () => {
             loading={loading}
             config={config}
             onConfigChange={setConfig}
-            searchPlaceholder="Rechercher par sujet, chef d'équipe ou équipe..."
-            title="Sujets de recherche"
-            subtitle="Liste des sujets de recherche proposés par les équipes"
+            searchPlaceholder="Rechercher par nom d'équipe, chef ou nombre de membres..."
+            title="Équipes de recherche"
+            subtitle="Liste des équipes de recherche et leurs informations"
             searchable={true}
-            emptyMessage="Aucun sujet de recherche trouvé"
+            emptyMessage="Aucune équipe de recherche trouvée"
             actions={false}
           />
         </div>
@@ -141,4 +151,4 @@ const EquipesDeRecherchePage: React.FC = () => {
   );
 };
 
-export default EquipesDeRecherchePage;
+export default EquipeDeRecherchePage;

@@ -129,6 +129,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
         return method.equalsIgnoreCase("OPTIONS") ||
                 path.startsWith("/api/auth/") ||
                 path.startsWith("/api/guest/") ||
+                path.contains("/public") ||
                 path.startsWith("/images/") ||
                 (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||
                 (method.equalsIgnoreCase("GET") && path.equals("/api/sujets/chefs-sujets"));

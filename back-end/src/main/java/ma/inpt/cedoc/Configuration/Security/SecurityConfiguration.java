@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                                                 AccessTokenFilter.class)
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/api/*/public/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/formations").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/sujets/chefs-sujets-equipes")
                                                 .permitAll()
