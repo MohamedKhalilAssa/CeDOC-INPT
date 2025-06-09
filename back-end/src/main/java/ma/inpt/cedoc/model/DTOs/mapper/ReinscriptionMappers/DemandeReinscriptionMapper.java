@@ -1,20 +1,20 @@
 package ma.inpt.cedoc.model.DTOs.mapper.ReinscriptionMappers;
 
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.DemandeReinscriptionResponseDTO;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.stereotype.Component;
-
 @Component
 @RequiredArgsConstructor
 public class DemandeReinscriptionMapper {
     private final SujetRepository sujetRepository;
 
-    public DemandeReinscription toEntity(DemandeReinscriptionRequestDTO dto){
+    public DemandeReinscription toEntity(DemandeReinscriptionRequestDTO dto) {
         DemandeReinscription entity = new DemandeReinscription();
         entity.setAnnee(dto.getAnnee());
         entity.setRapportAvancement(dto.getRapportAvancement());
@@ -28,7 +28,7 @@ public class DemandeReinscriptionMapper {
         return entity;
     }
 
-    public void updateFromRequest(DemandeReinscriptionRequestDTO dto, DemandeReinscription entity){
+    public void updateFromRequest(DemandeReinscriptionRequestDTO dto, DemandeReinscription entity) {
         entity.setAnnee(dto.getAnnee());
         entity.setRapportAvancement(dto.getRapportAvancement());
         entity.setPlanAction(dto.getPlanAction());
@@ -40,7 +40,7 @@ public class DemandeReinscriptionMapper {
                 .orElseThrow(() -> new ResourceNotFoundException("Sujet non trouvé")));
     }
 
-    public DemandeReinscriptionResponseDTO toResponseDTO(DemandeReinscription entity){
+    public DemandeReinscriptionResponseDTO toResponseDTO(DemandeReinscription entity) {
         DemandeReinscriptionResponseDTO responseDTO = new DemandeReinscriptionResponseDTO();
         responseDTO.setId(entity.getId());
         responseDTO.setAnnee(entity.getAnnee());

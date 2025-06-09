@@ -210,7 +210,8 @@ public class ChefEquipeServiceImpl implements ChefEquipeService {
     }
 
     @Override
-    public Page<Sujet> findSujetsMembreEquipes(ChefEquipeRole chef, Pageable pageable) {
+    public PaginatedResponseDTO<SujetResponseDTO> findSujetsMembreEquipesPaginated(ChefEquipeRole chef,
+            Pageable pageable, String search) {
         // Validate input parameters
         if (chef == null) {
             throw new ResponseStatusException(
@@ -233,8 +234,9 @@ public class ChefEquipeServiceImpl implements ChefEquipeService {
 
         List<Professeur> membres = equipe.getMembres();
         if (membres == null || membres.isEmpty()) {
-            // Return empty page instead of throwing exception for better UX
-            return Page.empty(pageable);
+            // Return empty page for better UX
+            Page<SujetResponseDTO> emptyPage = Page.empty(pageable);
+            return PaginatedMapper.mapToDTO(emptyPage);
         }
 
         // Extract member IDs, excluding the chef themselves to avoid conflicts
@@ -245,33 +247,28 @@ public class ChefEquipeServiceImpl implements ChefEquipeService {
                 .collect(Collectors.toList());
 
         if (membreIds.isEmpty()) {
-            return Page.empty(pageable);
+            Page<SujetResponseDTO> emptyPage = Page.empty(pageable);
+            return PaginatedMapper.mapToDTO(emptyPage);
         }
 
-        // Use proper logging instead of System.out.println
         log.debug("Recherche de sujets pour les membres de l'équipe avec IDs : {}", membreIds);
+        log.debug("Recherche avec filtre : '{}'", search);
 
         try {
-            return sujetRepository.findByProfesseursOrDirecteurDeTheseIdIn(membreIds, pageable);
+            Page<Sujet> sujetsPage = sujetRepository.findByProfesseursOrDirecteurDeTheseIdInWithSearch(membreIds,
+                    search, pageable);
+
+            // Convert entities to DTOs
+            Page<SujetResponseDTO> sujetsDTOPage = sujetsPage.map(sujetMapper::toResponseDTO);
+
+            // Map to paginated response DTO
+            return PaginatedMapper.mapToDTO(sujetsDTOPage);
         } catch (Exception e) {
             log.error("Erreur lors de la recherche des sujets pour les membres de l'équipe : {}", e.getMessage(), e);
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "Erreur lors de la récupération des sujets des membres de l'équipe.");
         }
-    }
-
-    @Override
-    public PaginatedResponseDTO<SujetResponseDTO> findSujetsMembreEquipesPaginated(ChefEquipeRole chef,
-            Pageable pageable) {
-        // Reuse the existing logic from findSujetsMembreEquipes
-        Page<Sujet> sujetsPage = findSujetsMembreEquipes(chef, pageable);
-
-        // Convert entities to DTOs
-        Page<SujetResponseDTO> sujetsDTOPage = sujetsPage.map(sujetMapper::toResponseDTO);
-
-        // Map to paginated response DTO
-        return PaginatedMapper.mapToDTO(sujetsDTOPage);
     }
 
 }
