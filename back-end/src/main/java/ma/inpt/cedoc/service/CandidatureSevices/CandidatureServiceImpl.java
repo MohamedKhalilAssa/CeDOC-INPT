@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,10 +37,10 @@ import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
+import ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRefuserRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
-import ma.inpt.cedoc.repositories.model.enums.roles_enum.RoleEnum;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.*;
 import ma.inpt.cedoc.service.Global.EmailService;
 import ma.inpt.cedoc.service.Global.FileService;
@@ -439,32 +440,36 @@ public class CandidatureServiceImpl implements CandidatureService {
     }
 
     @Override
-public List<Candidature> getAccessibleCandidatures(Utilisateur utilisateur) {
-    Long userId = utilisateur.getId();
+    public List<Candidature> getAccessibleCandidatures(UserDetails userDetails) {
+        Utilisateur utilisateur = utilisateurRepository
+            .findByEmail(userDetails.getUsername())
+            .orElseThrow(() -> new UsernameNotFoundException("User not found: " 
+                                                        + userDetails.getUsername()));
+        Long userId = utilisateur.getId();
 
-    // 1) Lab-head and CEDoc director see everything
-    if (utilisateur.hasRole(RoleEnum.DIRECTION_CEDOC)) {
-        return candidatureRepository.findAll();
-    }
+        // 1) Lab-head and CEDoc director see everything
+        if (utilisateur.hasRole(RoleEnum.DIRECTION_CEDOC)) {
+            return candidatureRepository.findAll();
+        }
 
-    // 2) Team-leader sees only the candidatures on their team’s subjects
-    else if (utilisateur.hasRole(RoleEnum.CHEF_EQUIPE)) {
-        Long chefRoleId = chefEquipeRoleRepository
-            .findByProfesseurUtilisateurId(userId)
-            .orElseThrow(() -> new RuntimeException("Pas de rôle chef trouvé"))
-            .getId();
-        return findByChefEquipeRoleId(chefRoleId);
-    }
+        // 2) Team-leader sees only the candidatures on their team’s subjects
+        else if (utilisateur.hasRole(RoleEnum.CHEF_EQUIPE)) {
+            Long chefRoleId = chefEquipeRoleRepository
+                .findByProfesseurUtilisateurId(userId)
+                .orElseThrow(() -> new RuntimeException("Pas de rôle chef trouvé"))
+                .getId();
+            return findByChefEquipeRoleId(chefRoleId);
+        }
 
-    // 3) Ordinary professor sees only their own candida­tures
-    else if (utilisateur.hasRole(RoleEnum.PROFESSEUR)) {
-        return findByProfesseurId(userId);
-    }
+        // 3) Ordinary professor sees only their own candida­tures
+        else if (utilisateur.hasRole(RoleEnum.PROFESSEUR)) {
+            return findByProfesseurId(userId);
+        }
 
-    // 4) Everyone else is forbidden
-    else {
-        throw new AccessDeniedException("Accès non autorisé");
+        // 4) Everyone else is forbidden
+        else {
+            throw new AccessDeniedException("Accès non autorisé");
+        }
     }
-}
 
 }

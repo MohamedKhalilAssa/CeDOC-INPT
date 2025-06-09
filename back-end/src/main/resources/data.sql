@@ -1,4 +1,18 @@
-INSERT INTO roles (intitule) VALUES 
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS utilisateur_roles;
+DROP TABLE IF EXISTS directeur_de_these_roles;
+DROP TABLE IF EXISTS chef_equipe_roles;
+DROP TABLE IF EXISTS professeurs;
+DROP TABLE IF EXISTS sujets;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS lieux_de_naissances;
+DROP TABLE IF EXISTS nationalites;
+DROP TABLE IF EXISTS equipes_de_recherches;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+INSERT IGNORE INTO roles (intitule) VALUES 
 ('CANDIDAT'),
 ('PROFESSEUR'),
 ('DOCTORANT'),
