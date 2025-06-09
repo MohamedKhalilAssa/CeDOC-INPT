@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.repositories.utilisateursRepositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.validation.constraints.NotNull;
@@ -13,4 +14,6 @@ public interface DoctorantRepository extends JpaRepository<Doctorant, Long> {
     public Optional<Long> getIdByUtilisateurEmail(String email);
 
     Optional<Doctorant> findByUtilisateurId(Long declarantId);
+
+    List<Doctorant> findByDirecteurDeTheseId(Long directeurDeTheseId);
 }
