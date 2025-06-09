@@ -185,17 +185,17 @@ const appConfig: AppConfig = {
     CONFERENCES: {
       getAll: {
         name: "Get All Conferences",
-        path: "/conferences",
+        path: "/confparticipation/doctorant/me",
         method: "GET",
       },
       create: {
         name: "Create Conference",
-        path: "/conferences",
+        path: "/confparticipation/",
         method: "POST",
       },
       delete: {
         name: "Delete Conference",
-        path: "/conferences/:id",
+        path: "/confparticipation/",
         method: "DELETE",
       },
     },
@@ -292,6 +292,10 @@ const appConfig: AppConfig = {
         reinscrire: {
           name: "Mes Réinscriptions",
           path: "reinscriptions/reinscrire",
+        },
+        valider: {
+          name: "Mes Réinscriptions",
+          path: "reinscriptions/valider",
         },
       },
     },

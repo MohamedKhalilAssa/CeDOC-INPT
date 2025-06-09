@@ -28,6 +28,7 @@ import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
 
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
+import AdminValidationReinscriptions from "./Pages/Dashboard/Reinscriptions/AdminValidationReinscriptions";
 
 function App() {
   return (
@@ -135,6 +136,12 @@ function App() {
             appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.reinscrire.path
           }
           element={<DoctorantReinscriptions />}
+        />
+        <Route
+          path={
+            appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.valider.path
+          }
+          element={<AdminValidationReinscriptions />}
         />
       </Route>
 

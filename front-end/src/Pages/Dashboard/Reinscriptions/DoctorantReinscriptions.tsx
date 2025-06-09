@@ -1,635 +1,440 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
+import { Upload, Calendar, User, FileText, AlertCircle, X } from 'lucide-react';
 
 const DoctorantReinscriptions = () => {
-  // Form states
   const [formData, setFormData] = useState({
-    thesisSubject: "",
-    team: "",
-    director: "",
-    coDirector: "",
-    progressReport: "",
-    workPlan: "",
-    professionalStatus: "",
-    residenceStatus: "",
-    cotutelleInstitution: "",
-    cotutelleProfessor: "",
-    derogationRequest: "",
-    year: "",
-    attestationFile: null,
-    employmentCertificate: null,
-    otherFiles: []
+    sujetThese: '',
+    equipe: '',
+    directeurThese: '',
+    coDirecteurThese: '',
+    rapportAvancement: '',
+    planAction: '',
+    statutProfessionnel: '',
+    residence: '',
+    etablissementCotutelle: '',
+    lieuCotutelle: '',
+    professeurCotutelle: '',
+    anneeInscription: '',
+    demandeDerogation: ''
   });
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [submissions, setSubmissions] = useState([]);
-  const [currentYear, setCurrentYear] = useState("");
-  const [showDerogationField, setShowDerogationField] = useState(false);
-  const [showCotutelleFields, setShowCotutelleFields] = useState(false);
-  const [showPublicationWarning, setShowPublicationWarning] = useState(false);
+  const [files, setFiles] = useState({
+    attestationHonneur: null,
+    certificatNonTravail: null
+  });
 
-  // Fetch current academic year and user data (simulated)
-  useEffect(() => {
-    // Simulate API call
-    setCurrentYear("2023-2024");
-    // Set default values from user profile
+  const [currentYear, setCurrentYear] = useState(3);
+  const [showDeadlineWarning, setShowDeadlineWarning] = useState(true);
+
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      director: "Pr. Ahmed Benali",
-      coDirector: "Pr. Fatima Zahraoui",
-      team: "Equipe de Recherche en Intelligence Artificielle"
-    }));
-  }, []);
-
-  // Handle year selection changes
-  useEffect(() => {
-    const yearNum = parseInt(formData.year);
-    setShowDerogationField(yearNum >= 5);
-    setShowPublicationWarning(yearNum === 4);
-  }, [formData.year]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: null
-      }));
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({
-          ...prev,
-          [name]: "Fichier trop volumineux (max 5MB)"
-        }));
-        return;
-      }
-      if (file.type !== "application/pdf") {
-        setErrors(prev => ({
-          ...prev,
-          [name]: "Seuls les fichiers PDF sont acceptés"
-        }));
-        return;
-      }
-      setFormData(prev => ({
-        ...prev,
-        [name]: file
-      }));
-      setErrors(prev => ({
-        ...prev,
-        [name]: null
-      }));
-    }
-  };
-
-  const handleMultipleFilesChange = (e) => {
-    const files = Array.from(e.target.files);
-    const validFiles = files.filter(file => 
-      file.size <= 5 * 1024 * 1024 && 
-      file.type === "application/pdf"
-    );
-    
-    setFormData(prev => ({
-      ...prev,
-      otherFiles: [...prev.otherFiles, ...validFiles]
+      [field]: value
     }));
   };
 
-  const removeFile = (fileName, fieldName) => {
-    if (fieldName === "otherFiles") {
-      setFormData(prev => ({
-        ...prev,
-        otherFiles: prev.otherFiles.filter(file => file.name !== fileName)
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [fieldName]: null
-      }));
-    }
+  const handleFileUpload = (fileType, file) => {
+    setFiles(prev => ({
+      ...prev,
+      [fileType]: file
+    }));
   };
 
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.thesisSubject.trim()) newErrors.thesisSubject = "Le sujet de thèse est requis";
-    if (!formData.team.trim()) newErrors.team = "L'équipe est requise";
-    if (!formData.director.trim()) newErrors.director = "Le directeur de thèse est requis";
-    if (!formData.progressReport.trim()) newErrors.progressReport = "Le rapport d'avancement est requis";
-    if (!formData.workPlan.trim()) newErrors.workPlan = "Le plan prévisionnel est requis";
-    if (!formData.professionalStatus) newErrors.professionalStatus = "Le statut professionnel est requis";
-    if (!formData.residenceStatus) newErrors.residenceStatus = "Le statut de résidence est requis";
-    if (!formData.year) newErrors.year = "L'année de réinscription est requise";
+  const validateForm = () => {
+    const required = ['sujetThese', 'equipe', 'directeurThese', 'rapportAvancement', 'planAction', 'statutProfessionnel', 'residence'];
+    const missing = required.filter(field => !formData[field]);
     
-    // Additional validations based on conditions
-    if (formData.professionalStatus === "Non salarié" && formData.residenceStatus === "Bénéficiaire") {
-      if (!formData.attestationFile) newErrors.attestationFile = "L'attestation sur l'honneur est requise";
-      if (!formData.employmentCertificate) newErrors.employmentCertificate = "Le certificat de non-travail est requis";
+    // Check for required files for non-salaried residence beneficiaries
+    if (formData.statutProfessionnel === 'non-salarie' && formData.residence === 'beneficiaire') {
+      if (!files.attestationHonneur) missing.push('attestation sur l\'honneur');
+      if (!files.certificatNonTravail) missing.push('certificat de non-travail');
     }
-    
-    if (showDerogationField && !formData.derogationRequest.trim()) {
-      newErrors.derogationRequest = "La demande de dérogation est requise";
+
+    // Check for derogation request for 5th/6th year
+    if (currentYear >= 5 && !formData.demandeDerogation) {
+      missing.push('demande de dérogation');
     }
-    
-    if (showCotutelleFields) {
-      if (!formData.cotutelleInstitution.trim()) newErrors.cotutelleInstitution = "L'établissement de cotutelle est requis";
-      if (!formData.cotutelleProfessor.trim()) newErrors.cotutelleProfessor = "Le professeur de cotutelle est requis";
-    }
-    
-    return newErrors;
+
+    return missing;
   };
+
+  const isFormValid = validateForm().length === 0;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+    if (isFormValid) {
+      console.log('Formulaire soumis:', formData, files);
+      alert('Demande de réinscription soumise avec succès ! Elle sera maintenant examinée par votre directeur de thèse.');
     }
-
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const submissionToAdd = {
-        ...formData,
-        id: Date.now(),
-        submittedAt: new Date().toISOString(),
-        status: "En attente de validation"
-      };
-      
-      setSubmissions(prev => [...prev, submissionToAdd]);
-      setSuccessMessage("Demande de réinscription soumise avec succès!");
-      setIsSubmitting(false);
-      
-      setTimeout(() => setSuccessMessage(""), 5000);
-    }, 1500);
-  };
-
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return new Date(dateString).toLocaleDateString('fr-FR', options);
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-gray-800">Demande de Réinscription {currentYear}</h1>
-      <p className="mb-6 text-gray-600">
-        Veuillez remplir ce formulaire pour votre réinscription en doctorat pour l'année universitaire suivante.
-      </p>
+    <div className="max-w-4xl mx-auto p-6 bg-white">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          Demande de Réinscription en Doctorat
+        </h1>
+        <p className="text-gray-600">
+          Formulaire à remplir par le doctorant - Année universitaire {new Date().getFullYear()}/{new Date().getFullYear()+1}
+        </p>
+      </div>
 
-      {successMessage && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
-          {successMessage}
+      {showDeadlineWarning && (
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+          <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+          <div className="flex-1">
+            <h3 className="font-semibold text-amber-800">Date limite importante</h3>
+            <p className="text-amber-700 text-sm">
+              Cette demande doit être complétée avant la date précisée par le directeur du CEDoc.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowDeadlineWarning(false)}
+            className="text-amber-600 hover:text-amber-800"
+          >
+            <X size={18} />
+          </button>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-        {/* Academic Information Section */}
-        <div className="border-b pb-4">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">Informations Académiques</h2>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Informations de base */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <User size={20} />
+            Informations de base
+          </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="year" className="block mb-1 font-medium text-gray-700">
-                Année de réinscription*
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Année d'inscription souhaitée *
               </label>
               <select
-                id="year"
-                name="year"
-                value={formData.year}
-                onChange={handleChange}
-                className={`w-full border rounded p-2 ${errors.year ? "border-red-500" : "border-gray-300"}`}
+                value={currentYear}
+                onChange={(e) => setCurrentYear(parseInt(e.target.value))}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
               >
-                <option value="">Sélectionnez une année</option>
-                <option value="2">2ème année</option>
-                <option value="3">3ème année</option>
-                <option value="4">4ème année</option>
-                <option value="5">5ème année</option>
-                <option value="6">6ème année</option>
+                <option value={2}>2ème année</option>
+                <option value={3}>3ème année</option>
+                <option value={4}>4ème année</option>
+                <option value={5}>5ème année</option>
+                <option value={6}>6ème année</option>
               </select>
-              {errors.year && <p className="text-red-500 text-sm mt-1">{errors.year}</p>}
-              {showPublicationWarning && (
-                <p className="text-yellow-600 text-sm mt-1">
-                  ⚠️ Pour s'inscrire en 4ème année, vous devez avoir au minimum une publication.
+              {currentYear >= 4 && (
+                <p className="text-sm text-orange-600 mt-1">
+                  Pour la 4ème année, vous devez obligatoirement avoir au minimum une publication.
                 </p>
               )}
             </div>
-            
-            <div>
-              <label htmlFor="team" className="block mb-1 font-medium text-gray-700">
-                Équipe de recherche*
-              </label>
-              <input
-                type="text"
-                id="team"
-                name="team"
-                value={formData.team}
-                onChange={handleChange}
-                className={`w-full border rounded p-2 ${errors.team ? "border-red-500" : "border-gray-300"}`}
-                placeholder="Votre équipe de recherche"
-              />
-              {errors.team && <p className="text-red-500 text-sm mt-1">{errors.team}</p>}
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
-              <label htmlFor="director" className="block mb-1 font-medium text-gray-700">
-                Directeur de thèse*
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sujet de thèse *
               </label>
               <input
                 type="text"
-                id="director"
-                name="director"
-                value={formData.director}
-                onChange={handleChange}
-                className={`w-full border rounded p-2 ${errors.director ? "border-red-500" : "border-gray-300"}`}
-                placeholder="Directeur de thèse"
+                value={formData.sujetThese}
+                onChange={(e) => handleInputChange('sujetThese', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Vous pouvez modifier le sujet si nécessaire"
+                required
               />
-              {errors.director && <p className="text-red-500 text-sm mt-1">{errors.director}</p>}
             </div>
-            
+
             <div>
-              <label htmlFor="coDirector" className="block mb-1 font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Équipe *
+              </label>
+              <input
+                type="text"
+                value={formData.equipe}
+                onChange={(e) => handleInputChange('equipe', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Changement d'équipe possible (demande au directeur CEDoc)"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Directeur de thèse *
+              </label>
+              <input
+                type="text"
+                value={formData.directeurThese}
+                onChange={(e) => handleInputChange('directeurThese', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Possible de switcher avec le co-directeur"
+                required
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Co-Directeur de thèse
               </label>
               <input
                 type="text"
-                id="coDirector"
-                name="coDirector"
-                value={formData.coDirector}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded p-2"
-                placeholder="Co-Directeur de thèse"
+                value={formData.coDirecteurThese}
+                onChange={(e) => handleInputChange('coDirecteurThese', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Possible de switcher avec le directeur"
               />
             </div>
           </div>
+        </div>
 
-          <div className="mt-4">
-            <label htmlFor="thesisSubject" className="block mb-1 font-medium text-gray-700">
-              Sujet de thèse*
-            </label>
-            <textarea
-              id="thesisSubject"
-              name="thesisSubject"
-              value={formData.thesisSubject}
-              onChange={handleChange}
-              className={`w-full border rounded p-2 ${errors.thesisSubject ? "border-red-500" : "border-gray-300"}`}
-              rows={3}
-              placeholder="Décrivez votre sujet de thèse (vous pouvez le modifier)"
-            />
-            {errors.thesisSubject && <p className="text-red-500 text-sm mt-1">{errors.thesisSubject}</p>}
+        {/* Rapport d'avancement */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <FileText size={20} />
+            Rapport d'avancement *
+          </h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Résumé de la thèse (incluant la problématique) + Travaux réalisés *
+              </label>
+              <textarea
+                value={formData.rapportAvancement}
+                onChange={(e) => handleInputChange('rapportAvancement', e.target.value)}
+                rows={8}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Décrivez votre problématique, les travaux réalisés jusqu'à présent, et l'état d'avancement de votre thèse..."
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Plan d'action prévisionnel des travaux de recherche *
+              </label>
+              <textarea
+                value={formData.planAction}
+                onChange={(e) => handleInputChange('planAction', e.target.value)}
+                rows={6}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Décrivez votre plan de travail prévu pour la prochaine année universitaire..."
+                required
+              />
+            </div>
           </div>
         </div>
 
-        {/* Progress Report Section */}
-        <div className="border-b pb-4">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">Rapport d'Avancement*</h2>
-          <div>
-            <label htmlFor="progressReport" className="block mb-1 font-medium text-gray-700">
-              Résumé de la thèse (incluant la problématique) et travaux réalisés*
-            </label>
-            <textarea
-              id="progressReport"
-              name="progressReport"
-              value={formData.progressReport}
-              onChange={handleChange}
-              className={`w-full border rounded p-2 ${errors.progressReport ? "border-red-500" : "border-gray-300"}`}
-              rows={6}
-              placeholder="Décrivez l'avancement de vos travaux, incluant la problématique et les résultats obtenus..."
-            />
-            {errors.progressReport && <p className="text-red-500 text-sm mt-1">{errors.progressReport}</p>}
-          </div>
-
-          <div className="mt-4">
-            <label htmlFor="workPlan" className="block mb-1 font-medium text-gray-700">
-              Plan d'action prévisionnel des travaux de recherche*
-            </label>
-            <textarea
-              id="workPlan"
-              name="workPlan"
-              value={formData.workPlan}
-              onChange={handleChange}
-              className={`w-full border rounded p-2 ${errors.workPlan ? "border-red-500" : "border-gray-300"}`}
-              rows={4}
-              placeholder="Présentez votre plan de travail pour l'année à venir..."
-            />
-            {errors.workPlan && <p className="text-red-500 text-sm mt-1">{errors.workPlan}</p>}
-          </div>
-        </div>
-
-        {/* Personal Status Section */}
-        <div className="border-b pb-4">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">Statut Personnel</h2>
+        {/* Statut professionnel */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Statut professionnel et résidence</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block mb-1 font-medium text-gray-700">Statut Professionnel*</label>
-              <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="professionalStatus"
-                    value="Salarié"
-                    checked={formData.professionalStatus === "Salarié"}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  Salarié
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="professionalStatus"
-                    value="Non salarié"
-                    checked={formData.professionalStatus === "Non salarié"}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  Non salarié
-                </label>
-              </div>
-              {errors.professionalStatus && <p className="text-red-500 text-sm mt-1">{errors.professionalStatus}</p>}
-            </div>
-            
-            <div>
-              <label className="block mb-1 font-medium text-gray-700">Résidence*</label>
-              <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="residenceStatus"
-                    value="Bénéficiaire"
-                    checked={formData.residenceStatus === "Bénéficiaire"}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  Bénéficiaire
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="residenceStatus"
-                    value="Non"
-                    checked={formData.residenceStatus === "Non"}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  Non bénéficiaire
-                </label>
-              </div>
-              {errors.residenceStatus && <p className="text-red-500 text-sm mt-1">{errors.residenceStatus}</p>}
-            </div>
-          </div>
-
-          {formData.professionalStatus === "Non salarié" && formData.residenceStatus === "Bénéficiaire" && (
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block mb-1 font-medium text-gray-700">
-                  Attestation sur l'honneur (PDF)*
-                </label>
-                <div className="flex items-center">
-                  <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded border border-gray-300">
-                    <span>{formData.attestationFile ? formData.attestationFile.name : "Choisir un fichier"}</span>
-                    <input
-                      type="file"
-                      name="attestationFile"
-                      accept="application/pdf"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
-                  {formData.attestationFile && (
-                    <button
-                      type="button"
-                      onClick={() => removeFile(formData.attestationFile.name, "attestationFile")}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
-                      Supprimer
-                    </button>
-                  )}
-                </div>
-                {errors.attestationFile && <p className="text-red-500 text-sm mt-1">{errors.attestationFile}</p>}
-              </div>
-              
-              <div>
-                <label className="block mb-1 font-medium text-gray-700">
-                  Certificat de non-travail (PDF)*
-                </label>
-                <div className="flex items-center">
-                  <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded border border-gray-300">
-                    <span>{formData.employmentCertificate ? formData.employmentCertificate.name : "Choisir un fichier"}</span>
-                    <input
-                      type="file"
-                      name="employmentCertificate"
-                      accept="application/pdf"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
-                  {formData.employmentCertificate && (
-                    <button
-                      type="button"
-                      onClick={() => removeFile(formData.employmentCertificate.name, "employmentCertificate")}
-                      className="ml-2 text-red-500 hover:text-red-700"
-                    >
-                      Supprimer
-                    </button>
-                  )}
-                </div>
-                {errors.employmentCertificate && <p className="text-red-500 text-sm mt-1">{errors.employmentCertificate}</p>}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Cotutelle Section */}
-        <div className="border-b pb-4">
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              id="hasCotutelle"
-              checked={showCotutelleFields}
-              onChange={() => setShowCotutelleFields(!showCotutelleFields)}
-              className="mr-2"
-            />
-            <label htmlFor="hasCotutelle" className="font-medium text-gray-700">
-              Je suis en cotutelle avec un établissement partenaire
-            </label>
-          </div>
-
-          {showCotutelleFields && (
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="cotutelleInstitution" className="block mb-1 font-medium text-gray-700">
-                  Nom et lieu de l'établissement de cotutelle*
-                </label>
-                <input
-                  type="text"
-                  id="cotutelleInstitution"
-                  name="cotutelleInstitution"
-                  value={formData.cotutelleInstitution}
-                  onChange={handleChange}
-                  className={`w-full border rounded p-2 ${errors.cotutelleInstitution ? "border-red-500" : "border-gray-300"}`}
-                  placeholder="Ex: Université Paris-Saclay, France"
-                />
-                {errors.cotutelleInstitution && <p className="text-red-500 text-sm mt-1">{errors.cotutelleInstitution}</p>}
-              </div>
-              
-              <div>
-                <label htmlFor="cotutelleProfessor" className="block mb-1 font-medium text-gray-700">
-                  Nom du professeur assurant la cotutelle*
-                </label>
-                <input
-                  type="text"
-                  id="cotutelleProfessor"
-                  name="cotutelleProfessor"
-                  value={formData.cotutelleProfessor}
-                  onChange={handleChange}
-                  className={`w-full border rounded p-2 ${errors.cotutelleProfessor ? "border-red-500" : "border-gray-300"}`}
-                  placeholder="Ex: Pr. Jean Dupont"
-                />
-                {errors.cotutelleProfessor && <p className="text-red-500 text-sm mt-1">{errors.cotutelleProfessor}</p>}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Derogation Section */}
-        {showDerogationField && (
-          <div className="border-b pb-4">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">Demande de Dérogation*</h2>
-            <div>
-              <label htmlFor="derogationRequest" className="block mb-1 font-medium text-gray-700">
-                Motivation pour la réinscription en {formData.year}ème année
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Statut Professionnel actuel *
               </label>
-              <textarea
-                id="derogationRequest"
-                name="derogationRequest"
-                value={formData.derogationRequest}
-                onChange={handleChange}
-                className={`w-full border rounded p-2 ${errors.derogationRequest ? "border-red-500" : "border-gray-300"}`}
-                rows={4}
-                placeholder="Veuillez justifier votre demande de réinscription..."
-              />
-              {errors.derogationRequest && <p className="text-red-500 text-sm mt-1">{errors.derogationRequest}</p>}
+              <select
+                value={formData.statutProfessionnel}
+                onChange={(e) => handleInputChange('statutProfessionnel', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="">Sélectionner...</option>
+                <option value="salarie">Salarié</option>
+                <option value="non-salarie">Non salarié</option>
+              </select>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Résidence *
+              </label>
+              <select
+                value={formData.residence}
+                onChange={(e) => handleInputChange('residence', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="">Sélectionner...</option>
+                <option value="beneficiaire">Bénéficiaire</option>
+                <option value="non-beneficiaire">Non bénéficiaire</option>
+              </select>
+            </div>
+          </div>
+
+          {formData.statutProfessionnel === 'non-salarie' && formData.residence === 'beneficiaire' && (
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="font-medium text-blue-800 mb-3">Documents requis pour non-salariés bénéficiaires de la résidence</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Attestation sur l'honneur (PDF) *
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => handleFileUpload('attestationHonneur', e.target.files[0])}
+                      className="hidden"
+                      id="attestation"
+                    />
+                    <label
+                      htmlFor="attestation"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+                    >
+                      <Upload size={16} />
+                      Choisir fichier
+                    </label>
+                    {files.attestationHonneur && (
+                      <span className="text-sm text-green-600">
+                        ✓ {files.attestationHonneur.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Certificat de non-travail (PDF) *
+                  </label>
+                  <p className="text-xs text-gray-600 mb-2">Délivré par les autorités compétentes</p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => handleFileUpload('certificatNonTravail', e.target.files[0])}
+                      className="hidden"
+                      id="certificat"
+                    />
+                    <label
+                      htmlFor="certificat"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+                    >
+                      <Upload size={16} />
+                      Choisir fichier
+                    </label>
+                    {files.certificatNonTravail && (
+                      <span className="text-sm text-green-600">
+                        ✓ {files.certificatNonTravail.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Cotutelle */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Cotutelle avec un établissement partenaire (si applicable)</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nom de l'établissement de cotutelle
+              </label>
+              <input
+                type="text"
+                value={formData.etablissementCotutelle}
+                onChange={(e) => handleInputChange('etablissementCotutelle', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lieu de l'établissement
+              </label>
+              <input
+                type="text"
+                value={formData.lieuCotutelle}
+                onChange={(e) => handleInputChange('lieuCotutelle', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nom du professeur assurant la cotutelle
+              </label>
+              <input
+                type="text"
+                value={formData.professeurCotutelle}
+                onChange={(e) => handleInputChange('professeurCotutelle', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Dérogation pour 5ème/6ème année */}
+        {(currentYear >= 5) && (
+          <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+            <h2 className="text-xl font-semibold mb-4 text-red-800">
+              Demande de dérogation exceptionnelle ({currentYear}ème année)
+            </h2>
+            <p className="text-red-700 text-sm mb-4">
+              {currentYear === 5 
+                ? "Demande de dérogation adressée au directeur du CEDOC"
+                : "Demande de dérogation adressée au directeur de l'INPT"
+              }
+            </p>
+            <textarea
+              value={formData.demandeDerogation}
+              onChange={(e) => handleInputChange('demandeDerogation', e.target.value)}
+              rows={5}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              placeholder="Justifiez de manière détaillée votre demande de dérogation pour cette année supplémentaire..."
+              required
+            />
           </div>
         )}
 
-        {/* Additional Files Section */}
-        <div>
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">Documents Complémentaires</h2>
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">
-              Autres fichiers justificatifs (PDF)
-            </label>
-            <div className="space-y-2">
-              <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded border border-gray-300 inline-block">
-                <span>Ajouter des fichiers</span>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleMultipleFilesChange}
-                  multiple
-                  className="hidden"
-                />
-              </label>
-              <p className="text-sm text-gray-500">Taille maximale par fichier : 5MB (PDF uniquement)</p>
-              
-              {formData.otherFiles.length > 0 && (
-                <div className="mt-2 border rounded divide-y">
-                  {formData.otherFiles.map((file, index) => (
-                    <div key={index} className="p-2 flex justify-between items-center">
-                      <span className="text-sm truncate">{file.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(file.name, "otherFiles")}
-                        className="text-red-500 hover:text-red-700 ml-2"
-                        aria-label={`Supprimer ${file.name}`}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+        {/* Validation et soumission */}
+        <div className="bg-white border-2 border-gray-200 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Validation du formulaire</h2>
+          
+          {!isFormValid && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <h3 className="font-medium text-red-800 mb-2">Champs obligatoires manquants :</h3>
+              <ul className="text-red-700 text-sm space-y-1">
+                {validateForm().map((field, index) => (
+                  <li key={index}>• {field}</li>
+                ))}
+              </ul>
             </div>
-          </div>
-        </div>
+          )}
 
-        {/* Submission Section */}
-        <div className="flex justify-between items-center pt-6">
-          <p className="text-sm text-gray-500">
-            * Champs obligatoires
-          </p>
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h3 className="font-medium text-blue-800 mb-2">Prochaines étapes :</h3>
+            <ol className="text-blue-700 text-sm space-y-1">
+              <li>1. Votre directeur de thèse donnera son avis (Favorable/Non favorable)</li>
+              <li>2. Votre co-directeur de thèse (si applicable) donnera son avis</li>
+              <li>3. Le chef de l'équipe approuvera la demande</li>
+              <li>4. Le directeur du CEDoc validera finalement votre réinscription</li>
+            </ol>
+          </div>
+
           <button
             type="submit"
-            disabled={isSubmitting}
-            className={`px-6 py-2 rounded text-white ${isSubmitting ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+            disabled={!isFormValid}
+            className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+              isFormValid
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
           >
-            {isSubmitting ? (
-              <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Soumission en cours...
-              </span>
-            ) : "Soumettre la demande"}
+            {isFormValid ? 'Soumettre la demande de réinscription' : 'Veuillez compléter tous les champs obligatoires'}
           </button>
+
+          {isFormValid && (
+            <p className="text-center text-sm text-gray-600 mt-2">
+              Une fois soumise, votre demande sera transmise à votre directeur de thèse pour avis.
+            </p>
+          )}
         </div>
       </form>
-
-      {/* Previous Submissions Section */}
-      {submissions.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Mes Demandes Précédentes</h2>
-          <div className="space-y-4">
-            {submissions.map((submission) => (
-              <div key={submission.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-medium text-gray-800">
-                      Demande pour la {submission.year}ème année - {formatDate(submission.submittedAt)}
-                    </h3>
-                    <div className="mt-2 text-sm text-gray-600">
-                      <p><span className="font-medium">Statut:</span> {submission.status}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {/* View details or cancel */}}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
-                  >
-                    Voir détails
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Information Box */}
-      <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="font-semibold text-blue-800 mb-2">Processus de validation</h3>
-        <p className="text-sm text-blue-700">
-          Après soumission, votre demande sera examinée par votre directeur de thèse, puis par le chef d'équipe,
-          et enfin par le directeur du CEDoc. Vous serez notifié à chaque étape du processus.
-        </p>
-      </div>
     </div>
   );
 };
