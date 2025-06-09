@@ -51,8 +51,7 @@ public class SecurityConfiguration {
                                                 .requestMatchers(HttpMethod.GET, "/api/chefs-equipe/chefs-sujets")
                                                 .permitAll()
                                                 .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**",
-                                                                "/api/utilisateurs/assign-role",
-                                                                "/api/utilisateurs/set-role")
+                                                                "/api/utilisateurs/assign-role", "/uploads/formations/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session

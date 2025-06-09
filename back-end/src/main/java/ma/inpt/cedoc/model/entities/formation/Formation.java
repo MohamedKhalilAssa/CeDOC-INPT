@@ -53,6 +53,7 @@ public class Formation {
         @Column(length = 1000)
         private String details;
 
+        @Column(name = "image", nullable = true)
         private String image; // store image URL or path
 
 

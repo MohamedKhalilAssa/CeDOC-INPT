@@ -42,7 +42,7 @@ public class FormationRequestDTO {
         @Size(max = 255, message = "Le lieu ne doit pas dépasser 255 caractères")
         private String lieu;
 
-        private List<Long> doctorantsCiblesIds;
+        private List<String> doctorantsEmails;
 
         @Size(max = 1000, message = "Les détails ne doivent pas dépasser 1000 caractères")
         private String details;

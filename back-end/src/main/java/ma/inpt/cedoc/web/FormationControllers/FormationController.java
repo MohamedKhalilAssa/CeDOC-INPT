@@ -1,7 +1,11 @@
 package ma.inpt.cedoc.web.FormationControllers;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
+import ma.inpt.cedoc.service.Global.FileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +16,7 @@ import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.service.FormationService.FormationService;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/formations")
@@ -19,6 +24,7 @@ import ma.inpt.cedoc.service.FormationService.FormationService;
 public class FormationController {
 
     private final FormationService formationService;
+    private final FileService fileService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('RESPONSABLE_FORMATION')")
@@ -74,5 +80,24 @@ public class FormationController {
         FormationResponseDTO formation = formationService.getById(id);
         return ResponseEntity.ok(formation);
     }
+
+    @PostMapping("/upload-image")
+    public ResponseEntity<Map<String, String>> uploadFormationImage(@RequestParam("image") MultipartFile file) {
+        try {
+            if (!fileService.isValidExtension(file, "jpg", "jpeg", "png", "webp")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Format d'image invalide."));
+            }
+
+            String path = fileService.storeFile(file, "formations");
+            String filename = Paths.get(path).getFileName().toString();
+
+            // Return full relative path (for frontend display)
+            return ResponseEntity.ok(Map.of("path", "/uploads/formations/" + filename));
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Erreur lors du téléversement."));
+        }
+    }
+
+
 
 }

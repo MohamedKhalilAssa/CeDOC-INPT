@@ -27,4 +27,6 @@ public class SeanceFormationResponseDTO extends BaseResponseDTO {
     private Long declarantId;
 
     private String validePar;
+
+    private String email;
 }

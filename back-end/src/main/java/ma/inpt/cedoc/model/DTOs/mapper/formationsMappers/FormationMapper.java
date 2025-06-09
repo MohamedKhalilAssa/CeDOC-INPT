@@ -5,11 +5,13 @@ import ma.inpt.cedoc.model.DTOs.Formations.FormationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Formations.FormationResponseDTO;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class FormationMapper {
         formation.setDateDebut(dto.getDateDebut());
         formation.setDuree(dto.getDuree());
         formation.setLieu(dto.getLieu());
-        formation.setDoctorantsCibles(mapDoctorantIdsToEntities(dto.getDoctorantsCiblesIds()));
+        formation.setDoctorantsCibles(mapDoctorantIdsToEntities(dto.getDoctorantsEmails()));
         formation.setDetails(dto.getDetails());
         formation.setImage(dto.getImage());
         return formation;
@@ -48,7 +50,7 @@ public class FormationMapper {
                 .lieu(formation.getLieu())
                 .createdAt(formation.getCreatedAt())
                 .updatedAt(formation.getUpdatedAt())
-                .doctorantIds(mapDoctorantEntitiesToIds(formation))
+                .doctorantEmails(mapDoctorantEntitiesToIds(formation))
                 .details(formation.getDetails())
                 .image(formation.getImage())
                 .build();
@@ -64,17 +66,21 @@ public class FormationMapper {
         entity.setLieu(dto.getLieu());
     }
 
-    private List<Long> mapDoctorantEntitiesToIds(Formation formation) {
+    private List<String> mapDoctorantEntitiesToIds(Formation formation) {
         if (formation.getDoctorantsCibles() == null) return Collections.emptyList();
         return formation.getDoctorantsCibles().stream()
-                .map(Doctorant::getId)
+                .map(doctorant -> {
+                    Utilisateur utilisateur = doctorant.getUtilisateur();
+                    return utilisateur != null ? utilisateur.getEmail() : null;
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private List<Doctorant> mapDoctorantIdsToEntities(List<Long> ids) {
-        if (ids == null) return Collections.emptyList();
-        return ids.stream()
-                .map(doctorantRepository::findById)
+    private List<Doctorant> mapDoctorantIdsToEntities(List<String> emails) {
+        if (emails == null) return Collections.emptyList();
+        return emails.stream()
+                .map(doctorantRepository::findByUtilisateurEmail)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());

@@ -62,6 +62,7 @@ public class SeanceFormationMapper {
                 .formation(mapFormationId(seance))
                 .declarantId(mapDeclarantId(seance))
                 .validePar(mapValideParId(seance))
+                .email(seance.getDeclarant().getUtilisateur().getEmail())
                 .build();
     }
 
