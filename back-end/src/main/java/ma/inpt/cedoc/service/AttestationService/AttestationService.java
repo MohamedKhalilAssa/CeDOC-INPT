@@ -2,6 +2,7 @@ package ma.inpt.cedoc.service.AttestationService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.entities.attestation.Attestation;
@@ -10,15 +11,15 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 
 public interface AttestationService {
 
-    /* ------------------ Save methods ------------------ */
-    AttestationAutomatiqueResponseDTO saveAttestationAutomatique(AttestationAutomatiqueRequestDTO dto);
+    /* ------------------ Save & Send methods ------------------ */
+    public AttestationAutomatiqueResponseDTO generateAndSendAttestationAutomatique(DoctorantRequestDTO request) throws IOException;
 
-    AttestationAvecValidationResponseDTO saveAttestationAvecValidation(AttestationAvecValidationRequestDTO dto);
+    AttestationAvecValidationResponseDTO requestAttestationAvecValidation(DoctorantRequestDTO request);
 
     /* ------------------ Generate methods ------------------ */
-    byte[] generateAttestationAutomatique(Long doctorantId, TypeAttestationAutoEnum typeAttestationAuto) throws IOException;
+    byte[] generateAttestationAutomatique(Map<String, Object> data) throws IOException;
 
-    byte[] generateAttestationAvecValidation(Long doctorantId, TypeAttestationValidationEnum typeAttestationValidation) throws IOException;
+    byte[] generateAttestationAvecValidation(Map<String, Object> data) throws IOException;
 
     /* ------------------ Get All ------------------ */
     List<Attestation> getAllAttestations();

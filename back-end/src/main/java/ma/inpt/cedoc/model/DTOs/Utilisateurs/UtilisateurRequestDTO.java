@@ -16,7 +16,7 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.GenreEnum;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldMatch(first = "password", second = "passwordConfirmation", message = "Les mots de passe ne se correspondent pas")
-public class UtilisateurRequestDTO {
+public class  UtilisateurRequestDTO {
 
     @NotBlank(message = "Le nom est obligatoire")
     @Size(min = 2, max = 50, message = "Le nom doit contenir entre 2 et 50 caractères")

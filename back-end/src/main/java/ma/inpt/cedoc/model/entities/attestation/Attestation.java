@@ -3,6 +3,7 @@ package ma.inpt.cedoc.model.entities.attestation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,15 +29,13 @@ public abstract class Attestation {
     @GeneratedValue
     private long id;
 
-    @Column(name = "url", nullable = true)
-    private String url;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "statut_attestation")
     private StatutAttestationEnum statutAttestation;
 
-    @Column(name = "doctorant_id")
-    private Long doctorantId;
+    @ManyToOne
+    @JoinColumn(name = "doctorant")
+    private Doctorant doctorant;
 
     @CreatedDate
     @Column(updatable = false)

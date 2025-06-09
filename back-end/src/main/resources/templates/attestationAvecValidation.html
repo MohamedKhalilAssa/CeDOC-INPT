@@ -1,10 +1,151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8"/>
+    <title>Attestation Avec Validation</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5cm;
+        }
+        body {
+            font-family: "Times New Roman", serif;
+            margin: 20px;
+            font-size: 14px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .logo{
+            width: 160px;
+            margin-top: 0;
+            height: 70px;
+        }
+        .center-title {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .info-table {
+            width: 87%;
+            border-collapse: collapse;
+            margin: 10px 50px 20px 50px;
+            table-layout: fixed;
+        }
+        .info-table td {
+            border: 1px solid black;
+            padding: 6px;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 9px;
+            font-weight: bolder;
+        }
+        .signature {
+            display: block;
+            margin-bottom: 70px;
+            text-align: center;
+            width: auto;
+            height: 150px;
+        }
+        .para {
+            margin: auto 70px;
+        }
+    </style>
 </head>
 <body>
-$END$
+<div class="page">
+    <div class="header">
+        <div>
+            <!-- INPT Logo at the top left -->
+            <img class="logo" src="images/Logo_inpt.png" alt="Logo INPT"/>
+
+            <!-- Header text below the logo -->
+            <div style="font-size: 11px; line-height: 1; margin-top: 10px; margin-left: 40px">
+                <strong>
+                    DIRECTION ADJOINTE DE LA RECHERCHE<br/>
+                    CENTRE DES ETUDES DOCTORALES (CEDOC-2TI)<br/>
+                    N/REF. : ANRT/INPT/DAR/CEDOC/2025/096
+                </strong>
+            </div>
+        </div>
+        <div style="text-align: right; font-size: 12px; margin-right: 40px;">
+            Rabat, le <strong th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}"></strong>
+        </div>
+    </div>
+
+    <div class="center-title">
+        <h2 style="margin-bottom: 0;">ATTESTATION <span th:text="${attestationAutoType}"></span></h2>
+    </div>
+
+    <p class="para">L’Institut National des Postes et Télécommunications atteste que :</p>
+
+    <table class="info-table">
+        <tr>
+            <td><strong>Nom et Prénoms</strong></td>
+            <td th:text="${fullName}"></td>
+        </tr>
+        <tr>
+            <td><strong>CINE / Carte de séjour</strong></td>
+            <td th:text="${cin}"></td>
+        </tr>
+        <tr>
+            <td><strong>Date de naissance</strong></td>
+            <td th:text="${birthDate}"></td>
+        </tr>
+        <tr>
+            <td><strong>Lieu de naissance</strong></td>
+            <td th:text="${birthPlace}"></td>
+        </tr>
+        <tr>
+            <td><strong>Numéro du CNE<sup>1</sup></strong></td>
+            <td th:text="${cne}"></td>
+        </tr>
+        <tr>
+            <td><strong>Date de 1<sup>ère</sup> inscription</strong></td>
+            <td th:text="${firstEnrollmentDate}"></td>
+        </tr>
+        <tr>
+            <td><strong>Cycle doctoral<sup>2,3</sup></strong></td>
+            <td th:text="${cycle}"></td>
+        </tr>
+        <tr>
+            <td><strong>Équipe de recherche</strong></td>
+            <td th:text="${researchTeam}"></td>
+        </tr>
+        <tr>
+            <td><strong>Année universitaire de l'inscription en cours</strong></td>
+            <td th:text="${currentYear}"></td>
+        </tr>
+        <tr>
+            <td><strong>Niveau actuel d’inscription</strong></td>
+            <td th:text="${currentLevel}"></td>
+        </tr>
+    </table>
+
+    <p class="para" th:text="${attestationParagraph}">
+    </p>
+
+    <p class="para" style="margin-top: 10px">
+        La présente attestation est délivrée pour servir et valoir ce que de droit.
+    </p>
+
+    <div class="signature">
+        <img src="images/signature.jpg" alt="Signature"/>
+    </div>
+
+    <div class="footer">
+        <p class="para" style="margin-bottom: 10px">
+            <sup>1</sup> : Code MASSAR le cas échéant.<br/>
+            <sup>2</sup> : Cette date peut être prorogée conformément à la réglementation en vigueur.<br/>
+            <sup>3</sup> : Sauf prorogation accordée par l’Administration de l’INPT, il est rappelé que le rapport de thèse devra être déposé au plus tard trois (3) années après la date de 1<sup>ère</sup> inscription. À défaut, l’INPT se réserve le droit de ne pas donner suite à la tenue de la soutenance de thèse et à l’achèvement de la thèse y afférente et de déclarer sa suspension définitive.
+        </p>
+        <div class="printed-info">
+            <img src="images/printedInfo.png" alt="Printed Info" width="200px" height="auto"/>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -13,10 +13,9 @@ public class AttestationMapperImpl implements AttestationMapper {
         if (dto == null) return null;
 
         AttestationAutomatique attestationAutomatique = new AttestationAutomatique();
-        attestationAutomatique.setUrl(dto.getUrl());
         attestationAutomatique.setTypeAttestationAutomatique(dto.getTypeAttestationAutomatique());
         attestationAutomatique.setStatutAttestation(dto.getStatutAttestation());
-        attestationAutomatique.setDoctorantId(dto.getDoctorantId());
+        attestationAutomatique.setDoctorant(dto.getDoctorant());
         return attestationAutomatique;
     }
 
@@ -26,10 +25,10 @@ public class AttestationMapperImpl implements AttestationMapper {
         if (dto == null) return null;
 
         AttestationAvecValidation attestationAvecValidation = new AttestationAvecValidation();
-        attestationAvecValidation.setUrl(dto.getUrl());
+//        attestationAvecValidation.setUrl(dto.getUrl());
         attestationAvecValidation.setTypeAttestationValidation(dto.getTypeAttestationValidation());
         attestationAvecValidation.setStatutAttestation(dto.getStatutAttestation());
-        attestationAvecValidation.setDoctorantId(dto.getDoctorantId());
+        attestationAvecValidation.setDoctorant(dto.getDoctorant());
         return attestationAvecValidation;
     }
 
@@ -40,10 +39,9 @@ public class AttestationMapperImpl implements AttestationMapper {
 
         AttestationAutomatiqueResponseDTO dto = new AttestationAutomatiqueResponseDTO();
         dto.setId(attestation.getId());
-        dto.setUrl(attestation.getUrl());
         dto.setTypeAttestationAutomatique(attestation.getTypeAttestationAutomatique());
         dto.setStatutAttestation(attestation.getStatutAttestation());
-        dto.setDoctorantId(attestation.getDoctorantId());
+        dto.setDoctorant(attestation.getDoctorant());
         dto.setDateDemande(attestation.getDateDemande());
         dto.setCreatedAt(attestation.getCreatedAt());
         dto.setUpdatedAt(attestation.getUpdatedAt());
@@ -57,11 +55,10 @@ public class AttestationMapperImpl implements AttestationMapper {
 
         AttestationAvecValidationResponseDTO dto = new AttestationAvecValidationResponseDTO();
         dto.setId(attestation.getId());
-        dto.setUrl(attestation.getUrl());
         dto.setTypeAttestationValidation(attestation.getTypeAttestationValidation());
         dto.setStatutAttestation(attestation.getStatutAttestation());
         dto.setEtatAttestation(attestation.getEtatAttestation());
-        dto.setDoctorantId(attestation.getDoctorantId());
+        dto.setDoctorant(attestation.getDoctorant());
         dto.setDateDemande(attestation.getDateDemande());
         dto.setCreatedAt(attestation.getCreatedAt());
         dto.setUpdatedAt(attestation.getUpdatedAt());

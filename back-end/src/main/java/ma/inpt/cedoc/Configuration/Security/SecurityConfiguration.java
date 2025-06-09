@@ -40,14 +40,14 @@ public class SecurityConfiguration {
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                                 .csrf(csrf -> csrf.disable())
-                                .addFilterBefore(
-                                                AccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                                .addFilterAfter(refreshTokenFilter,
-                                                AccessTokenFilter.class)
+//                                .addFilterBefore(
+//                                                AccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
+//                                .addFilterAfter(refreshTokenFilter,
+//                                                AccessTokenFilter.class)
 
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/logout", "/api/auth/check").authenticated()
-                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**")
+                                                .requestMatchers("/images/**", "/api/auth/**", "/api/guest/**", "/api/attestations/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session

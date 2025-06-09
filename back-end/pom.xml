@@ -137,6 +137,19 @@
             <version>2.0.30</version>
         </dependency>
 
+        <!-- Thymeleaf for rendering HTML -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Flying Saucer + OpenPDF for HTML to PDF -->
+        <dependency>
+            <groupId>org.xhtmlrenderer</groupId>
+            <artifactId>flying-saucer-pdf-openpdf</artifactId>
+            <version>9.1.22</version> <!-- or latest -->
+        </dependency>
+
 
 
         <!-- DevTools -->

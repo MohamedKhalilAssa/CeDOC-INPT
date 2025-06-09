@@ -89,7 +89,7 @@ INSERT INTO `utilisateurs`(
 
 -- CANDIDAT
 INSERT INTO candidats (id, archiver) VALUES 
-(1, FALSE);
+(3, FALSE);
 
 -- PROFESSEUR
 INSERT INTO professeurs (id, grade) VALUES 
@@ -98,7 +98,7 @@ INSERT INTO utilisateur_roles (utilisateur_id, role_id) VALUES
 (2, 2);
 -- DOCTORANT
 INSERT INTO doctorants (id, date_inscription, statut_doctorant, nombre_heures_labo, draft_diplome_url, archiver) VALUES 
-(3, '2023-09-01', 'EN_COURS', 100, 'http://example.com/draft.pdf', FALSE);
+(1, '2023-09-01', 'EN_COURS', 100, 'http://example.com/draft.pdf', FALSE);
 
 -- CHEF EQUIPE (as specialization of PROFESSEUR)
 INSERT INTO chefs_equipes (id) VALUES 

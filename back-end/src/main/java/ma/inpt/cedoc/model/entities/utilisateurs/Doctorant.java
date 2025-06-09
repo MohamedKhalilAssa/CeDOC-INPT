@@ -1,6 +1,7 @@
 package ma.inpt.cedoc.model.entities.utilisateurs;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
+import ma.inpt.cedoc.model.entities.attestation.Attestation;
 import ma.inpt.cedoc.model.entities.attestation.DemandeAttestation;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.formation.Formation;
@@ -30,6 +32,16 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 @NoArgsConstructor
 @Table(name = "doctorants")
 public class Doctorant extends Utilisateur {
+
+        private String cne;
+
+        private String cin;
+
+        private Year anneeEnCours;
+
+        private String niveauActuel;
+
+        private String cycle;
 
         @Column(name = "date_inscription")
         @NotNull(message = "La date d'inscription est obligatoire.")
@@ -93,4 +105,8 @@ public class Doctorant extends Utilisateur {
 
         @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<ConfParticipation> confParticipations;
+
+        //Relation avec Attestation
+        @OneToMany(mappedBy = "doctorant", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Attestation> attestations;
 }
