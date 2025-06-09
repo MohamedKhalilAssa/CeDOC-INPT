@@ -257,11 +257,11 @@ public class AttestationServiceImpl implements AttestationService {
 
                 // Build the data map
                 Map<String, Object> data = new HashMap<>();
-                data.put("fullName", doctorant.getNom() + " " + doctorant.getPrenom());
+                data.put("fullName", doctorant.getUtilisateur().getNom() + " " + doctorant.getUtilisateur().getPrenom());
 //                data.put("cne", doctorant.getCne());
 //                data.put("cin", doctorant.getCin());
-                data.put("birthDate", doctorant.getDateNaissance());
-                data.put("birthPlace", doctorant.getLieuDeNaissance());
+                data.put("birthDate", doctorant.getUtilisateur().getDateNaissance());
+                data.put("birthPlace", doctorant.getUtilisateur().getLieuDeNaissance());
                 data.put("firstEnrollmentDate", doctorant.getDateInscription());
                 data.put("researchTeam", doctorant.getEquipeDeRecherche());
 //                data.put("currentYear", doctorant.getAnneeEnCours());
@@ -289,7 +289,7 @@ public class AttestationServiceImpl implements AttestationService {
 
                 // Send email
                 emailService.sendEmailWithAttachment(
-                        doctorant.getEmail(),
+                        doctorant.getUtilisateur().getEmail(),
                         "Votre attestation validée",
                         "Votre attestation a été validée. Vous la trouverez en pièce jointe.",
                         pdf,

@@ -11,13 +11,13 @@ public class DoctorantMapperImpl implements DoctorantMapper {
         if (dto == null) return null;
 
         Doctorant doctorant = new Doctorant();
-        doctorant.setNom(dto.getNom());
-        doctorant.setPrenom(dto.getPrenom());
-        doctorant.setEmail(dto.getEmail());
+        doctorant.getUtilisateur().setNom(dto.getNom());
+        doctorant.getUtilisateur().setPrenom(dto.getPrenom());
+        doctorant.getUtilisateur().setEmail(dto.getEmail());
         doctorant.setCin(dto.getCin());
         doctorant.setCne(dto.getCne());
-        doctorant.setDateNaissance(dto.getBirthDate());
-        doctorant.setLieuDeNaissance(dto.getBirthPlace());
+        doctorant.getUtilisateur().setDateNaissance(dto.getBirthDate());
+        doctorant.getUtilisateur().setLieuDeNaissance(dto.getBirthPlace());
         doctorant.setEquipeDeRecherche(dto.getResearchTeam());
         doctorant.setAnneeEnCours(dto.getCurrentYear());
         doctorant.setNiveauActuel(dto.getCurrentLevel());

@@ -43,10 +43,6 @@ public class Doctorant {
 
     private Utilisateur utilisateur;
 
-    @Column(name = "date_inscription")
-    @NotNull(message = "La date d'inscription est obligatoire.")
-    @PastOrPresent(message = "La date de d'inscription doit être dans le passé ou aujourd'hui.")
-    private LocalDate dateInscription;
         private String cne;
 
         private String cin;
@@ -121,8 +117,6 @@ public class Doctorant {
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConfParticipation> confParticipations;
-        @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<ConfParticipation> confParticipations;
 
         //Relation avec Attestation
         @OneToMany(mappedBy = "doctorant", cascade = CascadeType.ALL, orphanRemoval = true)
