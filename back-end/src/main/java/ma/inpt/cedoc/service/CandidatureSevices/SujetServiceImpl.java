@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,11 @@ import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
+import ma.inpt.cedoc.service.utilisateurServices.DirecteurDeTheseService;
 import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
 
 @Service
@@ -30,6 +35,7 @@ public class SujetServiceImpl implements SujetService {
 
     private final SujetRepository sujetRepository;
     private final SujetMapper sujetMapper;
+    private final DirecteurDeTheseService directeurDeTheseService;
 
     /* CREATE --------------------------------------------- */
     // DTO-based methods
@@ -198,9 +204,7 @@ public class SujetServiceImpl implements SujetService {
 
     @Override
     public List<Sujet> getAllPublicSujetsEntities() {
-        return sujetRepository.findAll().stream()
-                .filter(Sujet::isEstPublic)
-                .collect(Collectors.toList());
+        return sujetRepository.findByEstPublic(true);
     }
 
     @Override
@@ -223,10 +227,17 @@ public class SujetServiceImpl implements SujetService {
             sujet.setProfesseurs(professeurs);
         }
 
-        // Add current user if not already in the list (avoid duplicates)
+        // remove current professor if already in the list
         if (professeurs.contains(currentProfesseur)) {
             professeurs.remove(currentProfesseur);
         }
+
+        DirecteurDeTheseRole directeurDeThese = currentProfesseur.getDirecteurDeTheseRole();
+        if (directeurDeThese == null) {
+            directeurDeThese = directeurDeTheseService.createDirecteurDeTheseWithProfesseur(currentProfesseur);
+        }
+        sujet.setDirecteurDeThese(directeurDeThese);
+        directeurDeThese.getSujets().add(sujet);
 
         // Sécurité : vérifier que les professeurs ont une équipe
         for (Professeur professeur : professeurs) {
@@ -242,6 +253,15 @@ public class SujetServiceImpl implements SujetService {
         // temporaire
         // sujet.setChefsEquipes(déduits des équipes des profs);
         // sujet.setChefsAyantValide(new ArrayList<>());
+
+        ChefEquipeRole chefEquipe = currentProfesseur.getEquipeDeRechercheAcceuillante()
+                .getChefEquipe();
+
+        if (chefEquipe == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "L'équipe actuelle n'a pas de chef d'équipe associé.");
+        }
+        sujet.setChefEquipe(chefEquipe);
 
         // Le sujet est invisible jusqu'à validation (future logique)
         sujet.setValide(false);
@@ -267,5 +287,27 @@ public class SujetServiceImpl implements SujetService {
         return sujetRepository.findAll().stream()
                 .map(sujetMapper::toSimpleResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    /* PAGINATION METHODS --------------------------------------------- */
+    @Override
+    public Page<SujetResponseDTO> getAllSujetsPaginated(Pageable pageable) {
+        Page<Sujet> sujetsPage = sujetRepository.findAll(pageable);
+        return sujetsPage.map(sujetMapper::toResponseDTO);
+    }
+
+    @Override
+    public Page<SujetResponseDTO> getAllPublicSujetsPaginated(Pageable pageable) {
+        // First get all sujets, then filter public ones
+        Page<Sujet> publicSujets = sujetRepository.findByEstPublic(true, pageable);
+
+        return publicSujets.map(sujetMapper::toResponseDTO);
+
+    }
+
+    @Override
+    public Page<SujetResponseSimpleDTO> getAllSimplePaginated(Pageable pageable) {
+        Page<Sujet> sujetsPage = sujetRepository.findAll(pageable);
+        return sujetsPage.map(sujetMapper::toSimpleResponseDTO);
     }
 }

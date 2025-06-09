@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
 
 public interface ProfesseurService {
@@ -28,4 +29,6 @@ public interface ProfesseurService {
 
     List<Professeur> searchForProfesseurs(
             String query);
+
+    List<Sujet> getSujetsByProfesseurId(Long professeurId);
 }

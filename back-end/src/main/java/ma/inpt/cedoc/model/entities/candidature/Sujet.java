@@ -36,6 +36,7 @@ public class Sujet {
     @Column(unique = true, nullable = false)
     private String intitule;
 
+    @Column(name = "description", nullable = true, length = 1000)
     private String description;
 
     @Column(name = "est_valide")
@@ -87,7 +88,7 @@ public class Sujet {
     // @Column(name = "chef_id")
     // private List<Long> chefsAyantValide;
 
-    @ManyToOne(targetEntity = DirecteurDeTheseRole.class)
+    @ManyToOne(targetEntity = DirecteurDeTheseRole.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "directeur_these_role_id")
     private DirecteurDeTheseRole directeurDeThese;
 

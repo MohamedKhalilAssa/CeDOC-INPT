@@ -8,15 +8,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.ProfesseurRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProfesseurServiceImpl implements ProfesseurService {
 
     private final ProfesseurRepository professeurRepository;
+    private final SujetRepository sujetRepository;
 
     @Override
     public Professeur createProfesseur(Professeur professeur) {
@@ -78,6 +83,11 @@ public class ProfesseurServiceImpl implements ProfesseurService {
         return professeurRepository.findByUtilisateurEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Professeur introuvable avec l'email : " + email));
+    }
+
+    @Override
+    public List<Sujet> getSujetsByProfesseurId(Long professeurId) {
+        return sujetRepository.findByProfesseursId(professeurId);
     }
 
 }
