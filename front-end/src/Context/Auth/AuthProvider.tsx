@@ -37,15 +37,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem("isAuthenticated", "true");
     syncStateFromToken();
   };
-
   const logout = () => {
     localStorage.setItem("isAuthenticated", "false");
     localStorage.removeItem("token");
+    // Check if logout was due to token expiration
+    const wasTokenExpired = localStorage.getItem("tokenExpired") === "true";
+    if (wasTokenExpired) {
+      localStorage.removeItem("tokenExpired");
+      // You could show a toast message here about session expiration
+      console.log("Session expired, user logged out");
+    }
     setIsAuthenticated(false);
     setRoles([]);
     setUtilisateur(null);
   };
-
   useEffect(() => {
     const verifyAuth = async () => {
       try {
@@ -59,6 +64,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           logout();
         }
       } catch (err) {
+        // Check if this was due to token expiration
+        const tokenExpired = localStorage.getItem("tokenExpired");
+        if (tokenExpired === "true") {
+          localStorage.removeItem("tokenExpired");
+          console.warn("Authentication failed due to expired tokens");
+        }
         logout();
       } finally {
         setLoading(false);

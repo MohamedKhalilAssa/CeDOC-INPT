@@ -11,7 +11,7 @@ import {
   XCircle,
 } from "lucide-react";
 import React, { useState } from "react";
-import TableExample from "../../Table/TableExample";
+// import TableExample from "../../Table/TableExample";
 const getStatusLabel = (status: string) => {
   switch (status) {
     case "phd_student":
@@ -204,7 +204,7 @@ const PhdProfileManagement: React.FC = () => {
         </div>
       </div>{" "}
       {/* Students Table */}
-      <TableExample />
+      {/* <TableExample /> */}
       {/* Student Detail Modal */}
       {selectedStudent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

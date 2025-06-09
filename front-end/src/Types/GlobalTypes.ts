@@ -26,3 +26,20 @@ export type PaginatedResponse<T> = {
   pageSize: number;
   isLast: boolean;
 };
+
+export type TableConfig = {
+  search: string;
+  sortBy: string;
+  sort: "asc" | "desc" | "";
+  filters: { [key: string]: string };
+  page: number;
+  pageSize: number;
+};
+
+export type TableState<T> = {
+  config: TableConfig;
+  data: PaginatedResponse<T>;
+  loading: boolean;
+  error: string | null;
+  stableData: PaginatedResponse<T> | null; // For data stability during loading
+};
