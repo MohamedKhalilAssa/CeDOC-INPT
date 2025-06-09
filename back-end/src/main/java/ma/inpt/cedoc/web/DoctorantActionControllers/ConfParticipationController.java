@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationRequestDTO;
 import ma.inpt.cedoc.model.DTOs.DoctorantActions.ConfParticipationResponseDTO;
 import ma.inpt.cedoc.service.DoctorantActionService.ConfParticipationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,13 +23,32 @@ public class ConfParticipationController {
     private final ConfParticipationService confParticipationService;
 
     @GetMapping("/")
-    public ResponseEntity<List<ConfParticipationResponseDTO>> getAllConfParticipations() {
-        return ResponseEntity.ok(confParticipationService.getAllConfParticipations());
+    public Page<ConfParticipationResponseDTO> getAllConfParticipations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return confParticipationService.getAllConfParticipations(pageable);
     }
 
     @GetMapping("doctorant/{id}")
-    public ResponseEntity<List<ConfParticipationResponseDTO>> getConfParticipationsByDoctorantId(@PathVariable Long id) {
-        return ResponseEntity.ok(confParticipationService.getConfParticipationsByDoctorantId(id));
+    public Page<ConfParticipationResponseDTO> getConfParticipationsByDoctorantId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return confParticipationService.getConfParticipationsByDoctorantId(id, pageable);
     }
 
     @GetMapping("/{id}")

@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 
+import java.util.Optional;
+
 public interface DirecteurDeTheseRoleRepository extends JpaRepository<DirecteurDeTheseRole, Long> {
 
+    Optional<DirecteurDeTheseRole> findByProfesseurUtilisateurEmail(String email);
 }

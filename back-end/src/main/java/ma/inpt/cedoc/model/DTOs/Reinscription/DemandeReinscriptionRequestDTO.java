@@ -19,10 +19,9 @@ public class DemandeReinscriptionRequestDTO {
 
     private String attestationHonneur;
 
-    private String CertificatTravail;
+    private String certificatTravail;
 
     private String demandeDerogation;
 
     private Long sujetId;
-
 }

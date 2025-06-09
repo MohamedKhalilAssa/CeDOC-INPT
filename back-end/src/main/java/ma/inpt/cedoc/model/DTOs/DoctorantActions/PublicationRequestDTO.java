@@ -22,5 +22,4 @@ public class PublicationRequestDTO {
     private String autresAuteurs;
 
     private String prixIntitule;
-
 }

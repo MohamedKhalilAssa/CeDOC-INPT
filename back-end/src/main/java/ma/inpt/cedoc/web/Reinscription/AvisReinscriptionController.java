@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Reinscription.AvisReinscriptionResponseDTO;
 import ma.inpt.cedoc.service.Reinscription.AvisReinscriptionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,13 +23,32 @@ public class AvisReinscriptionController {
     private final AvisReinscriptionService avisReinscriptionService;
 
     @GetMapping("/")
-    public ResponseEntity<List<AvisReinscriptionResponseDTO>> getAll(){
-        return ResponseEntity.ok(avisReinscriptionService.getAllAvis());
+    public Page<AvisReinscriptionResponseDTO> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ){
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return avisReinscriptionService.getAllAvis(pageable);
     }
 
     @GetMapping("/directeurthese/{id}")
-    public ResponseEntity<List<AvisReinscriptionResponseDTO>> getAvisByDirecteurTheseId(@PathVariable Long id){
-        return ResponseEntity.ok(avisReinscriptionService.getAvisByDirecteurThese(id));
+    public Page<AvisReinscriptionResponseDTO> getAvisByDirecteurTheseId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ){
+        Sort sort = Sort.by("updatedAt").ascending();
+        if (sortDir.equalsIgnoreCase("desc")) {
+            sort = sort.descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return avisReinscriptionService.getAvisByDirecteurThese(id, pageable);
     }
 
     @GetMapping("/{id}")
@@ -33,7 +56,7 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.getAvisById(id));
     }
 
-    @Secured("DIRECTION_CEDOC")
+//    @Secured("DIRECTION_CEDOC")
     @PostMapping("/")
     public ResponseEntity<AvisReinscriptionResponseDTO> createAvis(@AuthenticationPrincipal UserDetails userDetails,
                                                                    @RequestBody AvisReinscriptionRequestDTO requestDTO){
@@ -41,7 +64,7 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.createAvis(requestDTO, email));
     }
 
-    @Secured("DIRECTION_CEDOC")
+//    @Secured("DIRECTION_CEDOC")
     @PutMapping("/{id}")
     public ResponseEntity<AvisReinscriptionResponseDTO> editAvis(@AuthenticationPrincipal UserDetails userDetails,
                                                                  @RequestBody AvisReinscriptionRequestDTO requestDTO,
@@ -50,7 +73,7 @@ public class AvisReinscriptionController {
         return ResponseEntity.ok(avisReinscriptionService.editAvis(requestDTO, id, email));
     }
 
-    @Secured("DIRECTION_CEDOC")
+//    @Secured("DIRECTION_CEDOC")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAvis(@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable Long id){

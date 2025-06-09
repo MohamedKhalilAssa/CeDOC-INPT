@@ -50,5 +50,4 @@ public class Role {
     @ToString.Exclude
     @Builder.Default
     private List<Utilisateur> utilisateurs = new ArrayList<>();
-
 }

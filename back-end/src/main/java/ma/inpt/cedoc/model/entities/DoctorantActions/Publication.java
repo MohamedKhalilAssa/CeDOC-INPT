@@ -34,7 +34,7 @@ public class Publication {
     @NotBlank(message = "Le journal est obligatoire")
     private String journal;
 
-    @NotBlank(message = "La date de publication est obligatoire")
+    @NotNull(message = "La date de publication est obligatoire")
     private ZonedDateTime datePublication;
 
     @NotNull(message = "L'état de publication est obligatoire")

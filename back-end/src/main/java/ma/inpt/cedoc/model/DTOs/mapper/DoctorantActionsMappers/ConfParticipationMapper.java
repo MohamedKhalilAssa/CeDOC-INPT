@@ -40,7 +40,10 @@ public class ConfParticipationMapper {
         responseDTO.setJustificatif(confParticipation.getJustificatif());
         responseDTO.setAutresParticipants(confParticipation.getAutresParticipants());
         responseDTO.setParticipantId(confParticipation.getParticipant().getId());
-        responseDTO.setValidateurId(confParticipation.getValidateur().getId());
+        if (confParticipation.getValidateur() != null) {
+            responseDTO.setValidateurId(confParticipation.getValidateur().getId());
+        }
+        responseDTO.setStatus(confParticipation.getStatus());
         responseDTO.setCreatedAt(confParticipation.getCreatedAt());
         responseDTO.setUpdatedAt(confParticipation.getUpdatedAt());
         return responseDTO;

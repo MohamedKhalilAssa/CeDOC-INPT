@@ -2,6 +2,11 @@ package ma.inpt.cedoc.model.entities.Reinscription;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotNull;
+import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
+import ma.inpt.cedoc.model.entities.utilisateurs.DirectionCedoc;
+import ma.inpt.cedoc.model.enums.doctorant_enums.EtatEnum;
+import ma.inpt.cedoc.model.enums.reinscription_enums.DemandeReinscriptionEnum;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,17 +38,22 @@ public class DemandeReinscription {
     @NotBlank(message = "Le plan d'action est obligatoire")
     private String planAction;
 
-    @NotBlank(message = "La résidance est obligatoire")
     private boolean residance;
 
     @NotBlank(message = "L'attestation d'honneur est obligatoire")
     private String attestationHonneur;
 
     @NotBlank(message = "La certificat de travail est obligatoire")
-    private String CertificatTravail;
+    private String certificatTravail;
 
     @NotBlank(message = "Demande de derogation est obligatoire")
     private String demandeDerogation;
+
+    // la demande d'inscription doit etre approuvé par le chef d'équipe et la direction du cedoc
+
+    @NotNull(message = "Etat de demande de réinscription est obligatoire")
+    @Enumerated(EnumType.STRING)
+    private DemandeReinscriptionEnum status = DemandeReinscriptionEnum.DECLAREE;
 
     @Column(name = "created_at", updatable = false)
     @CreatedDate
@@ -53,8 +63,8 @@ public class DemandeReinscription {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    // ----------- Relation ----------------
 
+    // ----------- Relation ----------------
     @ManyToOne
     @JoinColumn(name = "doctorant_id")
     private Doctorant demandeur;
@@ -65,5 +75,13 @@ public class DemandeReinscription {
 
     @OneToOne(mappedBy = "demandeReinscription", cascade = CascadeType.ALL, orphanRemoval = true)
     private AvisReinscription avisReinscription;
+
+    @ManyToOne
+    @JoinColumn(name = "chef_equipe_id")
+    private ChefEquipeRole chefEquipeValidateur;
+
+    @ManyToOne
+    @JoinColumn(name = "direction_cedoc_id")
+    private DirectionCedoc DirectionCedocValidateur;
 
 }
