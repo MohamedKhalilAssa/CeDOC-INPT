@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   getData,
   putData,
+  patchFormData,
 } from "@/Helpers/CRUDFunctions";
 
 interface Publication {
@@ -40,52 +41,37 @@ const PublicationsValidation: React.FC = () => {
   }, [currentPage]);
 
   const fetchPublications = async (): Promise<void> => {
-  try {
-    setLoading(true);
-    
-    // Try different endpoints - uncomment one at a time to test:
-    
-    // Option 1: Without leading slash (your current approach)
-    const data = await getData<any>(`publications/?page=${currentPage}&size=10&sortDir=desc`);
-    
-    // Option 2: With leading slash
-    // const data = await getData<any>(`/publications/?page=${currentPage}&size=10&sortDir=desc`);
-    
-    // Option 3: Admin-specific endpoint
-    // const data = await getData<any>(`admin/publications/?page=${currentPage}&size=10&sortDir=desc`);
-    
-    // Option 4: Validation-specific endpoint  
-    // const data = await getData<any>(`validation/publications/?page=${currentPage}&size=10&sortDir=desc`);
-    
-    // Option 5: Filter by status
-    // const data = await getData<any>(`publications/?page=${currentPage}&size=10&sortDir=desc&status=EN_ATTENTE`);
-    
-    console.log("📦 Received publications data:", data);
-    
-    if (data && typeof data === 'object') {
-      if (Array.isArray(data)) {
-        setPublications(data);
-        setTotalPages(1);
-        setTotalElements(data.length);
-      } else if (data.content && Array.isArray(data.content)) {
-        setPublications(data.content);
-        setTotalPages(data.totalPages || 1);
-        setTotalElements(data.totalElements || data.content.length);
+    try {
+      setLoading(true);
+      
+      const data = await getData<any>(`publications/?page=${currentPage}&size=10&sortDir=desc`);
+      
+      console.log("📦 Received publications data:", data);
+      
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data)) {
+          setPublications(data);
+          setTotalPages(1);
+          setTotalElements(data.length);
+        } else if (data.content && Array.isArray(data.content)) {
+          setPublications(data.content);
+          setTotalPages(data.totalPages || 1);
+          setTotalElements(data.totalElements || data.content.length);
+        } else {
+          console.warn("Unexpected data structure:", data);
+          setPublications([]);
+        }
       } else {
-        console.warn("Unexpected data structure:", data);
         setPublications([]);
       }
-    } else {
+    } catch (error) {
+      console.error("❌ Error fetching publications:", error);
+      setErrorMessage("Erreur lors du chargement des publications");
       setPublications([]);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("❌ Error fetching publications:", error);
-    setErrorMessage("Erreur lors du chargement des publications");
-    setPublications([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleValidation = async (publicationId: number, action: 'valider' | 'refuser'): Promise<void> => {
     if (processingIds.has(publicationId)) return;
@@ -103,8 +89,10 @@ const PublicationsValidation: React.FC = () => {
     try {
       console.log(`🔄 ${action === 'valider' ? 'Validating' : 'Refusing'} publication:`, publicationId);
       
-      const endpoint = `/publications/${publicationId}/${action}`;
-      const response = await putData<Publication>(endpoint, {});
+      const endpoint = `publications/${publicationId}/${action}`;
+      
+      // Use patchFormData since your backend expects PATCH requests
+      const response = await patchFormData<Publication>(endpoint, {});
       
       console.log(`✅ ${action} response:`, response);
       
@@ -170,8 +158,11 @@ const PublicationsValidation: React.FC = () => {
       case "REFUSEE":
         return "text-red-600 bg-red-100";
       case "EN_ATTENTE":
-      default:
         return "text-yellow-600 bg-yellow-100";
+      case "DECLAREE":
+        return "text-blue-600 bg-blue-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
@@ -182,9 +173,17 @@ const PublicationsValidation: React.FC = () => {
       case "REFUSEE":
         return "Refusée";
       case "EN_ATTENTE":
-      default:
         return "En attente";
+      case "DECLAREE":
+        return "Déclarée";
+      default:
+        return status;
     }
+  };
+
+  // Check if publication can be validated/refused
+  const canValidateOrRefuse = (status: string): boolean => {
+    return status === "EN_ATTENTE" || status === "DECLAREE";
   };
 
   const handlePageChange = (newPage: number): void => {
@@ -310,7 +309,7 @@ const PublicationsValidation: React.FC = () => {
                           {getStatusText(publication.status)}
                         </span>
 
-                        {publication.status === "EN_ATTENTE" && (
+                        {canValidateOrRefuse(publication.status) && (
                           <div className="flex space-x-2">
                             <button
                               onClick={() => handleValidation(publication.id, 'valider')}
