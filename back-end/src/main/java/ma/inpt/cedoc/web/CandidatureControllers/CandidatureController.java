@@ -19,7 +19,6 @@ import ma.inpt.cedoc.model.DTOs.Generic.ErrorResponse;
 import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
 import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 
 // @ModelAttribute -> Spring remplit automatiquement les DTOs à partir du formulaire frontend.
@@ -30,7 +29,6 @@ import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 @Validated
 public class CandidatureController {
 
-    private final CandidatureMapper candidatureMapper;
     private final CandidatureService candidatureService;
 
     // 1) Création d’une nouvelle candidature (multipart/form-data pour inclure le champ MultipartFile)

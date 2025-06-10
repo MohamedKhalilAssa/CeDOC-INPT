@@ -162,19 +162,30 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     /*-----------------Update----------------- */
     @Override
     public UtilisateurResponseDTO updateUtilisateur(Utilisateur utilisateur) {
+        if(utilisateur.getId() == null || !utilisateurRepository.existsById(utilisateur.getId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable");
+        }
         Utilisateur updated = utilisateurRepository.save(utilisateur);
-        return utilisateurMapper.toResponseWithRoles(updated);
+        return utilisateurMapper.toResponse(updated);
     }
     
     @Override
-    public UtilisateurResponseDTO updateUtilisateurFromDTO(Utilisateur utilisateur, UtilisateurRequestDTO requestDTO) {
-        // Use the mapper to update the entity from the DTO
-        Utilisateur updatedEntity = utilisateurMapper.UpdateUtilisateurFromRequestDTO(utilisateur, requestDTO);
+    @Transactional
+    public UtilisateurResponseDTO updateCurrentUserProfile(String email, UtilisateurRequestDTO requestDTO) {
+        // Fetch the current user within this transaction
+        Utilisateur existingUser = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+        
+        // Use the mapper to update the existing user entity with the new data
+        // This method handles the nationality and lieu de naissance relationships properly
+        existingUser = utilisateurMapper.UpdateUtilisateurFromRequestDTO(existingUser, requestDTO);
         
         // Save the updated entity
-        Utilisateur saved = utilisateurRepository.save(updatedEntity);
+        Utilisateur updatedUser = utilisateurRepository.save(existingUser);
         
         // Return the response DTO
-        return utilisateurMapper.toResponseWithRoles(saved);
+        return utilisateurMapper.toResponseWithRoles(updatedUser);
     }
+    
+  
 }

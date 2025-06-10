@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.RoleAssignmentRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository;
 import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @RestController
@@ -20,6 +21,11 @@ import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 public class UtilisateurController {
 
     private final UtilisateurService utilisateurService;
+    private final UtilisateurMapper utilisateurMapper;
+    private final UtilisateurRepository utilisateurRepository;
+    private final ma.inpt.cedoc.service.utilisateurServices.NationaliteService nationaliteService;
+    private final ma.inpt.cedoc.service.utilisateurServices.LieuDeNaissanceService lieuDeNaissanceService;
+
     @GetMapping("logged-in")
     public ResponseEntity<UtilisateurResponseDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -48,13 +54,17 @@ public class UtilisateurController {
             if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
                 String email = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
                 
-                // Get the current user entity
-                Utilisateur currentUser = utilisateurService.getFullUtilisateurByEmail(email);
-                
-                // Update the user entity with the request data and save
-                UtilisateurResponseDTO updatedUser = utilisateurService.updateUtilisateurFromDTO(currentUser, requestDTO);
-                
-                return ResponseEntity.ok(updatedUser);
+                try {
+                    // Use the service to handle the update within a single transaction
+                    UtilisateurResponseDTO updatedUser = utilisateurService.updateCurrentUserProfile(email, requestDTO);
+                    return ResponseEntity.ok(updatedUser);
+                    
+                } catch (Exception e) {
+                    // Log the error and return a more specific error response
+                    System.err.println("Error updating user: " + e.getMessage());
+                    e.printStackTrace();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                }
             }
         }
     

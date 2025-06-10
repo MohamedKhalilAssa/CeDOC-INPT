@@ -84,7 +84,7 @@ export const professeursSidebarConfig: NavigationGroup[] = [
   },
 ];
 export const chefsEquipesSidebarConfig: NavigationGroup[] = [
-  ...professeursSidebarConfig,
+  ...utilisateursSidebarConfig,
   {
     title: "Sujets",
     items: [

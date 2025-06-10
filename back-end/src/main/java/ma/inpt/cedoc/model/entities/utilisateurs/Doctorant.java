@@ -9,10 +9,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
@@ -38,7 +35,7 @@ public class Doctorant {
     @MapsId
     @JoinColumn(name = "utilisateur_id")
     @JsonIgnore
-
+    @EqualsAndHashCode.Exclude
     private Utilisateur utilisateur;
 
     @Column(name = "date_inscription")

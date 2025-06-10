@@ -23,6 +23,7 @@ public class Candidat {
     @MapsId
     @JoinColumn(name = "utilisateur_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Utilisateur utilisateur;
 
     @Builder.Default
@@ -32,6 +33,7 @@ public class Candidat {
 
     @OneToOne(mappedBy = "candidat", fetch = FetchType.LAZY)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Candidature candidature;
 
 }

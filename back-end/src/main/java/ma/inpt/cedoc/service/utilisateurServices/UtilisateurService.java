@@ -18,6 +18,8 @@ public interface UtilisateurService {
     public List<UtilisateurResponseDTO> saveAllUtilisateurs(List<Utilisateur> utilisateurs);
 
     public UtilisateurResponseDTO updateUtilisateur(Utilisateur utilisateurRequestDTO);
+    
+    public UtilisateurResponseDTO updateCurrentUserProfile(String email, UtilisateurRequestDTO requestDTO);
 
     public void deleteUtilisateur(Long id);
 
@@ -41,5 +43,4 @@ public interface UtilisateurService {
 
     public Page<UtilisateurResponseDTO> searchByNomOuPrenom(String query);
     
-    public UtilisateurResponseDTO updateUtilisateurFromDTO(Utilisateur utilisateur, UtilisateurRequestDTO requestDTO);
 }

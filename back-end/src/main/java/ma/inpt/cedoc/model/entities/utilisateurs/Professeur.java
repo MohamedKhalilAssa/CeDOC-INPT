@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.formation.Formation;
 import ma.inpt.cedoc.model.entities.soutenance.ProfesseurJury;
@@ -30,6 +27,7 @@ public class Professeur {
     @MapsId
     @JoinColumn(name = "utilisateur_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Utilisateur utilisateur;
 
     @Enumerated(EnumType.STRING)
@@ -40,27 +38,41 @@ public class Professeur {
     @ManyToOne
     @JoinColumn(name = "equipe_de_recherche_id")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
+
     private EquipeDeRecherche equipeDeRechercheAcceuillante;
 
     @OneToMany(mappedBy = "professeur")
+    @EqualsAndHashCode.Exclude
+
     private List<ProfesseurJury> participationsEnJury;
 
     @ManyToMany(mappedBy = "professeurs")
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
+
     private List<Sujet> sujetsProposes;
 
     // Relation avec formations
     @OneToMany(mappedBy = "professeur")
+    @EqualsAndHashCode.Exclude
+
     private List<Formation> formationsProposees;
 
     // Roles - composition instead of inheritance
     @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+
     private ChefEquipeRole chefEquipeRole;
 
     @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+
     private DirecteurDeTheseRole directeurDeTheseRole;
 
     @OneToOne(mappedBy = "professeur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+
     private ResponsableDeFormationRole responsableDeFormationRole;
 
     // Helper methods to check roles

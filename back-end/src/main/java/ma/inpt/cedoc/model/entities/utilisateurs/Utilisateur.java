@@ -97,15 +97,19 @@ public class Utilisateur implements UserDetails {
     /*ROLES - STATES OF USER */
 
     @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Candidat candidat;
 
     @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Professeur professeur;
 
     @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Doctorant doctorant;
 
     @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private DirectionCedoc directionCedoc;
 
     public boolean hasRole(RoleEnum role) {

@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.soutenance.DemandeSoutenance;
@@ -29,7 +27,7 @@ public class DirectionCedoc {
     @MapsId
     @JoinColumn(name = "utilisateur_id")
     @JsonIgnore
-
+    @EqualsAndHashCode.Exclude
     private Utilisateur utilisateur;
 
     @Column(name = "role_administrative")
