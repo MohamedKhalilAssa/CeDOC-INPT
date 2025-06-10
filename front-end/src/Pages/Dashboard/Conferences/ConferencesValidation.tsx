@@ -13,7 +13,6 @@ interface ConfParticipation {
   validateurId?: number;
   createdAt: string;
   updatedAt: string;
-  // Additional fields that might be useful for validation
   participant?: {
     nom: string;
     prenom: string;
@@ -39,20 +38,16 @@ const DirectionCedocValidation: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Fetch conferences from backend
   useEffect(() => {
     const fetchConferences = async (): Promise<void> => {
       try {
         setLoading(true);
-        setErrorMessage(""); // Clear previous errors
-        console.log(
-          "🔍 Fetching conferences for validation from /confparticipation/"
-        );
+        setErrorMessage("");
+        console.log("🔍 Fetching conferences for validation from /confparticipation/");
 
         const data = await getData<any>("/confparticipation/");
         console.log("📦 Received data:", data);
 
-        // Handle paginated response with more robust checking
         let conferencesArray: ConfParticipation[] = [];
         if (data) {
           if (Array.isArray(data)) {
@@ -61,49 +56,26 @@ const DirectionCedocValidation: React.FC = () => {
             conferencesArray = data.content;
           } else if (data.data && Array.isArray(data.data)) {
             conferencesArray = data.data;
-          } else if (
-            typeof data === "object" &&
-            data.results &&
-            Array.isArray(data.results)
-          ) {
+          } else if (typeof data === "object" && data.results && Array.isArray(data.results)) {
             conferencesArray = data.results;
           }
         }
 
-        // Validate that we have proper conference objects
         const validConferences = conferencesArray.filter(
-          (conf) =>
-            conf &&
-            typeof conf === "object" &&
-            conf.id &&
-            conf.titre &&
-            conf.status
+          (conf) => conf && typeof conf === "object" && conf.id && conf.titre && conf.status
         );
 
         setConferences(validConferences);
-        console.log("📊 Valid conferences loaded:", validConferences.length);
-        console.log(
-          "📊 Status distribution:",
-          validConferences.reduce((acc, conf) => {
-            acc[conf.status] = (acc[conf.status] || 0) + 1;
-            return acc;
-          }, {} as Record<string, number>)
-        );
       } catch (error) {
         console.error("❌ Error fetching conferences:", error);
         let errorMsg = "Erreur lors du chargement des conférences";
 
-        // More specific error messages
         if (error instanceof Error) {
           if (error.message.includes("Network")) {
-            errorMsg =
-              "Erreur de connexion. Vérifiez votre connexion internet.";
+            errorMsg = "Erreur de connexion. Vérifiez votre connexion internet.";
           } else if (error.message.includes("404")) {
             errorMsg = "Endpoint non trouvé. Vérifiez l'URL de l'API.";
-          } else if (
-            error.message.includes("403") ||
-            error.message.includes("401")
-          ) {
+          } else if (error.message.includes("403") || error.message.includes("401")) {
             errorMsg = "Accès non autorisé. Vérifiez vos permissions.";
           } else if (error.message.includes("500")) {
             errorMsg = "Erreur serveur. Contactez l'administrateur.";
@@ -131,47 +103,40 @@ const DirectionCedocValidation: React.FC = () => {
     id: number,
     status: "VALIDEE" | "REFUSEE"
   ): Promise<void> => {
-    // Validate input
     if (!id || (status !== "VALIDEE" && status !== "REFUSEE")) {
       setErrorMessage("Paramètres de validation invalides");
       return;
     }
 
     setValidatingIds((prev) => new Set(prev).add(id));
-    setErrorMessage(""); // Clear previous errors
-    setSuccessMessage(""); // Clear previous success messages
+    setErrorMessage("");
+    setSuccessMessage("");
 
     try {
       const comment = comments[id]?.trim() || "";
-
-      console.log(
-        `🔄 ${status === "VALIDEE" ? "Validating" : "Rejecting"} conference:`,
-        id
-      );
-      console.log(`📝 Comment:`, comment);
-
-      // Prepare validation request
       const validationRequest: ValidationRequest = {
         status: status,
-        comment: comment || undefined, // Only include comment if not empty
+        comment: comment || undefined,
       };
 
-      const response = await patchData<ConfParticipation>(
-        `/confparticipation/${id}/valider`,
-        validationRequest
-      );
+      // Use different endpoint based on action
+      const endpoint = 
+        status === "VALIDEE" 
+          ? `/confparticipation/${id}/valider` 
+          : `/confparticipation/${id}/refuser`;
 
-      console.log("🔄 Validation response:", response);
+      console.log(`📤 Sending ${status} request to: ${endpoint}`);
 
-      // Handle successful response
+      const response = await patchData<ConfParticipation>(endpoint, validationRequest);
+
       if (response) {
-        // Update local state with the response
+        const actualStatus = response.status || status;
         setConferences((prev) =>
           prev.map((conf) =>
             conf.id === id
               ? {
                   ...conf,
-                  status: status,
+                  status: actualStatus,
                   validateurId: response.validateurId || 1,
                   updatedAt: response.updatedAt || new Date().toISOString(),
                 }
@@ -180,47 +145,49 @@ const DirectionCedocValidation: React.FC = () => {
         );
 
         setSuccessMessage(
-          `Participation ${
-            status === "VALIDEE" ? "validée" : "refusée"
-          } avec succès!`
+          `Participation ${actualStatus === "VALIDEE" ? "validée" : "refusée"} avec succès!`
         );
       } else {
-        // If no response but no error, assume success and refetch
-        console.log("🔄 No response object, refetching data...");
         await refetchConferences();
+        const refreshData = await getData<any>("/confparticipation/");
+        let refreshedConferences: ConfParticipation[] = [];
+
+        if (refreshData) {
+          if (Array.isArray(refreshData)) {
+            refreshedConferences = refreshData;
+          } else if (refreshData.content && Array.isArray(refreshData.content)) {
+            refreshedConferences = refreshData.content;
+          } else if (refreshData.data && Array.isArray(refreshData.data)) {
+            refreshedConferences = refreshData.data;
+          }
+        }
+
+        const updatedConf = refreshedConferences.find((conf) => conf.id === id);
+        const actualFinalStatus = updatedConf?.status;
+
         setSuccessMessage(
-          `Participation ${
-            status === "VALIDEE" ? "validée" : "refusée"
-          } avec succès!`
+          `Participation ${actualFinalStatus === "VALIDEE" ? "validée" : "refusée"} avec succès!`
         );
       }
 
-      // Clear the comment for this conference
       setComments((prev) => {
         const newComments = { ...prev };
         delete newComments[id];
         return newComments;
       });
 
-      // Clear success message after 5 seconds
       setTimeout(() => setSuccessMessage(""), 5000);
     } catch (error) {
       console.error("❌ Error validating conference:", error);
 
-      let errorMsg = `Erreur lors de la ${
-        status === "VALIDEE" ? "validation" : "refus"
-      } de la participation`;
+      let errorMsg = `Erreur lors de la ${status === "VALIDEE" ? "validation" : "refus"} de la participation`;
 
-      // More specific error handling
       if (error instanceof Error) {
         if (error.message.includes("Network")) {
           errorMsg = "Erreur de connexion lors de la validation";
         } else if (error.message.includes("404")) {
           errorMsg = "Participation non trouvée";
-        } else if (
-          error.message.includes("403") ||
-          error.message.includes("401")
-        ) {
+        } else if (error.message.includes("403") || error.message.includes("401")) {
           errorMsg = "Vous n'avez pas les permissions pour cette action";
         } else if (error.message.includes("400")) {
           errorMsg = "Données de validation invalides";
@@ -242,7 +209,6 @@ const DirectionCedocValidation: React.FC = () => {
     }
   };
 
-  // Helper function to refetch conferences
   const refetchConferences = async (): Promise<void> => {
     try {
       const updatedData = await getData<any>("/confparticipation/");
@@ -259,12 +225,7 @@ const DirectionCedocValidation: React.FC = () => {
       }
 
       const validConferences = conferencesArray.filter(
-        (conf) =>
-          conf &&
-          typeof conf === "object" &&
-          conf.id &&
-          conf.titre &&
-          conf.status
+        (conf) => conf && typeof conf === "object" && conf.id && conf.titre && conf.status
       );
 
       setConferences(validConferences);
@@ -327,18 +288,10 @@ const DirectionCedocValidation: React.FC = () => {
     return conf.status === filter;
   });
 
-  const declareeCount = conferences.filter(
-    (conf) => conf.status === "DECLAREE"
-  ).length;
-  const pendingCount = conferences.filter(
-    (conf) => conf.status === "EN_ATTENTE"
-  ).length;
-  const validatedCount = conferences.filter(
-    (conf) => conf.status === "VALIDEE"
-  ).length;
-  const rejectedCount = conferences.filter(
-    (conf) => conf.status === "REFUSEE"
-  ).length;
+  const declareeCount = conferences.filter((conf) => conf.status === "DECLAREE").length;
+  const pendingCount = conferences.filter((conf) => conf.status === "EN_ATTENTE").length;
+  const validatedCount = conferences.filter((conf) => conf.status === "VALIDEE").length;
+  const rejectedCount = conferences.filter((conf) => conf.status === "REFUSEE").length;
   const awaitingValidationCount = declareeCount + pendingCount;
 
   if (loading) {
@@ -346,24 +299,19 @@ const DirectionCedocValidation: React.FC = () => {
       <div className="flex items-center justify-center min-h-64">
         <div className="flex items-center space-x-2">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="text-gray-600">
-            Chargement des participations...
-          </span>
+          <span className="text-gray-600">Chargement des participations...</span>
         </div>
       </div>
     );
   }
 
-  // Show error state if we have an error and no conferences
   if (errorMessage && conferences.length === 0) {
     return (
       <div className="max-w-6xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-md">
           <div className="p-6 text-center">
             <div className="text-6xl mb-4">⚠️</div>
-            <h3 className="text-xl font-medium text-gray-800 mb-2">
-              Erreur de chargement
-            </h3>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">Erreur de chargement</h3>
             <p className="text-red-600 mb-4">{errorMessage}</p>
             <button
               onClick={() => window.location.reload()}
@@ -385,13 +333,11 @@ const DirectionCedocValidation: React.FC = () => {
             Validation des Participations aux Conférences
           </h1>
           <p className="text-gray-600">
-            Validez ou refusez les participations aux conférences soumises par
-            les doctorants.
+            Validez ou refusez les participations aux conférences soumises par les doctorants.
           </p>
         </div>
 
         <div className="p-6">
-          {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center">
@@ -401,12 +347,8 @@ const DirectionCedocValidation: React.FC = () => {
                   </div>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-yellow-800">
-                    À valider
-                  </p>
-                  <p className="text-2xl font-bold text-yellow-900">
-                    {awaitingValidationCount}
-                  </p>
+                  <p className="text-sm font-medium text-yellow-800">À valider</p>
+                  <p className="text-2xl font-bold text-yellow-900">{awaitingValidationCount}</p>
                 </div>
               </div>
             </div>
@@ -420,9 +362,7 @@ const DirectionCedocValidation: React.FC = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-green-800">Validées</p>
-                  <p className="text-2xl font-bold text-green-900">
-                    {validatedCount}
-                  </p>
+                  <p className="text-2xl font-bold text-green-900">{validatedCount}</p>
                 </div>
               </div>
             </div>
@@ -436,9 +376,7 @@ const DirectionCedocValidation: React.FC = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-red-800">Refusées</p>
-                  <p className="text-2xl font-bold text-red-900">
-                    {rejectedCount}
-                  </p>
+                  <p className="text-2xl font-bold text-red-900">{rejectedCount}</p>
                 </div>
               </div>
             </div>
@@ -452,15 +390,12 @@ const DirectionCedocValidation: React.FC = () => {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-blue-800">Total</p>
-                  <p className="text-2xl font-bold text-blue-900">
-                    {conferences.length}
-                  </p>
+                  <p className="text-2xl font-bold text-blue-900">{conferences.length}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Filter Buttons */}
           <div className="flex flex-wrap gap-2 mb-6">
             {[
               { key: "TOUS", label: "Toutes", count: conferences.length },
@@ -490,7 +425,6 @@ const DirectionCedocValidation: React.FC = () => {
             ))}
           </div>
 
-          {/* Success/Error Messages */}
           {successMessage && (
             <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded flex items-center">
               <span className="mr-2">✅</span>
@@ -505,7 +439,6 @@ const DirectionCedocValidation: React.FC = () => {
             </div>
           )}
 
-          {/* Conferences List */}
           {filteredConferences.length > 0 ? (
             <div className="space-y-4">
               {filteredConferences.map((conference) => (
@@ -546,27 +479,22 @@ const DirectionCedocValidation: React.FC = () => {
                         {conference.participant && (
                           <p>
                             <strong>Participant:</strong>{" "}
-                            {conference.participant.nom}{" "}
-                            {conference.participant.prenom}
+                            {conference.participant.nom} {conference.participant.prenom}
                           </p>
                         )}
                         <p>
-                          <strong>Soumis le:</strong>{" "}
-                          {formatDate(conference.createdAt)}
+                          <strong>Soumis le:</strong> {formatDate(conference.createdAt)}
                         </p>
                         {conference.updatedAt !== conference.createdAt && (
                           <p>
-                            <strong>Mis à jour le:</strong>{" "}
-                            {formatDate(conference.updatedAt)}
+                            <strong>Mis à jour le:</strong> {formatDate(conference.updatedAt)}
                           </p>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Validation Actions - Only show for pending conferences */}
-                  {(conference.status === "DECLAREE" ||
-                    conference.status === "EN_ATTENTE") && (
+                  {(conference.status === "DECLAREE" || conference.status === "EN_ATTENTE") && (
                     <div className="border-t border-gray-200 pt-4">
                       <div className="mb-3">
                         <label
@@ -590,9 +518,7 @@ const DirectionCedocValidation: React.FC = () => {
 
                       <div className="flex gap-3">
                         <button
-                          onClick={() =>
-                            validateConference(conference.id, "VALIDEE")
-                          }
+                          onClick={() => validateConference(conference.id, "VALIDEE")}
                           disabled={validatingIds.has(conference.id)}
                           className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
@@ -610,9 +536,7 @@ const DirectionCedocValidation: React.FC = () => {
                         </button>
 
                         <button
-                          onClick={() =>
-                            validateConference(conference.id, "REFUSEE")
-                          }
+                          onClick={() => validateConference(conference.id, "REFUSEE")}
                           disabled={validatingIds.has(conference.id)}
                           className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
@@ -632,24 +556,16 @@ const DirectionCedocValidation: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Show validation info for processed conferences */}
-                  {(conference.status === "VALIDEE" ||
-                    conference.status === "REFUSEE") && (
+                  {(conference.status === "VALIDEE" || conference.status === "REFUSEE") && (
                     <div className="border-t border-gray-200 pt-4">
                       <div className="text-sm text-gray-600">
                         <p>
-                          <strong>
-                            {conference.status === "VALIDEE"
-                              ? "Validé"
-                              : "Refusé"}{" "}
-                            le:
-                          </strong>{" "}
+                          <strong>{conference.status === "VALIDEE" ? "Validé" : "Refusé"} le:</strong>{" "}
                           {formatDate(conference.updatedAt)}
                         </p>
                         {conference.validateurId && (
                           <p>
-                            <strong>Validateur ID:</strong>{" "}
-                            {conference.validateurId}
+                            <strong>Validateur ID:</strong> {conference.validateurId}
                           </p>
                         )}
                       </div>
@@ -667,9 +583,7 @@ const DirectionCedocValidation: React.FC = () => {
               <p className="text-gray-600">
                 {filter === "TOUS"
                   ? "Aucune participation aux conférences n'a été soumise."
-                  : `Aucune participation avec le statut "${getStatusLabel(
-                      filter
-                    )}" trouvée.`}
+                  : `Aucune participation avec le statut "${getStatusLabel(filter)}" trouvée.`}
               </p>
               {filter !== "TOUS" && (
                 <button
