@@ -1,12 +1,15 @@
 package ma.inpt.cedoc.service.CandidatureSevices;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,10 +29,12 @@ import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
 import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
 import ma.inpt.cedoc.service.utilisateurServices.DirecteurDeTheseService;
 import ma.inpt.cedoc.service.utilisateurServices.ProfesseurService;
+import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +47,7 @@ public class SujetServiceImpl implements SujetService {
     private final SujetMapper sujetMapper;
     private final ChefSujetsEquipeMapper chefSujetsEquipeMapper;
     private final DirecteurDeTheseService directeurDeTheseService;
+    private final UtilisateurService utilisateurService;
 
     /* CREATE --------------------------------------------- */
     // DTO-based methods
@@ -72,15 +78,19 @@ public class SujetServiceImpl implements SujetService {
     public List<Sujet> saveSujetsEntities(List<Sujet> sujets) {
         return sujetRepository.saveAll(sujets);
     } /* UPDATE --------------------------------------------- */
-    // DTO-based methods
+    // DTO-based methods @Override
 
-    @Override
     public SujetResponseDTO updateSujet(SujetRequestDTO dto, Long id) {
-        if (!sujetRepository.existsById(id)) {
-            throw new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id);
-        }
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Sujet toUpdate = sujetRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id));
+
+        // Check permissions before updating
+        if (!canModifySubject(toUpdate, currentUserEmail)) {
+            throw new AccessDeniedException("Vous n'avez pas l'autorisation de modifier ce sujet");
+        }
+
         Sujet sujet = sujetMapper.updateFromRequestDTO(toUpdate, dto);
 
         return sujetMapper.toResponseDTO(sujetRepository.save(sujet));
@@ -107,9 +117,16 @@ public class SujetServiceImpl implements SujetService {
 
     @Override
     public void deleteSujetById(Long id) {
-        if (!sujetRepository.existsById(id)) {
-            throw new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id);
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Sujet sujet = sujetRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + id));
+
+        // Check permissions before deleting
+        if (!canModifySubject(sujet, currentUserEmail)) {
+            throw new AccessDeniedException("Vous n'avez pas l'autorisation de supprimer ce sujet");
         }
+
         sujetRepository.deleteById(id);
     }
 
@@ -363,9 +380,229 @@ public class SujetServiceImpl implements SujetService {
         sujet.setEstPublic(true);
 
         // Sauvegarder le sujet
-        Sujet savedSujet = sujetRepository.save(sujet);
-
-        // Retourner le DTO de réponse
+        Sujet savedSujet = sujetRepository.save(sujet); // Retourner le DTO de réponse
         return sujetMapper.toResponseDTO(savedSujet);
+    }
+
+    @Override
+    public PaginatedResponseDTO<SujetResponseDTO> getMesSujetsPaginated(String userEmail, Pageable pageable,
+            String search) {
+        try {
+            Professeur currentProfesseur = professeurService.getProfesseurByEmail(userEmail);
+            if (currentProfesseur == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Professeur introuvable");
+            }
+
+            Set<Long> sujetIds = new HashSet<>();
+
+            // 1. Get subjects where user is a collaborating professor
+            sujetIds.addAll(sujetRepository.findByProfesseursId(currentProfesseur.getId())
+                    .stream().map(Sujet::getId).collect(Collectors.toSet()));
+
+            // 2. Get subjects where user is directeur de these
+            if (currentProfesseur.isDirecteurDeThese() && currentProfesseur.getDirecteurDeTheseRole() != null) {
+                sujetIds.addAll(
+                        sujetRepository.findByDirecteurDeTheseId(currentProfesseur.getDirecteurDeTheseRole().getId())
+                                .stream().map(Sujet::getId).collect(Collectors.toSet()));
+            }
+
+            if (sujetIds.isEmpty()) {
+                Page<SujetResponseDTO> emptyPage = Page.empty(pageable);
+                return PaginatedMapper.mapToDTO(emptyPage);
+            }
+
+            // Get paginated results with search
+            Page<Sujet> sujetsPage = sujetRepository.findByIdInWithSearch(new ArrayList<>(sujetIds), search, pageable);
+
+            // Convert to DTOs
+            Page<SujetResponseDTO> sujetsDTOPage = sujetsPage.map(sujetMapper::toResponseDTO);
+
+            return PaginatedMapper.mapToDTO(sujetsDTOPage);
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erreur lors de la récupération des sujets: " + e.getMessage());
+        }
+    }
+
+    /* PERMISSION HELPER METHODS */
+
+    /**
+     * Checks if the current user can modify (update/delete) the given subject
+     */
+    private boolean canModifySubject(Sujet sujet, String userEmail) {
+        try {
+            // Check if user has DIRECTION_CEDOC role
+            Utilisateur currentUser = utilisateurService.getFullUtilisateurByEmail(userEmail);
+            boolean hasDirectionRole = currentUser.getRoles().stream()
+                    .anyMatch(role -> "DIRECTION_CEDOC".equals(role.getIntitule()));
+
+            if (hasDirectionRole) {
+                return true; // DIRECTION_CEDOC can modify any subject
+            }
+
+            Professeur currentProfesseur = professeurService.getProfesseurByEmail(userEmail);
+            if (currentProfesseur == null) {
+                return false;
+            }
+
+            // Check if user is the directeur de these of this subject
+            if (sujet.getDirecteurDeThese() != null &&
+                    currentProfesseur.isDirecteurDeThese() &&
+                    currentProfesseur.getDirecteurDeTheseRole() != null &&
+                    sujet.getDirecteurDeThese().getId().equals(currentProfesseur.getDirecteurDeTheseRole().getId())) {
+                return true;
+            }
+
+            // Check if user is a collaborating professor on this subject
+            boolean isCollaboratingProfessor = sujet.getProfesseurs().stream()
+                    .anyMatch(prof -> prof.getId().equals(currentProfesseur.getId()));
+            if (isCollaboratingProfessor) {
+                return true;
+            }
+
+            // Check if user is chef d'equipe and subject belongs to team member
+            if (currentProfesseur.isChefEquipe() && currentProfesseur.getChefEquipeRole() != null) {
+                ChefEquipeRole chefEquipeRole = currentProfesseur.getChefEquipeRole();
+                // Check if subject's directeur de these is in the team
+                if (sujet.getDirecteurDeThese() != null) {
+                    Professeur directeurProfesseur = sujet.getDirecteurDeThese().getProfesseur();
+                    if (chefEquipeRole.getEquipeDeRecherche().getMembres().contains(directeurProfesseur)) {
+                        return true;
+                    }
+                }
+
+                // Check if any collaborating professor is in the team
+                for (Professeur prof : sujet.getProfesseurs()) {
+                    if (chefEquipeRole.getEquipeDeRecherche().getMembres().contains(prof)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public PaginatedResponseDTO<SujetResponseDTO> findSujetsByCurrentUserPaginated(Pageable pageable, String search,
+            String userEmail) {
+        try {
+            // Get current user's professor entity
+            Professeur currentProfesseur = professeurService.getProfesseurByEmail(userEmail);
+
+            // Collect all subject IDs that belong to this user
+            List<Long> userSujetIds = new ArrayList<>();
+
+            // 1. Subjects where user is a participating professor
+            List<Sujet> professorSujets = sujetRepository.findByProfesseursId(currentProfesseur.getId());
+            userSujetIds.addAll(professorSujets.stream().map(Sujet::getId).collect(Collectors.toList()));
+
+            // 2. Subjects where user is directeur de these
+            if (currentProfesseur.isDirecteurDeThese() && currentProfesseur.getDirecteurDeTheseRole() != null) {
+                List<Sujet> directeurSujets = sujetRepository
+                        .findByDirecteurDeTheseId(currentProfesseur.getDirecteurDeTheseRole().getId());
+                userSujetIds.addAll(directeurSujets.stream().map(Sujet::getId).collect(Collectors.toList()));
+            }
+
+            // 3. Subjects where user is chef d'equipe
+            if (currentProfesseur.isChefEquipe() && currentProfesseur.getChefEquipeRole() != null) {
+                List<Sujet> chefSujets = sujetRepository
+                        .findByChefEquipeId(currentProfesseur.getChefEquipeRole().getId());
+                userSujetIds.addAll(chefSujets.stream().map(Sujet::getId).collect(Collectors.toList()));
+            }
+
+            // Remove duplicates
+            userSujetIds = userSujetIds.stream().distinct().collect(Collectors.toList());
+
+            if (userSujetIds.isEmpty()) {
+                Page<SujetResponseDTO> emptyPage = Page.empty(pageable);
+                return PaginatedMapper.mapToDTO(emptyPage);
+            }
+
+            // Search with pagination
+            Page<Sujet> sujetsPage = sujetRepository.findByIdInWithSearch(userSujetIds, search, pageable);
+
+            // Convert to DTOs
+            Page<SujetResponseDTO> sujetsDTOPage = sujetsPage.map(sujetMapper::toResponseDTO);
+
+            return PaginatedMapper.mapToDTO(sujetsDTOPage);
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erreur lors de la récupération des sujets de l'utilisateur : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean canModifyOrDeleteSujet(Long sujetId, String userEmail) {
+        try {
+            Sujet sujet = sujetRepository.findById(sujetId)
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Sujet introuvable avec l'identifiant : " + sujetId));
+
+            Professeur currentProfesseur = professeurService.getProfesseurByEmail(userEmail);
+
+            // Check if user has DIRECTION_CEDOC role
+            if (currentProfesseur.getUtilisateur().getRoles().stream()
+                    .anyMatch(role -> "DIRECTION_CEDOC".equals(role.getIntitule()))) {
+                return true;
+            }
+
+            // Check if user is the subject creator (participating professor)
+            if (sujet.getProfesseurs().contains(currentProfesseur)) {
+                return true;
+            }
+
+            // Check if user is directeur de these for this subject
+            if (sujet.getDirecteurDeThese() != null &&
+                    currentProfesseur.isDirecteurDeThese() &&
+                    currentProfesseur.getDirecteurDeTheseRole() != null &&
+                    sujet.getDirecteurDeThese().getId().equals(currentProfesseur.getDirecteurDeTheseRole().getId())) {
+                return true;
+            }
+
+            // Check if user is chef d'equipe and subject belongs to team member
+            if (currentProfesseur.isChefEquipe() && currentProfesseur.getChefEquipeRole() != null) {
+                ChefEquipeRole chefRole = currentProfesseur.getChefEquipeRole();
+
+                // Check if subject's chef equipe is the current user
+                if (sujet.getChefEquipe() != null && sujet.getChefEquipe().getId().equals(chefRole.getId())) {
+                    return true;
+                }
+
+                // Check if subject belongs to a team member
+                if (chefRole.getEquipeDeRecherche() != null && chefRole.getEquipeDeRecherche().getMembres() != null) {
+                    List<Long> teamMemberIds = chefRole.getEquipeDeRecherche().getMembres().stream()
+                            .map(Professeur::getId)
+                            .collect(Collectors.toList());
+
+                    // Check if any subject professor is a team member
+                    boolean belongsToTeamMember = sujet.getProfesseurs().stream()
+                            .anyMatch(prof -> teamMemberIds.contains(prof.getId()));
+
+                    if (belongsToTeamMember) {
+                        return true;
+                    }
+
+                    // Check if directeur de these is a team member
+                    if (sujet.getDirecteurDeThese() != null && sujet.getDirecteurDeThese().getProfesseur() != null) {
+                        if (teamMemberIds.contains(sujet.getDirecteurDeThese().getProfesseur().getId())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erreur lors de la vérification des permissions : " + e.getMessage());
+        }
     }
 }

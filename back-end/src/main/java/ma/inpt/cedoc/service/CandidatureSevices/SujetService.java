@@ -22,6 +22,24 @@ public interface SujetService {
      */
     SujetResponseDTO createSujetByChefEquipe(SujetRequestDTO dto, Long chefEquipeId);
 
+    /**
+     * Trouve tous les sujets proposés par l'utilisateur actuel (en tant que
+     * professeur, directeur de thèse ou chef d'équipe)
+     * avec pagination et recherche
+     */
+    PaginatedResponseDTO<SujetResponseDTO> findSujetsByCurrentUserPaginated(Pageable pageable, String search,
+            String userEmail);
+
+    /**
+     * Vérifie si l'utilisateur actuel peut modifier ou supprimer un sujet
+     * Retourne true si:
+     * 1) Le sujet a été créé par l'utilisateur connecté, OU
+     * 2) L'utilisateur a le rôle DIRECTION_CEDOC, OU
+     * 3) Le sujet appartient à un membre de l'équipe et l'utilisateur est chef
+     * d'équipe
+     */
+    boolean canModifyOrDeleteSujet(Long sujetId, String userEmail);
+
     /* CREATE METHODS */
     // DTO-based methods
     SujetResponseDTO saveSujet(SujetRequestDTO dto);
@@ -97,4 +115,12 @@ public interface SujetService {
     Sujet getSujetEntityByDoctorantId(Long doctorantId);
 
     List<Sujet> getAllPublicSujetsEntities();
+
+    /**
+     * Gets subjects for the current authenticated user based on their roles:
+     * - As professor (collaborator)
+     * - As directeur de these
+     * - As chef d'equipe
+     */
+    PaginatedResponseDTO<SujetResponseDTO> getMesSujetsPaginated(String userEmail, Pageable pageable, String search);
 }

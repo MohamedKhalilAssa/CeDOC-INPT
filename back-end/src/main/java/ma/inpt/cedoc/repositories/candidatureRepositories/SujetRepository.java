@@ -59,4 +59,11 @@ public interface SujetRepository extends JpaRepository<Sujet, Long> {
             "LOWER(er.nomDeLequipe) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Sujet> findPublicValideSujetsWithSearch(@Param("search") String search, Pageable pageable);
 
+    @Query("SELECT DISTINCT s FROM Sujet s " +
+            "WHERE s.id IN :sujetIds " +
+            "AND (:search IS NULL OR :search = '' OR " +
+            "LOWER(s.intitule) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(s.description) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Sujet> findByIdInWithSearch(@Param("sujetIds") List<Long> sujetIds, @Param("search") String search,
+            Pageable pageable);
 }

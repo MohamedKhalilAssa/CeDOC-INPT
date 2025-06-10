@@ -55,6 +55,11 @@ export const professeursSidebarConfig: NavigationGroup[] = [
         label: "Proposer un sujet",
         icon: "fas fa-book",
       },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.sujets.mesSujets.path,
+        label: "Mes Sujets",
+        icon: "fas fa-list",
+      },
     ],
   },
 ];

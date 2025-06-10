@@ -248,6 +248,11 @@ const appConfig: AppConfig = {
         path: "/professeurs/search",
         method: "GET",
       },
+      mesSujets: {
+        name: "Mes Sujets",
+        path: "/professeurs/mes-sujets",
+        method: "GET",
+      },
     },
     EQUIPE: {
       getAllPublic: {
@@ -308,6 +313,10 @@ const appConfig: AppConfig = {
           path: "/dashboard/sujets/proposer",
         },
         creer: { name: "Créer un Sujet", path: "/dashboard/sujets/creer" },
+        mesSujets: {
+          name: "Mes Sujets",
+          path: "/dashboard/sujets/mes-sujets",
+        },
         MembresEquipe: {
           name: "Sujets des Membres de l'Équipe",
           path: "/dashboard/sujets/membres-equipe",
