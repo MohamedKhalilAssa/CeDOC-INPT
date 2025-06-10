@@ -1,15 +1,76 @@
 import { Label } from "@/Components/DashComps";
-import {Modal} from "@/Components/DashComps/ui/modal/index";
-import { useModal } from "@/Hooks/DashHooks/useModal";
 import Button from "@/Components/DashComps/ui/button/Button";
-import Input from "@mui/material/Input";
+import { Modal } from "@/Components/DashComps/ui/modal/index";
+import { putData } from "@/Helpers/CRUDFunctions";
+import { useModal } from "@/Hooks/DashHooks/useModal";
+import { useAlert } from "@/Hooks/UseAlert";
+import appConfig from "@/public/config";
+import { UtilisateurResponseDTO } from "@/Types/UtilisateursTypes";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
-export default function UserAddressCard() {
+interface UserLocationFormData {
+  pays: string;
+  ville: string;
+  nationaliteIntitule: string;
+  statutProfessionnel: string;
+}
+
+interface UserAddressCardProps {
+  user: UtilisateurResponseDTO | null;
+  loading: boolean;
+  onUserUpdate: () => Promise<void>;
+}
+
+export default function UserAddressCard({
+  user,
+  loading,
+  onUserUpdate,
+}: UserAddressCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const [saving, setSaving] = useState(false);
+  const alert = useAlert();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<UserLocationFormData>();
+
+  // Reset form when user data changes
+  useEffect(() => {
+    if (user) {
+      reset({
+        pays: user.lieuDeNaissance?.pays || "",
+        ville: user.lieuDeNaissance?.ville || "",
+        nationaliteIntitule: user.nationalite?.intitule || "",
+        statutProfessionnel: user.statutProfessionnel || "",
+      });
+    }
+  }, [user, reset]);
+
+  const handleSave = async (data: UserLocationFormData) => {
+    try {
+      setSaving(true);
+
+      // Note: We're only updating the professional status here
+      // Location info would typically require separate endpoints
+      await putData(appConfig.API_PATHS.AUTH.updateCurrentUser.path, {
+        statutProfessionnel: data.statutProfessionnel,
+      });
+
+      // Refresh user data
+      await onUserUpdate();
+
+      alert.success("Succès", "Informations mises à jour avec succès");
+      closeModal();
+    } catch (error) {
+      console.error("Error updating user data:", error);
+      alert.error("Erreur", "Impossible de mettre à jour les informations");
+    } finally {
+      setSaving(false);
+    }
   };
   return (
     <>
@@ -17,51 +78,79 @@ export default function UserAddressCard() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Address
+              Localisation
             </h4>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Country
+                  Pays
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  United States.
-                </p>
+                {loading ? (
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                  </div>
+                ) : (
+                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                    {user?.lieuDeNaissance?.pays || "Non spécifié"}
+                  </p>
+                )}
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  City/State
+                  Ville
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Phoenix, Arizona, United States.
-                </p>
+                {loading ? (
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-40"></div>
+                  </div>
+                ) : (
+                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                    {user?.lieuDeNaissance?.ville || "Non spécifié"}
+                  </p>
+                )}
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Postal Code
+                  Nationalité
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  ERT 2489
-                </p>
+                {loading ? (
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-28"></div>
+                  </div>
+                ) : (
+                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                    {user?.nationalite?.intitule || "Non spécifiée"}
+                  </p>
+                )}
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  TAX ID
+                  Statut Professionnel
                 </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  AS4568384
-                </p>
+                {loading ? (
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-36"></div>
+                  </div>
+                ) : (
+                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                    {user?.statutProfessionnel
+                      ?.split("_")
+                      .join(" ")
+                      .toUpperCase() || "Non spécifié"}
+                  </p>
+                )}
               </div>
             </div>
           </div>
 
           <button
             onClick={openModal}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg
               className="fill-current"
@@ -78,7 +167,7 @@ export default function UserAddressCard() {
                 fill=""
               />
             </svg>
-            Edit
+            Modifier
           </button>
         </div>
       </div>
@@ -86,42 +175,89 @@ export default function UserAddressCard() {
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Address
+              Modifier les informations de localisation
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              Mettez à jour vos informations de localisation et statut
+              professionnel.
             </p>
           </div>
           <form className="flex flex-col">
-            <div className="px-2 overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                <div>
-                  <Label>Country</Label>
-                  <Input type="text" value="United States" />
-                </div>
+            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+              <div className="mt-7">
+                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                  Informations de localisation
+                </h5>
 
-                <div>
-                  <Label>City/State</Label>
-                  <Input type="text" value="Arizona, United States." />
-                </div>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Pays</Label>
+                    <input
+                      type="text"
+                      {...register("pays", { required: "Le pays est requis" })}
+                      className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:text-white/90 dark:focus:border-brand-800 dark:bg-gray-900"
+                    />
+                    {errors.pays && (
+                      <p className="mt-1.5 text-xs text-error-500">
+                        {errors.pays.message}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <Label>Postal Code</Label>
-                  <Input type="text" value="ERT 2489" />
-                </div>
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Ville</Label>
+                    <input
+                      type="text"
+                      {...register("ville", {
+                        required: "La ville est requise",
+                      })}
+                      className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:text-white/90 dark:focus:border-brand-800 dark:bg-gray-900"
+                    />
+                    {errors.ville && (
+                      <p className="mt-1.5 text-xs text-error-500">
+                        {errors.ville.message}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <Label>TAX ID</Label>
-                  <Input type="text" value="AS4568384" />
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Nationalité</Label>
+                    <input
+                      type="text"
+                      value={user?.nationalite?.intitule || ""}
+                      disabled
+                      className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs text-gray-500 border-gray-300 opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700"
+                    />
+                  </div>
+
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Statut Professionnel</Label>
+                    <input
+                      type="text"
+                      {...register("statutProfessionnel", {
+                        required: "Le statut professionnel est requis",
+                      })}
+                      className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:text-white/90 dark:focus:border-brand-800 dark:bg-gray-900"
+                    />
+                    {errors.statutProfessionnel && (
+                      <p className="mt-1.5 text-xs text-error-500">
+                        {errors.statutProfessionnel.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={closeModal}>
-                Close
+                Annuler
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save Changes
+              <Button
+                size="sm"
+                disabled={saving}
+                onClick={handleSubmit(handleSave)}
+              >
+                {saving ? "Enregistrement..." : "Enregistrer"}
               </Button>
             </div>
           </form>

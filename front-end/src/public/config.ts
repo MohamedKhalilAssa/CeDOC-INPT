@@ -94,6 +94,11 @@ const appConfig: AppConfig = {
         path: "/utilisateurs/logged-in",
         method: "GET",
       },
+      updateCurrentUser: {
+        name: "Update Current User",
+        path: "/utilisateurs/logged-in",
+        method: "PUT",
+      },
     },
 
     NATIONALITE: {

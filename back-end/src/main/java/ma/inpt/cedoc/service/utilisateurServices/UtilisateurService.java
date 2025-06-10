@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 
@@ -39,4 +40,6 @@ public interface UtilisateurService {
     public List<UtilisateurResponseDTO> getAllUtilisateurs();
 
     public Page<UtilisateurResponseDTO> searchByNomOuPrenom(String query);
+    
+    public UtilisateurResponseDTO updateUtilisateurFromDTO(Utilisateur utilisateur, UtilisateurRequestDTO requestDTO);
 }

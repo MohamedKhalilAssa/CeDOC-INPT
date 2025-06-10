@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapperImpl;
 import ma.inpt.cedoc.model.entities.utilisateurs.Role;
@@ -163,5 +164,17 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public UtilisateurResponseDTO updateUtilisateur(Utilisateur utilisateur) {
         Utilisateur updated = utilisateurRepository.save(utilisateur);
         return utilisateurMapper.toResponseWithRoles(updated);
+    }
+    
+    @Override
+    public UtilisateurResponseDTO updateUtilisateurFromDTO(Utilisateur utilisateur, UtilisateurRequestDTO requestDTO) {
+        // Use the mapper to update the entity from the DTO
+        Utilisateur updatedEntity = utilisateurMapper.UpdateUtilisateurFromRequestDTO(utilisateur, requestDTO);
+        
+        // Save the updated entity
+        Utilisateur saved = utilisateurRepository.save(updatedEntity);
+        
+        // Return the response DTO
+        return utilisateurMapper.toResponseWithRoles(saved);
     }
 }
