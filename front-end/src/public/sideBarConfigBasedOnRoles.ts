@@ -55,6 +55,11 @@ export const professeursSidebarConfig: NavigationGroup[] = [
         label: "Proposer un sujet",
         icon: "fas fa-book",
       },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.sujets.mesSujets.path,
+        label: "Mes Sujets",
+        icon: "fas fa-list",
+      },
     ],
   },
   {
@@ -71,10 +76,20 @@ export const professeursSidebarConfig: NavigationGroup[] = [
 export const chefsEquipesSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
   {
+    title: "Sujets",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.sujets.creer.path,
+        label: "Créer un Sujet",
+        icon: "fas fa-plus-circle",
+      },
+    ],
+  },
+  {
     title: "Gestion d'Équipe",
     items: [
       {
-        href: "/dashboard/sujets/membres-equipe",
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.sujets.MembresEquipe.path,
         label: "Sujets des Membres",
         icon: "fas fa-users",
       },

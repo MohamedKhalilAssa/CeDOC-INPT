@@ -73,10 +73,9 @@ public class Sujet {
     private List<Doctorant> doctorants;
 
     @ManyToOne(targetEntity = ChefEquipeRole.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "chef_equipe_role_id", nullable = false)
+    @JoinColumn(name = "chef_equipe_id", nullable = false)
     @JsonIgnore
     private ChefEquipeRole chefEquipe;
-
 
     @ManyToOne(targetEntity = DirecteurDeTheseRole.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "directeur_these_role_id")

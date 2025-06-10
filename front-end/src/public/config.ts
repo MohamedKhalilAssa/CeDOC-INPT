@@ -19,7 +19,6 @@ interface AppConfig {
   BACKEND_URL: string;
   FRONTEND_URL: string;
   IMAGES_RESSOURCES: string;
-
   API_PATHS: {
     AUTH: ApiPathsMap;
     NATIONALITE: ApiPathsMap;
@@ -33,12 +32,14 @@ interface AppConfig {
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
+    EQUIPE: ApiPathsMap;
   };
 
   FRONTEND_PATHS: {
     AUTH: FrontendPathsMap;
     GLOBAL: FrontendPathsMap;
     FORMATION: FrontendPathsMap;
+    EQUIPE: FrontendPathsMap;
     DASHBOARD: {
       homePage: FrontendPaths;
       utilisateurs: FrontendPathsMap;
@@ -122,9 +123,9 @@ const appConfig: AppConfig = {
         path: "/chefs-equipe/chefs-sujets",
         method: "GET",
       },
-      sujetsEquipes: {
-        name: "Sujets et Équipes",
-        path: "/chefs-equipe/sujets-equipes",
+      sujetsChefEquipes: {
+        name: "Sujets et chef et Équipes",
+        path: "/sujets/chefs-sujets-equipes",
         method: "GET",
       },
       sujetsListPublic: {
@@ -241,6 +242,11 @@ const appConfig: AppConfig = {
         path: "/chefs-equipe/sujets/membres-equipe",
         method: "GET",
       },
+      createSujet: {
+        name: "Créer un Sujet par Chef d'Équipe",
+        path: "/chefs-equipe/sujets",
+        method: "POST",
+      },
     },
     PROFESSEUR: {
       getAll: {
@@ -256,6 +262,33 @@ const appConfig: AppConfig = {
       search: {
         name: "Search Professeurs",
         path: "/professeurs/search",
+        method: "GET",
+      },
+      mesSujets: {
+        name: "Mes Sujets",
+        path: "/professeurs/mes-sujets",
+        method: "GET",
+      },
+    },
+    EQUIPE: {
+      getAllPublic: {
+        name: "Get All Public Équipes",
+        path: "/equipes/public",
+        method: "GET",
+      },
+      getAllSimple: {
+        name: "Get All Simple Équipes",
+        path: "/equipes/public/simple",
+        method: "GET",
+      },
+      getPublicPaginated: {
+        name: "Get Public Équipes Paginated",
+        path: "/equipes/public/paginated",
+        method: "GET",
+      },
+      getById: {
+        name: "Get Équipe by ID",
+        path: "/equipes/public/:id",
         method: "GET",
       },
     },
@@ -281,20 +314,35 @@ const appConfig: AppConfig = {
     FORMATION: {
       formations: { name: "Formations", path: "/formations" },
     },
+    EQUIPE: {
+      Listings: { name: "Équipes de Recherche", path: "/equipes" },
+      // Details: { name: "Détails de l'Équipe", path: "/equipes/:id" },
+    },
     DASHBOARD: {
       homePage: { name: "Dashboard Home", path: "/dashboard" },
       utilisateurs: {
-        profile: { name: "Profil", path: "utilisateurs/profile" },
+        profile: { name: "Profil", path: "/dashboard/utilisateurs/profile" },
       },
       sujets: {
-        proposer: { name: "Proposer un Sujet", path: "sujets/proposer" },
+        proposer: {
+          name: "Proposer un Sujet",
+          path: "/dashboard/sujets/proposer",
+        },
+        creer: { name: "Créer un Sujet", path: "/dashboard/sujets/creer" },
+        mesSujets: {
+          name: "Mes Sujets",
+          path: "/dashboard/sujets/mes-sujets",
+        },
         MembresEquipe: {
           name: "Sujets des Membres de l'Équipe",
-          path: "sujets/membres-equipe",
+          path: "/dashboard/sujets/membres-equipe",
         },
       },
       formations: {
-        proposer: { name: "Mes Formations", path: "formations/mesformations" },
+        proposer: {
+          name: "Mes Formations",
+          path: "/dashboard/formations/mesformations",
+        },
       },
       candidatures:{
         accessible: { name: "Candidatures", path: "candidatures" },

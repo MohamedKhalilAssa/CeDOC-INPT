@@ -69,7 +69,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
         try {
             // Extract refresh token from cookies
             String refreshToken = extractRefreshToken(request);
-            if (refreshToken != null) {
+            if (refreshToken != null && !refreshToken.trim().isEmpty()) {
                 RefreshResult result = handleRefreshToken(refreshToken, request, response);
                 if (result.success) {
                     logger.debug("Token refresh successful");
@@ -78,6 +78,13 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 } else {
                     // Send specific error response based on failure type
                     logger.debug("Token refresh failed: {}", result.errorMessage);
+
+                    // Revoke the token in database if it exists
+                    revokeTokenInDatabase(refreshToken);
+
+                    // Clear the refresh token cookie properly
+                    clearRefreshTokenCookie(response);
+
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     response.getWriter().write(String.format(
@@ -87,15 +94,20 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                 }
             }
 
-            // If no refresh token available, send token expired error
-            logger.debug("No refresh token available - sending token expired error");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write(
-                    "{\"error\":\"token_expired\",\"message\":\"Both access and refresh tokens are expired or invalid\",\"requiresLogin\":true}");
+            // If no refresh token available, continue with the request
+            // (other filters/handlers will deal with authorization)
+            filterChain.doFilter(request, response);
             return;
         } catch (Exception e) {
             logger.error("Token refresh error: {}", e.getMessage());
+
+            // Try to revoke token and clear cookie on any error
+            String refreshToken = extractRefreshToken(request);
+            if (refreshToken != null && !refreshToken.trim().isEmpty()) {
+                revokeTokenInDatabase(refreshToken);
+            }
+            clearRefreshTokenCookie(response);
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write(
@@ -107,15 +119,20 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         String method = request.getMethod();
-        return (!path.contains("/api/auth/logout") && !path.contains("/api/auth/check")) &&
-                (method.equalsIgnoreCase("OPTIONS") ||
-                        path.startsWith("/api/auth/") ||
-                        path.startsWith("/api/guest/") ||
-                        path.startsWith("/images/") ||
-                        (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||
-                        (method.equalsIgnoreCase("GET") && path.equals("/api/chefs-equipe/chefs-sujets")) ||
-                        path.startsWith("/api/utilisateurs/assign-role") ||
-                        path.startsWith("/api/utilisateurs/set-role"));
+
+        // Never skip logout and check endpoints - they need token processing
+        if (path.contains("/api/auth/logout") || path.contains("/api/auth/check")) {
+            return false;
+        }
+
+        // Skip these public endpoints and auth paths
+        return method.equalsIgnoreCase("OPTIONS") ||
+                path.startsWith("/api/auth/") ||
+                path.startsWith("/api/guest/") ||
+                path.contains("/public") ||
+                path.startsWith("/images/") ||
+                (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||
+                (method.equalsIgnoreCase("GET") && path.equals("/api/sujets/chefs-sujets"));
     }
 
     private String extractRefreshToken(HttpServletRequest request) {
@@ -178,6 +195,47 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             logger.error("Unexpected error during token refresh: {}", e.getMessage());
             return RefreshResult.failure("server_error", "Internal server error during token refresh");
+        }
+    }
+
+    /**
+     * Helper method to properly clear the refresh token cookie
+     */
+    private void clearRefreshTokenCookie(HttpServletResponse response) {
+
+        // Clear with api path (in case it was set with /api path)
+        Cookie clearRefreshToken1 = new Cookie("refresh_token", "");
+        clearRefreshToken1.setHttpOnly(true);
+        clearRefreshToken1.setSecure(true);
+        clearRefreshToken1.setPath("/api/");
+        clearRefreshToken1.setMaxAge(0);
+        response.addCookie(clearRefreshToken1);
+
+        // Clear with empty path (fallback)
+        Cookie clearRefreshToken2 = new Cookie("refresh_token", "");
+        clearRefreshToken2.setHttpOnly(true);
+        clearRefreshToken2.setSecure(true);
+        clearRefreshToken2.setMaxAge(0);
+        response.addCookie(clearRefreshToken2);
+
+        response.addHeader("Set-Cookie",
+                "refresh_token=; Path=/api/; HttpOnly; Secure; Max-Age=0; SameSite=None");
+
+        logger.debug("Refresh token cookie cleared with multiple strategies");
+    }
+
+    /**
+     * Helper method to revoke token in database
+     */
+    private void revokeTokenInDatabase(String refreshToken) {
+        try {
+            Token tokenEntity = tokenService.findByTokenSafe(refreshToken);
+            if (tokenEntity != null && !tokenEntity.isRevoked()) {
+                tokenService.revokeToken(tokenEntity);
+                logger.debug("Token revoked in database");
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to revoke token in database: {}", e.getMessage());
         }
     }
 

@@ -115,13 +115,19 @@ public class AccessTokenFilter extends OncePerRequestFilter {
     private boolean shouldSkipFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         String method = request.getMethod();
-        return (!path.contains("/api/auth/logout") && !path.contains("/api/auth/check")) &&
-                (method.equalsIgnoreCase("OPTIONS") ||
-                        path.startsWith("/api/auth/") ||
-                        path.startsWith("/api/guest/") ||
-                        path.startsWith("/images/") ||
-                        (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||
-                        path.startsWith("/api/utilisateurs/assign-role") ||
-                        path.startsWith("/api/utilisateurs/set-role"));
+
+        // Never skip logout and check endpoints - they need token processing
+        if (path.contains("/api/auth/logout") || path.contains("/api/auth/check")) {
+            return false;
+        }
+
+        // Skip these public endpoints and auth paths
+        return method.equalsIgnoreCase("OPTIONS") ||
+                path.startsWith("/api/auth/") ||
+                path.contains("/public") ||
+                path.startsWith("/api/guest/") ||
+                path.startsWith("/images/") ||
+                (method.equalsIgnoreCase("GET") && path.equals("/api/formations")) ||
+                (method.equalsIgnoreCase("GET") && path.equals("/api/sujets/chefs-sujets"));
     }
 }

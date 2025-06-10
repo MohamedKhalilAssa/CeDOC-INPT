@@ -5,7 +5,7 @@ const ScrollToHash = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.hash) {
+    if (location?.hash) {
       const id = location.hash.replace("#", "");
       const el = document.getElementById(id);
       if (el) {
