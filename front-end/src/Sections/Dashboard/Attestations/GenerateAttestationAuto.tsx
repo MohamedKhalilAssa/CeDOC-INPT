@@ -1,16 +1,34 @@
+import { postData } from '@/Helpers/CRUDFunctions';
+import appConfig from '@/public/config';
 import React, { useState } from 'react';
 
+interface requestType {
+    typeAttestationAutomatique: string;
+}
 
 // Generate Attestation Component
 const GenerateAttestation: React.FC = () => {
   const [selectedAttestation, setSelectedAttestation] = useState<string>('');
 
-  const handleGenerate = () => {
-    if (selectedAttestation) {
-      alert(`Generating attestation: ${selectedAttestation}`);
-    } else {
-      alert('Please choose an attestation type');
+  const handleGenerate = async () => {
+
+    const request: requestType = {
+        typeAttestationAutomatique : selectedAttestation
+    };
+
+    try{
+        const response = await postData(appConfig.API_PATHS.ATTESTATION.generer.path, request);
+        if(response){
+              alert(`Generating attestation: ${selectedAttestation}`);
+        }
+    } catch (err){
+        console.error(err)
     }
+
+    if (!selectedAttestation) {
+        alert('Please choose an attestation type');
+    }
+
   };
 
   return (

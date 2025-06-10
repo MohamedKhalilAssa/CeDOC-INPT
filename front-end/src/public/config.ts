@@ -30,6 +30,8 @@ interface AppConfig {
     //Formations API paths
     FORMATION: ApiPathsMap;
     SEANCEFORMATION: ApiPathsMap;
+    //Attetation API paths
+    ATTESTATION: ApiPathsMap;
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
@@ -205,6 +207,15 @@ const appConfig: AppConfig = {
         name: "Post Seance Formation",
         path: "/formations/seances-formations/doctorant",
         method: "GET",
+      },
+    },
+
+     // Attestation API paths
+    ATTESTATION: {
+      generer: {
+        name: "Post Attestation automatique",
+        path: "/attestations/automatique/generate-send",
+        method: "POST",
       },
     },
 
