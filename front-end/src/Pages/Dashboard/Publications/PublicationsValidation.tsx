@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  getData,
-  putData,
-  patchFormData,
-} from "@/Helpers/CRUDFunctions";
+import { getData, putData, patchData } from "@/Helpers/CRUDFunctions";
 
 interface Publication {
   id: number;
@@ -35,7 +31,6 @@ const PublicationsValidation: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
 
-  // Fetch publications from backend
   useEffect(() => {
     fetchPublications();
   }, [currentPage]);
@@ -43,12 +38,11 @@ const PublicationsValidation: React.FC = () => {
   const fetchPublications = async (): Promise<void> => {
     try {
       setLoading(true);
-      
-      const data = await getData<any>(`publications/?page=${currentPage}&size=10&sortDir=desc`);
-      
-      console.log("📦 Received publications data:", data);
-      
-      if (data && typeof data === 'object') {
+      const data = await getData<any>(
+        `publications/?page=${currentPage}&size=10&sortDir=desc`
+      );
+
+      if (data && typeof data === "object") {
         if (Array.isArray(data)) {
           setPublications(data);
           setTotalPages(1);
@@ -58,14 +52,13 @@ const PublicationsValidation: React.FC = () => {
           setTotalPages(data.totalPages || 1);
           setTotalElements(data.totalElements || data.content.length);
         } else {
-          console.warn("Unexpected data structure:", data);
           setPublications([]);
         }
       } else {
         setPublications([]);
       }
     } catch (error) {
-      console.error("❌ Error fetching publications:", error);
+      console.error("Error fetching publications:", error);
       setErrorMessage("Erreur lors du chargement des publications");
       setPublications([]);
     } finally {
@@ -73,57 +66,60 @@ const PublicationsValidation: React.FC = () => {
     }
   };
 
-  const handleValidation = async (publicationId: number, action: 'valider' | 'refuser'): Promise<void> => {
+  const handleValidation = async (
+    publicationId: number,
+    action: "valider" | "refuser"
+  ): Promise<void> => {
     if (processingIds.has(publicationId)) return;
 
-    const confirmMessage = action === 'valider' 
-      ? "Êtes-vous sûr de vouloir valider cette publication ?" 
-      : "Êtes-vous sûr de vouloir refuser cette publication ?";
-    
+    const confirmMessage =
+      action === "valider"
+        ? "Êtes-vous sûr de vouloir valider cette publication ?"
+        : "Êtes-vous sûr de vouloir refuser cette publication ?";
+
     if (!window.confirm(confirmMessage)) return;
 
-    setProcessingIds(prev => new Set(prev).add(publicationId));
+    setProcessingIds((prev) => new Set(prev).add(publicationId));
     setErrorMessage("");
     setSuccessMessage("");
 
     try {
-      console.log(`🔄 ${action === 'valider' ? 'Validating' : 'Refusing'} publication:`, publicationId);
-      
       const endpoint = `publications/${publicationId}/${action}`;
-      
-      // Use patchFormData since your backend expects PATCH requests
-      const response = await patchFormData<Publication>(endpoint, {});
-      
-      console.log(`✅ ${action} response:`, response);
-      
+
+      const response = await patchData<Publication>(endpoint, {});
+
       if (response) {
-        // Update the publication in the list
-        setPublications(prev => 
-          prev.map(pub => 
-            pub.id === publicationId 
-              ? { ...pub, status: action === 'valider' ? 'VALIDEE' : 'REFUSEE' }
+        setPublications((prev) =>
+          prev.map((pub) =>
+            pub.id === publicationId
+              ? { ...pub, status: action === "valider" ? "VALIDEE" : "REFUSEE" }
               : pub
           )
         );
         setSuccessMessage(
-          `Publication ${action === 'valider' ? 'validée' : 'refusée'} avec succès!`
+          `Publication ${
+            action === "valider" ? "validée" : "refusée"
+          } avec succès!`
         );
       } else {
-        // If no response, refetch the data
         await fetchPublications();
         setSuccessMessage(
-          `Publication ${action === 'valider' ? 'validée' : 'refusée'} avec succès!`
+          `Publication ${
+            action === "valider" ? "validée" : "refusée"
+          } avec succès!`
         );
       }
-      
+
       setTimeout(() => setSuccessMessage(""), 5000);
     } catch (error) {
-      console.error(`❌ Error ${action}ing publication:`, error);
+      console.error(`Error ${action}ing publication:`, error);
       setErrorMessage(
-        `Erreur lors de la ${action === 'valider' ? 'validation' : 'refus'} de la publication`
+        `Erreur lors de la ${
+          action === "valider" ? "validation" : "refus"
+        } de la publication`
       );
     } finally {
-      setProcessingIds(prev => {
+      setProcessingIds((prev) => {
         const newSet = new Set(prev);
         newSet.delete(publicationId);
         return newSet;
@@ -137,8 +133,6 @@ const PublicationsValidation: React.FC = () => {
         year: "numeric",
         month: "long",
         day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
       };
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
@@ -181,7 +175,6 @@ const PublicationsValidation: React.FC = () => {
     }
   };
 
-  // Check if publication can be validated/refused
   const canValidateOrRefuse = (status: string): boolean => {
     return status === "EN_ATTENTE" || status === "DECLAREE";
   };
@@ -215,7 +208,7 @@ const PublicationsValidation: React.FC = () => {
           </p>
           {totalElements > 0 && (
             <p className="text-sm text-gray-500 mt-2">
-              {totalElements} publication{totalElements > 1 ? 's' : ''} au total
+              {totalElements} publication{totalElements > 1 ? "s" : ""} au total
             </p>
           )}
         </div>
@@ -235,166 +228,159 @@ const PublicationsValidation: React.FC = () => {
 
           {publications.length > 0 ? (
             <>
-              <div className="space-y-4">
-                {publications.map((publication) => (
-                  <div
-                    key={publication.id}
-                    className="border border-gray-200 rounded-lg p-6 bg-gray-50"
-                  >
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg text-gray-800 mb-2">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Journal
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date de publication
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Auteurs
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Titre de l'article
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Justificatif
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Statut
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {publications.map((publication) => (
+                      <tr key={publication.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {publication.journal}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {publication.annee}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {publication.auteurs}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
                           {publication.titre}
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                          <div>
-                            <p><strong>Auteurs:</strong> {publication.auteurs}</p>
-                            <p><strong>Journal:</strong> {publication.journal}</p>
-                            <p><strong>Année:</strong> {publication.annee}</p>
-                            {publication.volume && (
-                              <p><strong>Volume:</strong> {publication.volume}</p>
-                            )}
-                            {publication.numero && (
-                              <p><strong>Numéro:</strong> {publication.numero}</p>
-                            )}
-                            {publication.pages && (
-                              <p><strong>Pages:</strong> {publication.pages}</p>
-                            )}
-                          </div>
-                          <div>
-                            {publication.doi && (
-                              <p><strong>DOI:</strong> {publication.doi}</p>
-                            )}
-                            {publication.url && (
-                              <p>
-                                <strong>URL:</strong>{" "}
-                                <a 
-                                  href={publication.url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:underline"
-                                >
-                                  Lien vers la publication
-                                </a>
-                              </p>
-                            )}
-                            {publication.motsCles && (
-                              <p><strong>Mots-clés:</strong> {publication.motsCles}</p>
-                            )}
-                            <p className="mt-2">
-                              <strong>Soumis le:</strong> {formatDate(publication.createdAt)}
-                            </p>
-                            <p>
-                              <strong>Modifié le:</strong> {formatDate(publication.updatedAt)}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {publication.resume && (
-                          <div className="mt-4">
-                            <p className="font-medium text-gray-700 mb-1">Résumé:</p>
-                            <p className="text-gray-600 text-sm bg-white p-3 rounded border">
-                              {publication.resume}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="ml-6 flex flex-col items-end space-y-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                            publication.status
-                          )}`}
-                        >
-                          {getStatusText(publication.status)}
-                        </span>
-
-                        {canValidateOrRefuse(publication.status) && (
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleValidation(publication.id, 'valider')}
-                              disabled={processingIds.has(publication.id)}
-                              className={`px-4 py-2 rounded text-white text-sm font-medium ${
-                                processingIds.has(publication.id)
-                                  ? "bg-green-400 cursor-not-allowed"
-                                  : "bg-green-600 hover:bg-green-700"
-                              } transition-colors`}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
+                          {publication.url ? (
+                            <a
+                              href={publication.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:underline"
                             >
-                              {processingIds.has(publication.id) ? (
-                                <span className="flex items-center">
-                                  <svg
-                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <circle
-                                      className="opacity-25"
-                                      cx="12"
-                                      cy="12"
-                                      r="10"
-                                      stroke="currentColor"
-                                      strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                      className="opacity-75"
-                                      fill="currentColor"
-                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    ></path>
-                                  </svg>
-                                  En cours...
-                                </span>
-                              ) : (
-                                <>
-                                  ✓ Valider
-                                </>
-                              )}
-                            </button>
-                            <button
-                              onClick={() => handleValidation(publication.id, 'refuser')}
-                              disabled={processingIds.has(publication.id)}
-                              className={`px-4 py-2 rounded text-white text-sm font-medium ${
-                                processingIds.has(publication.id)
-                                  ? "bg-red-400 cursor-not-allowed"
-                                  : "bg-red-600 hover:bg-red-700"
-                              } transition-colors`}
-                            >
-                              {processingIds.has(publication.id) ? (
-                                <span className="flex items-center">
-                                  <svg
-                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <circle
-                                      className="opacity-25"
-                                      cx="12"
-                                      cy="12"
-                                      r="10"
-                                      stroke="currentColor"
-                                      strokeWidth="4"
-                                    ></circle>
-                                    <path
-                                      className="opacity-75"
-                                      fill="currentColor"
-                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                    ></path>
-                                  </svg>
-                                  En cours...
-                                </span>
-                              ) : (
-                                <>
-                                  ✗ Refuser
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                              Voir le justificatif
+                            </a>
+                          ) : (
+                            <span className="text-gray-400">Aucun</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                              publication.status
+                            )}`}
+                          >
+                            {getStatusText(publication.status)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          {canValidateOrRefuse(publication.status) && (
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() =>
+                                  handleValidation(publication.id, "valider")
+                                }
+                                disabled={processingIds.has(publication.id)}
+                                className={`px-3 py-1 rounded text-white text-xs font-medium ${
+                                  processingIds.has(publication.id)
+                                    ? "bg-green-400 cursor-not-allowed"
+                                    : "bg-green-600 hover:bg-green-700"
+                                } transition-colors`}
+                              >
+                                {processingIds.has(publication.id) ? (
+                                  <span className="flex items-center">
+                                    <svg
+                                      className="animate-spin -ml-1 mr-1 h-3 w-3 text-white"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      ></path>
+                                    </svg>
+                                    ...
+                                  </span>
+                                ) : (
+                                  "Valider"
+                                )}
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleValidation(publication.id, "refuser")
+                                }
+                                disabled={processingIds.has(publication.id)}
+                                className={`px-3 py-1 rounded text-white text-xs font-medium ${
+                                  processingIds.has(publication.id)
+                                    ? "bg-red-400 cursor-not-allowed"
+                                    : "bg-red-600 hover:bg-red-700"
+                                } transition-colors`}
+                              >
+                                {processingIds.has(publication.id) ? (
+                                  <span className="flex items-center">
+                                    <svg
+                                      className="animate-spin -ml-1 mr-1 h-3 w-3 text-white"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      ></path>
+                                    </svg>
+                                    ...
+                                  </span>
+                                ) : (
+                                  "Refuser"
+                                )}
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
               {/* Pagination */}
@@ -411,11 +397,11 @@ const PublicationsValidation: React.FC = () => {
                   >
                     Précédent
                   </button>
-                  
+
                   <span className="text-gray-600">
                     Page {currentPage + 1} sur {totalPages}
                   </span>
-                  
+
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages - 1}
@@ -437,7 +423,8 @@ const PublicationsValidation: React.FC = () => {
                 Aucune publication à valider
               </h3>
               <p className="text-gray-600">
-                Toutes les publications ont été traitées ou aucune publication n'a été soumise.
+                Toutes les publications ont été traitées ou aucune publication
+                n'a été soumise.
               </p>
             </div>
           )}
