@@ -23,10 +23,11 @@ interface Publication {
   prixIntitule?: string;
   status: string;
   auteurId: number;
-  coAuteurs: string[]; // Changed from coAuteursIds: number[]
+  autresAuteurs: string;
   createdAt: string;
   updatedAt: string;
   link: string;
+  justificatif: string;
 }
 
 interface NewPublication {
@@ -34,8 +35,9 @@ interface NewPublication {
   journal: string;
   datePublication: string;
   prixIntitule?: string;
-  coAuteurs: string[]; // Changed from coAuteursIds: number[]
+  autresAuteurs: string;
   link: string;
+  justificatif: string;
 }
 
 interface Errors {
@@ -44,6 +46,7 @@ interface Errors {
   journal?: string;
   datePublication?: string;
   link?: string;
+  justificatif?: string;
   submit?: string;
 }
 
@@ -87,8 +90,9 @@ const DoctorantPublications: React.FC = () => {
     titre: "",
     journal: "",
     datePublication: "",
-    coAuteurs: [],
+    autresAuteurs: "",
     link: "",
+    justificatif: "",
   });
   const [errors, setErrors] = useState<Errors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -149,7 +153,6 @@ const DoctorantPublications: React.FC = () => {
             publicationsArray = [];
           }
         }
-
         setPublications(publicationsArray);
       } catch (error) {
         console.error("Error fetching publications:", error);
@@ -168,31 +171,16 @@ const DoctorantPublications: React.FC = () => {
   ): void => {
     const { name, value } = e.target;
 
-    // Special handling for coAuteurs
-    if (name === "coAuteurs") {
-      const names = value
-        .split(",")
-        .map((name) => name.trim())
-        .filter((name) => name.length > 0); // Filter out empty names
-
-      if (editingPublication) {
-        setEditingPublication((prev) => ({ ...prev!, coAuteurs: names }));
-      } else {
-        setNewPublication((prev) => ({ ...prev, coAuteurs: names }));
-      }
+    if (editingPublication) {
+      setEditingPublication((prev) => ({
+        ...prev!,
+        [name]: value,
+      }));
     } else {
-      // Standard handling for all other fields
-      if (editingPublication) {
-        setEditingPublication((prev) => ({
-          ...prev!,
-          [name]: value,
-        }));
-      } else {
-        setNewPublication((prev) => ({
-          ...prev,
-          [name]: value,
-        }));
-      }
+      setNewPublication((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
 
     if (errors[name]) {
@@ -209,8 +197,8 @@ const DoctorantPublications: React.FC = () => {
       newErrors.titre = "Le titre de la publication est requis";
     if (!publication.journal.trim())
       newErrors.journal = "Le nom du journal est requis";
-    if (!publication.link.trim())
-      newErrors.link = "Le lien justificatif est requis";
+    if (!publication.justificatif.trim())
+      newErrors.justificatif = "Le justificatif est requis";
 
     if (publication.datePublication) {
       const dateObj = new Date(publication.datePublication);
@@ -235,51 +223,46 @@ const DoctorantPublications: React.FC = () => {
 
     try {
       let response;
+      let requestData;
+
       if (editingPublication) {
-        // For editing, merge the changes into the full object
-        const updatedPublicationData = {
-          ...editingPublication, // Keep all original fields (id, status, etc.)
+        requestData = {
+          ...editingPublication,
           titre: editingPublication.titre.trim(),
           journal: editingPublication.journal.trim(),
           datePublication: editingPublication.datePublication
             ? new Date(editingPublication.datePublication).toISOString()
             : new Date().toISOString(),
-          prixIntitule: editingPublication.prixIntitule?.trim() || undefined,
-          coAuteursIds: editingPublication.coAuteurs || [],
+          prixIntitule: editingPublication.prixIntitule?.trim() || null,
+          autresAuteurs: editingPublication.autresAuteurs.trim(),
           link: editingPublication.link.trim(),
+          justificatif: editingPublication.justificatif.trim(),
         };
 
-        console.log(
-          "Sending updated publication data:",
-          updatedPublicationData
-        );
+        console.log("Sending PUT request with data:", requestData);
         response = await putData<Publication>(
           `/publications/${editingPublication.id}`,
-          updatedPublicationData
+          requestData
         );
       } else {
-        // For adding, create a new object from the form state
-        const newPublicationData = {
+        requestData = {
           titre: newPublication.titre.trim(),
           journal: newPublication.journal.trim(),
           datePublication: newPublication.datePublication
             ? new Date(newPublication.datePublication).toISOString()
             : new Date().toISOString(),
-          prixIntitule: newPublication.prixIntitule?.trim() || undefined,
-          coAuteursIds: newPublication.coAuteurs || [],
+          prixIntitule: newPublication.prixIntitule?.trim() || null,
+          autresAuteurs: newPublication.autresAuteurs.trim(),
           link: newPublication.link.trim(),
+          justificatif: newPublication.justificatif.trim(),
         };
 
-        console.log("Sending new publication data:", newPublicationData);
-        response = await postData<Publication>(
-          "/publications/",
-          newPublicationData
-        );
+        console.log("Sending POST request with data:", requestData);
+        response = await postData<Publication>("/publications/", requestData);
       }
 
       console.log("Response from backend:", response);
 
-      // This logic for handling the response and refetching is robust and can remain the same
       if (response) {
         if (editingPublication) {
           setPublications((prev) =>
@@ -350,8 +333,9 @@ const DoctorantPublications: React.FC = () => {
       titre: "",
       journal: "",
       datePublication: "",
-      coAuteurs: [],
+      autresAuteurs: "",
       link: "",
+      justificatif: "",
     });
     setEditingPublication(null);
     setErrors({});
@@ -388,7 +372,12 @@ const DoctorantPublications: React.FC = () => {
   };
 
   const startEditingPublication = (publication: Publication): void => {
-    setEditingPublication(publication);
+    setEditingPublication({
+      ...publication,
+      autresAuteurs: publication.autresAuteurs || "",
+      link: publication.link || "",
+      justificatif: publication.justificatif || "",
+    });
     setShowAddForm(true);
   };
 
@@ -503,7 +492,14 @@ const DoctorantPublications: React.FC = () => {
                             Prix: {safeDisplayText(publication.prixIntitule)}
                           </p>
                         )}
-                        {publication.link && (
+                        {publication.autresAuteurs && (
+                          <p className="text-sm text-gray-600 mb-1">
+                            Co-auteurs:{" "}
+                            {safeDisplayText(publication.autresAuteurs)}
+                          </p>
+                        )}
+
+                        {publication.link ? (
                           <p className="text-sm text-blue-600 mb-1">
                             <a
                               href={publication.link}
@@ -512,6 +508,11 @@ const DoctorantPublications: React.FC = () => {
                             >
                               Lien justificatif
                             </a>
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-600 mb-1">
+                            Justificatif:{" "}
+                            {safeDisplayText(publication.justificatif)}
                           </p>
                         )}
                         <p className="text-sm text-gray-500">
@@ -758,19 +759,19 @@ const DoctorantPublications: React.FC = () => {
                     <div className="space-y-4">
                       <div>
                         <label
-                          htmlFor="coAuteurs"
+                          htmlFor="autresAuteurs"
                           className="block mb-1 font-medium text-gray-700"
                         >
                           Noms des Co-auteurs (séparés par une virgule)
                         </label>
                         <input
                           type="text"
-                          id="coAuteurs"
-                          name="coAuteurs"
+                          id="autresAuteurs"
+                          name="autresAuteurs"
                           value={
                             editingPublication
-                              ? (editingPublication.coAuteurs || []).join(", ")
-                              : newPublication.coAuteurs.join(", ")
+                              ? editingPublication.autresAuteurs
+                              : newPublication.autresAuteurs
                           }
                           onChange={handleChange}
                           className="w-full border border-gray-300 rounded p-2"
@@ -793,27 +794,27 @@ const DoctorantPublications: React.FC = () => {
                     <div className="space-y-4">
                       <div>
                         <label
-                          htmlFor="link"
+                          htmlFor="justificatif"
                           className="block mb-1 font-medium text-gray-700"
                         >
-                          Lien justificatif*
+                          Justificatif*
                         </label>
                         <input
-                          type="url"
-                          id="link"
-                          name="link"
+                          type="text"
+                          id="justificatif"
+                          name="justificatif"
                           value={
                             editingPublication
-                              ? editingPublication.link
-                              : newPublication.link
+                              ? editingPublication.justificatif
+                              : newPublication.justificatif
                           }
                           onChange={handleChange}
                           className="w-full border border-gray-300 rounded p-2"
-                          placeholder="https://example.com/publication"
+                          placeholder="Description du justificatif"
                         />
-                        {errors.link && (
+                        {errors.justificatif && (
                           <p className="text-red-500 text-sm mt-1">
-                            {errors.link}
+                            {errors.justificatif}
                           </p>
                         )}
                       </div>
@@ -981,10 +982,20 @@ const DoctorantPublications: React.FC = () => {
                       </p>
                     </div>
                   )}
+                  {selectedPublication.autresAuteurs && (
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-1">
+                        Co-auteurs
+                      </h3>
+                      <p className="text-gray-600">
+                        {selectedPublication.autresAuteurs}
+                      </p>
+                    </div>
+                  )}
                   {selectedPublication.link && (
                     <div>
                       <h3 className="font-semibold text-gray-700 mb-1">
-                        Justificatif
+                        Lien justificatif
                       </h3>
                       <p className="text-blue-600">
                         <a
@@ -992,8 +1003,18 @@ const DoctorantPublications: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          Lien vers la publication
+                          {selectedPublication.link}
                         </a>
+                      </p>
+                    </div>
+                  )}
+                  {selectedPublication.justificatif && (
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-1">
+                        Justificatif
+                      </h3>
+                      <p className="text-gray-600">
+                        {selectedPublication.justificatif}
                       </p>
                     </div>
                   )}
