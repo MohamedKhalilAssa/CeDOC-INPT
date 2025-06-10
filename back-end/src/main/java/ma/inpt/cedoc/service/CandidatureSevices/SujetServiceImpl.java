@@ -1,9 +1,6 @@
 package ma.inpt.cedoc.service.CandidatureSevices;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -17,19 +14,13 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.ChefSujetsEquipeResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.*;
 import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.ChefSujetsEquipeMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.Global.PaginatedMapper;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
-import ma.inpt.cedoc.model.entities.utilisateurs.DirecteurDeTheseRole;
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
 import ma.inpt.cedoc.repositories.candidatureRepositories.SujetRepository;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
 import ma.inpt.cedoc.service.utilisateurServices.DirecteurDeTheseService;
@@ -272,6 +263,12 @@ public class SujetServiceImpl implements SujetService {
                                 + " n'appartient à aucune équipe.");
             }
         }
+        
+        // Vérifier que le professeur actuel appartient à une équipe
+        if (currentProfesseur.getEquipeDeRechercheAcceuillante() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Vous devez appartenir à une équipe de recherche pour proposer un sujet.");
+        }
 
         // TODO: Implémenter la logique pour gérer plusieurs chefs d'équipes
         // Actuellement, on ne supporte qu'un seul chefEquipe pour simplification
@@ -284,7 +281,8 @@ public class SujetServiceImpl implements SujetService {
 
         if (chefEquipe == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "L'équipe actuelle n'a pas de chef d'équipe associé.");
+                    "L'équipe '" + currentProfesseur.getEquipeDeRechercheAcceuillante().getNomDeLequipe() + 
+                    "' n'a pas de chef d'équipe associé.");
         }
         sujet.setChefEquipe(chefEquipe);
 
