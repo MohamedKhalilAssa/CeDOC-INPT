@@ -12,7 +12,7 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 public interface AttestationService {
 
     /* ------------------ Save & Send methods ------------------ */
-    public AttestationAutomatiqueResponseDTO generateAndSendAttestationAutomatique(DoctorantRequestDTO request) throws IOException;
+    public AttestationAutomatiqueResponseDTO generateAndSendAttestationAutomatique(TypeAttestationAutoEnum type, String email) throws IOException;
 
     AttestationAvecValidationResponseDTO requestAttestationAvecValidation(DoctorantRequestDTO request);
 

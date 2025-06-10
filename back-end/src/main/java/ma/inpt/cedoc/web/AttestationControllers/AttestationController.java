@@ -3,15 +3,21 @@ package ma.inpt.cedoc.web.AttestationControllers;
 import com.lowagie.text.DocumentException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ma.inpt.cedoc.Exceptions.UserNotFoundException;
 import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 import ma.inpt.cedoc.service.AttestationService.AttestationService;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/attestations")
 @RequiredArgsConstructor
+@Slf4j
 public class AttestationController {
 
     private final AttestationService attestationService;
@@ -26,13 +33,35 @@ public class AttestationController {
     /* ------------------ Save ------------------ */
     @PostMapping("/automatique/generate-send")
     public ResponseEntity<AttestationAutomatiqueResponseDTO> generateAndSendAttestation(
-            @RequestBody DoctorantRequestDTO request) {
+            @RequestBody AttestationAutomatiqueRequestDTO request,
+            @AuthenticationPrincipal Object principal) {
         try {
-            var response = attestationService.generateAndSendAttestationAutomatique(request);
+            String username;
+            if (principal instanceof UserDetails) {
+                username = ((UserDetails) principal).getUsername();
+            } else if (principal instanceof Principal) {
+                username = ((Principal) principal).getName();
+            } else {
+                username = principal.toString();
+            }
+            AttestationAutomatiqueResponseDTO response = attestationService
+                    .generateAndSendAttestationAutomatique(request.getTypeAttestationAutomatique(), username);
+
             return ResponseEntity.ok(response);
+        } catch (UserNotFoundException e) {
+            log.error("User not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(AttestationAutomatiqueResponseDTO.builder()
+                            .success(false)
+                            .message("Utilisateur non trouvé")
+                            .build());
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error generating attestation: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(AttestationAutomatiqueResponseDTO.builder()
+                            .success(false)
+                            .message("Erreur lors de la génération de l'attestation")
+                            .build());
         }
     }
 
@@ -49,13 +78,13 @@ public class AttestationController {
     public ResponseEntity<byte[]> generateAttestationAutomatique(@RequestBody DoctorantRequestDTO request) {
         try {
             Map<String, Object> data = new HashMap<>();
-            data.put("fullName", request.getNom() + " " + request.getPrenom());
+            data.put("fullName", request.getUtilisateur().getNom() + " " + request.getUtilisateur().getPrenom());
             data.put("cne", request.getCne());
             data.put("cin", request.getCin());
-            data.put("birthDate", request.getBirthDate());
-            data.put("birthPlace", request.getBirthPlace());
+            data.put("birthDate", request.getUtilisateur().getDateNaissance());
+            data.put("birthPlace", request.getUtilisateur().getLieuDeNaissance());
             data.put("firstEnrollmentDate", request.getFirstEnrollmentDate());
-            data.put("researchTeam", request.getResearchTeam());
+            data.put("researchTeam", request.getResearchTeamId());
             data.put("currentYear", request.getCurrentYear());
             data.put("currentLevel", request.getCurrentLevel());
             data.put("cycle", request.getCycle());
@@ -129,7 +158,7 @@ public class AttestationController {
     }
 
     /* ------------------ Update ------------------ */
-//    @PreAuthorize("hasRole('DIRECTION_CEDOC')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/avec-validation/{id}/etat")
     public ResponseEntity<AttestationAvecValidationResponseDTO> updateEtat(
             @PathVariable Long id,

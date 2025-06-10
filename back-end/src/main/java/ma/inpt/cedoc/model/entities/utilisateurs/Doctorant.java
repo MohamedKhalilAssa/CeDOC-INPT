@@ -4,8 +4,11 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +21,8 @@ import ma.inpt.cedoc.model.entities.DoctorantActions.ConfParticipation;
 import ma.inpt.cedoc.model.entities.DoctorantActions.Publication;
 import ma.inpt.cedoc.model.entities.Reinscription.DemandeReinscription;
 import ma.inpt.cedoc.model.entities.attestation.Attestation;
+import ma.inpt.cedoc.model.entities.attestation.AttestationAutomatique;
+import ma.inpt.cedoc.model.entities.attestation.AttestationAvecValidation;
 import ma.inpt.cedoc.model.entities.attestation.DemandeAttestation;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.model.entities.formation.Formation;
@@ -31,6 +36,9 @@ import ma.inpt.cedoc.model.enums.utilisateur_enums.DoctorantEnum;
 @NoArgsConstructor
 @Builder
 @Table(name = "doctorants")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Doctorant {
 
     @Id
@@ -118,7 +126,13 @@ public class Doctorant {
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConfParticipation> confParticipations;
 
-        //Relation avec Attestation
-        @OneToMany(mappedBy = "doctorant", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Attestation> attestations;
+        //Relation avec Attestation automatique
+        @OneToOne(mappedBy = "doctorant", cascade = CascadeType.ALL, orphanRemoval = true)
+//        @JsonManagedReference
+        private AttestationAutomatique attestationAutomatique;
+
+        //Relation avec Attestation avec validation
+        @OneToOne(mappedBy = "doctorant", cascade = CascadeType.ALL, orphanRemoval = true)
+        @JsonManagedReference
+        private AttestationAvecValidation attestationAvecValidation;
 }

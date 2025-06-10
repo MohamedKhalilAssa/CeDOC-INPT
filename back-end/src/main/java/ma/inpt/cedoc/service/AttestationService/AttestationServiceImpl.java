@@ -2,15 +2,22 @@ package ma.inpt.cedoc.service.AttestationService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+import ma.inpt.cedoc.Exceptions.UserNotFoundException;
 import ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers.DoctorantMapper;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.doctorant_enums.EtatAttestationEnum;
+import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -18,6 +25,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -39,6 +47,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AttestationServiceImpl implements AttestationService {
 
     private final AttestationAutomatiqueRepository attestationAutomatiqueRepository;
@@ -50,71 +59,102 @@ public class AttestationServiceImpl implements AttestationService {
     @Autowired
     private EmailService emailService;
     @Autowired
-    private DoctorantRepository doctorantRepository;
+    private UtilisateurRepository utilisateurRepository;
 
     /* ------------------ Save & Send methods ------------------ */
 
     @Override
-    public AttestationAutomatiqueResponseDTO generateAndSendAttestationAutomatique(DoctorantRequestDTO request) throws IOException {
-        // Génération de l’attestation
-        Map<String, Object> data = new HashMap<>();
-        data.put("fullName", request.getNom() + " " + request.getPrenom());
-        data.put("cne", request.getCne());
-        data.put("cin", request.getCin());
-        data.put("birthDate", request.getBirthDate());
-        data.put("birthPlace", request.getBirthPlace());
-        data.put("firstEnrollmentDate", request.getFirstEnrollmentDate());
-        data.put("researchTeam", request.getResearchTeam());
-        data.put("currentYear", request.getCurrentYear());
-        data.put("currentLevel", request.getCurrentLevel());
-        data.put("cycle", request.getCycle());
-        data.put("attestationAutoType", request.getTypeAttestationAuto());
+    public AttestationAutomatiqueResponseDTO generateAndSendAttestationAutomatique(TypeAttestationAutoEnum typeAttestation, String username) throws IOException {
 
-        // Choix du paragraphe selon le type d'attestation
-        String paragraph;
-        TypeAttestationAutoEnum type = request.getTypeAttestationAuto();
+        // 1. Find the user and doctorant
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(username)
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'email: " + username));
 
-        switch (type) {
-            case INSCRIPTION:
-                paragraph = "Est inscrit(e) en thèse au Centre d’Études Doctorales en Télécommunications et Technologies de l’Information (CEDoc2TI) de l’Institut National des Postes et Télécommunications (INPT).";
-                break;
-            case TRAVAIL:
-                paragraph = "Travaille à plein temps au sein du laboratoire " + request.getResearchTeam() +
-                        " du Centre d’Études Doctorales en Télécommunications et Technologies de l’Information (CEDoc2TI) de l’Institut National des Postes et Télécommunications (INPT), dans le cadre de ses travaux de recherche doctorale.";
-                break;
-            default:
-                throw new IllegalArgumentException("Type d'attestation automatique inconnu : " + type);
+        Doctorant doctorant = utilisateur.getDoctorant();
+        if (doctorant == null) {
+            throw new IllegalStateException("L'utilisateur n'est pas un doctorant");
         }
 
-        data.put("attestationParagraph", paragraph);
+        // 2. Create attestation entity
+        AttestationAutomatique attestation = createAttestationEntity(doctorant, typeAttestation);
 
+        // 3. Save the attestation
+        attestation = attestationAutomatiqueRepository.save(attestation);
+        log.info("Attestation saved with ID: {}", attestation.getId());
 
+        Map<String, Object> data = prepareAttestationData(doctorant, typeAttestation, attestation);
+
+        // 5. Generate PDF
         byte[] pdfBytes = generateAttestationAutomatique(data);
 
-        Doctorant doctorant = doctorantMapper.doctorantRequestDTOToDoctorant(request);
-        doctorantRepository.save(doctorant);
 
-        // Sauvegarde dans la base de données
-        AttestationAutomatiqueRequestDTO dto = AttestationAutomatiqueRequestDTO.builder()
-                .doctorant(doctorant)
-                .typeAttestationAutomatique(request.getTypeAttestationAuto())
-                .build();
 
-        System.out.println(dto);
-
-        AttestationAutomatique saved = attestationMapper.attestationAutomatiqueRequestDTOToAttestationAutomatique(dto);
-        saved = attestationAutomatiqueRepository.save(saved);
 
         // Envoi d'e-mail
         emailService.sendEmailWithAttachment(
-                request.getEmail(),
+                doctorant.getUtilisateur().getEmail(),
                 "Votre attestation automatique",
                 "Veuillez trouver ci-joint votre attestation.",
                 pdfBytes,
                 "attestation.pdf"
         );
 
-        return attestationMapper.attestationAutomatiqueToAttestationAutomatiqueResponseDTO(saved);
+        return AttestationAutomatiqueResponseDTO.builder()
+                .id(attestation.getId())
+                .typeAttestationAutomatique(typeAttestation)
+                .statutAttestation(StatutAttestationEnum.AUTOMATIQUE)
+                .dateDemande(attestation.getDateDemande())
+                .success(true)
+                .message("Attestation générée et envoyée avec succès")
+                .build();
+    }
+
+    private Map<String, Object> prepareAttestationData(Doctorant doctorant, TypeAttestationAutoEnum typeAttestation, AttestationAutomatique attestation) {
+        Map<String, Object> data = new HashMap<>();
+
+        // User information
+        Utilisateur utilisateur = doctorant.getUtilisateur();
+        data.put("fullName", utilisateur.getNom() + " " + utilisateur.getPrenom());
+        data.put("email", utilisateur.getEmail());
+        data.put("dateNaissance", utilisateur.getDateNaissance());
+        data.put("lieuNaissance", utilisateur.getLieuDeNaissance() != null ?
+                utilisateur.getLieuDeNaissance().getVille() + ", " + utilisateur.getLieuDeNaissance().getPays() : "");
+
+        // Doctorant information
+        data.put("cne", doctorant.getCne());
+        data.put("cin", doctorant.getCin());
+        data.put("dateInscription", doctorant.getDateInscription());
+        data.put("anneeEnCours", doctorant.getAnneeEnCours());
+        data.put("niveauActuel", doctorant.getNiveauActuel());
+        data.put("cycle", doctorant.getCycle());
+
+        // Research team information
+        if (doctorant.getEquipeDeRecherche() != null) {
+            data.put("equipeRecherche", doctorant.getEquipeDeRecherche().getNomDeLequipe());
+        }
+
+        // Attestation specific information
+        data.put("typeAttestation", typeAttestation);
+        data.put("dateGeneration", LocalDate.now());
+
+        String paragraph = switch (typeAttestation) {
+            case INSCRIPTION -> "Est inscrit(e) en thèse au Centre d’Études Doctorales en Télécommunications et Technologies de l’Information (CEDoc2TI) de l’Institut National des Postes et Télécommunications (INPT).";
+            case TRAVAIL -> "Travaille à plein temps au sein du laboratoire" + doctorant.getEquipeDeRecherche() + " du Centre d’Études Doctorales en Télécommunications et Technologies de l’Information (CEDoc2TI) de l’Institut National des Postes et Télécommunications (INPT), dans le cadre de ses travaux de recherche doctorale.";
+            default -> throw new IllegalArgumentException("Type inconnu : " + typeAttestation);
+        };
+        data.put("attestationParagraph", paragraph);
+
+        log.debug("Prepared attestation data: {}", data);
+        return data;
+    }
+
+    private AttestationAutomatique createAttestationEntity(Doctorant doctorant, TypeAttestationAutoEnum typeAttestation) {
+        AttestationAutomatique attestation = new AttestationAutomatique();
+        attestation.setDoctorant(doctorant);
+        attestation.setTypeAttestationAutomatique(typeAttestation);
+        attestation.setStatutAttestation(StatutAttestationEnum.AUTOMATIQUE);
+        attestation.setDateDemande(LocalDateTime.now());
+        return attestation;
     }
 
 

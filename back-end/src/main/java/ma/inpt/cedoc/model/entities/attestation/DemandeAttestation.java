@@ -3,6 +3,10 @@ package ma.inpt.cedoc.model.entities.attestation;
 import java.sql.Date;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,6 +25,9 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "demandes_attestions")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class DemandeAttestation {
 
     @Id
@@ -38,6 +45,7 @@ public class DemandeAttestation {
     /* Relations start here */
     @ManyToOne
     @JoinColumn(name = "attestation_id")
+    @JsonIgnore
     private Attestation attestation;
 
     @ManyToOne

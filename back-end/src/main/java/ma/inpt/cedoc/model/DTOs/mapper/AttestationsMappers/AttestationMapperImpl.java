@@ -1,11 +1,18 @@
 package ma.inpt.cedoc.model.DTOs.mapper.AttestationsMappers;
 
+import lombok.AllArgsConstructor;
+import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.DoctorantRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ma.inpt.cedoc.model.DTOs.Attestation.*;
 import ma.inpt.cedoc.model.entities.attestation.*;
 
 @Component
+@AllArgsConstructor
 public class AttestationMapperImpl implements AttestationMapper {
+
+    private final DoctorantRepository doctorantRepository;
 
     @Override
     public AttestationAutomatique attestationAutomatiqueRequestDTOToAttestationAutomatique(
@@ -14,8 +21,8 @@ public class AttestationMapperImpl implements AttestationMapper {
 
         AttestationAutomatique attestationAutomatique = new AttestationAutomatique();
         attestationAutomatique.setTypeAttestationAutomatique(dto.getTypeAttestationAutomatique());
-        attestationAutomatique.setStatutAttestation(dto.getStatutAttestation());
-        attestationAutomatique.setDoctorant(dto.getDoctorant());
+//        attestationAutomatique.setStatutAttestation(dto.);
+//        attestationAutomatique.setDoctorant(doctorantRepository.findById(dto.getDoctorantId()).orElse(null));
         return attestationAutomatique;
     }
 
@@ -25,7 +32,6 @@ public class AttestationMapperImpl implements AttestationMapper {
         if (dto == null) return null;
 
         AttestationAvecValidation attestationAvecValidation = new AttestationAvecValidation();
-//        attestationAvecValidation.setUrl(dto.getUrl());
         attestationAvecValidation.setTypeAttestationValidation(dto.getTypeAttestationValidation());
         attestationAvecValidation.setStatutAttestation(dto.getStatutAttestation());
         attestationAvecValidation.setDoctorant(dto.getDoctorant());
@@ -41,10 +47,10 @@ public class AttestationMapperImpl implements AttestationMapper {
         dto.setId(attestation.getId());
         dto.setTypeAttestationAutomatique(attestation.getTypeAttestationAutomatique());
         dto.setStatutAttestation(attestation.getStatutAttestation());
-        dto.setDoctorant(attestation.getDoctorant());
+//        dto.setDoctorant(mapDoctorantSummary(attestation.getDoctorant()));
         dto.setDateDemande(attestation.getDateDemande());
-        dto.setCreatedAt(attestation.getCreatedAt());
-        dto.setUpdatedAt(attestation.getUpdatedAt());
+//        dto.setCreatedAt(attestation.getCreatedAt());
+//        dto.setUpdatedAt(attestation.getUpdatedAt());
         return dto;
     }
 
@@ -58,7 +64,7 @@ public class AttestationMapperImpl implements AttestationMapper {
         dto.setTypeAttestationValidation(attestation.getTypeAttestationValidation());
         dto.setStatutAttestation(attestation.getStatutAttestation());
         dto.setEtatAttestation(attestation.getEtatAttestation());
-        dto.setDoctorant(attestation.getDoctorant());
+        dto.setDoctorant(mapDoctorantSummary(attestation.getDoctorant()));
         dto.setDateDemande(attestation.getDateDemande());
         dto.setCreatedAt(attestation.getCreatedAt());
         dto.setUpdatedAt(attestation.getUpdatedAt());
@@ -71,5 +77,20 @@ public class AttestationMapperImpl implements AttestationMapper {
         if (dto != null && entity != null) {
             entity.setEtatAttestation(dto.getEtatAttestation());
         }
+    }
+
+    private DoctorantResponseDTO mapDoctorantSummary(Doctorant d) {
+        if (d == null) return null;
+        return new DoctorantResponseDTO(
+                d.getUtilisateur(),
+                d.getCne(),
+                d.getCin(),
+                d.getDateInscription(),
+                d.getEquipeDeRecherche().getId(),
+                d.getAnneeEnCours(),
+                d.getNiveauActuel(),
+                d.getCycle(),
+                d.getAttestationAutomatique().getTypeAttestationAutomatique(),
+                d.getAttestationAvecValidation().getTypeAttestationValidation());
     }
 }

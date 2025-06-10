@@ -16,9 +16,8 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 @Builder
 public class AttestationResponseDTO extends BaseResponseDTO {
 
-    private String url;
     private StatutAttestationEnum statutAttestation;
-    private Doctorant doctorant;
+    private DoctorantResponseDTO doctorant;
     private LocalDateTime dateDemande;
 
 }

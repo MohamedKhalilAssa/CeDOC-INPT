@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import lombok.Data;
 import ma.inpt.cedoc.model.entities.utilisateurs.EquipeDeRecherche;
 import ma.inpt.cedoc.model.entities.utilisateurs.LieuDeNaissance;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationAutoEnum;
 import ma.inpt.cedoc.model.enums.doctorant_enums.TypeAttestationValidationEnum;
 
@@ -12,16 +13,11 @@ import java.time.Year;
 
 @Data
 public class DoctorantRequestDTO {
-    private String nom;
-    private String prenom;
-    @Email
-    private String email;
+    private Utilisateur utilisateur;
     private String cne;
     private String cin;
-    private LocalDate birthDate;
-    private LieuDeNaissance birthPlace;
     private String firstEnrollmentDate;
-    private EquipeDeRecherche researchTeam;
+    private Long researchTeamId;
     private Year currentYear;
     private String currentLevel;
     private String cycle;

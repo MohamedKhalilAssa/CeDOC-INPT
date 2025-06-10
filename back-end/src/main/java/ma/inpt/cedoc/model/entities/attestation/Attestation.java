@@ -3,6 +3,7 @@ package ma.inpt.cedoc.model.entities.attestation;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.*;
 import ma.inpt.cedoc.model.entities.utilisateurs.Doctorant;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -23,6 +24,9 @@ import ma.inpt.cedoc.model.enums.doctorant_enums.StatutAttestationEnum;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type_attestation", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("DEFAULT")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public abstract class Attestation {
 
     @Id
@@ -33,15 +37,12 @@ public abstract class Attestation {
     @Column(name = "statut_attestation")
     private StatutAttestationEnum statutAttestation;
 
-    @ManyToOne
-    @JoinColumn(name = "doctorant")
-    private Doctorant doctorant;
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime dateDemande;
 
     @OneToMany(mappedBy = "attestation")
+    @JsonIgnore
     private List<DemandeAttestation> demandeAttestations;
 
     // for logging and administration purposes it will be filled by the system
