@@ -28,6 +28,8 @@ import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
 
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
+import PublicationsValidation from "./Pages/Dashboard/Publications/PublicationsValidation";
+import ConferencesValidation from "./Pages/Dashboard/Conferences/ConferencesValidation";
 import AdminValidationReinscriptions from "./Pages/Dashboard/Reinscriptions/AdminValidationReinscriptions";
 
 function App() {
@@ -136,6 +138,18 @@ function App() {
             appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.reinscrire.path
           }
           element={<DoctorantReinscriptions />}
+        />
+        <Route
+          path={
+            appConfig.FRONTEND_PATHS.DASHBOARD.publications.valider.path
+          }
+          element={<PublicationsValidation />}
+        />
+        <Route
+          path={
+            appConfig.FRONTEND_PATHS.DASHBOARD.conferences.valider.path
+          }
+          element={<ConferencesValidation />}
         />
         <Route
           path={

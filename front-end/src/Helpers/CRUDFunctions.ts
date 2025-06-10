@@ -179,6 +179,19 @@ export const putData = async <T>(
   }
 };
 
+export const patchData = async <T>(
+  url: string,
+  data: any,
+  config?: AxiosRequestConfig
+): Promise<T | undefined> => {
+  try {
+    const res = await API.patch<T>(url, data, config);
+    return res.data;
+  } catch (error) {
+    handleError(error as AxiosError);
+  }
+};
+
 export const deleteData = async <T>(
   url: string,
   config?: AxiosRequestConfig
@@ -315,6 +328,30 @@ export const putFormData = async <T>(
   try {
     const formData = transformToFormData(data);
     const res = await API.put<T>(url, formData, {
+      ...config,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...config?.headers,
+      },
+    });
+    return res.data;
+  } catch (error) {
+    handleError(error as AxiosError);
+  }
+};
+
+/**
+ * PATCH request with automatic multipart/form-data handling
+ * Use this when your backend expects @ModelAttribute or has MultipartFile fields
+ */
+export const patchFormData = async <T>(
+  url: string,
+  data: any,
+  config?: AxiosRequestConfig
+): Promise<T | undefined> => {
+  try {
+    const formData = transformToFormData(data);
+    const res = await API.patch<T>(url, formData, {
       ...config,
       headers: {
         "Content-Type": "multipart/form-data",

@@ -1,0 +1,774 @@
+.
+├── README.md
+├── TO_READ_BEFORE_STARTING.txt
+├── backend.md
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── setup-secrets.sh
+├── setup.cmd
+├── src
+│   ├── Uploads
+│   ├── main
+│   │   ├── java
+│   │   │   └── ma
+│   │   │       └── inpt
+│   │   │           └── cedoc
+│   │   │               ├── Annotations
+│   │   │               │   └── FieldMatcher
+│   │   │               │       ├── FieldMatch.java
+│   │   │               │       └── FieldMatchValidator.java
+│   │   │               ├── CedocApplication.java
+│   │   │               ├── Configuration
+│   │   │               │   ├── ApplicationConfiguration.java
+│   │   │               │   ├── AsyncConfig.java
+│   │   │               │   └── Security
+│   │   │               │       ├── JWT
+│   │   │               │       │   ├── AccessTokenFilter.java
+│   │   │               │       │   ├── JwtUtil.java
+│   │   │               │       │   └── RefreshTokenFilter.java
+│   │   │               │       └── SecurityConfiguration.java
+│   │   │               ├── Exceptions
+│   │   │               │   └── GlobalExceptionHandler.java
+│   │   │               ├── Helpers
+│   │   │               │   └── UtilFunctions.java
+│   │   │               ├── model
+│   │   │               │   ├── DTOs
+│   │   │               │   │   ├── Attestation
+│   │   │               │   │   │   ├── AttestationAutomatiqueRequestDTO.java
+│   │   │               │   │   │   ├── AttestationAutomatiqueResponseDTO.java
+│   │   │               │   │   │   ├── AttestationAvecValidationRequestDTO.java
+│   │   │               │   │   │   ├── AttestationAvecValidationResponseDTO.java
+│   │   │               │   │   │   ├── AttestationAvecValidationUpdateDTO.java
+│   │   │               │   │   │   ├── AttestationRequestDTO.java
+│   │   │               │   │   │   └── AttestationResponseDTO.java
+│   │   │               │   │   ├── Candidature
+│   │   │               │   │   │   ├── CandidatureRequestDTO.java
+│   │   │               │   │   │   ├── CandidatureResponseDTO.java
+│   │   │               │   │   │   ├── SujetEquipeDTO.java
+│   │   │               │   │   │   ├── SujetRequestDTO.java
+│   │   │               │   │   │   ├── SujetResponseDTO.java
+│   │   │               │   │   │   └── SujetResponseSimpleDTO.java
+│   │   │               │   │   ├── DoctorantActions
+│   │   │               │   │   │   ├── ConfParticipationRequestDTO.java
+│   │   │               │   │   │   ├── ConfParticipationResponseDTO.java
+│   │   │               │   │   │   ├── PublicationRequestDTO.java
+│   │   │               │   │   │   └── PublicationResponseDTO.java
+│   │   │               │   │   ├── Formations
+│   │   │               │   │   │   ├── FormationRequestDTO.java
+│   │   │               │   │   │   ├── FormationResponseDTO.java
+│   │   │               │   │   │   ├── SeanceFormationRequestDTO.java
+│   │   │               │   │   │   ├── SeanceFormationResponseDTO.java
+│   │   │               │   │   │   ├── VacationRequestDTO.java
+│   │   │               │   │   │   └── VacationResponseDTO.java
+│   │   │               │   │   ├── Generic
+│   │   │               │   │   │   ├── BaseResponseDTO.java
+│   │   │               │   │   │   ├── ErrorResponse.java
+│   │   │               │   │   │   └── PaginatedResponseDTO.java
+│   │   │               │   │   ├── Reinscription
+│   │   │               │   │   │   ├── AvisReinscriptionRequestDTO.java
+│   │   │               │   │   │   ├── AvisReinscriptionResponseDTO.java
+│   │   │               │   │   │   ├── DemandeReinscriptionRequestDTO.java
+│   │   │               │   │   │   └── DemandeReinscriptionResponseDTO.java
+│   │   │               │   │   ├── Utilisateurs
+│   │   │               │   │   │   ├── CandidatRequestDTO.java
+│   │   │               │   │   │   ├── CandidatResponseDTO.java
+│   │   │               │   │   │   ├── ChefSujetsResponseDTO.java
+│   │   │               │   │   │   ├── LieuDeNaissanceRequestDTO.java
+│   │   │               │   │   │   ├── LieuDeNaissanceResponseDTO.java
+│   │   │               │   │   │   ├── NationaliteRequestDTO.java
+│   │   │               │   │   │   ├── NationaliteResponseDTO.java
+│   │   │               │   │   │   ├── RoleAssignmentRequestDTO.java
+│   │   │               │   │   │   ├── RoleResponseDTO.java
+│   │   │               │   │   │   ├── UtilisateurRequestDTO.java
+│   │   │               │   │   │   ├── UtilisateurResponseDTO.java
+│   │   │               │   │   │   └── simpleDTOs
+│   │   │               │   │   │       ├── EquipeSimpleDTO.java
+│   │   │               │   │   │       ├── ProfesseurResponseDTO.java
+│   │   │               │   │   │       └── UtilisateurResponseDTO.java
+│   │   │               │   │   ├── auth
+│   │   │               │   │   │   ├── AuthenticationResponse.java
+│   │   │               │   │   │   ├── EmailRequest.java
+│   │   │               │   │   │   ├── EmailVerificationRequest.java
+│   │   │               │   │   │   ├── LoginRequest.java
+│   │   │               │   │   │   ├── RegisterRequestDTO.java
+│   │   │               │   │   │   ├── ResetPasswordRequest.java
+│   │   │               │   │   │   └── TokenRefreshRequest.java
+│   │   │               │   │   └── mapper
+│   │   │               │   │       ├── AttestationsMappers
+│   │   │               │   │       │   └── AttestationMapper.java
+│   │   │               │   │       ├── CandidatureMappers
+│   │   │               │   │       │   ├── CandidatureMapper.java
+│   │   │               │   │       │   ├── CandidatureMapperImpl.java
+│   │   │               │   │       │   ├── EquipeMapper.java
+│   │   │               │   │       │   ├── SujetEquipeMapperImpl.java
+│   │   │               │   │       │   ├── SujetMapper.java
+│   │   │               │   │       │   └── SujetMapperImpl.java
+│   │   │               │   │       ├── DoctorantActionsMappers
+│   │   │               │   │       │   ├── ConfParticipationMapper.java
+│   │   │               │   │       │   └── PublicationMapper.java
+│   │   │               │   │       ├── Global
+│   │   │               │   │       │   └── PaginatedMapper.java
+│   │   │               │   │       ├── MapperHelpers
+│   │   │               │   │       │   └── utilisateurs
+│   │   │               │   │       │       ├── LieuDeNaissanceMapperHelper.java
+│   │   │               │   │       │       └── NationaliteMapperHelper.java
+│   │   │               │   │       ├── ReinscriptionMappers
+│   │   │               │   │       │   ├── AvisResinscriptionMapper.java
+│   │   │               │   │       │   └── DemandeReinscriptionMapper.java
+│   │   │               │   │       ├── formationsMappers
+│   │   │               │   │       │   ├── FormationMapper.java
+│   │   │               │   │       │   ├── SeanceFormationMapper.java
+│   │   │               │   │       │   └── VacationMapper.java
+│   │   │               │   │       └── utilisateursMapper
+│   │   │               │   │           ├── CandidatMapper.java
+│   │   │               │   │           ├── CandidatMapperImpl.java
+│   │   │               │   │           ├── ChefEquipeMapperImpl.java
+│   │   │               │   │           ├── NationaliteMapper.java
+│   │   │               │   │           ├── ProfesseurMapper.java
+│   │   │               │   │           ├── ProfesseurMapperImpl.java
+│   │   │               │   │           ├── UtilisateurMapper.java
+│   │   │               │   │           └── UtilisateurMapperImpl.java
+│   │   │               │   ├── entities
+│   │   │               │   │   ├── DoctorantActions
+│   │   │               │   │   │   ├── ConfParticipation.java
+│   │   │               │   │   │   └── Publication.java
+│   │   │               │   │   ├── Reinscription
+│   │   │               │   │   │   ├── AvisReinscription.java
+│   │   │               │   │   │   └── DemandeReinscription.java
+│   │   │               │   │   ├── attestation
+│   │   │               │   │   │   ├── Attestation.java
+│   │   │               │   │   │   ├── AttestationAutomatique.java
+│   │   │               │   │   │   ├── AttestationAvecValidation.java
+│   │   │               │   │   │   └── DemandeAttestation.java
+│   │   │               │   │   ├── auth
+│   │   │               │   │   │   └── Token.java
+│   │   │               │   │   ├── candidature
+│   │   │               │   │   │   ├── Candidature.java
+│   │   │               │   │   │   ├── CandidatureAccepter.java
+│   │   │               │   │   │   ├── CandidatureRefuser.java
+│   │   │               │   │   │   └── Sujet.java
+│   │   │               │   │   ├── formation
+│   │   │               │   │   │   ├── Formation.java
+│   │   │               │   │   │   ├── SeanceFormation.java
+│   │   │               │   │   │   └── Vacation.java
+│   │   │               │   │   ├── soutenance
+│   │   │               │   │   │   ├── DemandeSoutenance.java
+│   │   │               │   │   │   ├── Jury.java
+│   │   │               │   │   │   ├── ProfesseurJury.java
+│   │   │               │   │   │   └── Soutenance.java
+│   │   │               │   │   └── utilisateurs
+│   │   │               │   │       ├── Candidat.java
+│   │   │               │   │       ├── ChefEquipeRole.java
+│   │   │               │   │       ├── DirecteurDeTheseRole.java
+│   │   │               │   │       ├── DirectionCedoc.java
+│   │   │               │   │       ├── Doctorant.java
+│   │   │               │   │       ├── EquipeDeRecherche.java
+│   │   │               │   │       ├── LieuDeNaissance.java
+│   │   │               │   │       ├── Nationalite.java
+│   │   │               │   │       ├── Professeur.java
+│   │   │               │   │       ├── ResponsableDeFormationRole.java
+│   │   │               │   │       ├── Role.java
+│   │   │               │   │       └── Utilisateur.java
+│   │   │               │   └── enums
+│   │   │               │       ├── auth
+│   │   │               │       │   └── TokenEnum.java
+│   │   │               │       ├── candidature_enums
+│   │   │               │       │   ├── CandidatureEnum.java
+│   │   │               │       │   ├── DiplomeEnum.java
+│   │   │               │       │   ├── EtablissementEnum.java
+│   │   │               │       │   ├── MentionEnum.java
+│   │   │               │       │   └── StatutProfessionnelEnum.java
+│   │   │               │       ├── doctorant_enums
+│   │   │               │       │   ├── DemandeSoutenanceEnum.java
+│   │   │               │       │   ├── EtatAttestationEnum.java
+│   │   │               │       │   ├── EtatEnum.java
+│   │   │               │       │   ├── StatutAttestationEnum.java
+│   │   │               │       │   ├── StatutSoutenanceEnum.java
+│   │   │               │       │   ├── TypeAttestationAutoEnum.java
+│   │   │               │       │   └── TypeAttestationValidationEnum.java
+│   │   │               │       ├── formation_enums
+│   │   │               │       │   ├── ModuleEnum.java
+│   │   │               │       │   ├── StatutFormationEnum.java
+│   │   │               │       │   └── StatutVacationEnum.java
+│   │   │               │       ├── reinscription_enums
+│   │   │               │       │   ├── AvancementEnum.java
+│   │   │               │       │   ├── AvisEnum.java
+│   │   │               │       │   └── DemandeReinscriptionEnum.java
+│   │   │               │       └── utilisateur_enums
+│   │   │               │           ├── CEDocEnum.java
+│   │   │               │           ├── DoctorantEnum.java
+│   │   │               │           ├── EtatCivilEnum.java
+│   │   │               │           ├── GenreEnum.java
+│   │   │               │           ├── GradeProfesseurEnum.java
+│   │   │               │           ├── RoleEnum.java
+│   │   │               │           └── RoleJuryEnum.java
+│   │   │               ├── repositories
+│   │   │               │   ├── AttestationRepositories
+│   │   │               │   │   ├── AttestationAutomatiqueRepository.java
+│   │   │               │   │   ├── AttestationAvecValidationRepository.java
+│   │   │               │   │   └── DemandeAttestationRepository.java
+│   │   │               │   ├── DoctorantActionsRepositories
+│   │   │               │   │   ├── ConfParticipationRepository.java
+│   │   │               │   │   └── PublicationRepository.java
+│   │   │               │   ├── ResinscriptionRepositories
+│   │   │               │   │   ├── AvisReinscriptionRepository.java
+│   │   │               │   │   └── DemandeReinscriptionRepository.java
+│   │   │               │   ├── authRepositories
+│   │   │               │   │   └── TokenRepository.java
+│   │   │               │   ├── candidatureRepositories
+│   │   │               │   │   ├── CandidatureAccepterRepository.java
+│   │   │               │   │   ├── CandidatureRefuserRepository.java
+│   │   │               │   │   ├── CandidatureRepository.java
+│   │   │               │   │   └── SujetRepository.java
+│   │   │               │   ├── formationRepositories
+│   │   │               │   │   ├── FormationRepository.java
+│   │   │               │   │   ├── SeanceFormationRepository.java
+│   │   │               │   │   └── VacationRepository.java
+│   │   │               │   ├── soutenanceRepositories
+│   │   │               │   │   ├── DemandeSoutenanceRepository.java
+│   │   │               │   │   ├── JuryRepository.java
+│   │   │               │   │   ├── ProfesseurJuryRepository.java
+│   │   │               │   │   └── SoutenanceRepository.java
+│   │   │               │   └── utilisateursRepositories
+│   │   │               │       ├── CandidatRepository.java
+│   │   │               │       ├── ChefEquipeRoleRepository.java
+│   │   │               │       ├── DirecteurDeTheseRoleRepository.java
+│   │   │               │       ├── DirectionCedocRepository.java
+│   │   │               │       ├── DoctorantRepository.java
+│   │   │               │       ├── EquipeDeRechercheRepository.java
+│   │   │               │       ├── LieuDeNaissanceRepository.java
+│   │   │               │       ├── NationaliteRepository.java
+│   │   │               │       ├── ProfesseurRepository.java
+│   │   │               │       ├── ResponsableDeFormationRoleRepository.java
+│   │   │               │       ├── RoleRepository.java
+│   │   │               │       └── UtilisateurRepository.java
+│   │   │               ├── service
+│   │   │               │   ├── AttestationService
+│   │   │               │   │   ├── AttestationService.java
+│   │   │               │   │   └── AttestationServiceImpl.java
+│   │   │               │   ├── CandidatureSevices
+│   │   │               │   │   ├── CandidatureService.java
+│   │   │               │   │   ├── CandidatureServiceImpl.java
+│   │   │               │   │   ├── SujetService.java
+│   │   │               │   │   └── SujetServiceImpl.java
+│   │   │               │   ├── DoctorantActionService
+│   │   │               │   │   ├── ConfParticipationService.java
+│   │   │               │   │   ├── ConfParticipationServiceImpl.java
+│   │   │               │   │   ├── PublicationService.java
+│   │   │               │   │   └── PublicationServiceImpl.java
+│   │   │               │   ├── FormationService
+│   │   │               │   │   ├── FormationService.java
+│   │   │               │   │   ├── FormationServiceImpl.java
+│   │   │               │   │   ├── SeanceFormationService.java
+│   │   │               │   │   ├── SeanceFormationServiceImpl.java
+│   │   │               │   │   ├── VacationService.java
+│   │   │               │   │   └── VacationServiceImpl.java
+│   │   │               │   ├── Global
+│   │   │               │   │   ├── EmailService.java
+│   │   │               │   │   ├── EmailServiceImpl.java
+│   │   │               │   │   ├── FileService.java
+│   │   │               │   │   └── FileServiceImpl.java
+│   │   │               │   ├── Reinscription
+│   │   │               │   │   ├── AvisReinscriptionService.java
+│   │   │               │   │   ├── AvisReinscriptionServiceImpl.java
+│   │   │               │   │   ├── DemandeResincriptionService.java
+│   │   │               │   │   └── DemandeResincriptionServiceImpl.java
+│   │   │               │   ├── auth
+│   │   │               │   │   ├── AuthenticationService.java
+│   │   │               │   │   ├── AuthenticationServiceImpl.java
+│   │   │               │   │   ├── EmailVerificationService.java
+│   │   │               │   │   ├── EmailVerificationServiceImpl.java
+│   │   │               │   │   ├── OtpService.java
+│   │   │               │   │   ├── OtpServiceImpl.java
+│   │   │               │   │   ├── TokenService.java
+│   │   │               │   │   └── TokenServiceImpl.java
+│   │   │               │   └── utilisateurServices
+│   │   │               │       ├── CandidatService.java
+│   │   │               │       ├── CandidatServiceImpl.java
+│   │   │               │       ├── ChefEquipeService.java
+│   │   │               │       ├── ChefEquipeServiceImpl.java
+│   │   │               │       ├── DirecteurDeTheseService.java
+│   │   │               │       ├── DirecteurDeTheseServiceImpl.java
+│   │   │               │       ├── LieuDeNaissanceService.java
+│   │   │               │       ├── LieuDeNaissanceServiceImpl.java
+│   │   │               │       ├── NationaliteService.java
+│   │   │               │       ├── NationaliteServiceImpl.java
+│   │   │               │       ├── ProfesseurService.java
+│   │   │               │       ├── ProfesseurServiceImpl.java
+│   │   │               │       ├── UtilisateurService.java
+│   │   │               │       └── UtilisateurServiceImpl.java
+│   │   │               └── web
+│   │   │                   ├── AttestationControllers
+│   │   │                   │   └── AttestationController.java
+│   │   │                   ├── CandidatureControllers
+│   │   │                   │   ├── CandidatureController.java
+│   │   │                   │   └── SujetController.java
+│   │   │                   ├── DoctorantActionControllers
+│   │   │                   │   ├── ConfParticipationController.java
+│   │   │                   │   └── PublicationController.java
+│   │   │                   ├── FormationControllers
+│   │   │                   │   ├── FormationController.java
+│   │   │                   │   ├── SeanceFormationController.java
+│   │   │                   │   └── VacationController.java
+│   │   │                   ├── Logged
+│   │   │                   │   └── LoggedController.java
+│   │   │                   ├── Reinscription
+│   │   │                   │   ├── AvisReinscriptionController.java
+│   │   │                   │   └── DemandeReinscriptionController.java
+│   │   │                   ├── Utilisateurs
+│   │   │                   │   ├── ChefEquipeController.java
+│   │   │                   │   ├── LieuDeNaissanceController.java
+│   │   │                   │   ├── NationaliteController.java
+│   │   │                   │   ├── ProfesseurController.java
+│   │   │                   │   └── UtilisateurController.java
+│   │   │                   ├── authentication
+│   │   │                   │   └── AuthenticationController.java
+│   │   │                   └── guest
+│   │   │                       └── guestController.java
+│   │   └── resources
+│   │       ├── Populate.sql
+│   │       ├── application-secrets.properties
+│   │       ├── application-secrets.properties.example
+│   │       ├── application.properties
+│   │       ├── data.sql
+│   │       ├── data_new.sql
+│   │       ├── reset.sql
+│   │       ├── reset_db.sql
+│   │       └── static
+│   │           └── images
+│   │               └── Logo_inpt.png
+│   └── test
+│       └── java
+│           └── ma
+│               └── inpt
+│                   └── cedoc
+│                       └── CedocApplicationTests.java
+├── structure.txt
+└── target
+    ├── cedoc-0.0.1-SNAPSHOT.jar
+    ├── cedoc-0.0.1-SNAPSHOT.jar.original
+    ├── classes
+    │   ├── Populate.sql
+    │   ├── application-secrets.properties
+    │   ├── application-secrets.properties.example
+    │   ├── application.properties
+    │   ├── data.sql
+    │   ├── data_new.sql
+    │   ├── ma
+    │   │   └── inpt
+    │   │       └── cedoc
+    │   │           ├── Annotations
+    │   │           │   └── FieldMatcher
+    │   │           │       ├── FieldMatch$List.class
+    │   │           │       ├── FieldMatch.class
+    │   │           │       └── FieldMatchValidator.class
+    │   │           ├── CedocApplication.class
+    │   │           ├── Configuration
+    │   │           │   ├── ApplicationConfiguration$1.class
+    │   │           │   ├── ApplicationConfiguration.class
+    │   │           │   ├── AsyncConfig.class
+    │   │           │   └── Security
+    │   │           │       ├── JWT
+    │   │           │       │   ├── AccessTokenFilter.class
+    │   │           │       │   ├── JwtUtil.class
+    │   │           │       │   └── RefreshTokenFilter.class
+    │   │           │       └── SecurityConfiguration.class
+    │   │           ├── Exceptions
+    │   │           │   └── GlobalExceptionHandler.class
+    │   │           ├── Helpers
+    │   │           │   └── UtilFunctions.class
+    │   │           ├── model
+    │   │           │   ├── DTOs
+    │   │           │   │   ├── Attestation
+    │   │           │   │   │   ├── AttestationAutomatiqueRequestDTO.class
+    │   │           │   │   │   ├── AttestationAutomatiqueResponseDTO$AttestationAutomatiqueResponseDTOBuilder.class
+    │   │           │   │   │   ├── AttestationAutomatiqueResponseDTO$AttestationAutomatiqueResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── AttestationAutomatiqueResponseDTO.class
+    │   │           │   │   │   ├── AttestationAvecValidationRequestDTO.class
+    │   │           │   │   │   ├── AttestationAvecValidationResponseDTO$AttestationAvecValidationResponseDTOBuilder.class
+    │   │           │   │   │   ├── AttestationAvecValidationResponseDTO$AttestationAvecValidationResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── AttestationAvecValidationResponseDTO.class
+    │   │           │   │   │   ├── AttestationAvecValidationUpdateDTO.class
+    │   │           │   │   │   ├── AttestationRequestDTO.class
+    │   │           │   │   │   ├── AttestationResponseDTO$AttestationResponseDTOBuilder.class
+    │   │           │   │   │   ├── AttestationResponseDTO$AttestationResponseDTOBuilderImpl.class
+    │   │           │   │   │   └── AttestationResponseDTO.class
+    │   │           │   │   ├── Candidature
+    │   │           │   │   │   ├── CandidatureRequestDTO$CandidatureRequestDTOBuilder.class
+    │   │           │   │   │   ├── CandidatureRequestDTO$CandidatureRequestDTOBuilderImpl.class
+    │   │           │   │   │   ├── CandidatureRequestDTO.class
+    │   │           │   │   │   ├── CandidatureResponseDTO$CandidatureResponseDTOBuilder.class
+    │   │           │   │   │   ├── CandidatureResponseDTO$CandidatureResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── CandidatureResponseDTO.class
+    │   │           │   │   │   ├── SujetEquipeDTO$SujetEquipeDTOBuilder.class
+    │   │           │   │   │   ├── SujetEquipeDTO.class
+    │   │           │   │   │   ├── SujetRequestDTO.class
+    │   │           │   │   │   ├── SujetResponseDTO$SujetResponseDTOBuilder.class
+    │   │           │   │   │   ├── SujetResponseDTO.class
+    │   │           │   │   │   ├── SujetResponseSimpleDTO$SujetResponseSimpleDTOBuilder.class
+    │   │           │   │   │   └── SujetResponseSimpleDTO.class
+    │   │           │   │   ├── DoctorantActions
+    │   │           │   │   │   ├── ConfParticipationRequestDTO.class
+    │   │           │   │   │   ├── ConfParticipationResponseDTO.class
+    │   │           │   │   │   ├── PublicationRequestDTO.class
+    │   │           │   │   │   └── PublicationResponseDTO.class
+    │   │           │   │   ├── Formations
+    │   │           │   │   │   ├── FormationRequestDTO.class
+    │   │           │   │   │   ├── FormationResponseDTO$FormationResponseDTOBuilder.class
+    │   │           │   │   │   ├── FormationResponseDTO$FormationResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── FormationResponseDTO.class
+    │   │           │   │   │   ├── SeanceFormationRequestDTO.class
+    │   │           │   │   │   ├── SeanceFormationResponseDTO$SeanceFormationResponseDTOBuilder.class
+    │   │           │   │   │   ├── SeanceFormationResponseDTO$SeanceFormationResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── SeanceFormationResponseDTO.class
+    │   │           │   │   │   ├── VacationRequestDTO.class
+    │   │           │   │   │   ├── VacationResponseDTO$VacationResponseDTOBuilder.class
+    │   │           │   │   │   ├── VacationResponseDTO$VacationResponseDTOBuilderImpl.class
+    │   │           │   │   │   └── VacationResponseDTO.class
+    │   │           │   │   ├── Generic
+    │   │           │   │   │   ├── BaseResponseDTO$BaseResponseDTOBuilder.class
+    │   │           │   │   │   ├── BaseResponseDTO$BaseResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── BaseResponseDTO.class
+    │   │           │   │   │   ├── ErrorResponse$ErrorResponseBuilder.class
+    │   │           │   │   │   ├── ErrorResponse.class
+    │   │           │   │   │   ├── PaginatedResponseDTO$PaginatedResponseDTOBuilder.class
+    │   │           │   │   │   └── PaginatedResponseDTO.class
+    │   │           │   │   ├── Reinscription
+    │   │           │   │   │   ├── AvisReinscriptionRequestDTO.class
+    │   │           │   │   │   ├── AvisReinscriptionResponseDTO.class
+    │   │           │   │   │   ├── DemandeReinscriptionRequestDTO.class
+    │   │           │   │   │   └── DemandeReinscriptionResponseDTO.class
+    │   │           │   │   ├── Utilisateurs
+    │   │           │   │   │   ├── CandidatRequestDTO$CandidatRequestDTOBuilder.class
+    │   │           │   │   │   ├── CandidatRequestDTO$CandidatRequestDTOBuilderImpl.class
+    │   │           │   │   │   ├── CandidatRequestDTO.class
+    │   │           │   │   │   ├── CandidatResponseDTO$CandidatResponseDTOBuilder.class
+    │   │           │   │   │   ├── CandidatResponseDTO$CandidatResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── CandidatResponseDTO.class
+    │   │           │   │   │   ├── ChefSujetsResponseDTO$ChefSujetsResponseDTOBuilder.class
+    │   │           │   │   │   ├── ChefSujetsResponseDTO.class
+    │   │           │   │   │   ├── LieuDeNaissanceRequestDTO.class
+    │   │           │   │   │   ├── LieuDeNaissanceResponseDTO$LieuDeNaissanceResponseDTOBuilder.class
+    │   │           │   │   │   ├── LieuDeNaissanceResponseDTO$LieuDeNaissanceResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── LieuDeNaissanceResponseDTO.class
+    │   │           │   │   │   ├── NationaliteRequestDTO$NationaliteRequestDTOBuilder.class
+    │   │           │   │   │   ├── NationaliteRequestDTO.class
+    │   │           │   │   │   ├── NationaliteResponseDTO$NationaliteResponseDTOBuilder.class
+    │   │           │   │   │   ├── NationaliteResponseDTO$NationaliteResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── NationaliteResponseDTO.class
+    │   │           │   │   │   ├── RoleAssignmentRequestDTO.class
+    │   │           │   │   │   ├── RoleResponseDTO$RoleResponseDTOBuilder.class
+    │   │           │   │   │   ├── RoleResponseDTO$RoleResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── RoleResponseDTO.class
+    │   │           │   │   │   ├── UtilisateurRequestDTO$UtilisateurRequestDTOBuilder.class
+    │   │           │   │   │   ├── UtilisateurRequestDTO$UtilisateurRequestDTOBuilderImpl.class
+    │   │           │   │   │   ├── UtilisateurRequestDTO.class
+    │   │           │   │   │   ├── UtilisateurResponseDTO$UtilisateurResponseDTOBuilder.class
+    │   │           │   │   │   ├── UtilisateurResponseDTO$UtilisateurResponseDTOBuilderImpl.class
+    │   │           │   │   │   ├── UtilisateurResponseDTO.class
+    │   │           │   │   │   └── simpleDTOs
+    │   │           │   │   │       ├── EquipeSimpleDTO$EquipeSimpleDTOBuilder.class
+    │   │           │   │   │       ├── EquipeSimpleDTO.class
+    │   │           │   │   │       ├── ProfesseurResponseDTO$ProfesseurResponseDTOBuilder.class
+    │   │           │   │   │       ├── ProfesseurResponseDTO$ProfesseurResponseDTOBuilderImpl.class
+    │   │           │   │   │       ├── ProfesseurResponseDTO.class
+    │   │           │   │   │       ├── UtilisateurResponseDTO$UtilisateurResponseDTOBuilder.class
+    │   │           │   │   │       ├── UtilisateurResponseDTO$UtilisateurResponseDTOBuilderImpl.class
+    │   │           │   │   │       └── UtilisateurResponseDTO.class
+    │   │           │   │   ├── auth
+    │   │           │   │   │   ├── AuthenticationResponse$AuthenticationResponseBuilder.class
+    │   │           │   │   │   ├── AuthenticationResponse.class
+    │   │           │   │   │   ├── EmailRequest$EmailRequestBuilder.class
+    │   │           │   │   │   ├── EmailRequest.class
+    │   │           │   │   │   ├── EmailVerificationRequest$EmailVerificationRequestBuilder.class
+    │   │           │   │   │   ├── EmailVerificationRequest.class
+    │   │           │   │   │   ├── LoginRequest$LoginRequestBuilder.class
+    │   │           │   │   │   ├── LoginRequest.class
+    │   │           │   │   │   ├── RegisterRequestDTO$RegisterRequestDTOBuilder.class
+    │   │           │   │   │   ├── RegisterRequestDTO.class
+    │   │           │   │   │   ├── ResetPasswordRequest$ResetPasswordRequestBuilder.class
+    │   │           │   │   │   ├── ResetPasswordRequest.class
+    │   │           │   │   │   ├── TokenRefreshRequest$TokenRefreshRequestBuilder.class
+    │   │           │   │   │   └── TokenRefreshRequest.class
+    │   │           │   │   └── mapper
+    │   │           │   │       ├── AttestationsMappers
+    │   │           │   │       │   ├── AttestationMapper.class
+    │   │           │   │       │   └── AttestationMapperImpl.class
+    │   │           │   │       ├── CandidatureMappers
+    │   │           │   │       │   ├── CandidatureMapper.class
+    │   │           │   │       │   ├── CandidatureMapperImpl.class
+    │   │           │   │       │   ├── EquipeMapper.class
+    │   │           │   │       │   ├── SujetEquipeMapperImpl.class
+    │   │           │   │       │   ├── SujetMapper.class
+    │   │           │   │       │   └── SujetMapperImpl.class
+    │   │           │   │       ├── DoctorantActionsMappers
+    │   │           │   │       │   ├── ConfParticipationMapper.class
+    │   │           │   │       │   └── PublicationMapper.class
+    │   │           │   │       ├── Global
+    │   │           │   │       │   └── PaginatedMapper.class
+    │   │           │   │       ├── MapperHelpers
+    │   │           │   │       │   └── utilisateurs
+    │   │           │   │       │       ├── LieuDeNaissanceMapperHelper.class
+    │   │           │   │       │       └── NationaliteMapperHelper.class
+    │   │           │   │       ├── ReinscriptionMappers
+    │   │           │   │       │   ├── AvisResinscriptionMapper.class
+    │   │           │   │       │   └── DemandeReinscriptionMapper.class
+    │   │           │   │       ├── formationsMappers
+    │   │           │   │       │   ├── FormationMapper.class
+    │   │           │   │       │   ├── SeanceFormationMapper.class
+    │   │           │   │       │   └── VacationMapper.class
+    │   │           │   │       └── utilisateursMapper
+    │   │           │   │           ├── CandidatMapper.class
+    │   │           │   │           ├── CandidatMapperImpl.class
+    │   │           │   │           ├── ChefEquipeMapperImpl.class
+    │   │           │   │           ├── NationaliteMapper.class
+    │   │           │   │           ├── ProfesseurMapper.class
+    │   │           │   │           ├── ProfesseurMapperImpl.class
+    │   │           │   │           ├── UtilisateurMapper.class
+    │   │           │   │           └── UtilisateurMapperImpl.class
+    │   │           │   ├── entities
+    │   │           │   │   ├── DoctorantActions
+    │   │           │   │   │   ├── ConfParticipation.class
+    │   │           │   │   │   └── Publication.class
+    │   │           │   │   ├── Reinscription
+    │   │           │   │   │   ├── AvisReinscription.class
+    │   │           │   │   │   └── DemandeReinscription.class
+    │   │           │   │   ├── attestation
+    │   │           │   │   │   ├── Attestation.class
+    │   │           │   │   │   ├── AttestationAutomatique.class
+    │   │           │   │   │   ├── AttestationAvecValidation.class
+    │   │           │   │   │   └── DemandeAttestation.class
+    │   │           │   │   ├── auth
+    │   │           │   │   │   ├── Token$TokenBuilder.class
+    │   │           │   │   │   └── Token.class
+    │   │           │   │   ├── candidature
+    │   │           │   │   │   ├── Candidature$CandidatureBuilder.class
+    │   │           │   │   │   ├── Candidature.class
+    │   │           │   │   │   ├── CandidatureAccepter.class
+    │   │           │   │   │   ├── CandidatureRefuser.class
+    │   │           │   │   │   ├── Sujet$SujetBuilder.class
+    │   │           │   │   │   └── Sujet.class
+    │   │           │   │   ├── formation
+    │   │           │   │   │   ├── Formation.class
+    │   │           │   │   │   ├── SeanceFormation.class
+    │   │           │   │   │   └── Vacation.class
+    │   │           │   │   ├── soutenance
+    │   │           │   │   │   ├── DemandeSoutenance.class
+    │   │           │   │   │   ├── Jury.class
+    │   │           │   │   │   ├── ProfesseurJury.class
+    │   │           │   │   │   └── Soutenance.class
+    │   │           │   │   └── utilisateurs
+    │   │           │   │       ├── Candidat$CandidatBuilder.class
+    │   │           │   │       ├── Candidat.class
+    │   │           │   │       ├── ChefEquipeRole.class
+    │   │           │   │       ├── DirecteurDeTheseRole.class
+    │   │           │   │       ├── DirectionCedoc.class
+    │   │           │   │       ├── Doctorant$DoctorantBuilder.class
+    │   │           │   │       ├── Doctorant.class
+    │   │           │   │       ├── EquipeDeRecherche.class
+    │   │           │   │       ├── LieuDeNaissance.class
+    │   │           │   │       ├── Nationalite.class
+    │   │           │   │       ├── Professeur$ProfesseurBuilder.class
+    │   │           │   │       ├── Professeur.class
+    │   │           │   │       ├── ResponsableDeFormationRole.class
+    │   │           │   │       ├── Role$RoleBuilder.class
+    │   │           │   │       ├── Role.class
+    │   │           │   │       ├── Utilisateur$UtilisateurBuilder.class
+    │   │           │   │       ├── Utilisateur$UtilisateurBuilderImpl.class
+    │   │           │   │       └── Utilisateur.class
+    │   │           │   └── enums
+    │   │           │       ├── auth
+    │   │           │       │   └── TokenEnum.class
+    │   │           │       ├── candidature_enums
+    │   │           │       │   ├── CandidatureEnum.class
+    │   │           │       │   ├── DiplomeEnum.class
+    │   │           │       │   ├── EtablissementEnum.class
+    │   │           │       │   ├── MentionEnum.class
+    │   │           │       │   └── StatutProfessionnelEnum.class
+    │   │           │       ├── doctorant_enums
+    │   │           │       │   ├── DemandeSoutenanceEnum.class
+    │   │           │       │   ├── EtatAttestationEnum.class
+    │   │           │       │   ├── EtatEnum.class
+    │   │           │       │   ├── StatutAttestationEnum.class
+    │   │           │       │   ├── StatutSoutenanceEnum.class
+    │   │           │       │   ├── TypeAttestationAutoEnum.class
+    │   │           │       │   └── TypeAttestationValidationEnum.class
+    │   │           │       ├── formation_enums
+    │   │           │       │   ├── ModuleEnum.class
+    │   │           │       │   ├── StatutFormationEnum.class
+    │   │           │       │   └── StatutVacationEnum.class
+    │   │           │       ├── reinscription_enums
+    │   │           │       │   ├── AvancementEnum.class
+    │   │           │       │   ├── AvisEnum.class
+    │   │           │       │   └── DemandeReinscriptionEnum.class
+    │   │           │       └── utilisateur_enums
+    │   │           │           ├── CEDocEnum.class
+    │   │           │           ├── DoctorantEnum.class
+    │   │           │           ├── EtatCivilEnum.class
+    │   │           │           ├── GenreEnum.class
+    │   │           │           ├── GradeProfesseurEnum.class
+    │   │           │           ├── RoleEnum.class
+    │   │           │           └── RoleJuryEnum.class
+    │   │           ├── repositories
+    │   │           │   ├── AttestationRepositories
+    │   │           │   │   ├── AttestationAutomatiqueRepository.class
+    │   │           │   │   ├── AttestationAvecValidationRepository.class
+    │   │           │   │   └── DemandeAttestationRepository.class
+    │   │           │   ├── DoctorantActionsRepositories
+    │   │           │   │   ├── ConfParticipationRepository.class
+    │   │           │   │   └── PublicationRepository.class
+    │   │           │   ├── ResinscriptionRepositories
+    │   │           │   │   ├── AvisReinscriptionRepository.class
+    │   │           │   │   └── DemandeReinscriptionRepository.class
+    │   │           │   ├── authRepositories
+    │   │           │   │   └── TokenRepository.class
+    │   │           │   ├── candidatureRepositories
+    │   │           │   │   ├── CandidatureAccepterRepository.class
+    │   │           │   │   ├── CandidatureRefuserRepository.class
+    │   │           │   │   ├── CandidatureRepository.class
+    │   │           │   │   └── SujetRepository.class
+    │   │           │   ├── formationRepositories
+    │   │           │   │   ├── FormationRepository.class
+    │   │           │   │   ├── SeanceFormationRepository.class
+    │   │           │   │   └── VacationRepository.class
+    │   │           │   ├── soutenanceRepositories
+    │   │           │   │   ├── DemandeSoutenanceRepository.class
+    │   │           │   │   ├── JuryRepository.class
+    │   │           │   │   ├── ProfesseurJuryRepository.class
+    │   │           │   │   └── SoutenanceRepository.class
+    │   │           │   └── utilisateursRepositories
+    │   │           │       ├── CandidatRepository.class
+    │   │           │       ├── ChefEquipeRoleRepository.class
+    │   │           │       ├── DirecteurDeTheseRoleRepository.class
+    │   │           │       ├── DirectionCedocRepository.class
+    │   │           │       ├── DoctorantRepository.class
+    │   │           │       ├── EquipeDeRechercheRepository.class
+    │   │           │       ├── LieuDeNaissanceRepository.class
+    │   │           │       ├── NationaliteRepository.class
+    │   │           │       ├── ProfesseurRepository.class
+    │   │           │       ├── ResponsableDeFormationRoleRepository.class
+    │   │           │       ├── RoleRepository.class
+    │   │           │       └── UtilisateurRepository.class
+    │   │           ├── service
+    │   │           │   ├── AttestationService
+    │   │           │   │   ├── AttestationService.class
+    │   │           │   │   └── AttestationServiceImpl.class
+    │   │           │   ├── CandidatureSevices
+    │   │           │   │   ├── CandidatureService.class
+    │   │           │   │   ├── CandidatureServiceImpl.class
+    │   │           │   │   ├── SujetService.class
+    │   │           │   │   └── SujetServiceImpl.class
+    │   │           │   ├── DoctorantActionService
+    │   │           │   │   ├── ConfParticipationService.class
+    │   │           │   │   ├── ConfParticipationServiceImpl.class
+    │   │           │   │   ├── PublicationService.class
+    │   │           │   │   └── PublicationServiceImpl.class
+    │   │           │   ├── FormationService
+    │   │           │   │   ├── FormationService.class
+    │   │           │   │   ├── FormationServiceImpl.class
+    │   │           │   │   ├── SeanceFormationService.class
+    │   │           │   │   ├── SeanceFormationServiceImpl.class
+    │   │           │   │   ├── VacationService.class
+    │   │           │   │   └── VacationServiceImpl.class
+    │   │           │   ├── Global
+    │   │           │   │   ├── EmailService.class
+    │   │           │   │   ├── EmailServiceImpl.class
+    │   │           │   │   ├── FileService.class
+    │   │           │   │   └── FileServiceImpl.class
+    │   │           │   ├── Reinscription
+    │   │           │   │   ├── AvisReinscriptionService.class
+    │   │           │   │   ├── AvisReinscriptionServiceImpl.class
+    │   │           │   │   ├── DemandeResincriptionService.class
+    │   │           │   │   └── DemandeResincriptionServiceImpl.class
+    │   │           │   ├── auth
+    │   │           │   │   ├── AuthenticationService.class
+    │   │           │   │   ├── AuthenticationServiceImpl.class
+    │   │           │   │   ├── EmailVerificationService.class
+    │   │           │   │   ├── EmailVerificationServiceImpl.class
+    │   │           │   │   ├── OtpService.class
+    │   │           │   │   ├── OtpServiceImpl.class
+    │   │           │   │   ├── TokenService.class
+    │   │           │   │   └── TokenServiceImpl.class
+    │   │           │   └── utilisateurServices
+    │   │           │       ├── CandidatService.class
+    │   │           │       ├── CandidatServiceImpl.class
+    │   │           │       ├── ChefEquipeService.class
+    │   │           │       ├── ChefEquipeServiceImpl.class
+    │   │           │       ├── DirecteurDeTheseService.class
+    │   │           │       ├── DirecteurDeTheseServiceImpl.class
+    │   │           │       ├── LieuDeNaissanceService.class
+    │   │           │       ├── LieuDeNaissanceServiceImpl.class
+    │   │           │       ├── NationaliteService.class
+    │   │           │       ├── NationaliteServiceImpl.class
+    │   │           │       ├── ProfesseurService.class
+    │   │           │       ├── ProfesseurServiceImpl.class
+    │   │           │       ├── UtilisateurService.class
+    │   │           │       └── UtilisateurServiceImpl.class
+    │   │           └── web
+    │   │               ├── AttestationControllers
+    │   │               │   └── AttestationController.class
+    │   │               ├── CandidatureControllers
+    │   │               │   ├── CandidatureController.class
+    │   │               │   └── SujetController.class
+    │   │               ├── DoctorantActionControllers
+    │   │               │   ├── ConfParticipationController.class
+    │   │               │   └── PublicationController.class
+    │   │               ├── FormationControllers
+    │   │               │   ├── FormationController.class
+    │   │               │   ├── SeanceFormationController.class
+    │   │               │   └── VacationController.class
+    │   │               ├── Logged
+    │   │               │   └── LoggedController.class
+    │   │               ├── Reinscription
+    │   │               │   ├── AvisReinscriptionController.class
+    │   │               │   └── DemandeReinscriptionController.class
+    │   │               ├── Utilisateurs
+    │   │               │   ├── ChefEquipeController.class
+    │   │               │   ├── LieuDeNaissanceController.class
+    │   │               │   ├── NationaliteController.class
+    │   │               │   ├── ProfesseurController.class
+    │   │               │   └── UtilisateurController.class
+    │   │               ├── authentication
+    │   │               │   └── AuthenticationController.class
+    │   │               └── guest
+    │   │                   └── guestController.class
+    │   ├── reset.sql
+    │   ├── reset_db.sql
+    │   └── static
+    │       └── images
+    │           └── Logo_inpt.png
+    ├── generated-sources
+    │   └── annotations
+    │       └── ma
+    │           └── inpt
+    │               └── cedoc
+    │                   └── model
+    │                       └── DTOs
+    │                           └── mapper
+    │                               └── AttestationsMappers
+    │                                   └── AttestationMapperImpl.java
+    ├── generated-test-sources
+    │   └── test-annotations
+    ├── maven-archiver
+    │   └── pom.properties
+    ├── maven-status
+    │   └── maven-compiler-plugin
+    │       ├── compile
+    │       │   └── default-compile
+    │       │       ├── createdFiles.lst
+    │       │       └── inputFiles.lst
+    │       └── testCompile
+    │           └── default-testCompile
+    │               ├── createdFiles.lst
+    │               └── inputFiles.lst
+    ├── surefire-reports
+    │   ├── TEST-ma.inpt.cedoc.CedocApplicationTests.xml
+    │   └── ma.inpt.cedoc.CedocApplicationTests.txt
+    └── test-classes
+        └── ma
+            └── inpt
+                └── cedoc
+                    └── CedocApplicationTests.class
+
+190 directories, 582 files

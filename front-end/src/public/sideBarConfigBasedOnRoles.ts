@@ -97,11 +97,6 @@ export const chefsEquipesSidebarConfig: NavigationGroup[] = [
         label: "Sujets des Membres",
         icon: "fas fa-users",
       },
-      {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.valider.path,
-        label: "valider reinscriptions",
-        icon: "fas fa-check",
-      },
     ],
   },
 ];
@@ -110,6 +105,28 @@ export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
 ];
 export const directionCedocSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
+  ...chefsEquipesSidebarConfig,
+  {
+    title: "Administration",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.publications.valider.path,
+        label: "valider publications",
+        icon: "fas fa-check",
+      },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.conferences.valider.path,
+        label: "valider conferences",
+        icon: "fas fa-check",
+      },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.valider.path,
+        label: "valider reinscriptions",
+        icon: "fas fa-check",
+      },
+    ],
+  },
+
 ];
 export const responsableFormationSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,

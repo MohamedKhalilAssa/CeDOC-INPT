@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@types/antd": "^0.12.32"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.0.0"
+  }
+}

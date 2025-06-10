@@ -208,6 +208,16 @@ const appConfig: AppConfig = {
         path: "/confparticipation/",
         method: "DELETE",
       },
+      valider: {
+        name: "Valider Conference",
+        path: "/confparticipation/",
+        method: "POST",
+      },
+      refuser: {
+        name: "Refuser Conference",
+        path: "/confparticipation/",
+        method: "POST",
+      },
     },
     REINSCRIPTIONS: {
       getAll: {
@@ -291,12 +301,20 @@ const appConfig: AppConfig = {
           name: "Mes Publications",
           path: "publications/mespublications",
         },
+        valider: {
+          name: "Mes Publications",
+          path: "publications/valider",
+        },
       },
       vacations: {
         vacation: { name: "Mes vacation", path: "vacations/vacation" },
       },
       conferences: {
         participer: { name: "Mes Conférences", path: "conferences/participer" },
+        valider: {
+          name: "Mes Conférences",
+          path: "conferences/valider",
+        },
       },
       reinscriptions: {
         reinscrire: {
