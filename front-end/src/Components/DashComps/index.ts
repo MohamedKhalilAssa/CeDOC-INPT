@@ -22,7 +22,7 @@ export { default as PageMeta } from "./common/PageMeta";
 
 // Ecommerce Components
 export { default as DemographicCard } from "./ecommerce/DemographicCard";
-export { default as EcommerceMetrics } from "./ecommerce/EcommerceMetrics";
+export { default as EcommerceMetrics } from "./ecommerce/DashboardOverview";
 export { default as MonthlySalesChart } from "./ecommerce/MonthlySalesChart";
 export { default as MonthlyTarget } from "./ecommerce/MonthlyTarget";
 export { default as RecentOrders } from "./ecommerce/RecentOrders";

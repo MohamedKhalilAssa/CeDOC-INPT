@@ -1,21 +1,27 @@
+import { useAuth } from "@/Hooks/UseAuth";
+import { RoleEnum } from "@/Types/UtilisateursEnums";
+import  DashboardOverview from "@/Components/DashComps/ecommerce/DashboardOverview";
 import PageMeta from "@/Components/DashComps/common/PageMeta";
-import DemographicCard from "@/Components/DashComps/ecommerce/DemographicCard";
-import EcommerceMetrics from "@/Components/DashComps/ecommerce/EcommerceMetrics";
-import MonthlySalesChart from "@/Components/DashComps/ecommerce/MonthlySalesChart";
-import MonthlyTarget from "@/Components/DashComps/ecommerce/MonthlyTarget";
-import RecentOrders from "@/Components/DashComps/ecommerce/RecentOrders";
-import StatisticsChart from "@/Components/DashComps/ecommerce/StatisticsChart";
 
 export default function Home() {
-  const newLocal = 
-      <EcommerceMetrics />
+  // Get the authenticated user's data
+  const { utilisateur, roles } = useAuth();
+
+  // Determine which DashboardOverview to render based on user role
+  const getDashboardComponent = () => {
+    if (roles.includes(RoleEnum.DIRECTION_CEDOC)) {
+      return <DashboardOverview userRole="admin" />;
+    } else if (roles.includes(RoleEnum.DOCTORANT)) {
+      return <DashboardOverview userRole="student" userId="1" />;
+    }
+    // Add more cases for other roles as needed
+    return <DashboardOverview userRole="student" userId="1" />;
+  };
+
   return (
     <>
-      <PageMeta
-        title="CEDoc"
-        description=""
-      />
-      {newLocal}
+      <PageMeta title="CEDoc" description="" />
+      {getDashboardComponent()}
     </>
   );
 }
