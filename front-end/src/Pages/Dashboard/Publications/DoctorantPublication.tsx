@@ -1,642 +1,1091 @@
-import PageBreadcrumb from "@/Components/DashComps/common/PageBreadCrumb";
-import PageMeta from "@/Components/DashComps/common/PageMeta";
-import Button from "@/Components/DashComps/ui/button/Button";
-import { HeaderCard } from "@/Components/Form/HeaderCard";
-import InputField from "@/Components/Form/InputField";
-import ProfesseurSearch from "@/Components/Form/ProfesseurSearch";
-import TextArea from "@/Components/Form/TextArea";
-import { postData } from "@/Helpers/CRUDFunctions";
-import { useAlert } from "@/Hooks/UseAlert";
-import appConfig from "@/public/config";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, ChangeEvent } from "react";
+import { getData, postData, deleteData } from "@/Helpers/CRUDFunctions";
+const debugPublication = (pub: Publication) => {
+  console.log("=== Publication Debug ===");
+  console.log("Full object:", pub);
+  console.log("titre:", pub.titre, "type:", typeof pub.titre);
+  console.log("resume:", pub.resume, "type:", typeof pub.resume);
+  console.log("contenu:", pub.contenu, "type:", typeof pub.contenu);
+  console.log("motsCles:", pub.motsCles, "type:", typeof pub.motsCles);
+  console.log("journal:", pub.journal, "type:", typeof pub.journal);
+  console.log("=========================");
+};
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
-
-interface ArticleFormData {
-  title: string;
-  abstract: string;
-  contentFile: File | null; // PDF file for publication content
-  keywords: string;
-  coAuthors: number[];
-  // Journal indexation fields
-  isIndexedJournal: boolean;
-  journalName: string;
-  publicationDate: string;
-  indexingProof: string; // URL or file path
-  indexingProofFile: File | null;
-  // Awards and distinctions
-  awards: string;
-  awardsProof: string; // URL or file path
-  awardsProofFile: File | null;
+interface Publication {
+  id: number;
+  titre: string;
+  resume: string;
+  motsCles: string;
+  contenu: string;
+  journal: string;
+  datePublication: string;
+  prixIntitule?: string;
+  status: string;
+  auteurId: number;
+  coAuteursIds: number[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-const PublierPublication = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [contentFile, setContentFile] = useState<File | null>(null);
-  const [indexingProofFile, setIndexingProofFile] = useState<File | null>(null);
-  const [awardsProofFile, setAwardsProofFile] = useState<File | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string>("");
-  const navigate = useNavigate();
-  const swal = useAlert();
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    watch,
-    setValue,
-  } = useForm<ArticleFormData>({
-    defaultValues: {
-      title: "",
-      abstract: "",
-      contentFile: null,
-      keywords: "",
-      coAuthors: [],
-      isIndexedJournal: false,
-      journalName: "",
-      publicationDate: "",
-      indexingProof: "",
-      indexingProofFile: null,
-      awards: "",
-      awardsProof: "",
-      awardsProofFile: null,
-    },
+interface NewPublication {
+  titre: string;
+  resume: string;
+  motsCles: string;
+  contenu: string;
+  journal: string;
+  datePublication: string;
+  prixIntitule?: string;
+  coAuteursIds: number[];
+}
+
+interface Errors {
+  [key: string]: string | undefined;
+  titre?: string;
+  resume?: string;
+  motsCles?: string;
+  contenu?: string;
+  datePublication?: string;
+  submit?: string;
+}
+
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Error caught by boundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-4 bg-red-100 text-red-700 rounded-lg">
+          Something went wrong. Please refresh the page.
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const DoctorantPublications: React.FC = () => {
+  const [publications, setPublications] = useState<Publication[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [selectedPublication, setSelectedPublication] =
+    useState<Publication | null>(null);
+  const [showPublicationModal, setShowPublicationModal] =
+    useState<boolean>(false);
+  const [newPublication, setNewPublication] = useState<NewPublication>({
+    titre: "",
+    resume: "",
+    motsCles: "",
+    contenu: "",
+    journal: "",
+    datePublication: "",
+    coAuteursIds: [],
   });
+  const [errors, setErrors] = useState<Errors>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
-  const isIndexedJournal = watch("isIndexedJournal");
-  const awardsValue = watch("awards");
+  useEffect(() => {
+    const fetchPublications = async (): Promise<void> => {
+      try {
+        setLoading(true);
+        const data = await getData<any>("/publications/");
 
-  const isValidPdf = (file: File): boolean => {
-    return file.type === "application/pdf" || file.name.toLowerCase().endsWith('.pdf');
+        let publicationsArray: Publication[] = [];
+        if (data) {
+          if (Array.isArray(data)) {
+            publicationsArray = data;
+          } else if (Array.isArray(data?.content)) {
+            publicationsArray = data.content;
+          } else if (Array.isArray(data?.data)) {
+            publicationsArray = data.data;
+          } else if (Array.isArray(data?.publications)) {
+            publicationsArray = data.publications;
+          } else if (data?.results && Array.isArray(data.results)) {
+            publicationsArray = data.results;
+          } else {
+            console.warn("Unexpected data format:", data);
+            publicationsArray = [];
+          }
+        }
+
+        setPublications(publicationsArray);
+      } catch (error) {
+        console.error("Error fetching publications:", error);
+        setErrors({ submit: "Erreur lors du chargement des publications" });
+        setPublications([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPublications();
+  }, []);
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
+    const { name, value } = e.target;
+    setNewPublication((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: undefined,
+      }));
+    }
   };
 
-  const handleFileUpload = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    type: 'content' | 'indexing' | 'awards'
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const validate = (): Errors => {
+    const newErrors: Errors = {};
+    if (!newPublication.titre.trim())
+      newErrors.titre = "Le titre de la publication est requis";
+    if (!newPublication.resume.trim())
+      newErrors.resume = "Le résumé est requis";
+    if (!newPublication.motsCles.trim())
+      newErrors.motsCles = "Les mots-clés sont requis";
+    if (!newPublication.contenu.trim())
+      newErrors.contenu = "Le contenu est requis";
 
-    // Clear previous file input value to allow re-uploading the same file
-    event.target.value = '';
+    if (newPublication.datePublication) {
+      const dateObj = new Date(newPublication.datePublication);
+      if (isNaN(dateObj.getTime())) {
+        newErrors.datePublication = "Format de date invalide";
+      }
+    }
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      swal.toast(`Le fichier est trop volumineux (max 10MB)`, "error");
+    return newErrors;
+  };
+
+  const handleSubmit = async (): Promise<void> => {
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
-    // Validate file type for PDF
-    if (!isValidPdf(file)) {
-      swal.toast("Seuls les fichiers PDF sont acceptés", "error");
-      return;
-    }
-
-    if (type === 'content') {
-      setContentFile(file);
-      setValue("contentFile", file);
-    } else if (type === 'indexing') {
-      setIndexingProofFile(file);
-      setValue("indexingProofFile", file);
-    } else {
-      setAwardsProofFile(file);
-      setValue("awardsProofFile", file);
-    }
-  };
-
-  const removeFile = (type: 'content' | 'indexing' | 'awards'): void => {
-    if (type === 'content') {
-      setContentFile(null);
-      setValue("contentFile", null);
-    } else if (type === 'indexing') {
-      setIndexingProofFile(null);
-      setValue("indexingProofFile", null);
-    } else {
-      setAwardsProofFile(null);
-      setValue("awardsProofFile", null);
-    }
-  };
-
-  const onSubmit = async (data: ArticleFormData) => {
     setIsSubmitting(true);
+    setErrors({});
 
     try {
-      console.log("Submitting article data:", data);
+      const publicationData = {
+        titre: newPublication.titre.trim(),
+        resume: newPublication.resume.trim(),
+        motsCles: newPublication.motsCles.trim(),
+        contenu: newPublication.contenu.trim(),
+        journal: newPublication.journal.trim() || "Non spécifié",
+        datePublication: newPublication.datePublication
+          ? new Date(newPublication.datePublication).toISOString()
+          : new Date().toISOString(),
+        prixIntitule: newPublication.prixIntitule?.trim() || undefined,
+        coAuteursIds: newPublication.coAuteursIds || [],
+      };
 
-      // Create FormData for file uploads
-      const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("abstract", data.abstract);
-      formData.append("keywords", JSON.stringify(data.keywords.split(',').map(k => k.trim())));
-      formData.append("coAuthorsIds", JSON.stringify(data.coAuthors || []));
-      formData.append("isIndexedJournal", data.isIndexedJournal.toString());
-      
-      // Add content PDF file
-      if (contentFile) {
-        formData.append("contentFile", contentFile);
-      }
-      
-      if (data.isIndexedJournal) {
-        formData.append("journalName", data.journalName);
-        formData.append("publicationDate", data.publicationDate);
-        formData.append("indexingProof", data.indexingProof);
-        if (indexingProofFile) {
-          formData.append("indexingProofFile", indexingProofFile);
-        }
-      }
+      // Debugging: Log data sent to backend
+      console.log("Sending publication data:", publicationData);
 
-      if (data.awards) {
-        formData.append("awards", data.awards);
-        formData.append("awardsProof", data.awardsProof);
-        if (awardsProofFile) {
-          formData.append("awardsProofFile", awardsProofFile);
-        }
-      }
-
-      const response = await postData(
-        appConfig.API_PATHS.PUBLICATIONS.publierPublication.path,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+      const response = await postData<Publication>(
+        "/publications/",
+        publicationData
       );
 
+      // Debugging: Log response from backend
+      console.log("Response from backend:", response);
+
       if (response) {
-        setSuccessMessage("Article publié avec succès! Il est maintenant visible dans la bibliothèque.");
-        swal.toast(
-          "Article publié avec succès! Il est maintenant visible dans la bibliothèque.",
-          "success"
-        );
-        resetForm();
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-          setSuccessMessage("");
-          navigate("/publications");
-        }, 1500);
+        // Ensure the response data is used directly if available and correct
+        setPublications((prev) => [...prev, response]);
+        setSuccessMessage("Publication ajoutée avec succès!");
+      } else {
+        // Fallback to refetching all publications if the immediate response is empty
+        const updatedData = await getData<any>("/publications/");
+        console.log("Refetched data after empty response:", updatedData); // Log refetched data
+        if (updatedData) {
+          let publicationsArray: Publication[] = [];
+          if (Array.isArray(updatedData)) {
+            publicationsArray = updatedData;
+          } else if (Array.isArray(updatedData?.content)) {
+            publicationsArray = updatedData.content;
+          } else if (Array.isArray(updatedData?.data)) {
+            publicationsArray = updatedData.data;
+          } else if (Array.isArray(updatedData?.publications)) {
+            publicationsArray = updatedData.publications;
+          } else if (
+            updatedData?.results &&
+            Array.isArray(updatedData.results)
+          ) {
+            publicationsArray = updatedData.results;
+          }
+          setPublications(publicationsArray);
+          setSuccessMessage("Publication ajoutée avec succès!");
+        } else {
+          setErrors({
+            submit:
+              "Publication ajoutée mais échec de la mise à jour de la liste.",
+          });
+        }
       }
-    } catch (error: any) {
-      console.error("Error submitting article:", error);
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        error?.errors ||
-        "Erreur lors de la publication de l'article";
-      swal.toast(errorMessage, "error");
+
+      resetForm();
+      setShowAddForm(false);
+      setTimeout(() => setSuccessMessage(""), 5000);
+    } catch (error) {
+      console.error("Error adding publication:", error);
+      let errorMessage = "Une erreur s'est produite lors de l'ajout";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        if ("errors" in error) {
+          const apiErrors = (
+            error as { errors: Record<string, { message: string }> }
+          ).errors;
+          const errorList = Object.values(apiErrors)
+            .map((err) => err.message)
+            .join(", ");
+          errorMessage = errorList;
+        } else if ("message" in error) {
+          errorMessage = (error as { message: string }).message;
+        }
+      }
+
+      setErrors({
+        submit: errorMessage,
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const resetForm = (): void => {
-    reset();
-    setContentFile(null);
-    setIndexingProofFile(null);
-    setAwardsProofFile(null);
-    setSuccessMessage("");
+    setNewPublication({
+      titre: "",
+      resume: "",
+      motsCles: "",
+      contenu: "",
+      journal: "",
+      datePublication: "",
+      coAuteursIds: [],
+    });
+    setErrors({});
   };
 
-  return (
-    <div>
-      <PageMeta
-        title="Publier un Article - CeDoc INPT"
-        description="Publier un nouvel article scientifique"
-      />
+  const removePublication = async (id: number): Promise<void> => {
+    if (
+      !window.confirm("Êtes-vous sûr de vouloir supprimer cette publication?")
+    ) {
+      return;
+    }
 
-      <PageBreadcrumb pageTitle="publier un Article" />
+    try {
+      await deleteData(`/publications/${id}`);
+      setPublications((prev) => prev.filter((pub) => pub.id !== id));
+      setSuccessMessage("Publication supprimée avec succès!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("Error removing publication:", error);
+      setErrors({
+        submit: "Erreur lors de la suppression de la publication",
+      });
+    }
+  };
 
-      <div className="max-w-4xl mx-auto">
-        {/* Header Card */}
-        <HeaderCard
-          title="Publier un Nouvel Article"
-          description="Partagez vos recherches et découvertes avec la communauté académique. Votre article sera disponible dans la bibliothèque après soumission."
-          icon="fa-file-alt"
-        />
+  const openPublicationModal = (publication: Publication): void => {
+    setSelectedPublication(publication);
+    setShowPublicationModal(true);
+  };
 
-        {/* Success Message */}
-        {successMessage && (
-          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-            <div className="flex items-center">
-              <i className="fas fa-check-circle mr-2"></i>
-              {successMessage}
+  const closePublicationModal = (): void => {
+    setSelectedPublication(null);
+    setShowPublicationModal(false);
+  };
+
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return "Non spécifiée";
+    try {
+      const options: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+      return date.toLocaleDateString("fr-FR", options);
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
+  };
+
+  // Fixed safeDisplayText function
+  // Replace the safeDisplayText function with this improved version:
+  const safeDisplayText = (
+    text: string | null | undefined,
+    fallback: string = "Non spécifié"
+  ): string => {
+    // More precise check for empty values
+    if (text === null || text === undefined) {
+      return fallback;
+    }
+
+    const stringValue = String(text).trim();
+    if (
+      stringValue === "" ||
+      stringValue === "null" ||
+      stringValue === "undefined"
+    ) {
+      return fallback;
+    }
+
+    return stringValue;
+  };
+
+  // And replace the modal content section (around line 700+) with this:
+  {
+    showPublicationModal && selectedPublication && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-xl font-bold text-gray-800">
+              {selectedPublication.titre || "Titre non spécifié"}
+            </h2>
+            <button
+              onClick={closePublicationModal}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* Debug info - remove this in production */}
+            <div className="bg-gray-100 p-2 text-xs font-mono">
+              <strong>Debug:</strong>
+              <br />
+              Resume: "{selectedPublication.resume}" (type:{" "}
+              {typeof selectedPublication.resume})<br />
+              Contenu: "{selectedPublication.contenu}" (type:{" "}
+              {typeof selectedPublication.contenu})<br />
+              MotsCles: "{selectedPublication.motsCles}" (type:{" "}
+              {typeof selectedPublication.motsCles})
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <h3 className="font-semibold text-gray-700 mb-1">Journal</h3>
+                <p className="text-gray-600">
+                  {selectedPublication.journal || "Non spécifié"}
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-700 mb-1">
+                  Date de Publication
+                </h3>
+                <p className="text-gray-600">
+                  {formatDate(selectedPublication.datePublication)}
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-700 mb-1">Statut</h3>
+                <span
+                  className={`inline-block px-2 py-1 rounded text-sm font-medium ${
+                    selectedPublication.status === "PUBLIEE"
+                      ? "bg-green-100 text-green-800"
+                      : selectedPublication.status === "REFUSEE"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {selectedPublication.status || "Non défini"}
+                </span>
+              </div>
+              {selectedPublication.prixIntitule &&
+                String(selectedPublication.prixIntitule).trim() && (
+                  <div>
+                    <h3 className="font-semibold text-gray-700 mb-1">Prix</h3>
+                    <p className="text-gray-600">
+                      {selectedPublication.prixIntitule}
+                    </p>
+                  </div>
+                )}
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-2">Mots-clés</h3>
+              <div className="flex flex-wrap gap-2">
+                {selectedPublication.motsCles &&
+                String(selectedPublication.motsCles).trim() ? (
+                  String(selectedPublication.motsCles)
+                    .split(",")
+                    .map((keyword, index) => (
+                      <span
+                        key={index}
+                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
+                      >
+                        {keyword.trim()}
+                      </span>
+                    ))
+                ) : (
+                  <span className="text-gray-500">Aucun mot-clé</span>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-2">Résumé</h3>
+              <p className="text-gray-600 leading-relaxed">
+                {selectedPublication.resume &&
+                String(selectedPublication.resume).trim()
+                  ? String(selectedPublication.resume)
+                  : "Aucun résumé disponible"}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-2">Contenu</h3>
+              <div className="prose max-w-none">
+                <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                  {selectedPublication.contenu &&
+                  String(selectedPublication.contenu).trim()
+                    ? String(selectedPublication.contenu)
+                    : "Aucun contenu disponible"}
+                </p>
+              </div>
+            </div>
+
+            <div className="text-sm text-gray-500 border-t pt-4">
+              <p>Créé le: {formatDate(selectedPublication.createdAt)}</p>
+              <p>
+                Dernière modification:{" "}
+                {formatDate(selectedPublication.updatedAt)}
+              </p>
             </div>
           </div>
-        )}
-        
-        {/* Form Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Basic Information Section */}
-            <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
-              <h3 className="flex items-center font-medium text-blue-800 mb-4">
-                <i className="fas fa-file-alt mr-2"></i>
-                Informations de Base
-              </h3>
 
-              <div className="space-y-4">
-                {/* Article Title */}
-                <div>
-                  <InputField
-                    label="Titre de l'Article"
-                    name="title"
-                    type="text"
-                    placeholder="Saisissez le titre de votre article"
-                    required={true}
-                    control={control}
-                    errors={errors}
-                    validation={{
-                      required: "Le titre de l'article est requis",
-                      minLength: {
-                        value: 10,
-                        message: "Le titre doit contenir au moins 10 caractères",
-                      },
-                      maxLength: {
-                        value: 200,
-                        message: "Le titre ne peut pas dépasser 200 caractères",
-                      },
-                    }}
-                  />
-                </div>
+          <div className="p-6 border-t border-gray-200 flex justify-end">
+            <button
+              onClick={closePublicationModal}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-                {/* Keywords */}
-                <div>
-                  <InputField
-                    label="Mots-clés (séparés par des virgules)"
-                    name="keywords"
-                    type="text"
-                    placeholder="Ex: intelligence artificielle, apprentissage automatique, réseaux de neurones"
-                    required={true}
-                    control={control}
-                    errors={errors}
-                    validation={{
-                      required: "Les mots-clés sont requis",
-                    }}
-                  />
-                </div>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="flex items-center space-x-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="text-gray-600">Chargement des publications...</span>
+        </div>
+      </div>
+    );
+  }
 
-                {/* Abstract */}
-                <div>
-                  <TextArea
-                    label="Résumé"
-                    name="abstract"
-                    placeholder="Fournissez un résumé concis de votre article (150-250 mots)..."
-                    required={true}
-                    control={control}
-                    errors={errors}
-                    rows={4}
-                    validation={{
-                      required: "Le résumé est requis",
-                      minLength: {
-                        value: 150,
-                        message: "Le résumé doit contenir au moins 150 caractères",
-                      },
-                      maxLength: {
-                        value: 500,
-                        message: "Le résumé ne peut pas dépasser 500 caractères",
-                      },
-                    }}
-                  />
-                </div>
+  return (
+    <ErrorBoundary>
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="p-6 border-b border-gray-200">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              Mes Publications Scientifiques
+            </h1>
+            <p className="text-gray-600">
+              Gérez vos publications scientifiques et articles de recherche.
+            </p>
+          </div>
 
-                {/* Content PDF Upload */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Contenu de l'Article (PDF) <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center">
-                    <label
-                      htmlFor="contentUpload"
-                      className="cursor-pointer bg-green-50 hover:bg-green-100 px-4 py-2 rounded border border-green-300 text-green-700"
+          <div className="p-6">
+            <button
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                if (showAddForm) resetForm();
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              <span className="text-lg">➕</span>
+              {showAddForm ? "Annuler" : "Ajouter une publication"}
+            </button>
+
+            {successMessage && (
+              <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                {successMessage}
+              </div>
+            )}
+
+            {errors.submit && (
+              <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {errors.submit}
+              </div>
+            )}
+
+            {publications.length > 0 ? (
+              <div className="mt-6">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                  Publications enregistrées ({publications.length})
+                </h2>
+
+                {publications.map((publication) => {
+                  // Debug each publication
+                  console.log("Rendering publication:", publication);
+
+                  return (
+                    <div
+                      key={publication.id}
+                      className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50"
                     >
-                      <span>{contentFile ? contentFile.name : "Choisir un fichier PDF"}</span>
-                      <input
-                        id="contentUpload"
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileUpload(e, 'content')}
-                        className="hidden"
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-800 mb-1">
+                            {publication.titre || "Titre non spécifié"}
+                          </h3>
+                          <p className="text-gray-600 mb-1">
+                            {publication.resume &&
+                            String(publication.resume).trim()
+                              ? String(publication.resume).length > 150
+                                ? String(publication.resume).substring(0, 150) +
+                                  "..."
+                                : String(publication.resume)
+                              : "Aucun résumé"}
+                          </p>
+                          <p className="text-gray-700 mb-1">
+                            Journal: {publication.journal || "Non spécifié"}
+                          </p>
+                          <p className="text-gray-700 mb-2">
+                            Date: {formatDate(publication.datePublication)}
+                          </p>
+                          <p className="text-sm text-gray-600 mb-1">
+                            Mots-clés:{" "}
+                            {publication.motsCles &&
+                            String(publication.motsCles).trim()
+                              ? String(publication.motsCles)
+                              : "Aucun mot-clé"}
+                          </p>
+                          {publication.prixIntitule &&
+                            String(publication.prixIntitule).trim() && (
+                              <p className="text-sm text-gray-600 mb-1">
+                                Prix: {publication.prixIntitule}
+                              </p>
+                            )}
+                          <p className="text-sm text-gray-500">
+                            Statut:{" "}
+                            <span
+                              className={`font-medium ${
+                                publication.status === "PUBLIEE"
+                                  ? "text-green-600"
+                                  : publication.status === "REFUSEE"
+                                  ? "text-red-600"
+                                  : "text-yellow-600"
+                              }`}
+                            >
+                              {publication.status || "Non défini"}
+                            </span>
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              debugPublication(publication); // Add debug call
+                              openPublicationModal(publication);
+                            }}
+                            className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded"
+                            aria-label={`Voir la publication ${publication.titre}`}
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => removePublication(publication.id)}
+                            className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded"
+                            aria-label={`Supprimer la publication ${publication.titre}`}
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">📚</div>
+                <h3 className="text-xl font-medium text-gray-800 mb-2">
+                  Aucune publication enregistrée
+                </h3>
+                <p className="text-gray-600">
+                  Commencez par ajouter votre première publication.
+                </p>
+              </div>
+            )}
+
+            {showAddForm && (
+              <div className="mt-6 border border-gray-200 rounded-lg">
+                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Ajouter une nouvelle publication
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setShowAddForm(false);
+                      resetForm();
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
                       />
-                    </label>
-                    {contentFile && (
-                      <button
-                        type="button"
-                        onClick={() => removeFile('content')}
-                        className="ml-2 text-red-500 hover:text-red-700"
-                        aria-label="Supprimer le fichier"
-                      >
-                        Supprimer
-                      </button>
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                    <h3 className="flex items-center font-medium text-blue-800 mb-4">
+                      <span className="mr-2">📝</span>
+                      Informations de Base
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="titre"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Titre de la publication*
+                        </label>
+                        <input
+                          type="text"
+                          id="titre"
+                          name="titre"
+                          value={newPublication.titre}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                          placeholder="Titre de votre publication"
+                        />
+                        {errors.titre && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.titre}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="datePublication"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Date de Publication
+                        </label>
+                        <input
+                          type="date"
+                          id="datePublication"
+                          name="datePublication"
+                          value={newPublication.datePublication}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                          Si non spécifiée, la date actuelle sera utilisée
+                        </p>
+                        {errors.datePublication && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.datePublication}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="motsCles"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Mots-clés*
+                        </label>
+                        <input
+                          type="text"
+                          id="motsCles"
+                          name="motsCles"
+                          value={newPublication.motsCles}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                          placeholder="Séparés par des virgules"
+                        />
+                        {errors.motsCles && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.motsCles}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="resume"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Résumé*
+                        </label>
+                        <textarea
+                          id="resume"
+                          name="resume"
+                          value={newPublication.resume}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                          rows={4}
+                          placeholder="Résumé de votre publication"
+                        />
+                        {errors.resume && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.resume}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="contenu"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Contenu*
+                        </label>
+                        <textarea
+                          id="contenu"
+                          name="contenu"
+                          value={newPublication.contenu}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                          rows={6}
+                          placeholder="Contenu complet de votre publication"
+                        />
+                        {errors.contenu && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.contenu}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                    <h3 className="flex items-center font-medium text-purple-800 mb-4">
+                      <span className="mr-2">📰</span>
+                      Information du Journal
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="journal"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Nom du Journal
+                        </label>
+                        <input
+                          type="text"
+                          id="journal"
+                          name="journal"
+                          value={newPublication.journal}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                          placeholder="Nom du journal de publication (optionnel)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                    <h3 className="flex items-center font-medium text-yellow-800 mb-4">
+                      <span className="mr-2">🏆</span>
+                      Prix et Distinctions
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="prixIntitule"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Intitulé du Prix
+                        </label>
+                        <input
+                          type="text"
+                          id="prixIntitule"
+                          name="prixIntitule"
+                          value={newPublication.prixIntitule || ""}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                          placeholder="Nom du prix ou distinction reçue (optionnel)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-4">
+                    <button
+                      onClick={() => {
+                        setShowAddForm(false);
+                        resetForm();
+                      }}
+                      className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting}
+                      className={`px-4 py-2 rounded text-white ${
+                        isSubmitting
+                          ? "bg-blue-400 cursor-not-allowed"
+                          : "bg-blue-600 hover:bg-blue-700"
+                      }`}
+                      aria-busy={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <span className="flex items-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          En cours...
+                        </span>
+                      ) : (
+                        "Publier"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {showPublicationModal && selectedPublication && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-800">
+                  {safeDisplayText(
+                    selectedPublication.titre,
+                    "Titre non spécifié"
+                  )}
+                </h2>
+                <button
+                  onClick={closePublicationModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <h3 className="font-semibold text-gray-700 mb-1">
+                      Journal
+                    </h3>
+                    <p className="text-gray-600">
+                      {safeDisplayText(selectedPublication.journal)}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-700 mb-1">
+                      Date de Publication
+                    </h3>
+                    <p className="text-gray-600">
+                      {formatDate(selectedPublication.datePublication)}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-700 mb-1">Statut</h3>
+                    <span
+                      className={`inline-block px-2 py-1 rounded text-sm font-medium ${
+                        selectedPublication.status === "PUBLIEE"
+                          ? "bg-green-100 text-green-800"
+                          : selectedPublication.status === "REFUSEE"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {selectedPublication.status}
+                    </span>
+                  </div>
+                  {selectedPublication.prixIntitule &&
+                    selectedPublication.prixIntitule.trim() && (
+                      <div>
+                        <h3 className="font-semibold text-gray-700 mb-1">
+                          Prix
+                        </h3>
+                        <p className="text-gray-600">
+                          {selectedPublication.prixIntitule}
+                        </p>
+                      </div>
+                    )}
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">
+                    Mots-clés
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPublication.motsCles ? (
+                      selectedPublication.motsCles
+                        .split(",")
+                        .map((keyword, index) => (
+                          <span
+                            key={index}
+                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
+                          >
+                            {keyword.trim()}
+                          </span>
+                        ))
+                    ) : (
+                      <span className="text-gray-500">Aucun mot-clé</span>
                     )}
                   </div>
-                  {contentFile && (
-                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
-                      <p className="text-sm text-green-700 flex items-center">
-                        <i className="fas fa-file-pdf mr-2"></i>
-                        <span className="font-medium">Fichier sélectionné:</span>
-                        <span className="ml-1">{contentFile.name}</span>
-                        <span className="ml-2 text-xs text-green-600">
-                          ({(contentFile.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
-                      </p>
-                    </div>
-                  )}
-                  {!contentFile && (
-                    <p className="mt-2 text-sm text-red-600">
-                      <i className="fas fa-exclamation-circle mr-1"></i>
-                      Le fichier PDF du contenu est obligatoire
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Taille maximale : 10MB (PDF uniquement)
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Résumé</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {safeDisplayText(
+                      selectedPublication.resume,
+                      "Aucun résumé disponible"
+                    )}
                   </p>
                 </div>
 
-                {/* Co-authors Search */}
                 <div>
-                  <ProfesseurSearch
-                    control={control}
-                    errors={errors}
-                    name="coAuthors"
-                    label="Co-auteurs"
-                    placeholder="Rechercher des co-auteurs par nom ou email..."
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Journal Indexation Section */}
-            <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
-              <h3 className="flex items-center font-medium text-purple-800 mb-4">
-                <i className="fas fa-journal-whills mr-2"></i>
-                Publication dans un Journal Indexé
-              </h3>
-              
-              {/* Checkbox for indexed journal */}
-              <div className="mb-4">
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                    {...control.register("isIndexedJournal")}
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    Cette publication est réalisée dans un journal indexé (référencé)
-                  </span>
-                </label>
-              </div>
-
-              {isIndexedJournal && (
-                <div className="space-y-4">
-                  {/* Journal Name */}
-                  <div>
-                    <InputField
-                      label="Nom du Journal"
-                      name="journalName"
-                      type="text"
-                      placeholder="Ex: Nature, Science, IEEE Transactions..."
-                      required={isIndexedJournal}
-                      control={control}
-                      errors={errors}
-                      validation={{
-                        required: isIndexedJournal ? "Le nom du journal est requis" : false,
-                      }}
-                    />
-                  </div>
-
-                  {/* Publication Date */}
-                  <div>
-                    <InputField
-                      label="Date de Publication"
-                      name="publicationDate"
-                      type="date"
-                      required={isIndexedJournal}
-                      control={control}
-                      errors={errors}
-                      validation={{
-                        required: isIndexedJournal ? "La date de publication est requise" : false,
-                      }}
-                    />
-                  </div>
-
-                  {/* Indexing Proof URL */}
-                  <div>
-                    <InputField
-                      label="Lien de Justification (URL)"
-                      name="indexingProof"
-                      type="url"
-                      placeholder="https://example.com/article-link"
-                      control={control}
-                      errors={errors}
-                    />
-                  </div>
-
-                  {/* Indexing Proof File Upload */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ou télécharger un justificatif PDF
-                    </label>
-                    <div className="flex items-center">
-                      <label
-                        htmlFor="indexingUpload"
-                        className="cursor-pointer bg-purple-50 hover:bg-purple-100 px-4 py-2 rounded border border-purple-300 text-purple-700"
-                      >
-                        <span>{indexingProofFile ? indexingProofFile.name : "Choisir un fichier"}</span>
-                        <input
-                          id="indexingUpload"
-                          type="file"
-                          accept=".pdf"
-                          onChange={(e) => handleFileUpload(e, 'indexing')}
-                          className="hidden"
-                        />
-                      </label>
-                      {indexingProofFile && (
-                        <button
-                          type="button"
-                          onClick={() => removeFile('indexing')}
-                          className="ml-2 text-red-500 hover:text-red-700"
-                          aria-label="Supprimer le fichier d'indexation"
-                        >
-                          Supprimer
-                        </button>
+                  <h3 className="font-semibold text-gray-700 mb-2">Contenu</h3>
+                  <div className="prose max-w-none">
+                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                      {safeDisplayText(
+                        selectedPublication.contenu,
+                        "Aucun contenu disponible"
                       )}
-                    </div>
-                    {indexingProofFile && (
-                      <p className="mt-2 text-sm text-green-600">
-                        <i className="fas fa-check-circle mr-1"></i>
-                        Fichier sélectionné: {indexingProofFile.name}
-                      </p>
-                    )}
+                    </p>
                   </div>
                 </div>
-              )}
-            </div>
 
-            {/* Awards and Distinctions Section */}
-            <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
-              <h3 className="flex items-center font-medium text-yellow-800 mb-4">
-                <i className="fas fa-trophy mr-2"></i>
-                Prix et Distinctions
-              </h3>
-              
-              {/* Awards Description */}
-              <div className="mb-4">
-                <TextArea
-                  label="Description des Prix et Distinctions"
-                  name="awards"
-                  placeholder="Décrivez les prix, distinctions ou reconnaissances reçues en relation avec cette publication..."
-                  control={control}
-                  errors={errors}
-                  rows={3}
-                />
-              </div>
-
-              {/* Show proof fields only if awards are filled */}
-              {awardsValue && (
-                <div className="space-y-4">
-                  {/* Awards Proof URL */}
-                  <div>
-                    <InputField
-                      label="Lien de Justification (URL)"
-                      name="awardsProof"
-                      type="url"
-                      placeholder="https://example.com/award-link"
-                      control={control}
-                      errors={errors}
-                    />
-                  </div>
-
-                  {/* Awards Proof File Upload */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ou télécharger un justificatif PDF
-                    </label>
-                    <div className="flex items-center">
-                      <label
-                        htmlFor="awardsUpload"
-                        className="cursor-pointer bg-yellow-50 hover:bg-yellow-100 px-4 py-2 rounded border border-yellow-300 text-yellow-700"
-                      >
-                        <span>{awardsProofFile ? awardsProofFile.name : "Choisir un fichier"}</span>
-                        <input
-                          id="awardsUpload"
-                          type="file"
-                          accept=".pdf"
-                          onChange={(e) => handleFileUpload(e, 'awards')}
-                          className="hidden"
-                        />
-                      </label>
-                      {awardsProofFile && (
-                        <button
-                          type="button"
-                          onClick={() => removeFile('awards')}
-                          className="ml-2 text-red-500 hover:text-red-700"
-                          aria-label="Supprimer le fichier de prix"
-                        >
-                          Supprimer
-                        </button>
-                      )}
-                    </div>
-                    {awardsProofFile && (
-                      <p className="mt-2 text-sm text-green-600">
-                        <i className="fas fa-check-circle mr-1"></i>
-                        Fichier sélectionné: {awardsProofFile.name}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Guidelines */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2 flex items-center">
-                <i className="fas fa-info-circle mr-2"></i>
-                Conseils pour une bonne publication
-              </h3>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Assurez-vous que votre PDF est de haute qualité et lisible</li>
-                <li>• Structurez votre article clairement (introduction, méthode, résultats, discussion)</li>
-                <li>• Utilisez un langage académique précis</li>
-                <li>• Citez vos sources correctement</li>
-                <li>• Vérifiez l'orthographe et la grammaire</li>
-                <li>• Incluez des figures et tableaux si nécessaire</li>
-                <li>• Obtenez l'accord de tous les co-auteurs</li>
-                <li>• Respectez les directives éthiques de publication</li>
-                <li>• Pour les journaux indexés, vérifiez le facteur d'impact et l'indexation</li>
-                <li>• Conservez tous les justificatifs de publication et prix</li>
-              </ul>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-              <Button
-                variant="primary"
-                size="md"
-                disabled={isSubmitting || !contentFile}
-                className="flex-1 sm:flex-none"
-                onClick={handleSubmit(onSubmit)}
-              >
-                {isSubmitting ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>
-                    Publication en cours...
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-upload mr-2"></i>
-                    Publier l'Article
-                  </>
-                )}
-              </Button>
-
-              <Button
-                variant="outline"
-                size="md"
-                disabled={isSubmitting}
-                className="flex-1 sm:flex-none"
-                onClick={() => {
-                  resetForm();
-                  swal.toast("Formulaire réinitialisé", "info");
-                }}
-              >
-                <i className="fas fa-undo mr-2"></i>
-                Réinitialiser
-              </Button>
-            </div>
-
-            {/* Status Information */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <h4 className="font-medium text-gray-900 mb-2">
-                Processus de publication
-              </h4>
-              <div className="text-sm text-gray-600 space-y-2">
-                <div className="flex items-center">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-blue-600 font-semibold text-xs">1</span>
-                  </div>
-                  <span>Soumission de votre article avec justificatifs</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-blue-600 font-semibold text-xs">2</span>
-                  </div>
-                  <span>Vérification automatique du format et des justificatifs</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-green-600 font-semibold text-xs">3</span>
-                  </div>
-                  <span>Publication avec badges de qualité (journal indexé, prix)</span>
+                <div className="text-sm text-gray-500 border-t pt-4">
+                  <p>Créé le: {formatDate(selectedPublication.createdAt)}</p>
+                  <p>
+                    Dernière modification:{" "}
+                    {formatDate(selectedPublication.updatedAt)}
+                  </p>
                 </div>
               </div>
+
+              <div className="p-6 border-t border-gray-200 flex justify-end">
+                <button
+                  onClick={closePublicationModal}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                >
+                  Fermer
+                </button>
+              </div>
             </div>
-          </form>
-        </div>
+          </div>
+        )}
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 
-export default PublierPublication;
+export default DoctorantPublications;

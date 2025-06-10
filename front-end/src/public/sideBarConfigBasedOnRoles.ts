@@ -37,7 +37,6 @@ export const candidatsSidebarConfig: NavigationGroup[] = [
   },
 ];
 export const doctorantsSidebarConfig: NavigationGroup[] = [
-
   {
     title: "Doctorant",
     items: [
@@ -71,11 +70,6 @@ export const doctorantsSidebarConfig: NavigationGroup[] = [
         label: "Demande de Réinscription",
         icon: "fas fa-undo",
       },
-      {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.valider.path,
-        label: "valider reinscriptions",
-        icon: "fas fa-check",
-      },
     ],
   },
 ];
@@ -103,6 +97,11 @@ export const chefsEquipesSidebarConfig: NavigationGroup[] = [
         label: "Sujets des Membres",
         icon: "fas fa-users",
       },
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.valider.path,
+        label: "valider reinscriptions",
+        icon: "fas fa-check",
+      },
     ],
   },
 ];
@@ -111,17 +110,6 @@ export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
 ];
 export const directionCedocSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
-  ...doctorantsSidebarConfig,
-  {
-    title: "reinscriptions",
-    items: [
-      {
-        href: appConfig.FRONTEND_PATHS.DASHBOARD.reinscriptions.valider.path,
-        label: "valider reinscriptions",
-        icon: "fas fa-true",
-      },
-    ],
-  },
 ];
 export const responsableFormationSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,

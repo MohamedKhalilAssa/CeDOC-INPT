@@ -178,8 +178,18 @@ const appConfig: AppConfig = {
     PUBLICATIONS: {
       getAll: {
         name: "Get All Publications",
-        path: "/publications",
+        path: "/publications/",
         method: "GET",
+      },
+      ajouter: {
+        name: "Ajouter une Publication",
+        path: "/publications/",
+        method: "POST",
+      },
+      supprimer: {
+        name: "Supprimer une Publication",
+        path: "/publications/:id",
+        method: "DELETE",
       },
     },
     CONFERENCES: {
