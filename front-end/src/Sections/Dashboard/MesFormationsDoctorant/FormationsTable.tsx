@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search,  Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Search,  Clock} from 'lucide-react';
 import { FormationResponseDTO } from '@/Types/FormationTypes/FormationResponse';
 import { UtilisateurResponseDTO } from '@/Types/UtilisateursTypes';
 import appConfig from '@/public/config';
@@ -49,12 +49,10 @@ const FormationsTable: React.FC = () => {
   const fetchValidatedFormations = async () => {
     try {
       const user = await getData<UtilisateurResponseDTO>(appConfig.API_PATHS.AUTH.currentUser.path);
-      console.log("Current User:", user?.id);
       if (!user?.id) return;
 
     const url = `${appConfig.API_PATHS.SEANCEFORMATION.getValidatedFormationsByDoctorant.path}/${user.id}`;
     const formationList = await getData<FormationResponseDTO[]>(url);
-    console.log("Validated Formations Data:", formationList);
 
     if (!formationList) {
       setFormations([]);

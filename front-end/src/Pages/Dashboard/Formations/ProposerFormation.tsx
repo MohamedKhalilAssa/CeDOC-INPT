@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Upload, X, Calendar, MapPin, User, BookOpen, Clock, FileText, Users } from 'lucide-react';
 import { FormationRequestDTO } from '@/Types/FormationTypes/FormationRequestDTO';
 import { ModuleEnum } from '@/Types/FormationTypes/FormationEnum';
-import { useNavigate } from 'react-router-dom';
 import { API, postData } from '@/Helpers/CRUDFunctions';
 import appConfig from '@/public/config';
 import PageBreadcrumb from '@/Components/DashComps/common/PageBreadCrumb';
@@ -385,7 +384,6 @@ const ProposerFormation: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
-  const navigate = useNavigate();
 
   const handleFieldChange = (field: keyof FormationRequestDTO, value: any) => {
     if (field === 'doctorantsCiblesEmails') {

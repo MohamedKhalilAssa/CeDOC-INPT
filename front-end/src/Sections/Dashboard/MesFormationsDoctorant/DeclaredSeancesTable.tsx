@@ -23,13 +23,13 @@ const DeclaredSeancesTable: React.FC = () => {
   }, []);
 
   const filtered = seances.filter(s =>
-    s.formation?.toLowerCase().includes(searchTerm.toLowerCase())
+    s.formationName?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'VALIDER': return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'REJETER': return <XCircle className="w-5 h-5 text-red-500" />;
+      case 'REFUSER': return <XCircle className="w-5 h-5 text-red-500" />;
       default: return <AlertCircle className="w-5 h-5 text-yellow-500" />;
     }
   };
@@ -56,12 +56,14 @@ const DeclaredSeancesTable: React.FC = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Formation</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Durée</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Statut</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Validation</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">Déclarée le</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filtered.map(seance => (
               <tr key={seance.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">{seance.formation}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{seance.formationName}</td>
                 <td className="px-6 py-4 text-sm text-gray-900">
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 mr-1 text-gray-400" />
@@ -71,6 +73,18 @@ const DeclaredSeancesTable: React.FC = () => {
                 <td className="px-6 py-4 text-sm text-gray-900 flex items-center space-x-2">
                   {getStatusIcon(seance.statut)}
                   <span>{seance.statut}</span>
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900">{seance.validePar}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">
+                  {seance.createdAt
+                    ? new Date(seance.createdAt).toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })
+                    : ''}
                 </td>
               </tr>
             ))}

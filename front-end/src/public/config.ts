@@ -183,7 +183,7 @@ const appConfig: AppConfig = {
     SEANCEFORMATION: {
       getAll: {
         name: "Get All Formations",
-        path: "/formations",
+        path: "/formations/seances-formations",
         method: "GET",
       },
       postSeanceFormation: {
@@ -192,25 +192,35 @@ const appConfig: AppConfig = {
         method: "POST",
       },
         getValidatedFormationsByDoctorant: {
-        name: "Post Seance Formation",
+        name: "getValidatedFormationsByDoctorant",
         path: "/formations/seances-formations/validated/doctorant",
         method: "GET",
       },
       getTotalValidatedDuree: {
-        name: "Post Seance Formation",
+        name: "getTotalValidatedDuree",
         path: "/formations/seances-formations/validated/duree/total",
         method: "GET",
       },
       getValidatedFormationDuree: {
-        name: "Post Seance Formation",
+        name: "getValidatedFormationDuree",
         path: "/formations/seances-formations/validated/duree",
         method: "GET",
       },
       getDeclaredSeances: {
-        name: "Post Seance Formation",
+        name: "getDeclaredSeances",
         path: "/formations/seances-formations/doctorant",
         method: "GET",
-      }  
+      },
+        putSeanceFormation: {
+        name: "putSeanceFormation",
+        path: "/formations/seances-formations",
+        method: "PUT",
+      },
+        justificatifPDF: {
+        name: "justificatifPDF",
+        path: "/formations/seances-formations/upload-pdf",
+        method: "PUT",
+      },   
     },
 
     // ── THE TWO NEW TOP‐LEVEL KEYS ──

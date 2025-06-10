@@ -3,7 +3,7 @@ import { Search, Upload } from 'lucide-react';
 import { FormationResponseDTO } from "@/Types/FormationTypes/FormationResponse";
 import { SeanceFormationRequestDTO} from "@/Types/FormationTypes/SeanceFormationRequest";
 import { StatutFormationEnum } from "@/Types/FormationTypes/StatutFormationEnum";
-import { getData, postData } from "@/Helpers/CRUDFunctions";
+import { API, getData, postData } from "@/Helpers/CRUDFunctions";
 import appConfig from "@/public/config";
 import { ModuleEnum } from '@/Types/FormationTypes/FormationEnum';
 import { UtilisateurResponseDTO } from '@/Types/UtilisateursTypes';
@@ -20,6 +20,22 @@ interface FullFormData {
 }
 
 
+export const uploadJustificatifPdf = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await API.post<{ path: string }>(
+    appConfig.API_PATHS.SEANCEFORMATION.justificatifPDF.path,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return res.data.path; // e.g. "/uploads/justificatifs/filename.pdf"
+};
 
 
 
@@ -80,6 +96,8 @@ const FormationDeclaration: React.FC = () => {
   //     module: ''
   //   });
   // };
+
+  const [uploading, setUploading] = useState(false);
 
   const getDeclarantId = async (): Promise<number | null> => {
     try {
@@ -261,16 +279,16 @@ const FormationDeclaration: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Lieu de la formation
             </label>
-            <input
-              type="text"
+            <select
               value={formData.lieu}
               onChange={(e) => setFormData({ ...formData, lieu: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Lieu de formation"
-            />
+            >
+              <option value="">Sélectionner le lieu</option>
+              <option value="INPT-Rabat">INPT-Rabat</option>
+            </select>
           </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -302,11 +320,17 @@ const FormationDeclaration: React.FC = () => {
             </label>
             <input
               type="number"
-              value={formData.duree}
-              onChange={(e) => setFormData({ ...formData, duree: parseInt(e.target.value) || 0 })}
+              value={formData.duree === 0 ? '' : formData.duree}
+              onChange={(e) => {
+                const val = e.target.value;
+                // Allow empty string (so user can delete all digits), otherwise parseInt
+                setFormData({ ...formData, duree: val === '' ? 0 : parseInt(val) || 0 });
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="0"
               min="0"
+              inputMode="numeric"
+              pattern="[0-9]*"
             />
           </div>
         </div>
@@ -318,13 +342,23 @@ const FormationDeclaration: React.FC = () => {
           <div className="flex items-center space-x-4">
             <input
               type="file"
-              accept=".pdf"
-              onChange={(e) => {
+              accept="application/pdf"
+              onChange={async (e) => {
                 const file = e.target.files?.[0];
-                if (file) {
-                  setFormData({ ...formData, justificatifPdf: file.name });
+                if (file && file.type === "application/pdf") {
+                  setUploading(true);
+                  try {
+                    const uploadedPath = await uploadJustificatifPdf(file);
+                    setFormData(prev => ({
+                      ...prev,
+                      justificatifPdf: uploadedPath
+                    }));
+                  } finally {
+                    setUploading(false);
+                  }
                 }
               }}
+
               className="hidden"
               id="pdf-upload"
             />
@@ -335,9 +369,11 @@ const FormationDeclaration: React.FC = () => {
               <Upload className="w-4 h-4 mr-2" />
               Choose File
             </label>
-            {formData.justificatifPdf && (
-              <span className="text-sm text-gray-600">{formData.justificatifPdf}</span>
-            )}
+              {uploading ? (
+                <span className="text-sm text-gray-500">Téléversement en cours...</span>
+              ) : formData.justificatifPdf ? (
+                <span className="text-sm text-gray-600">{formData.justificatifPdf}</span>
+              ) : null}
             <span className="text-xs text-gray-500">PDF seulement (max 5MB)</span>
           </div>
         </div>

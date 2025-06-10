@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, Clock, Calendar, Users, Star, Award, Check, Brain, Network, Shield, Database, Cloud, Code, Link, Bot, Trophy, GraduationCap, CheckCircle, ArrowRight, Mail } from 'lucide-react';
 import HeroSection from '@/Sections/FormatonsPage/FormationHeroSection';
 import DomainesSection from '@/Sections/FormatonsPage/DomainesSection';
 import FormationStatsSection from '@/Sections/FormatonsPage/StatsSection';   
