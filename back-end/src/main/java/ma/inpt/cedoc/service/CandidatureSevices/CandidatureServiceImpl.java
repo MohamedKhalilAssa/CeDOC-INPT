@@ -2,10 +2,10 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.*;
 import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
@@ -85,45 +83,72 @@ public class CandidatureServiceImpl implements CandidatureService {
 
     // TO BE FIXED: save entretien date somewhere if needed
     @Override
+    @Transactional
     public CandidatureResponseDTO accepterCandidature(Long candidatureId, LocalDate entretien) {
         // 1) Load the parent
         Candidature parent = candidatureRepository.findById(candidatureId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Candidature introuvable"));
 
-        // 2) Create the subclass instance
+        // 2) Create the subclass instance with manual field copying (excluding ID)
         CandidatureAccepter child = new CandidatureAccepter();
-        BeanUtils.copyProperties(parent, child);            // copy all common fields
+        copyBasicFields(parent, child);
         child.setStatutCandidature(CandidatureEnum.ACCEPTER);
         child.setDateEntretien((int) entretien.toEpochDay());
 
-        // 3) Save the subclass → inserts into candidatures + candidatures_accepter
+        // 3) Delete the original entity first
+        candidatureRepository.delete(parent);
+        candidatureRepository.flush(); // Ensure the delete is processed
+
+        // 4) Save the new subclass entity (will get a new ID)
         CandidatureAccepter saved = candidatureAccepterRepository.save(child);
 
-        // 4) Map to DTO
+        // 5) Map to DTO
         return candidatureMapper.toResponseDTO(saved);
     }
 
     @Override
+    @Transactional
     public CandidatureResponseDTO refuserCandidature(Long candidatureId, String motif) {
         // 1) Load the parent
         Candidature parent = candidatureRepository.findById(candidatureId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Candidature introuvable"));
 
-        // 2) Create the subclass instance
+        // 2) Create the subclass instance with manual field copying (excluding ID)
         CandidatureRefuser child = new CandidatureRefuser();
-        BeanUtils.copyProperties(parent, child);
+        copyBasicFields(parent, child);
         child.setStatutCandidature(CandidatureEnum.REFUSER);
         child.setMotif(motif);
 
-        // 3) Save the subclass → inserts into candidatures + candidatures_refuser
+        // 3) Delete the original entity first
+        candidatureRepository.delete(parent);
+        candidatureRepository.flush(); // Ensure the delete is processed
+
+        // 4) Save the new subclass entity (will get a new ID)
         CandidatureRefuser saved = candidatureRefuserRepository.save(child);
 
-        // 4) Map to DTO
+        // 5) Map to DTO
         return candidatureMapper.toResponseDTO(saved);
     }
 
+    /**
+     * Manually copy basic fields from parent to child candidature (excluding ID to avoid conflicts)
+     */
+    private void copyBasicFields(Candidature parent, Candidature child) {
+        child.setCreatedAt(parent.getCreatedAt());
+        child.setUpdatedAt(parent.getUpdatedAt());
+        child.setMentionBac(parent.getMentionBac());
+        child.setDiplome(parent.getDiplome());
+        child.setMentionDiplome(parent.getMentionDiplome());
+        child.setDossierCandidature(parent.getDossierCandidature());
+        child.setTypeEtablissement(parent.getTypeEtablissement());
+        child.setSpecialite(parent.getSpecialite());
+        child.setIntitulePFE(parent.getIntitulePFE());
+        child.setCandidat(parent.getCandidat());
+        child.setSujets(parent.getSujets());
+        // Note: ID and statutCandidature are not copied intentionally
+    }
 
     @Override
     public void fermerEtArchiverCompteCandidat(Long candidatId) {
@@ -618,6 +643,111 @@ public class CandidatureServiceImpl implements CandidatureService {
             default:
                 return c1.getId().compareTo(c2.getId());
         }
+    }
+
+    @Override
+    @Transactional
+    public CandidatureResponseDTO changeStatutCandidature(Long candidatureId, ChangeStatutCandidatureRequestDTO dto, UserDetails userDetails) {
+        // 1. Load the candidature
+        Candidature candidature = candidatureRepository.findById(candidatureId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidature introuvable"));
+
+        // 2. Get current user and verify authorization
+        Utilisateur currentUser = utilisateurRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+        if (!canChangeStatutCandidature(currentUser, candidature)) {
+            throw new AccessDeniedException("Vous n'avez pas l'autorisation de modifier le statut de cette candidature");
+        }
+
+        // 3. Handle status change based on target status
+        switch (dto.getNouveauStatut()) {
+            case ACCEPTER:
+                if (dto.getDateEntretien() != null && !dto.getDateEntretien().isEmpty()) {
+                    try {
+                        LocalDate entretienDate = LocalDate.parse(dto.getDateEntretien());
+                        return accepterCandidature(candidatureId, entretienDate);
+                    } catch (DateTimeParseException e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                            "Format de date invalide. Utilisez le format yyyy-MM-dd (ex: 2025-06-10). Date reçue: " + dto.getDateEntretien());
+                    } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                            "Erreur lors du traitement de la date d'entretien: " + e.getMessage());
+                    }
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                        "La date d'entretien est obligatoire pour accepter une candidature");
+                }
+
+            case REFUSER:
+                if (dto.getMotif() == null || dto.getMotif().trim().isEmpty()) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                        "Le motif de refus est obligatoire");
+                }
+                return refuserCandidature(candidatureId, dto.getMotif().trim());
+
+            case EN_COURS_DE_TRAITEMENT:
+            case SOUMISE:
+                // Simple status update without subclass creation
+                candidature.setStatutCandidature(dto.getNouveauStatut());
+                Candidature updated = candidatureRepository.save(candidature);
+                return candidatureMapper.toResponseDTO(updated);
+
+            default:
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Statut invalide");
+        }
+    }
+
+    /**
+     * Check if the current user can change the status of the given candidature
+     */
+    private boolean canChangeStatutCandidature(Utilisateur currentUser, Candidature candidature) {
+        // DIRECTION_CEDOC can change any candidature status
+        if (currentUser.hasRole(RoleEnum.DIRECTION_CEDOC)) {
+            return true;
+        }
+
+        Long userId = currentUser.getId();
+
+        // Check if user is chef equipe for any of the candidature's sujets
+        if (currentUser.hasRole(RoleEnum.CHEF_EQUIPE)) {
+            ChefEquipeRole chefRole = chefEquipeRoleRepository.findByProfesseurUtilisateurId(userId).orElse(null);
+            if (chefRole != null) {
+                boolean isChefForSujet = candidature.getSujets().stream()
+                    .anyMatch(sujet -> sujet.getChefEquipe() != null && 
+                             sujet.getChefEquipe().getId().equals(chefRole.getId()));
+                if (isChefForSujet) {
+                    return true;
+                }
+            }
+        }
+
+        // Check if user is professeur for any of the candidature's sujets
+        if (currentUser.hasRole(RoleEnum.PROFESSEUR)) {
+            Professeur professeur = professeurRepository.findByUtilisateurId(userId).orElse(null);
+            if (professeur != null) {
+                boolean isProfesseurForSujet = candidature.getSujets().stream()
+                    .anyMatch(sujet -> sujet.getProfesseurs().contains(professeur));
+                if (isProfesseurForSujet) {
+                    return true;
+                }
+            }
+        }
+
+        // Check if user is directeur de these for any of the candidature's sujets
+        if (currentUser.hasRole(RoleEnum.DIRECTEUR_DE_THESE)) {
+            DirecteurDeTheseRole directeurRole = directeurDeTheseRoleRepository.findByProfesseurUtilisateurId(userId).orElse(null);
+            if (directeurRole != null) {
+                boolean isDirecteurForSujet = candidature.getSujets().stream()
+                    .anyMatch(sujet -> sujet.getDirecteurDeThese() != null &&
+                             sujet.getDirecteurDeThese().getId().equals(directeurRole.getId()));
+                if (isDirecteurForSujet) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 }

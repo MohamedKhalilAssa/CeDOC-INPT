@@ -183,5 +183,16 @@ public class CandidatureController {
             };
         }
 
+        // 11) Change candidature status (PROFESSEUR, CHEF_EQUIPE, DIRECTEUR_DE_THESE, DIRECTION_CEDOC only)
+        @PutMapping("/{id}/status")
+        public ResponseEntity<CandidatureResponseDTO> changeStatutCandidature(
+            @PathVariable("id") Long candidatureId,
+            @RequestBody @Validated ChangeStatutCandidatureRequestDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
+        ) {
+            CandidatureResponseDTO updated = candidatureService.changeStatutCandidature(candidatureId, dto, userDetails);
+            return ResponseEntity.ok(updated);
+        }
+
     
 }

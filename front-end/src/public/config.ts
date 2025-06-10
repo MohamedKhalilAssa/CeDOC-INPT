@@ -191,6 +191,11 @@ const appConfig: AppConfig = {
         path: "/candidatures/{id}/refuser",
         method: "POST",
       },
+      changeStatus: {
+        name: "Changer statut candidature",
+        path: "/candidatures/{id}/status",
+        method: "PUT",
+      },
     },
 
     // Formation API paths

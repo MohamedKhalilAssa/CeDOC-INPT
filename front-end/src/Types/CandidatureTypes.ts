@@ -86,6 +86,12 @@ export interface RefuserCandidatureRequest {
   motif: string;
 }
 
+export interface ChangeStatutCandidatureRequest {
+  nouveauStatut: string; // CandidatureEnum from backend
+  motif?: string; // Optional, for REFUSER status or general notes
+  dateEntretien?: string; // Optional, for ACCEPTER status (ISO format: yyyy-MM-dd)
+}
+
 // CandidatureResponseDTO to match backend structure
 export interface CandidatureResponseDTO {
   id: number;

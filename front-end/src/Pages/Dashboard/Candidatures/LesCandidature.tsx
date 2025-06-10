@@ -2,12 +2,15 @@ import Badge from "@/Components/DashComps/ui/badge/Badge";
 import type { Column } from "@/Components/Table/ServerSideTable";
 import ServerSideTable from "@/Components/Table/ServerSideTable";
 import { getData } from "@/Helpers/CRUDFunctions";
+import { useAuth } from "@/Hooks/UseAuth";
 import { useServerSideTable } from "@/Hooks/useServerSideTable";
 import appConfig from "@/public/config";
 import { CandidatureResponseDTO } from "@/Types/CandidatureTypes";
 import { PaginatedResponse, TableConfig } from "@/Types/GlobalTypes";
+import { RoleEnum } from "@/Types/UtilisateursEnums";
 import { CheckCircle, Clock, User, XCircle } from "lucide-react";
 import React, { useCallback, useState } from "react";
+import ChangeStatusModal from "./ChangeStatusModal";
 import EditMaCandidatureModal from "./EditMaCandidatureModal";
 import ViewCandidatureModal from "./ViewCandidatureModal";
 
@@ -16,6 +19,7 @@ interface CandidatureTableData extends CandidatureResponseDTO {
 }
 
 const LesCandidature: React.FC = () => {
+  const auth = useAuth();
   // Fetcher function for the table hook
   const fetchCandidatures = useCallback(
     async (
@@ -74,6 +78,7 @@ const LesCandidature: React.FC = () => {
   // Modal state management
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
   const [selectedCandidature, setSelectedCandidature] =
     useState<CandidatureTableData | null>(null);
 
@@ -85,12 +90,18 @@ const LesCandidature: React.FC = () => {
 
   const handleEditCandidature = (candidature: CandidatureTableData) => {
     setSelectedCandidature(candidature);
-    setIsEditModalOpen(true);
+    // If user is CANDIDAT, show edit modal; otherwise show change status modal
+    if (auth.roles.includes(RoleEnum.CANDIDAT)) {
+      setIsEditModalOpen(true);
+    } else if (canChangeStatus) {
+      setIsChangeStatusModalOpen(true);
+    }
   };
 
   const handleCloseModal = () => {
     setIsViewModalOpen(false);
     setIsEditModalOpen(false);
+    setIsChangeStatusModalOpen(false);
     setSelectedCandidature(null);
   };
 
@@ -98,6 +109,21 @@ const LesCandidature: React.FC = () => {
     // Refresh the table data to show updated information
     window.location.reload(); // Simple refresh - you could implement more sophisticated state update
   };
+
+  const handleStatusChangeSuccess = () => {
+    // Refresh the table data to show updated status
+    window.location.reload();
+  };
+
+  // Check if user has permission to change status
+  const canChangeStatus = auth.roles.some((role) =>
+    [
+      RoleEnum.PROFESSEUR,
+      RoleEnum.CHEF_EQUIPE,
+      RoleEnum.DIRECTEUR_DE_THESE,
+      RoleEnum.DIRECTION_CEDOC,
+    ].includes(role)
+  );
 
   // Status badge component for candidature status
   const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
@@ -284,20 +310,29 @@ const LesCandidature: React.FC = () => {
         // Note: Delete actions might need specific permissions
         // onDelete={async (row) => { ... }}
       />
-
       <ViewCandidatureModal
         candidature={selectedCandidature}
         isOpen={isViewModalOpen}
         onClose={handleCloseModal}
       />
-
-      <EditMaCandidatureModal
-        candidature={selectedCandidature}
-        isOpen={isEditModalOpen}
-        onClose={handleCloseModal}
-        onSuccess={handleEditSuccess}
-        onError={(error) => console.error("Edit error:", error)}
-      />
+      {auth.roles.includes(RoleEnum.CANDIDAT) ? (
+        <EditMaCandidatureModal
+          candidature={selectedCandidature}
+          isOpen={isEditModalOpen}
+          onClose={handleCloseModal}
+          onSuccess={handleEditSuccess}
+          onError={(error) => console.error("Edit error:", error)}
+        />
+      ) : null}
+      {canChangeStatus && (
+        <ChangeStatusModal
+          candidature={selectedCandidature}
+          isOpen={isChangeStatusModalOpen}
+          onClose={handleCloseModal}
+          onSuccess={handleStatusChangeSuccess}
+          onError={(error) => console.error("Status change error:", error)}
+        />
+      )}
     </div>
   );
 };
