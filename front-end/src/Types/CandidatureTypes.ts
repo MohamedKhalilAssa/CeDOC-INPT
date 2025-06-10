@@ -1,7 +1,13 @@
 import { UtilisateurResponseDTO } from "@/Types/UtilisateursTypes";
 
+export enum GradeProfesseurEnum {
+  ASSISTANT = "ASSISTANT",
+  HABILITE = "HABILITE",
+  PES = "PES",
+}
+
 export interface ProfesseurResponseDTO extends UtilisateurResponseDTO {
-  grade: string;
+  grade: GradeProfesseurEnum;
 }
 
 export interface SujetResponseDTO {
@@ -40,17 +46,18 @@ export interface DoctorantResponseDTO extends UtilisateurResponseDTO {
 /**
  * Payload returned by GET /api/chefs-equipe/chefs-sujets
  */
-export interface PublicSujetWithParticipants {
-  sujet: {
-    id: number;
-    intitule: string;
-    description: string;
-    estPublic: boolean;
-    valide: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
-  chef: UtilisateurResponseDTO | null;
-  professeurs: ProfesseurResponseDTO[];
-  doctorants: DoctorantResponseDTO[];
+export interface PublicSujetWithEquipeAndChef {
+  intituleSujet: string;
+  equipeIntitule: string;
+  nomCompletChef: string;
+  equipeId: number;
+}
+
+/**
+ * Payload returned by paginated GET /api/sujets/chefs-sujets-equipes
+ */
+export interface ChefSujetsEquipeResponseDTO {
+  intituleSujet: string;
+  nomCompletChef: string;
+  equipeIntitule: string;
 }

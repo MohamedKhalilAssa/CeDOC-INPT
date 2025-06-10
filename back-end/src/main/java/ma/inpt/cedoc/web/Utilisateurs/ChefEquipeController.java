@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetEquipeDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetEquipeMapperImpl;
@@ -25,8 +26,8 @@ import ma.inpt.cedoc.service.utilisateurServices.ChefEquipeService;
 import ma.inpt.cedoc.service.utilisateurServices.UtilisateurService;
 
 @RestController
-@RequestMapping("/api/chefs-equipe")
 @RequiredArgsConstructor
+@RequestMapping("/api/chefs-equipe")
 public class ChefEquipeController {
 
     private final ChefEquipeService chefEquipeService;
@@ -79,21 +80,28 @@ public class ChefEquipeController {
         return ResponseEntity.ok(dtoList);
     }
 
-    // ───–──── CRUD “tout brut” pour ChefEquipeRole ───–────
-
     /**
-     * POST /api/chefs-equipe
-     * Crée un nouveau ChefEquipeRole (JSON correspondant à ChefEquipeRole).
-     */
-    @PostMapping
-    public ResponseEntity<ChefEquipeRole> createChef(@RequestBody ChefEquipeRole chefEquipeRole) {
-        ChefEquipeRole saved = chefEquipeService.createChefEquipe(chefEquipeRole);
-        return ResponseEntity.status(201).body(saved);
-    }
-
-    /**
-     * GET /api/chefs-equipe
-     * Renvoie la liste brute de tous les ChefEquipeRole.
+     * 
+     * 
+     * 
+     * 
+     * * POST /api/chefs-equipe
+     * 
+     * rée un nouveau ChefEquipeRole (JSON correspondant à ChefEquipeRole).
+     * 
+     * 
+     * @PostMapping
+     *              @PreAuthorize("hasAuthority('DIRECTION_CEDOC')")
+     *              public ResponseEntity<ChefEquipeRole> createChef(@RequestBody
+     *              ChefEquipeRole chefEquipeRole) {
+     *              ChefEquipeRole saved =
+     *              chefEquipeService.createChefEquipe(chefEquipeRole);
+     *              return ResponseEntity.status(201).body(saved);
+     *              }
+     * 
+     *              /**
+     *              GET /api/chefs-equipe
+     *              Renvoie la liste brute de tous les ChefEquipeRole.
      */
     @GetMapping
     public ResponseEntity<List<ChefEquipeRole>> getAllChefs() {
@@ -117,6 +125,8 @@ public class ChefEquipeController {
      * dans le JSON.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('DIRECTION_CEDOC')")
+
     public ResponseEntity<ChefEquipeRole> updateChef(
             @PathVariable Long id,
             @RequestBody ChefEquipeRole chefEquipeRole) {
@@ -130,6 +140,7 @@ public class ChefEquipeController {
      * réussit.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DIRECTION_CEDOC')")
     public ResponseEntity<Void> deleteChef(@PathVariable Long id) {
         chefEquipeService.deleteChefEquipe(id);
         return ResponseEntity.noContent().build();
@@ -148,9 +159,23 @@ public class ChefEquipeController {
     }
 
     /**
-     * GET /api/chefs-equipe/{id}/candidatures
-     * Renvoie la liste brute des Candidatures associées aux sujets de ce chef.
-     */
+     * POST /api/chefs-equipe/sujets
+     * Crée un nouveau sujet directement validé par le chef d'équipe authentifié
+     **/
+
+    @PostMapping("/sujets")
+    @PreAuthorize("hasAuthority('CHEF_EQUIPE')")
+    public ResponseEntity<SujetResponseDTO> createSujet(@RequestBody SujetRequestDTO sujetRequest) {
+        // Récupérer le chef d'équipe authentifié
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        ChefEquipeRole chefEquipe = chefEquipeService.findByEmailWithMembers(currentUserEmail);
+
+        // Créer le sujet avec le chef d'équipe automatiquement assigné
+        SujetResponseDTO createdSujet = sujetService.createSujetByChefEquipe(sujetRequest, chefEquipe.getId());
+
+        return ResponseEntity.status(201).body(createdSujet);
+    }
+
     @GetMapping("/{id}/candidatures")
     public ResponseEntity<List<ma.inpt.cedoc.model.entities.candidature.Candidature>> getCandidaturesByChef(
             @PathVariable Long id) {
@@ -159,22 +184,10 @@ public class ChefEquipeController {
         return ResponseEntity.ok(candidatures);
     }
 
-    /**
-     * POST /api/chefs-equipe/{chefId}/valider-sujet/{sujetId}
-     * Valide le sujet sujetId pour le chef chefId. Renvoie l’entité Sujet mise à
-     * jour.
-     */
-    @PostMapping("/{chefId}/valider-sujet/{sujetId}")
-    public ResponseEntity<Sujet> validerSujet(
-            @PathVariable Long chefId,
-            @PathVariable Long sujetId) {
-        Sujet validated = chefEquipeService.validerSujet(chefId, sujetId);
-        return ResponseEntity.ok(validated);
-    }
-
-    /**
+    /*
      * GET /api/chefs-equipe/{chefId}/can-access/{candidatureId}
-     * Renvoie true si le chef chefId peut accéder à la candidature candidatureId.
+     * 
+     * 
      */
     @GetMapping("/{chefId}/can-access/{candidatureId}")
     public ResponseEntity<Boolean> canAccess(

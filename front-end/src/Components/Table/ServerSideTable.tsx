@@ -43,6 +43,8 @@ interface ServerSideTableProps {
   onView?: (row: any) => void;
   onDelete?: (row: any) => void;
   dataStability?: boolean; // Enable data stability during loading
+  headerColor?: string; // Optional header color for customization
+  headerColorHover?: string; // Optional hover color for header
 }
 
 const ServerSideTable: React.FC<ServerSideTableProps> = ({
@@ -62,6 +64,8 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
   onDelete,
   onView,
   dataStability = true,
+  headerColor = "bg-gray-50", // Default header color
+  headerColorHover = "hover:bg-gray-100", // Default hover color for header
 }) => {
   const [searchTerm, setSearchTerm] = useState(config.search);
   const stableDataRef = useRef<PaginatedResponse<any> | null>(null);
@@ -201,13 +205,13 @@ const ServerSideTable: React.FC<ServerSideTableProps> = ({
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className={headerColor}>
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
                   className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                    column.sortable ? "cursor-pointer hover:bg-gray-100" : ""
+                    column.sortable ? `cursor-pointer ${headerColorHover}` : ""
                   }`}
                   style={{ width: column.width }}
                   onClick={() => column.sortable && handleSort(column.key)}

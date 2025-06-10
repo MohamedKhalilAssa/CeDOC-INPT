@@ -11,13 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import ma.inpt.cedoc.model.entities.auth.Token;
@@ -142,6 +136,20 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token);
     }
+
+    // Validate refresh token without throwing exceptions
+    public boolean isRefreshTokenValid(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
+    }
+
     // Getting the JWT_SECRET key
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);

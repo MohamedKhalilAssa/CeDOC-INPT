@@ -197,7 +197,7 @@ const ExampleServerSideTable: React.FC<ExampleServerSideTableProps> = ({
         <div className="space-x-2">
           <button
             onClick={() => setConfig({ page: 1 })}
-            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+            className="px-3 py-1  bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
           >
             Reset to Page 1
           </button>

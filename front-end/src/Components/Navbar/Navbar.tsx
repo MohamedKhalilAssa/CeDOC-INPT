@@ -6,7 +6,6 @@ import { UseAlert, useAlert } from "@/Hooks/UseAlert";
 import { useAuth } from "@/Hooks/UseAuth";
 import appConfig from "@/public/config.ts";
 import { AnimatePresence, motion } from "framer-motion";
-import path from "path";
 import { useEffect, useRef, useState, type JSX } from "react";
 import { Link } from "react-router-dom";
 
@@ -44,9 +43,19 @@ const Navbar = (): JSX.Element => {
   ];
   // Other pages for dropdown
   const otherPages = [
-    { label: "Formations", path: appConfig.FRONTEND_PATHS.FORMATION.formations.path },
+    {
+      label: "Formations",
+      path: appConfig.FRONTEND_PATHS.FORMATION.formations.path,
+    },
     { label: "Contact", path: appConfig.FRONTEND_PATHS.GLOBAL.contact.path },
-    { label: "Sujets de Recherches", path: appConfig.FRONTEND_PATHS.GLOBAL.recherche.path },
+    {
+      label: "Sujets de Recherches",
+      path: appConfig.FRONTEND_PATHS.GLOBAL.recherche.path,
+    },
+    {
+      label: "Équipe de Recherche",
+      path: appConfig.FRONTEND_PATHS.EQUIPE.Listings.path,
+    },
   ];
 
   return (

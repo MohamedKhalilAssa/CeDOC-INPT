@@ -78,14 +78,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     verifyAuth();
   }, []);
-
   useEffect(() => {
-    const syncAuthState = () => {
-      syncStateFromToken();
+    const handleStorageChange = () => {
+      // Check if tokenExpired flag was set
+      const tokenExpired = localStorage.getItem("tokenExpired");
+      if (tokenExpired === "true") {
+        console.warn("Token expired detected in localStorage - logging out");
+        localStorage.removeItem("tokenExpired");
+        logout();
+        return;
+      }
+
+      // Check if isAuthenticated was manually set to false
+      const authStatus = localStorage.getItem("isAuthenticated");
+      if (authStatus === "false" && isAuthenticated) {
+        console.log("Authentication status changed to false - logging out");
+        logout();
+        return;
+      }
+
+      // Check if token was removed
+      const token = localStorage.getItem("token");
+      if (!token && isAuthenticated) {
+        console.log("Token removed from localStorage - logging out");
+        logout();
+        return;
+      }
+
+      // If we have a token and auth status is true, sync the state
+      if (token && authStatus === "true") {
+        syncStateFromToken();
+      }
     };
-    window.addEventListener("storage", syncAuthState);
-    return () => window.removeEventListener("storage", syncAuthState);
-  }, []);
+
+    // Check initial state
+    handleStorageChange();
+
+    // Listen for storage changes
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [isAuthenticated]);
 
   return (
     <AuthContext.Provider
