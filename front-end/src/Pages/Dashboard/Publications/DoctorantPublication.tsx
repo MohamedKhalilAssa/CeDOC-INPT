@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { getData, postData, deleteData } from "@/Helpers/CRUDFunctions";
+
 const debugPublication = (pub: Publication) => {
   console.log("=== Publication Debug ===");
   console.log("Full object:", pub);
@@ -94,6 +95,40 @@ const DoctorantPublications: React.FC = () => {
   const [errors, setErrors] = useState<Errors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
+
+  // Improved function to safely display text values
+  const safeDisplayText = (
+    text: string | null | undefined,
+    fallback: string = "Non spécifié"
+  ): string => {
+    if (text === null || text === undefined) {
+      return fallback;
+    }
+
+    const stringValue = String(text).trim();
+    if (
+      stringValue === "" ||
+      stringValue === "null" ||
+      stringValue === "undefined" ||
+      stringValue === "None"
+    ) {
+      return fallback;
+    }
+
+    return stringValue;
+  };
+
+  // Function to check if content has meaningful value
+  const hasContent = (text: string | null | undefined): boolean => {
+    if (!text) return false;
+    const stringValue = String(text).trim();
+    return (
+      stringValue !== "" &&
+      stringValue !== "null" &&
+      stringValue !== "undefined" &&
+      stringValue !== "None"
+    );
+  };
 
   useEffect(() => {
     const fetchPublications = async (): Promise<void> => {
@@ -193,7 +228,6 @@ const DoctorantPublications: React.FC = () => {
         coAuteursIds: newPublication.coAuteursIds || [],
       };
 
-      // Debugging: Log data sent to backend
       console.log("Sending publication data:", publicationData);
 
       const response = await postData<Publication>(
@@ -201,17 +235,16 @@ const DoctorantPublications: React.FC = () => {
         publicationData
       );
 
-      // Debugging: Log response from backend
       console.log("Response from backend:", response);
 
       if (response) {
-        // Ensure the response data is used directly if available and correct
         setPublications((prev) => [...prev, response]);
         setSuccessMessage("Publication ajoutée avec succès!");
       } else {
-        // Fallback to refetching all publications if the immediate response is empty
+        // Fallback to refetching all publications
         const updatedData = await getData<any>("/publications/");
-        console.log("Refetched data after empty response:", updatedData); // Log refetched data
+        console.log("Refetched data after empty response:", updatedData);
+
         if (updatedData) {
           let publicationsArray: Publication[] = [];
           if (Array.isArray(updatedData)) {
@@ -261,9 +294,7 @@ const DoctorantPublications: React.FC = () => {
         }
       }
 
-      setErrors({
-        submit: errorMessage,
-      });
+      setErrors({ submit: errorMessage });
     } finally {
       setIsSubmitting(false);
     }
@@ -331,176 +362,6 @@ const DoctorantPublications: React.FC = () => {
     }
   };
 
-  // Fixed safeDisplayText function
-  // Replace the safeDisplayText function with this improved version:
-  const safeDisplayText = (
-    text: string | null | undefined,
-    fallback: string = "Non spécifié"
-  ): string => {
-    // More precise check for empty values
-    if (text === null || text === undefined) {
-      return fallback;
-    }
-
-    const stringValue = String(text).trim();
-    if (
-      stringValue === "" ||
-      stringValue === "null" ||
-      stringValue === "undefined"
-    ) {
-      return fallback;
-    }
-
-    return stringValue;
-  };
-
-  // And replace the modal content section (around line 700+) with this:
-  {
-    showPublicationModal && selectedPublication && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-800">
-              {selectedPublication.titre || "Titre non spécifié"}
-            </h2>
-            <button
-              onClick={closePublicationModal}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <div className="p-6 space-y-6">
-            {/* Debug info - remove this in production */}
-            <div className="bg-gray-100 p-2 text-xs font-mono">
-              <strong>Debug:</strong>
-              <br />
-              Resume: "{selectedPublication.resume}" (type:{" "}
-              {typeof selectedPublication.resume})<br />
-              Contenu: "{selectedPublication.contenu}" (type:{" "}
-              {typeof selectedPublication.contenu})<br />
-              MotsCles: "{selectedPublication.motsCles}" (type:{" "}
-              {typeof selectedPublication.motsCles})
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div>
-                <h3 className="font-semibold text-gray-700 mb-1">Journal</h3>
-                <p className="text-gray-600">
-                  {selectedPublication.journal || "Non spécifié"}
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-700 mb-1">
-                  Date de Publication
-                </h3>
-                <p className="text-gray-600">
-                  {formatDate(selectedPublication.datePublication)}
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-700 mb-1">Statut</h3>
-                <span
-                  className={`inline-block px-2 py-1 rounded text-sm font-medium ${
-                    selectedPublication.status === "PUBLIEE"
-                      ? "bg-green-100 text-green-800"
-                      : selectedPublication.status === "REFUSEE"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {selectedPublication.status || "Non défini"}
-                </span>
-              </div>
-              {selectedPublication.prixIntitule &&
-                String(selectedPublication.prixIntitule).trim() && (
-                  <div>
-                    <h3 className="font-semibold text-gray-700 mb-1">Prix</h3>
-                    <p className="text-gray-600">
-                      {selectedPublication.prixIntitule}
-                    </p>
-                  </div>
-                )}
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-2">Mots-clés</h3>
-              <div className="flex flex-wrap gap-2">
-                {selectedPublication.motsCles &&
-                String(selectedPublication.motsCles).trim() ? (
-                  String(selectedPublication.motsCles)
-                    .split(",")
-                    .map((keyword, index) => (
-                      <span
-                        key={index}
-                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
-                      >
-                        {keyword.trim()}
-                      </span>
-                    ))
-                ) : (
-                  <span className="text-gray-500">Aucun mot-clé</span>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-2">Résumé</h3>
-              <p className="text-gray-600 leading-relaxed">
-                {selectedPublication.resume &&
-                String(selectedPublication.resume).trim()
-                  ? String(selectedPublication.resume)
-                  : "Aucun résumé disponible"}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-700 mb-2">Contenu</h3>
-              <div className="prose max-w-none">
-                <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                  {selectedPublication.contenu &&
-                  String(selectedPublication.contenu).trim()
-                    ? String(selectedPublication.contenu)
-                    : "Aucun contenu disponible"}
-                </p>
-              </div>
-            </div>
-
-            <div className="text-sm text-gray-500 border-t pt-4">
-              <p>Créé le: {formatDate(selectedPublication.createdAt)}</p>
-              <p>
-                Dernière modification:{" "}
-                {formatDate(selectedPublication.updatedAt)}
-              </p>
-            </div>
-          </div>
-
-          <div className="p-6 border-t border-gray-200 flex justify-end">
-            <button
-              onClick={closePublicationModal}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
-            >
-              Fermer
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -556,7 +417,6 @@ const DoctorantPublications: React.FC = () => {
                 </h2>
 
                 {publications.map((publication) => {
-                  // Debug each publication
                   console.log("Rendering publication:", publication);
 
                   return (
@@ -567,36 +427,39 @@ const DoctorantPublications: React.FC = () => {
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-800 mb-1">
-                            {publication.titre || "Titre non spécifié"}
+                            {safeDisplayText(
+                              publication.titre,
+                              "Titre non spécifié"
+                            )}
                           </h3>
                           <p className="text-gray-600 mb-1">
-                            {publication.resume &&
-                            String(publication.resume).trim()
-                              ? String(publication.resume).length > 150
-                                ? String(publication.resume).substring(0, 150) +
-                                  "..."
-                                : String(publication.resume)
+                            {hasContent(publication.resume)
+                              ? safeDisplayText(publication.resume).length > 150
+                                ? safeDisplayText(publication.resume).substring(
+                                    0,
+                                    150
+                                  ) + "..."
+                                : safeDisplayText(publication.resume)
                               : "Aucun résumé"}
                           </p>
                           <p className="text-gray-700 mb-1">
-                            Journal: {publication.journal || "Non spécifié"}
+                            Journal: {safeDisplayText(publication.journal)}
                           </p>
                           <p className="text-gray-700 mb-2">
                             Date: {formatDate(publication.datePublication)}
                           </p>
                           <p className="text-sm text-gray-600 mb-1">
                             Mots-clés:{" "}
-                            {publication.motsCles &&
-                            String(publication.motsCles).trim()
-                              ? String(publication.motsCles)
-                              : "Aucun mot-clé"}
-                          </p>
-                          {publication.prixIntitule &&
-                            String(publication.prixIntitule).trim() && (
-                              <p className="text-sm text-gray-600 mb-1">
-                                Prix: {publication.prixIntitule}
-                              </p>
+                            {safeDisplayText(
+                              publication.motsCles,
+                              "Aucun mot-clé"
                             )}
+                          </p>
+                          {hasContent(publication.prixIntitule) && (
+                            <p className="text-sm text-gray-600 mb-1">
+                              Prix: {safeDisplayText(publication.prixIntitule)}
+                            </p>
+                          )}
                           <p className="text-sm text-gray-500">
                             Statut:{" "}
                             <span
@@ -608,7 +471,10 @@ const DoctorantPublications: React.FC = () => {
                                   : "text-yellow-600"
                               }`}
                             >
-                              {publication.status || "Non défini"}
+                              {safeDisplayText(
+                                publication.status,
+                                "Non défini"
+                              )}
                             </span>
                           </p>
                         </div>
@@ -616,7 +482,7 @@ const DoctorantPublications: React.FC = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
-                              debugPublication(publication); // Add debug call
+                              debugPublication(publication);
                               openPublicationModal(publication);
                             }}
                             className="text-blue-500 hover:text-blue-700 p-2 hover:bg-blue-50 rounded"
@@ -1003,20 +869,20 @@ const DoctorantPublications: React.FC = () => {
                           : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
-                      {selectedPublication.status}
+                      {safeDisplayText(
+                        selectedPublication.status,
+                        "Non défini"
+                      )}
                     </span>
                   </div>
-                  {selectedPublication.prixIntitule &&
-                    selectedPublication.prixIntitule.trim() && (
-                      <div>
-                        <h3 className="font-semibold text-gray-700 mb-1">
-                          Prix
-                        </h3>
-                        <p className="text-gray-600">
-                          {selectedPublication.prixIntitule}
-                        </p>
-                      </div>
-                    )}
+                  {hasContent(selectedPublication.prixIntitule) && (
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-1">Prix</h3>
+                      <p className="text-gray-600">
+                        {safeDisplayText(selectedPublication.prixIntitule)}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -1024,58 +890,62 @@ const DoctorantPublications: React.FC = () => {
                     Mots-clés
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {selectedPublication.motsCles ? (
-                      selectedPublication.motsCles
-                        .split(",")
-                        .map((keyword, index) => (
-                          <span
-                            key={index}
-                            className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
-                          >
-                            {keyword.trim()}
-                          </span>
-                        ))
-                    ) : (
-                      <span className="text-gray-500">Aucun mot-clé</span>
-                    )}
+                    {safeDisplayText(
+                      selectedPublication.motsCles,
+                      "Aucun mot-clé"
+                    )
+                      .split(",")
+                      .map((keyword, index) => (
+                        <span
+                          key={index}
+                          className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
+                        >
+                          {keyword.trim()}
+                        </span>
+                      ))}
                   </div>
                 </div>
 
                 <div>
                   <h3 className="font-semibold text-gray-700 mb-2">Résumé</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {safeDisplayText(
-                      selectedPublication.resume,
-                      "Aucun résumé disponible"
-                    )}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Contenu</h3>
-                  <div className="prose max-w-none">
-                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="text-gray-700 leading-relaxed">
                       {safeDisplayText(
-                        selectedPublication.contenu,
-                        "Aucun contenu disponible"
+                        selectedPublication.resume,
+                        "Aucun résumé disponible"
                       )}
                     </p>
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-500 border-t pt-4">
-                  <p>Créé le: {formatDate(selectedPublication.createdAt)}</p>
-                  <p>
-                    Dernière modification:{" "}
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Contenu</h3>
+                  <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                    <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      {safeDisplayText(
+                        selectedPublication.contenu,
+                        "Aucun contenu disponible"
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500">
+                  <div>
+                    <span className="font-medium">Créé le:</span>{" "}
+                    {formatDate(selectedPublication.createdAt)}
+                  </div>
+                  <div>
+                    <span className="font-medium">Modifié le:</span>{" "}
                     {formatDate(selectedPublication.updatedAt)}
-                  </p>
+                  </div>
                 </div>
               </div>
 
               <div className="p-6 border-t border-gray-200 flex justify-end">
                 <button
                   onClick={closePublicationModal}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg"
                 >
                   Fermer
                 </button>

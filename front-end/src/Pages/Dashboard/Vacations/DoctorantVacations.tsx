@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const DoctorantVacations = () => {
-  const [vacations, setVacations] = useState([]);
+  const [vacations, setVacations] = useState(() => {
+    // Load vacations from localStorage on initial render
+    const savedVacations = localStorage.getItem("vacations");
+    return savedVacations ? JSON.parse(savedVacations) : [];
+  });
+
   const [newVacation, setNewVacation] = useState({
     courseTitle: "",
     date: "",
@@ -16,6 +21,11 @@ const DoctorantVacations = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+
+  // Save vacations to localStorage whenever the state changes
+  useEffect(() => {
+    localStorage.setItem("vacations", JSON.stringify(vacations));
+  }, [vacations]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,17 +78,15 @@ const DoctorantVacations = () => {
     if (!newVacation.institution.trim()) newErrors.institution = "L'établissement est requis";
     if (!newVacation.duration.trim()) newErrors.duration = "La durée est requise";
     if (!newVacation.level.trim()) newErrors.level = "Le niveau est requis";
-    
-    // Fixed validation logic for awards justification
+
     if (newVacation.awards.trim() && !newVacation.justificationLink.trim() && !newVacation.file) {
       newErrors.justificationFile = "Un justificatif (lien ou fichier) est requis si vous avez des prix/distinctions";
     }
-    
-    // Only require file if no awards or if awards without link
+
     if (!newVacation.file && (!newVacation.awards.trim() || (newVacation.awards.trim() && !newVacation.justificationLink.trim()))) {
       newErrors.file = "Un justificatif est requis";
     }
-    
+
     return newErrors;
   };
 
@@ -90,21 +98,19 @@ const DoctorantVacations = () => {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate API call with timeout
+
     setTimeout(() => {
       const vacationToAdd = {
         ...newVacation,
         id: Date.now(),
         dateAdded: new Date().toLocaleDateString('fr-FR')
       };
-      
+
       setVacations(prev => [...prev, vacationToAdd]);
       resetForm();
       setSuccessMessage("Vacation ajoutée avec succès!");
       setIsSubmitting(false);
-      
-      // Clear success message after 3 seconds
+
       setTimeout(() => setSuccessMessage(""), 3000);
     }, 1000);
   };
@@ -366,7 +372,7 @@ const DoctorantVacations = () => {
                         </span>
                         <h3 className="font-semibold text-gray-800 text-lg">{vacation.courseTitle}</h3>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
                         <div className="flex items-center text-sm text-gray-600">
                           <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -390,12 +396,12 @@ const DoctorantVacations = () => {
                           <span className="ml-1">{vacation.level}</span>
                         </div>
                       </div>
-                      
+
                       <div className="mb-2 text-sm text-gray-600">
                         <span className="font-medium">Établissement:</span>
                         <span className="ml-1">{vacation.institution}</span>
                       </div>
-                      
+
                       {vacation.awards && (
                         <div className="mt-3 p-3 bg-yellow-50 rounded border-l-4 border-yellow-400">
                           <div className="text-sm">
@@ -407,9 +413,9 @@ const DoctorantVacations = () => {
                             </span>
                             <p className="text-yellow-700 mt-1">{vacation.awards}</p>
                             {vacation.justificationLink && (
-                              <a 
-                                href={vacation.justificationLink} 
-                                target="_blank" 
+                              <a
+                                href={vacation.justificationLink}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 underline text-xs mt-2 inline-flex items-center"
                               >
@@ -422,7 +428,7 @@ const DoctorantVacations = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       {vacation.fileName && (
                         <div className="mt-2 flex items-center text-sm text-gray-500">
                           <svg className="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -432,7 +438,7 @@ const DoctorantVacations = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     <button
                       onClick={() => removeVacation(vacation.id)}
                       className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors ml-4 flex-shrink-0"
