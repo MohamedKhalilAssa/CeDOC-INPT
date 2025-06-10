@@ -5,19 +5,14 @@ const debugPublication = (pub: Publication) => {
   console.log("=== Publication Debug ===");
   console.log("Full object:", pub);
   console.log("titre:", pub.titre, "type:", typeof pub.titre);
-  console.log("resume:", pub.resume, "type:", typeof pub.resume);
-  console.log("contenu:", pub.contenu, "type:", typeof pub.contenu);
-  console.log("motsCles:", pub.motsCles, "type:", typeof pub.motsCles);
   console.log("journal:", pub.journal, "type:", typeof pub.journal);
+  console.log("link:", pub.link, "type:", typeof pub.link);
   console.log("=========================");
 };
 
 interface Publication {
   id: number;
   titre: string;
-  resume: string;
-  motsCles: string;
-  contenu: string;
   journal: string;
   datePublication: string;
   prixIntitule?: string;
@@ -26,26 +21,24 @@ interface Publication {
   coAuteursIds: number[];
   createdAt: string;
   updatedAt: string;
+  link: string;
 }
 
 interface NewPublication {
   titre: string;
-  resume: string;
-  motsCles: string;
-  contenu: string;
   journal: string;
   datePublication: string;
   prixIntitule?: string;
   coAuteursIds: number[];
+  link: string;
 }
 
 interface Errors {
   [key: string]: string | undefined;
   titre?: string;
-  resume?: string;
-  motsCles?: string;
-  contenu?: string;
+  journal?: string;
   datePublication?: string;
+  link?: string;
   submit?: string;
 }
 
@@ -79,24 +72,19 @@ const DoctorantPublications: React.FC = () => {
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
-  const [selectedPublication, setSelectedPublication] =
-    useState<Publication | null>(null);
-  const [showPublicationModal, setShowPublicationModal] =
-    useState<boolean>(false);
+  const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null);
+  const [showPublicationModal, setShowPublicationModal] = useState<boolean>(false);
   const [newPublication, setNewPublication] = useState<NewPublication>({
     titre: "",
-    resume: "",
-    motsCles: "",
-    contenu: "",
     journal: "",
     datePublication: "",
     coAuteursIds: [],
+    link: ""
   });
   const [errors, setErrors] = useState<Errors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>("");
 
-  // Improved function to safely display text values
   const safeDisplayText = (
     text: string | null | undefined,
     fallback: string = "Non spécifié"
@@ -118,16 +106,13 @@ const DoctorantPublications: React.FC = () => {
     return stringValue;
   };
 
-  // Function to check if content has meaningful value
   const hasContent = (text: string | null | undefined): boolean => {
     if (!text) return false;
     const stringValue = String(text).trim();
-    return (
-      stringValue !== "" &&
-      stringValue !== "null" &&
-      stringValue !== "undefined" &&
-      stringValue !== "None"
-    );
+    return stringValue !== "" && 
+           stringValue !== "null" && 
+           stringValue !== "undefined" && 
+           stringValue !== "None";
   };
 
   useEffect(() => {
@@ -187,12 +172,10 @@ const DoctorantPublications: React.FC = () => {
     const newErrors: Errors = {};
     if (!newPublication.titre.trim())
       newErrors.titre = "Le titre de la publication est requis";
-    if (!newPublication.resume.trim())
-      newErrors.resume = "Le résumé est requis";
-    if (!newPublication.motsCles.trim())
-      newErrors.motsCles = "Les mots-clés sont requis";
-    if (!newPublication.contenu.trim())
-      newErrors.contenu = "Le contenu est requis";
+    if (!newPublication.journal.trim())
+      newErrors.journal = "Le nom du journal est requis";
+    if (!newPublication.link.trim())
+      newErrors.link = "Le lien justificatif est requis";
 
     if (newPublication.datePublication) {
       const dateObj = new Date(newPublication.datePublication);
@@ -217,15 +200,13 @@ const DoctorantPublications: React.FC = () => {
     try {
       const publicationData = {
         titre: newPublication.titre.trim(),
-        resume: newPublication.resume.trim(),
-        motsCles: newPublication.motsCles.trim(),
-        contenu: newPublication.contenu.trim(),
-        journal: newPublication.journal.trim() || "Non spécifié",
+        journal: newPublication.journal.trim(),
         datePublication: newPublication.datePublication
           ? new Date(newPublication.datePublication).toISOString()
           : new Date().toISOString(),
         prixIntitule: newPublication.prixIntitule?.trim() || undefined,
         coAuteursIds: newPublication.coAuteursIds || [],
+        link: newPublication.link.trim()
       };
 
       console.log("Sending publication data:", publicationData);
@@ -241,10 +222,9 @@ const DoctorantPublications: React.FC = () => {
         setPublications((prev) => [...prev, response]);
         setSuccessMessage("Publication ajoutée avec succès!");
       } else {
-        // Fallback to refetching all publications
         const updatedData = await getData<any>("/publications/");
         console.log("Refetched data after empty response:", updatedData);
-
+        
         if (updatedData) {
           let publicationsArray: Publication[] = [];
           if (Array.isArray(updatedData)) {
@@ -255,18 +235,14 @@ const DoctorantPublications: React.FC = () => {
             publicationsArray = updatedData.data;
           } else if (Array.isArray(updatedData?.publications)) {
             publicationsArray = updatedData.publications;
-          } else if (
-            updatedData?.results &&
-            Array.isArray(updatedData.results)
-          ) {
+          } else if (updatedData?.results && Array.isArray(updatedData.results)) {
             publicationsArray = updatedData.results;
           }
           setPublications(publicationsArray);
           setSuccessMessage("Publication ajoutée avec succès!");
         } else {
           setErrors({
-            submit:
-              "Publication ajoutée mais échec de la mise à jour de la liste.",
+            submit: "Publication ajoutée mais échec de la mise à jour de la liste.",
           });
         }
       }
@@ -282,9 +258,7 @@ const DoctorantPublications: React.FC = () => {
         errorMessage = error.message;
       } else if (typeof error === "object" && error !== null) {
         if ("errors" in error) {
-          const apiErrors = (
-            error as { errors: Record<string, { message: string }> }
-          ).errors;
+          const apiErrors = (error as { errors: Record<string, { message: string }> }).errors;
           const errorList = Object.values(apiErrors)
             .map((err) => err.message)
             .join(", ");
@@ -303,20 +277,16 @@ const DoctorantPublications: React.FC = () => {
   const resetForm = (): void => {
     setNewPublication({
       titre: "",
-      resume: "",
-      motsCles: "",
-      contenu: "",
       journal: "",
       datePublication: "",
       coAuteursIds: [],
+      link: ""
     });
     setErrors({});
   };
 
   const removePublication = async (id: number): Promise<void> => {
-    if (
-      !window.confirm("Êtes-vous sûr de vouloir supprimer cette publication?")
-    ) {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette publication?")) {
       return;
     }
 
@@ -427,37 +397,24 @@ const DoctorantPublications: React.FC = () => {
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-800 mb-1">
-                            {safeDisplayText(
-                              publication.titre,
-                              "Titre non spécifié"
-                            )}
+                            {safeDisplayText(publication.titre, "Titre non spécifié")}
                           </h3>
-                          <p className="text-gray-600 mb-1">
-                            {hasContent(publication.resume)
-                              ? safeDisplayText(publication.resume).length > 150
-                                ? safeDisplayText(publication.resume).substring(
-                                    0,
-                                    150
-                                  ) + "..."
-                                : safeDisplayText(publication.resume)
-                              : "Aucun résumé"}
-                          </p>
                           <p className="text-gray-700 mb-1">
                             Journal: {safeDisplayText(publication.journal)}
                           </p>
                           <p className="text-gray-700 mb-2">
                             Date: {formatDate(publication.datePublication)}
                           </p>
-                          <p className="text-sm text-gray-600 mb-1">
-                            Mots-clés:{" "}
-                            {safeDisplayText(
-                              publication.motsCles,
-                              "Aucun mot-clé"
-                            )}
-                          </p>
                           {hasContent(publication.prixIntitule) && (
                             <p className="text-sm text-gray-600 mb-1">
                               Prix: {safeDisplayText(publication.prixIntitule)}
+                            </p>
+                          )}
+                          {publication.link && (
+                            <p className="text-sm text-blue-600 mb-1">
+                              <a href={publication.link} target="_blank" rel="noopener noreferrer">
+                                Lien justificatif
+                              </a>
                             </p>
                           )}
                           <p className="text-sm text-gray-500">
@@ -471,10 +428,7 @@ const DoctorantPublications: React.FC = () => {
                                   : "text-yellow-600"
                               }`}
                             >
-                              {safeDisplayText(
-                                publication.status,
-                                "Non défini"
-                              )}
+                              {safeDisplayText(publication.status, "Non défini")}
                             </span>
                           </p>
                         </div>
@@ -587,7 +541,7 @@ const DoctorantPublications: React.FC = () => {
                           htmlFor="titre"
                           className="block mb-1 font-medium text-gray-700"
                         >
-                          Titre de la publication*
+                          Titre de l'article*
                         </label>
                         <input
                           type="text"
@@ -629,78 +583,9 @@ const DoctorantPublications: React.FC = () => {
                           </p>
                         )}
                       </div>
-
-                      <div>
-                        <label
-                          htmlFor="motsCles"
-                          className="block mb-1 font-medium text-gray-700"
-                        >
-                          Mots-clés*
-                        </label>
-                        <input
-                          type="text"
-                          id="motsCles"
-                          name="motsCles"
-                          value={newPublication.motsCles}
-                          onChange={handleChange}
-                          className="w-full border border-gray-300 rounded p-2"
-                          placeholder="Séparés par des virgules"
-                        />
-                        {errors.motsCles && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.motsCles}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="resume"
-                          className="block mb-1 font-medium text-gray-700"
-                        >
-                          Résumé*
-                        </label>
-                        <textarea
-                          id="resume"
-                          name="resume"
-                          value={newPublication.resume}
-                          onChange={handleChange}
-                          className="w-full border border-gray-300 rounded p-2"
-                          rows={4}
-                          placeholder="Résumé de votre publication"
-                        />
-                        {errors.resume && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.resume}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label
-                          htmlFor="contenu"
-                          className="block mb-1 font-medium text-gray-700"
-                        >
-                          Contenu*
-                        </label>
-                        <textarea
-                          id="contenu"
-                          name="contenu"
-                          value={newPublication.contenu}
-                          onChange={handleChange}
-                          className="w-full border border-gray-300 rounded p-2"
-                          rows={6}
-                          placeholder="Contenu complet de votre publication"
-                        />
-                        {errors.contenu && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.contenu}
-                          </p>
-                        )}
-                      </div>
                     </div>
                   </div>
-
+                  
                   <div className="border border-purple-200 rounded-lg p-4 bg-purple-50">
                     <h3 className="flex items-center font-medium text-purple-800 mb-4">
                       <span className="mr-2">📰</span>
@@ -713,7 +598,7 @@ const DoctorantPublications: React.FC = () => {
                           htmlFor="journal"
                           className="block mb-1 font-medium text-gray-700"
                         >
-                          Nom du Journal
+                          Nom du Journal*
                         </label>
                         <input
                           type="text"
@@ -722,8 +607,45 @@ const DoctorantPublications: React.FC = () => {
                           value={newPublication.journal}
                           onChange={handleChange}
                           className="w-full border border-gray-300 rounded p-2"
-                          placeholder="Nom du journal de publication (optionnel)"
+                          placeholder="Nom du journal de publication"
                         />
+                        {errors.journal && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.journal}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                    <h3 className="flex items-center font-medium text-green-800 mb-4">
+                      <span className="mr-2">🔗</span>
+                      Justificatif
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="link"
+                          className="block mb-1 font-medium text-gray-700"
+                        >
+                          Lien justificatif*
+                        </label>
+                        <input
+                          type="url"
+                          id="link"
+                          name="link"
+                          value={newPublication.link}
+                          onChange={handleChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                          placeholder="https://example.com/publication"
+                        />
+                        {errors.link && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errors.link}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -815,10 +737,7 @@ const DoctorantPublications: React.FC = () => {
             <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-200 flex justify-between items-center">
                 <h2 className="text-xl font-bold text-gray-800">
-                  {safeDisplayText(
-                    selectedPublication.titre,
-                    "Titre non spécifié"
-                  )}
+                  {safeDisplayText(selectedPublication.titre, "Titre non spécifié")}
                 </h2>
                 <button
                   onClick={closePublicationModal}
@@ -843,17 +762,14 @@ const DoctorantPublications: React.FC = () => {
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <h3 className="font-semibold text-gray-700 mb-1">
-                      Journal
-                    </h3>
+                    <h3 className="font-semibold text-gray-700 mb-1">Journal</h3>
                     <p className="text-gray-600">
                       {safeDisplayText(selectedPublication.journal)}
                     </p>
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-700 mb-1">
-                      Date de Publication
-                    </h3>
+                      Date de Publication</h3>
                     <p className="text-gray-600">
                       {formatDate(selectedPublication.datePublication)}
                     </p>
@@ -869,10 +785,7 @@ const DoctorantPublications: React.FC = () => {
                           : "bg-yellow-100 text-yellow-800"
                       }`}
                     >
-                      {safeDisplayText(
-                        selectedPublication.status,
-                        "Non défini"
-                      )}
+                      {safeDisplayText(selectedPublication.status, "Non défini")}
                     </span>
                   </div>
                   {hasContent(selectedPublication.prixIntitule) && (
@@ -883,51 +796,16 @@ const DoctorantPublications: React.FC = () => {
                       </p>
                     </div>
                   )}
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">
-                    Mots-clés
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {safeDisplayText(
-                      selectedPublication.motsCles,
-                      "Aucun mot-clé"
-                    )
-                      .split(",")
-                      .map((keyword, index) => (
-                        <span
-                          key={index}
-                          className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
-                        >
-                          {keyword.trim()}
-                        </span>
-                      ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Résumé</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-gray-700 leading-relaxed">
-                      {safeDisplayText(
-                        selectedPublication.resume,
-                        "Aucun résumé disponible"
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Contenu</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
-                    <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {safeDisplayText(
-                        selectedPublication.contenu,
-                        "Aucun contenu disponible"
-                      )}
+                  {selectedPublication.link && (
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-1">Justificatif</h3>
+                      <p className="text-blue-600">
+                        <a href={selectedPublication.link} target="_blank" rel="noopener noreferrer">
+                          Lien vers la publication
+                        </a>
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500">

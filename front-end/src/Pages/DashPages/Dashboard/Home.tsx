@@ -12,7 +12,7 @@ export default function Home() {
     if (roles.includes(RoleEnum.DIRECTION_CEDOC)) {
       return <DashboardOverview userRole="admin" />;
     } else if (roles.includes(RoleEnum.DOCTORANT)) {
-      return <DashboardOverview userRole="student" userId="1" />;
+      return <DashboardOverview userRole="student" userId="" />;
     }
     // Add more cases for other roles as needed
     return <DashboardOverview userRole="student" userId="1" />;

@@ -23,20 +23,20 @@ export const ProfileMenu = ({
   const dropdownItems: DropdownItem[] = [
     { type: "link", label: "Mon compte", to: "/dashboard" },
   ];
-  if (auth.roles.length === 0) {
+  if (auth.roles.length > 0) {
     dropdownItems.push({
       type: "link" as const,
       label: "Postuler",
       to: appConfig.FRONTEND_PATHS.GLOBAL.postuler.path,
     });
   }
-  if (auth.roles.length > 0) {
-    dropdownItems.push({
-      type: "link" as const,
-      label: "Dashboard",
-      to: appConfig.FRONTEND_PATHS.DASHBOARD.homePage.path,
-    });
-  }
+  // if (auth.roles.length > 0) {
+  //   dropdownItems.push({
+  //     type: "link" as const,
+  //     label: "Dashboard",
+  //     to: appConfig.FRONTEND_PATHS.DASHBOARD.homePage.path,
+  //   });
+  // }
   dropdownItems.push(logoutObj);
   return <AvatarDropdown triggerLabel={userLabel} items={dropdownItems} />;
 };
