@@ -24,6 +24,7 @@ import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
 
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
+import DoctorantAttestations from "./Pages/Dashboard/Attestations/DoctorantAttestations";
 
 function App() {
   return (
@@ -115,6 +116,11 @@ function App() {
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}
           element={<DoctorantFormation />}
+        />
+        {/* Attestations */}
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.attestations.generer.path}
+          element={<DoctorantAttestations />}
         />
       </Route>
 

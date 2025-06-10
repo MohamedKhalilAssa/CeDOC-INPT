@@ -40,6 +40,7 @@ interface AppConfig {
     GLOBAL: FrontendPathsMap;
     FORMATION: FrontendPathsMap;
     DASHBOARD: {
+      attestations: FrontendPathsMap;
       homePage: FrontendPaths;
       utilisateurs: FrontendPathsMap;
       sujets: FrontendPathsMap;
@@ -280,6 +281,9 @@ const appConfig: AppConfig = {
       formations: {
         proposer: { name: "Mes Formations", path: "formations/mesformations" },
       },
+      attestations: {
+        generer: { name: "Attestations", path: "attestations/generer"}
+      }
     },
   },
 };
