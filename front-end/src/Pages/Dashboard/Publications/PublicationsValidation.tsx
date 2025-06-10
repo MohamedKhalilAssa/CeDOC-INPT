@@ -4,18 +4,13 @@ import { getData, patchData } from "@/Helpers/CRUDFunctions";
 interface Publication {
   id: number;
   titre: string;
-  auteurs: string;
+  auteurId: number;
+  autresAuteurs?: string;
   journal: string;
-  volume?: string;
-  numero?: string;
-  pages?: string;
-  annee: number;
-  doi?: string;
-  url?: string;
-  resume?: string;
-  motsCles?: string;
+  datePublication: string;
+  prixIntitule?: string;
+  justificatif?: string;
   status: string;
-  participantId: number;
   validateurId?: number;
   createdAt: string;
   updatedAt: string;
@@ -211,6 +206,8 @@ const PublicationsValidation: React.FC = () => {
         year: "numeric",
         month: "long",
         day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       };
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
@@ -450,29 +447,22 @@ const PublicationsValidation: React.FC = () => {
                           <strong>Journal:</strong> {publication.journal}
                         </p>
                         <p>
-                          <strong>Auteurs:</strong> {publication.auteurs}
+                          <strong>Auteur principal ID:</strong>{" "}
+                          {publication.auteurId}
                         </p>
+                        {publication.autresAuteurs && (
+                          <p>
+                            <strong>Autres auteurs:</strong>{" "}
+                            {publication.autresAuteurs}
+                          </p>
+                        )}
                         <p>
-                          <strong>Année:</strong> {publication.annee}
+                          <strong>Date de publication:</strong>{" "}
+                          {formatDate(publication.datePublication)}
                         </p>
-                        {publication.volume && (
+                        {publication.prixIntitule && (
                           <p>
-                            <strong>Volume:</strong> {publication.volume}
-                          </p>
-                        )}
-                        {publication.numero && (
-                          <p>
-                            <strong>Numéro:</strong> {publication.numero}
-                          </p>
-                        )}
-                        {publication.pages && (
-                          <p>
-                            <strong>Pages:</strong> {publication.pages}
-                          </p>
-                        )}
-                        {publication.doi && (
-                          <p>
-                            <strong>DOI:</strong> {publication.doi}
+                            <strong>Prix:</strong> {publication.prixIntitule}
                           </p>
                         )}
                         {publication.participant && (
@@ -494,10 +484,10 @@ const PublicationsValidation: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    {publication.url && (
+                    {publication.justificatif && (
                       <div className="ml-4">
                         <a
-                          href={publication.url}
+                          href={publication.justificatif}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-3 py-1 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
@@ -625,7 +615,6 @@ const PublicationsValidation: React.FC = () => {
             </div>
           )}
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-6 flex justify-center items-center space-x-2">
               <button
