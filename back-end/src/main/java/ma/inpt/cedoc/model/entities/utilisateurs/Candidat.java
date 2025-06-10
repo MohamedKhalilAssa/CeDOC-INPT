@@ -30,7 +30,8 @@ public class Candidat {
 
     // ---------------------- Relations ----------------------------
 
-    @OneToOne(mappedBy = "candidat")
+    @OneToOne(mappedBy = "candidat", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Candidature candidature;
 
 }

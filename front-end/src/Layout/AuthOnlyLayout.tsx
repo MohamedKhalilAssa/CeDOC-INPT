@@ -17,6 +17,7 @@ const AuthOnlyLayout = () => {
       }
       navigate(appConfig.FRONTEND_PATHS.AUTH.login.path);
     }
+    console.log(auth.roles);
   }, [auth.loading, auth.isAuthenticated]);
 
   if (auth.loading) return <div>Loading...</div>;

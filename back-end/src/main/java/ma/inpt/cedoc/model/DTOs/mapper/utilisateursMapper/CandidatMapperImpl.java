@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
-import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
 import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.model.entities.utilisateurs.*;
 import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
@@ -16,16 +15,19 @@ import ma.inpt.cedoc.service.utilisateurServices.NationaliteService;
 @RequiredArgsConstructor
 public class CandidatMapperImpl implements CandidatMapper {
 
-    private final CandidatureMapper candidatureMapper;
     private final NationaliteService nationaliteService;
     private final LieuDeNaissanceService lieuDeNaissanceService;
 
     public Candidat toEntity(CandidatRequestDTO dto) {
-        // Forcer le statut de candidature
+        // Create a basic candidature entity without using the mapper to avoid circular dependency
         CandidatureRequestDTO candidatureDTO = dto.getCandidature();
         candidatureDTO.setStatutCandidature(CandidatureEnum.SOUMISE);
 
-        Candidature candidature = candidatureMapper.toEntity(candidatureDTO);
+        // Build candidature manually to break circular dependency
+        Candidature candidature = Candidature.builder()
+                .statutCandidature(CandidatureEnum.SOUMISE)
+                .candidat(null) // Will be set below in bidirectional relationship
+                .build();
 
         // Mapper les entités liées (relations ManyToOne)
         Nationalite nationalite = nationaliteService.getNationaliteEntityById(dto.getNationaliteId());

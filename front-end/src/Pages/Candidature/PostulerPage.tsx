@@ -122,7 +122,10 @@ const PostulerPage = () => {
         );
         setTimeout(() => {
           navigate(appConfig.FRONTEND_PATHS.GLOBAL.landingPage.path);
-        }, 200);
+        }, 3000);
+        setTimeout(() => {
+          auth.roles.push(RoleEnum.CANDIDAT);
+        }, 3600);
         setCurrentStep(4); // Move to the final step (Status) only on success
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

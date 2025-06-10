@@ -2,10 +2,7 @@ package ma.inpt.cedoc.model.DTOs.Candidature;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.inpt.cedoc.model.DTOs.Generic.BaseResponseDTO;
 import ma.inpt.cedoc.model.enums.candidature_enums.*;
@@ -30,4 +27,6 @@ public class CandidatureResponseDTO extends BaseResponseDTO {
     private List<Long> sujetsIds; // or SujetDTOs if needed (light version to avoid recursion)
 
     private Long candidatId;
+    private String candidatNom;
+    private String candidatPrenom;
 }

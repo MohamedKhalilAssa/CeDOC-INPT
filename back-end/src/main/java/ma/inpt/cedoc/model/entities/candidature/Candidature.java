@@ -9,10 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
 import ma.inpt.cedoc.model.enums.candidature_enums.*;
 
@@ -71,11 +68,11 @@ public class Candidature {
 
     // ---------------------- Relations ----------------------------
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "candidature_sujets", joinColumns = @JoinColumn(name = "candidature_id"), inverseJoinColumns = @JoinColumn(name = "sujet_id"))
     private List<Sujet> sujets;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidat_id", unique = true, nullable = false)
     private Candidat candidat;
 

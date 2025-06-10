@@ -24,6 +24,16 @@ export const utilisateursSidebarConfig: NavigationGroup[] = [
 ];
 export const candidatsSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
+  {
+    title: "Applications",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path,
+        label: "Candidatures",
+        icon: "fas fa-file-alt",
+      },
+    ],
+  },
   //TEST ONLY
 ];
 export const doctorantsSidebarConfig: NavigationGroup[] = [
@@ -66,7 +76,7 @@ export const professeursSidebarConfig: NavigationGroup[] = [
     title: "Applications",
     items: [
       {
-        href: `/dashboard/${appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path}`,
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path,
         label: "Candidatures",
         icon: "fas fa-file-alt",
       },
@@ -99,7 +109,7 @@ export const chefsEquipesSidebarConfig: NavigationGroup[] = [
     title: "Applications",
     items: [
       {
-        href: "/dashboard/candidatures",
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path,
         label: "Candidatures",
         icon: "fas fa-file-alt",
       },
@@ -108,6 +118,16 @@ export const chefsEquipesSidebarConfig: NavigationGroup[] = [
 ];
 export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
   ...professeursSidebarConfig,
+  {
+    title: "Applications",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path,
+        label: "Candidatures",
+        icon: "fas fa-file-alt",
+      },
+    ],
+  },
 ];
 export const directionCedocSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
@@ -115,7 +135,7 @@ export const directionCedocSidebarConfig: NavigationGroup[] = [
     title: "Applications",
     items: [
       {
-        href: "/dashboard/candidatures",
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path,
         label: "Candidatures",
         icon: "fas fa-file-alt",
       },

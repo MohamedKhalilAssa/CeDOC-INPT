@@ -2,10 +2,7 @@ package ma.inpt.cedoc.web.CandidatureControllers;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,10 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ma.inpt.cedoc.model.DTOs.Candidature.ChefSujetsEquipeResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetRequestDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseSimpleDTO;
+import ma.inpt.cedoc.model.DTOs.Candidature.*;
 import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 import ma.inpt.cedoc.service.CandidatureSevices.SujetService;
@@ -67,6 +61,7 @@ public class SujetController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSujet(@PathVariable Long id) {
+        System.out.println(id);
         Sujet sujet = sujetService.getSujetEntityById(id);
         sujetService.deleteSujet(sujet);
         return ResponseEntity.noContent().build();

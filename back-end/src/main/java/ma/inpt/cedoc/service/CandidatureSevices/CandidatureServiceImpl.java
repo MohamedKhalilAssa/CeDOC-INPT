@@ -2,14 +2,13 @@ package ma.inpt.cedoc.service.CandidatureSevices;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,26 +23,24 @@ import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.CandidatureResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Candidature.SujetResponseDTO;
+import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.CandidatResponseDTO;
-import ma.inpt.cedoc.model.DTOs.Utilisateurs.UtilisateurRequestDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.EquipeMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.SujetMapper;
+import ma.inpt.cedoc.model.DTOs.mapper.Global.PaginatedMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.CandidatMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.ProfesseurMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.UtilisateurMapper;
 import ma.inpt.cedoc.model.entities.candidature.*;
-import ma.inpt.cedoc.model.entities.utilisateurs.Candidat;
-import ma.inpt.cedoc.model.entities.utilisateurs.Professeur;
-import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
 import ma.inpt.cedoc.model.enums.candidature_enums.CandidatureEnum;
 import ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum;
 import ma.inpt.cedoc.repositories.candidatureRepositories.*;
 import ma.inpt.cedoc.repositories.utilisateursRepositories.*;
-import ma.inpt.cedoc.service.Global.EmailService;
 import ma.inpt.cedoc.service.Global.FileService;
 import ma.inpt.cedoc.service.utilisateurServices.CandidatService;
 
@@ -57,6 +54,7 @@ public class CandidatureServiceImpl implements CandidatureService {
     private final CandidatureMapper candidatureMapper;
 
     private final EquipeMapper equipeMapper;
+    private final RoleRepository roleRepository;
     private final SujetMapper sujetMapper;
 
     private final SujetRepository sujetRepository;
@@ -67,9 +65,9 @@ public class CandidatureServiceImpl implements CandidatureService {
     private final CandidatService candidatService;
     private final CandidatMapper candidatMapper;
     private final ChefEquipeRoleRepository chefEquipeRoleRepository;
+    private final DirecteurDeTheseRoleRepository directeurDeTheseRoleRepository;
 
     private final FileService fileService;
-    private final EmailService emailService;
     private final CandidatureAccepterRepository candidatureAccepterRepository;
     private final CandidatureRefuserRepository  candidatureRefuserRepository;
 
@@ -151,16 +149,18 @@ public class CandidatureServiceImpl implements CandidatureService {
                     "Vous avez déjà une candidature en cours. Veuillez la modifier plutôt que d'en créer une nouvelle.");
         }
 
-        // 2. Récupérer l’utilisateur authentifié (nouveau candidat)
+        // 2. Récupérer l'utilisateur authentifié (nouveau candidat)
         Utilisateur utilisateur = utilisateurRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
 
-        // 3. Mettre à jour l’utilisateur si des champs UtilisateurRequestDTO sont fournis dans le DTO
-        if (dto instanceof UtilisateurRequestDTO) {
-            UtilisateurRequestDTO utilisateurRequestDTO = (UtilisateurRequestDTO) dto;
-            utilisateur = utilisateurMapper.UpdateUtilisateurFromRequestDTO(utilisateur, utilisateurRequestDTO);
-            utilisateurRepository.save(utilisateur);
-        }
+        // 3. Mettre à jour l'utilisateur avec les champs fournis dans le DTO
+        // CandidatureRequestDTO extends UtilisateurRequestDTO, donc on peut directement l'utiliser
+        utilisateur = utilisateurMapper.UpdateUtilisateurFromRequestDTO(utilisateur, dto);
+        
+        Role candidatRole = roleRepository.findByIntitule("CANDIDAT")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rôle CANDIDAT introuvable"));
+        utilisateur.getRoles().add(candidatRole); // Assigner le rôle CANDIDAT
+        utilisateurRepository.save(utilisateur);
 
         // 4. Vérifier la date limite
         if (LocalDate.now().isAfter(dateLimiteCandidature)) {
@@ -203,6 +203,7 @@ public class CandidatureServiceImpl implements CandidatureService {
         // Use repository directly because candidatService.saveCandidat(...) returns DTO
         Candidat savedCandidat = candidatRepository.save(nouveauCandidat);
 
+
         Candidature candidature = Candidature.builder()
                 .statutCandidature(CandidatureEnum.SOUMISE)
                 .mentionBac(dto.getMentionBac())
@@ -226,7 +227,6 @@ public class CandidatureServiceImpl implements CandidatureService {
 
         // 10. Sauvegarder la candidature
         Candidature saved = candidatureRepository.save(candidature);
-
         // 11. Retourner le DTO
         return candidatureMapper.toResponseDTO(saved);
     }
@@ -267,10 +267,17 @@ public class CandidatureServiceImpl implements CandidatureService {
     // =====================================================================
     @Override
     public List<CandidatureResponseDTO> getCandidaturesByChefEquipeId(Long chefEquipeId) {
-        return candidatureRepository.findAll().stream()
+        List<Candidature> candidatures = candidatureRepository.findAll().stream()
                 .filter(cand -> cand.getSujets().stream()
                         .anyMatch(sujet -> sujet.getChefEquipe().getId().equals(chefEquipeId)))
-                .map(candidatureMapper::toResponseDTO)
+                .collect(Collectors.toList());
+        
+        // Extract IDs and use safe loading
+        List<Long> candidatureIds = candidatures.stream().map(Candidature::getId).collect(Collectors.toList());
+        List<Candidature> safelyLoadedCandidatures = candidatureRepository.findByIdInWithMinimalLoading(candidatureIds);
+        
+        return safelyLoadedCandidatures.stream()
+                .map(candidatureMapper::toResponseDTOSafe)
                 .collect(Collectors.toList());
     }
 
@@ -334,8 +341,13 @@ public class CandidatureServiceImpl implements CandidatureService {
     public List<CandidatureResponseDTO> getMyCandidatures(UserDetails userDetails) {
         Candidat candidat = candidatService.findFullCandidatByEmail(userDetails.getUsername());
         List<Candidature> list = candidatureRepository.findByCandidat(candidat);
-        return list.stream()
-                .map(candidatureMapper::toResponseDTO)
+        
+        // Extract IDs and use safe loading
+        List<Long> candidatureIds = list.stream().map(Candidature::getId).collect(Collectors.toList());
+        List<Candidature> safelyLoadedCandidatures = candidatureRepository.findByIdInWithMinimalLoading(candidatureIds);
+        
+        return safelyLoadedCandidatures.stream()
+                .map(candidatureMapper::toResponseDTOSafe)
                 .collect(Collectors.toList());
     }
 
@@ -461,67 +473,151 @@ public class CandidatureServiceImpl implements CandidatureService {
             .collect(Collectors.toList());
     }
 
-    @Override
-    public List<Candidature> getAccessibleCandidatures(UserDetails userDetails) {
-        Utilisateur utilisateur = utilisateurRepository
-            .findByEmail(userDetails.getUsername())
-            .orElseThrow(() -> new UsernameNotFoundException("User not found: " 
-                                                        + userDetails.getUsername()));
-        Long userId = utilisateur.getId();
-
-        // 1) Lab-head and CEDoc director see everything
-        if (utilisateur.hasRole(RoleEnum.DIRECTION_CEDOC)) {
-            return candidatureRepository.findAll();
-        }
-
-        // 2) Team-leader sees only the candidatures on their team’s subjects
-        else if (utilisateur.hasRole(RoleEnum.CHEF_EQUIPE)) {
-            Long chefRoleId = chefEquipeRoleRepository
-                .findByProfesseurUtilisateurId(userId)
-                .orElseThrow(() -> new RuntimeException("Pas de rôle chef trouvé"))
-                .getId();
-            return findByChefEquipeRoleId(chefRoleId);
-        }
-
-        // 3) Ordinary professor sees only their own candida­tures
-        else if (utilisateur.hasRole(RoleEnum.PROFESSEUR)) {
-            return findByProfesseurId(userId);
-        }
-
-        // 4) Everyone else is forbidden
-        else {
-            throw new AccessDeniedException("Accès non autorisé");
-        }
-    }
 
     @Override
-    public Page<Candidature> getAccessibleCandidatures(UserDetails userDetails, Pageable pageable) {
+    public PaginatedResponseDTO<CandidatureResponseDTO> getAccessibleCandidatures(UserDetails userDetails, Pageable pageable, String search) {
         Utilisateur user = utilisateurRepository
             .findByEmail(userDetails.getUsername())
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Long userId = user.getId();
 
         List<Candidature> allAllowed;
+        
+        // DIRECTION_CEDOC sees ALL candidatures
         if (user.hasRole(RoleEnum.DIRECTION_CEDOC)) {
-            // whole table
-            allAllowed = candidatureRepository.findAll();
-        } else if (user.hasRole(RoleEnum.CHEF_EQUIPE)) {
-            Long chefRoleId = chefEquipeRoleRepository
-                .findByProfesseurUtilisateurId(userId)
-                .orElseThrow(() -> new RuntimeException("No chef role"))
-                .getId();
-            allAllowed = findByChefEquipeRoleId(chefRoleId);
-        } else if (user.hasRole(RoleEnum.PROFESSEUR)) {
-            allAllowed = findByProfesseurId(userId);
+            allAllowed = candidatureRepository.findAllWithMinimalLoading();
         } else {
-            throw new AccessDeniedException("Accès non autorisé");
+            // For other roles, collect candidature IDs based on their specific roles
+            Set<Long> candidatureIds = new HashSet<>();
+            boolean hasValidRole = false;
+            
+            // Check if user is chef equipe
+            if (user.hasRole(RoleEnum.CHEF_EQUIPE)) {
+                hasValidRole = true;
+                ChefEquipeRole chefRole = chefEquipeRoleRepository.findByProfesseurUtilisateurId(userId).orElse(null);
+                if (chefRole != null) {
+                    List<Sujet> sujetsAsChef = sujetRepository.findByChefEquipeId(chefRole.getId());
+                    for (Sujet sujet : sujetsAsChef) {
+                        List<Candidature> sujetCandidatures = candidatureRepository.findBySujetsContaining(sujet);
+                        candidatureIds.addAll(sujetCandidatures.stream().map(Candidature::getId).collect(Collectors.toSet()));
+                    }
+                }
+            }
+            
+            // Check if user is professeur
+            if (user.hasRole(RoleEnum.PROFESSEUR)) {
+                hasValidRole = true;
+                Professeur professeur = professeurRepository.findByUtilisateurId(userId).orElse(null);
+                if (professeur != null) {
+                    List<Sujet> sujetsAsProfesseur = sujetRepository.findByProfesseursId(professeur.getId());
+                    for (Sujet sujet : sujetsAsProfesseur) {
+                        List<Candidature> sujetCandidatures = candidatureRepository.findBySujetsContaining(sujet);
+                        candidatureIds.addAll(sujetCandidatures.stream().map(Candidature::getId).collect(Collectors.toSet()));
+                    }
+                }
+            }
+            
+            // Check if user is directeur de these
+            if (user.hasRole(RoleEnum.DIRECTEUR_DE_THESE)) {
+                hasValidRole = true;
+                DirecteurDeTheseRole directeurRole = directeurDeTheseRoleRepository.findByProfesseurUtilisateurId(userId).orElse(null);
+                if (directeurRole != null) {
+                    List<Sujet> sujetsAsDirecteur = sujetRepository.findByDirecteurDeTheseId(directeurRole.getId());
+                    for (Sujet sujet : sujetsAsDirecteur) {
+                        List<Candidature> sujetCandidatures = candidatureRepository.findBySujetsContaining(sujet);
+                        candidatureIds.addAll(sujetCandidatures.stream().map(Candidature::getId).collect(Collectors.toSet()));
+                    }
+                }
+            }
+            if (user.hasRole(RoleEnum.CANDIDAT)) {
+                hasValidRole = true;
+                Candidat candidat = candidatRepository.findByUtilisateurId(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Candidat introuvable"));
+                List<Candidature> cnds = candidatureRepository.findByCandidat(candidat);
+                candidatureIds.addAll(cnds.stream().map(Candidature::getId).collect(Collectors.toSet()));
+            }
+            // If user doesn't have any valid role, throw access denied
+            if (!hasValidRole) {
+                throw new AccessDeniedException("Accès non autorisé");
+            }
+            
+            // Load the candidatures safely using the collected IDs
+            allAllowed = candidatureRepository.findByIdInWithMinimalLoading(new ArrayList<>(candidatureIds));
+        }
+
+        // Apply search filter if provided
+        if (search != null && !search.trim().isEmpty()) {
+            String searchLower = search.toLowerCase().trim();
+            allAllowed = allAllowed.stream()
+                .filter(candidature -> 
+                    candidature.getCandidat().getUtilisateur().getNom().toLowerCase().contains(searchLower) ||
+                    candidature.getCandidat().getUtilisateur().getPrenom().toLowerCase().contains(searchLower) ||
+                    candidature.getCandidat().getUtilisateur().getEmail().toLowerCase().contains(searchLower) ||
+                    candidature.getStatutCandidature().toString().toLowerCase().contains(searchLower) ||
+                    candidature.getSpecialite().toLowerCase().contains(searchLower))
+                .collect(Collectors.toList());
+        }
+
+        // Apply sorting
+        if (pageable.getSort().isSorted()) {
+            allAllowed = allAllowed.stream()
+                .sorted((c1, c2) -> {
+                    for (Sort.Order order : pageable.getSort()) {
+                        int comparison = compareByField(c1, c2, order.getProperty());
+                        if (comparison != 0) {
+                            return order.isAscending() ? comparison : -comparison;
+                        }
+                    }
+                    return 0;
+                })
+                .collect(Collectors.toList());
         }
 
         // Manually slice into a Page:
         int start = (int)pageable.getOffset();
-        int end   = Math.min(start + pageable.getPageSize(), allAllowed.size());
+        int end = Math.min(start + pageable.getPageSize(), allAllowed.size());
         List<Candidature> sub = allAllowed.subList(start, end);
-        return new PageImpl<>(sub, pageable, allAllowed.size());
+        
+        // Convert to DTOs using safe mapping method (entities are already safely loaded)
+        List<CandidatureResponseDTO> content = sub.stream()
+            .map(candidatureMapper::toResponseDTOSafe)
+            .collect(Collectors.toList());
+
+        // Create and return PaginatedResponseDTO
+        return PaginatedMapper.mapToDTO(
+            content,
+            pageable.getPageNumber(),
+            (int) Math.ceil((double) allAllowed.size() / pageable.getPageSize()),
+            allAllowed.size(),
+            pageable.getPageSize(),
+            start + pageable.getPageSize() >= allAllowed.size()
+        );
+    }
+
+    private int compareByField(Candidature c1, Candidature c2, String field) {
+        switch (field) {
+            case "candidatNom":
+                return c1.getCandidat().getUtilisateur().getNom().compareToIgnoreCase(
+                    c2.getCandidat().getUtilisateur().getNom());
+            case "candidatPrenom":
+                return c1.getCandidat().getUtilisateur().getPrenom().compareToIgnoreCase(
+                    c2.getCandidat().getUtilisateur().getPrenom());
+            case "candidatEmail":
+                return c1.getCandidat().getUtilisateur().getEmail().compareToIgnoreCase(
+                    c2.getCandidat().getUtilisateur().getEmail());
+            case "statutCandidature":
+                return c1.getStatutCandidature().toString().compareToIgnoreCase(
+                    c2.getStatutCandidature().toString());
+            case "specialite":
+                return c1.getSpecialite().compareToIgnoreCase(c2.getSpecialite());
+            case "createdAt":
+                return c1.getCreatedAt().compareTo(c2.getCreatedAt());
+            case "updatedAt":
+                return c1.getUpdatedAt().compareTo(c2.getUpdatedAt());
+            case "id":
+            default:
+                return c1.getId().compareTo(c2.getId());
+        }
     }
 
 }

@@ -2,7 +2,9 @@ package ma.inpt.cedoc.web.CandidatureControllers;
 
 import java.util.List;
 
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,10 +16,10 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import ma.inpt.cedoc.model.DTOs.Candidature.*;
 import ma.inpt.cedoc.model.DTOs.Generic.ErrorResponse;
+import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.CandidatureMappers.CandidatureMapper;
-import ma.inpt.cedoc.model.entities.candidature.Candidature;
 import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 
 // @ModelAttribute -> Spring remplit automatiquement les DTOs à partir du formulaire frontend.
@@ -140,21 +142,47 @@ public class CandidatureController {
         }
 
         @GetMapping("/accessible")
-        public ResponseEntity<Page<CandidatureResponseDTO>> getAccessibleCandidatures(
+        public ResponseEntity<PaginatedResponseDTO<CandidatureResponseDTO>> getAccessibleCandidatures(
                 @AuthenticationPrincipal UserDetails userDetails,
                 @RequestParam(defaultValue = "0")   int page,
                 @RequestParam(defaultValue = "10")  int size,
                 @RequestParam(defaultValue = "id")  String sortBy,
-                @RequestParam(defaultValue = "asc") String direction
-        ) {
-            Sort sort = direction.equalsIgnoreCase("asc")
-                        ? Sort.by(sortBy).ascending()
-                        : Sort.by(sortBy).descending();
-            Pageable pageable = PageRequest.of(page, size, sort);
+                @RequestParam(defaultValue = "asc") String sort,
+                @RequestParam(required = false) String search
+        ) { 
+            System.out.println("HEY");
+            // Validate sort direction
+            sort = sort.toLowerCase();
+            if (!(sort.equals("asc") || sort.equals("desc"))) {
+                sort = "asc"; // default to ascending if invalid
+            }
+            // Map DTO field names to entity field names for sorting
+            String entitySortBy = mapDtoFieldToEntityField(sortBy);
 
-            Page<Candidature> slice = candidatureService.getAccessibleCandidatures(userDetails, pageable);
-            Page<CandidatureResponseDTO> dtoPage = slice.map(candidatureMapper::toResponseDTO);
-            return ResponseEntity.ok(dtoPage);
+            // Create Pageable object
+            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sort), entitySortBy));
+
+            // Get paginated results with search
+            PaginatedResponseDTO<CandidatureResponseDTO> response = candidatureService
+                    .getAccessibleCandidatures(userDetails, pageable, search);
+
+            return ResponseEntity.ok(response);
+        }
+
+        /**
+         * Maps DTO field names to entity field names for sorting
+         */
+        private String mapDtoFieldToEntityField(String dtoField) {
+            return switch (dtoField) {
+                case "candidatNom" -> "candidatNom";
+                case "candidatPrenom" -> "candidatPrenom";
+                case "candidatEmail" -> "candidatEmail";
+                case "statutCandidature" -> "statutCandidature";
+                case "specialite" -> "specialite";
+                case "createdAt" -> "createdAt";
+                case "updatedAt" -> "updatedAt";
+                default -> "id"; // Default fallback to id field
+            };
         }
 
     

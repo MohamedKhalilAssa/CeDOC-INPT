@@ -111,10 +111,10 @@ function App() {
           path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.proposer.path}
           element={<ProposerSujet />}
         />
-         <Route
+        <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.candidatures.accessible.path}
           element={<CandidaturesPage />}
-          />
+        />
         <Route path="sujets/membres-equipe" element={<SujetsMembreEquipes />} />
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.sujets.mesSujets.path}

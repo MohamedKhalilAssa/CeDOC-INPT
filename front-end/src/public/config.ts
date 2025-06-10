@@ -166,6 +166,11 @@ const appConfig: AppConfig = {
         path: "/candidatures/postuler",
         method: "POST",
       },
+      update: {
+        name: "Mettre à jour candidature",
+        path: "/candidatures/{id}",
+        method: "PUT",
+      },
       accessible: {
         name: "Candidatures Accessibles",
         path: "/candidatures/accessible",
@@ -344,8 +349,8 @@ const appConfig: AppConfig = {
           path: "/dashboard/formations/mesformations",
         },
       },
-      candidatures:{
-        accessible: { name: "Candidatures", path: "candidatures" },
+      candidatures: {
+        accessible: { name: "Candidatures", path: "/dashboard/candidatures" },
       },
     },
   },

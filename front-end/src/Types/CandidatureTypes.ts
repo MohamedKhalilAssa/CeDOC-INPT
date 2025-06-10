@@ -79,9 +79,28 @@ export interface ChefSujetsEquipeResponseDTO {
 }
 
 export interface AccepterCandidatureRequest {
-  dateEntretien: string;  // ISO date, e.g. "2025-06-10"
+  dateEntretien: string; // ISO date, e.g. "2025-06-10"
 }
 
 export interface RefuserCandidatureRequest {
   motif: string;
+}
+
+// CandidatureResponseDTO to match backend structure
+export interface CandidatureResponseDTO {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  statutCandidature: string; // CandidatureEnum from backend
+  mentionBac: string; // MentionEnum from backend
+  diplome: string; // DiplomeEnum from backend
+  mentionDiplome: string; // MentionEnum from backend
+  dossierCandidature: string;
+  typeEtablissement: string; // EtablissementEnum from backend
+  specialite: string;
+  intitulePFE: string;
+  sujetsIds: number[]; // List<Long> from backend
+  candidatId: number;
+  candidatNom: string;
+  candidatPrenom: string;
 }
