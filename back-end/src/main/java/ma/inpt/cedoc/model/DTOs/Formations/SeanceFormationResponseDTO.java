@@ -22,11 +22,13 @@ public class SeanceFormationResponseDTO extends BaseResponseDTO {
 
     private StatutFormationEnum statut;
 
-    private String formation;
+    private String formationName;
 
     private Long declarantId;
 
     private String validePar;
 
     private String email;
+
+    private Long formationId;
 }

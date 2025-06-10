@@ -107,7 +107,8 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
                         (method.equalsIgnoreCase("GET") && path.equals("/api/chefs-equipe/chefs-sujets")) ||
                         path.startsWith("/api/utilisateurs/assign-role") ||
                         path.startsWith("/api/utilisateurs/set-role") ||
-                        path.startsWith("/uploads/formations/")) ;
+                        path.startsWith("/uploads/formations/") ||
+                        path.startsWith("/uploads/justificatifs/"));
     }
 
     private String extractRefreshToken(HttpServletRequest request) {

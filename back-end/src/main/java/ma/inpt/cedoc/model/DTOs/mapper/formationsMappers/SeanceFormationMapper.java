@@ -59,20 +59,32 @@ public class SeanceFormationMapper {
                 .statut(seance.getStatut())
                 .createdAt(seance.getCreatedAt())
                 .updatedAt(seance.getUpdatedAt())
-                .formation(mapFormationId(seance))
+                .formationName(mapFormationId(seance))
                 .declarantId(mapDeclarantId(seance))
                 .validePar(mapValideParId(seance))
                 .email(seance.getDeclarant().getUtilisateur().getEmail())
+                .formationId(seance.getFormation().getId())
                 .build();
     }
 
     public void updateSeanceFormationFromDTO(SeanceFormationRequestDTO dto, SeanceFormation entity) {
         if (dto == null || entity == null) return;
 
+        // Fetch and validate related entities
+        Formation formation = formationRepository.findById(dto.getFormationId())
+                .orElseThrow(() -> new EntityNotFoundException("Formation not found with id: " + dto.getFormationId()));
+
+        Doctorant declarant = doctorantRepository.findByUtilisateurId(dto.getDeclarantId())
+                .orElseThrow(() -> new EntityNotFoundException("Doctorant not found for user id: " + dto.getDeclarantId()));
+
+
         entity.setDuree(dto.getDuree());
         entity.setJustificatifPdf(dto.getJustificatifPdf());
         entity.setStatut(dto.getStatut());
-        // Do not override ids, formation, declarant, or validePar here
+        entity.setFormation(formation);
+        entity.setDeclarant(declarant);
+        entity.setValidePar(getResponsableIfExists(dto.getValideParId()));
+
     }
 
     /*-------------------------- HELPERS --------------------------*/

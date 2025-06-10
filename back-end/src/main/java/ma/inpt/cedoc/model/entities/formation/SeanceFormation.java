@@ -59,7 +59,7 @@ public class SeanceFormation {
     @JoinColumn(name = "doctorant_id")
     private Doctorant declarant; // 1 doctorant → * séances
 
-    @ManyToOne(optional = false) // valide
+    @ManyToOne(optional = true) // valide
     @JoinColumn(name = "responsable_id", nullable = true)
     private ResponsableDeFormationRole validePar; // 1 resp.→ * séances
 

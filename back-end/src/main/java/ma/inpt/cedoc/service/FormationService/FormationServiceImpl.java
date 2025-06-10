@@ -118,4 +118,5 @@ public class FormationServiceImpl implements FormationService {
     public FormationResponseDTO getById(Long id) {
         return formationMapper.formationToFormationResponseDTO(formationRepository.findById(id).orElse(null));
     }
+
 }
