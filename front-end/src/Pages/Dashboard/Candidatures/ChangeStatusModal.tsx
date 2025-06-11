@@ -111,7 +111,8 @@ const ChangeStatusModal: React.FC<ChangeStatusModalProps> = ({
         error instanceof Error
           ? error.message
           : "Erreur lors de la modification du statut";
-      swal.error("Erreur", errorMessage);
+      // @ts-ignore
+      swal.error("Erreur", error?.errors || errorMessage);
       onError?.(errorMessage);
     } finally {
       setIsLoading(false);

@@ -1,7 +1,14 @@
 import Badge from "@/Components/DashComps/ui/badge/Badge";
+import { downloadFile } from "@/Helpers/CRUDFunctions";
 import { CandidatureResponseDTO } from "@/Types/CandidatureTypes";
-import { CheckCircle, Clock, GraduationCap, XCircle } from "lucide-react";
-import React from "react";
+import {
+  CheckCircle,
+  Clock,
+  Download,
+  GraduationCap,
+  XCircle,
+} from "lucide-react";
+import React, { useState } from "react";
 
 interface ViewCandidatureModalProps {
   candidature: CandidatureResponseDTO | null;
@@ -14,6 +21,46 @@ const ViewCandidatureModal: React.FC<ViewCandidatureModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  // Function to download the zip file
+  const handleDownloadZip = async () => {
+    if (!candidature?.dossierCandidature) {
+      alert("Aucun dossier de candidature disponible pour le téléchargement.");
+      return;
+    }
+    setIsDownloading(true);
+    try {
+      // Extract the actual filename from the dossierCandidature path
+      // Path format: Uploads/candidatures/1/0d20b7b5-db96-44b1-acea-05f35858fcce.zip
+      const pathParts = candidature.dossierCandidature.split("/");
+      const actualFilename = pathParts[pathParts.length - 1]; // Get the last part (filename.zip)
+
+      console.log(
+        "Download URL:",
+        `/api/candidatures/${candidature.id}/dossier/download`
+      );
+      console.log("Filename:", actualFilename);
+      console.log("Full dossier path:", candidature.dossierCandidature);
+
+      // Use the backend API endpoint we created
+      await downloadFile(
+        `/api/candidatures/${candidature.id}/dossier/download`,
+        actualFilename,
+        {
+          headers: {
+            Accept: "application/zip, application/octet-stream",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Erreur lors du téléchargement:", error);
+      alert("Erreur lors du téléchargement du dossier. Veuillez réessayer.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   // Status badge component for candidature status
   const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
     const getStatusConfig = (status: string) => {
@@ -214,6 +261,33 @@ const ViewCandidatureModal: React.FC<ViewCandidatureModalProps> = ({
               </p>
             </div>
           </div>
+
+          {/* Download Section */}
+          {candidature.dossierCandidature && (
+            <div className="border-t pt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Dossier de Candidature
+              </label>
+              <button
+                onClick={handleDownloadZip}
+                disabled={isDownloading}
+                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white transition-colors ${
+                  isDownloading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                }`}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                {isDownloading
+                  ? "Téléchargement..."
+                  : "Télécharger le Dossier (ZIP)"}
+              </button>
+              <p className="text-xs text-gray-500 mt-1">
+                Télécharge tous les documents de la candidature dans un fichier
+                ZIP
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end mt-6">

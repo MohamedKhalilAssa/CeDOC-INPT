@@ -85,69 +85,21 @@ public class CandidatureServiceImpl implements CandidatureService {
     @Override
     @Transactional
     public CandidatureResponseDTO accepterCandidature(Long candidatureId, LocalDate entretien) {
-        // 1) Load the parent
-        Candidature parent = candidatureRepository.findById(candidatureId)
+        Candidature candidature = candidatureRepository.findById(candidatureId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Candidature introuvable"));
-
-        // 2) Create the subclass instance with manual field copying (excluding ID)
-        CandidatureAccepter child = new CandidatureAccepter();
-        copyBasicFields(parent, child);
-        child.setStatutCandidature(CandidatureEnum.ACCEPTER);
-        child.setDateEntretien((int) entretien.toEpochDay());
-
-        // 3) Delete the original entity first
-        candidatureRepository.delete(parent);
-        candidatureRepository.flush(); // Ensure the delete is processed
-
-        // 4) Save the new subclass entity (will get a new ID)
-        CandidatureAccepter saved = candidatureAccepterRepository.save(child);
-
-        // 5) Map to DTO
-        return candidatureMapper.toResponseDTO(saved);
+        
+        return transitionToAccepter(candidature, entretien);
     }
 
     @Override
     @Transactional
     public CandidatureResponseDTO refuserCandidature(Long candidatureId, String motif) {
-        // 1) Load the parent
-        Candidature parent = candidatureRepository.findById(candidatureId)
+        Candidature candidature = candidatureRepository.findById(candidatureId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Candidature introuvable"));
-
-        // 2) Create the subclass instance with manual field copying (excluding ID)
-        CandidatureRefuser child = new CandidatureRefuser();
-        copyBasicFields(parent, child);
-        child.setStatutCandidature(CandidatureEnum.REFUSER);
-        child.setMotif(motif);
-
-        // 3) Delete the original entity first
-        candidatureRepository.delete(parent);
-        candidatureRepository.flush(); // Ensure the delete is processed
-
-        // 4) Save the new subclass entity (will get a new ID)
-        CandidatureRefuser saved = candidatureRefuserRepository.save(child);
-
-        // 5) Map to DTO
-        return candidatureMapper.toResponseDTO(saved);
-    }
-
-    /**
-     * Manually copy basic fields from parent to child candidature (excluding ID to avoid conflicts)
-     */
-    private void copyBasicFields(Candidature parent, Candidature child) {
-        child.setCreatedAt(parent.getCreatedAt());
-        child.setUpdatedAt(parent.getUpdatedAt());
-        child.setMentionBac(parent.getMentionBac());
-        child.setDiplome(parent.getDiplome());
-        child.setMentionDiplome(parent.getMentionDiplome());
-        child.setDossierCandidature(parent.getDossierCandidature());
-        child.setTypeEtablissement(parent.getTypeEtablissement());
-        child.setSpecialite(parent.getSpecialite());
-        child.setIntitulePFE(parent.getIntitulePFE());
-        child.setCandidat(parent.getCandidat());
-        child.setSujets(parent.getSujets());
-        // Note: ID and statutCandidature are not copied intentionally
+        
+        return transitionToRefuser(candidature, motif);
     }
 
     @Override
@@ -661,22 +613,33 @@ public class CandidatureServiceImpl implements CandidatureService {
         }
 
         // 3. Handle status change based on target status
-        switch (dto.getNouveauStatut()) {
+        CandidatureEnum currentStatus = candidature.getStatutCandidature();
+        CandidatureEnum newStatus = dto.getNouveauStatut();
+        
+        // If status is not changing, just return current candidature
+        if (currentStatus == newStatus) {
+            return candidatureMapper.toResponseDTO(candidature);
+        }
+        if(currentStatus == CandidatureEnum.REFUSER || newStatus == CandidatureEnum.ACCEPTER) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Impossible de changer le statut d'une candidature déjà refusée ou dejà acceptée");
+        }
+
+        switch (newStatus) {
             case ACCEPTER:
-                if (dto.getDateEntretien() != null && !dto.getDateEntretien().isEmpty()) {
-                    try {
-                        LocalDate entretienDate = LocalDate.parse(dto.getDateEntretien());
-                        return accepterCandidature(candidatureId, entretienDate);
-                    } catch (DateTimeParseException e) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                            "Format de date invalide. Utilisez le format yyyy-MM-dd (ex: 2025-06-10). Date reçue: " + dto.getDateEntretien());
-                    } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                            "Erreur lors du traitement de la date d'entretien: " + e.getMessage());
-                    }
-                } else {
+                if (dto.getDateEntretien() == null || dto.getDateEntretien().isEmpty()) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
                         "La date d'entretien est obligatoire pour accepter une candidature");
+                }
+                try {
+                    LocalDate entretienDate = LocalDate.parse(dto.getDateEntretien());
+                    return transitionToAccepter(candidature, entretienDate);
+                } catch (DateTimeParseException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                        "Format de date invalide. Utilisez le format yyyy-MM-dd (ex: 2025-06-10). Date reçue: " + dto.getDateEntretien());
+                } catch (Exception e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                        "Erreur lors du traitement de la date d'entretien: " + e.getMessage());
                 }
 
             case REFUSER:
@@ -684,18 +647,104 @@ public class CandidatureServiceImpl implements CandidatureService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
                         "Le motif de refus est obligatoire");
                 }
-                return refuserCandidature(candidatureId, dto.getMotif().trim());
+                return transitionToRefuser(candidature, dto.getMotif().trim());
 
             case EN_COURS_DE_TRAITEMENT:
             case SOUMISE:
-                // Simple status update without subclass creation
-                candidature.setStatutCandidature(dto.getNouveauStatut());
-                Candidature updated = candidatureRepository.save(candidature);
-                return candidatureMapper.toResponseDTO(updated);
+                return transitionToSimpleStatus(candidature, newStatus);
 
             default:
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Statut invalide");
         }
+    }
+
+    /**
+     * Transition any candidature to ACCEPTER status
+     */
+    private CandidatureResponseDTO transitionToAccepter(Candidature currentCandidature, LocalDate entretienDate) {
+        // 1. Update the base candidature status
+        currentCandidature.setStatutCandidature(CandidatureEnum.ACCEPTER);
+        candidatureRepository.save(currentCandidature);
+        
+        // 2. Remove from CandidatureRefuser table if it exists
+        candidatureRefuserRepository.findById(currentCandidature.getId()).ifPresent(refuser -> {
+            candidatureRefuserRepository.delete(refuser);
+        });
+        
+        // 3. Create or update in CandidatureAccepter table
+        CandidatureAccepter accepter = candidatureAccepterRepository.findById(currentCandidature.getId())
+            .orElse(new CandidatureAccepter());
+        
+        // Copy all fields from base candidature
+        copyAllFields(currentCandidature, accepter);
+        accepter.setDateEntretien((int) entretienDate.toEpochDay());
+        
+        CandidatureAccepter saved = candidatureAccepterRepository.save(accepter);
+        return candidatureMapper.toResponseDTO(saved);
+    }
+
+    /**
+     * Transition any candidature to REFUSER status
+     */
+    private CandidatureResponseDTO transitionToRefuser(Candidature currentCandidature, String motif) {
+        // 1. Update the base candidature status
+        currentCandidature.setStatutCandidature(CandidatureEnum.REFUSER);
+        candidatureRepository.save(currentCandidature);
+        
+        // 2. Remove from CandidatureAccepter table if it exists
+        candidatureAccepterRepository.findById(currentCandidature.getId()).ifPresent(accepter -> {
+            candidatureAccepterRepository.delete(accepter);
+        });
+        
+        // 3. Create or update in CandidatureRefuser table
+        CandidatureRefuser refuser = candidatureRefuserRepository.findById(currentCandidature.getId())
+            .orElse(new CandidatureRefuser());
+        
+        // Copy all fields from base candidature
+        copyAllFields(currentCandidature, refuser);
+        refuser.setMotif(motif);
+        
+        CandidatureRefuser saved = candidatureRefuserRepository.save(refuser);
+        return candidatureMapper.toResponseDTO(saved);
+    }
+
+    /**
+     * Transition any candidature to a simple status (SOUMISE, EN_COURS_DE_TRAITEMENT)
+     */
+    private CandidatureResponseDTO transitionToSimpleStatus(Candidature currentCandidature, CandidatureEnum newStatus) {
+        // 1. Update the base candidature status
+        currentCandidature.setStatutCandidature(newStatus);
+        candidatureRepository.save(currentCandidature);
+        
+        // 2. Remove from both subclass tables
+        candidatureAccepterRepository.findById(currentCandidature.getId()).ifPresent(accepter -> {
+            candidatureAccepterRepository.delete(accepter);
+        });
+        candidatureRefuserRepository.findById(currentCandidature.getId()).ifPresent(refuser -> {
+            candidatureRefuserRepository.delete(refuser);
+        });
+        
+        // 3. Return the updated base candidature
+        return candidatureMapper.toResponseDTO(currentCandidature);
+    }
+
+    /**
+     * Copy all fields including ID for subclass entities
+     */
+    private void copyAllFields(Candidature source, Candidature target) {
+        target.setId(source.getId()); // Keep the same ID for subclass
+        target.setCreatedAt(source.getCreatedAt());
+        target.setUpdatedAt(source.getUpdatedAt());
+        target.setStatutCandidature(source.getStatutCandidature());
+        target.setMentionBac(source.getMentionBac());
+        target.setDiplome(source.getDiplome());
+        target.setMentionDiplome(source.getMentionDiplome());
+        target.setDossierCandidature(source.getDossierCandidature());
+        target.setTypeEtablissement(source.getTypeEtablissement());
+        target.setSpecialite(source.getSpecialite());
+        target.setIntitulePFE(source.getIntitulePFE());
+        target.setCandidat(source.getCandidat());
+        target.setSujets(source.getSujets());
     }
 
     /**

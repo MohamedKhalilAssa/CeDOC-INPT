@@ -1,12 +1,18 @@
 package ma.inpt.cedoc.web.CandidatureControllers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +25,10 @@ import ma.inpt.cedoc.model.DTOs.Generic.ErrorResponse;
 import ma.inpt.cedoc.model.DTOs.Generic.PaginatedResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.ProfesseurResponseDTO;
+import ma.inpt.cedoc.model.entities.candidature.Candidature;
+import ma.inpt.cedoc.model.entities.utilisateurs.Utilisateur;
+import ma.inpt.cedoc.repositories.candidatureRepositories.CandidatureRepository;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.UtilisateurRepository;
 import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 
 // @ModelAttribute -> Spring remplit automatiquement les DTOs à partir du formulaire frontend.
@@ -30,6 +40,8 @@ import ma.inpt.cedoc.service.CandidatureSevices.CandidatureService;
 public class CandidatureController {
 
     private final CandidatureService candidatureService;
+    private final CandidatureRepository candidatureRepository;
+    private final UtilisateurRepository utilisateurRepository;
 
     // 1) Création d’une nouvelle candidature (multipart/form-data pour inclure le champ MultipartFile)
     @PostMapping("/postuler")
@@ -192,6 +204,72 @@ public class CandidatureController {
         ) {
             CandidatureResponseDTO updated = candidatureService.changeStatutCandidature(candidatureId, dto, userDetails);
             return ResponseEntity.ok(updated);
+        }
+
+        // 12) Download candidature dossier
+        @GetMapping("/{id}/dossier/download")
+        public ResponseEntity<Resource> downloadCandidatureDossier(
+            @PathVariable("id") Long candidatureId,
+            @AuthenticationPrincipal UserDetails userDetails
+        ) {
+            try {
+                // 1. Load candidature
+                Candidature candidature = candidatureRepository.findById(candidatureId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Candidature introuvable"));
+
+                // 2. Check authorization - user should have access to view this candidature
+                Utilisateur currentUser = utilisateurRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utilisateur introuvable"));
+
+                // Check if user is the candidat owner or has administrative access
+                boolean isOwner = candidature.getCandidat().getUtilisateur().getId().equals(currentUser.getId());
+                boolean hasAdminAccess = currentUser.hasRole(ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum.DIRECTION_CEDOC) ||
+                                       currentUser.hasRole(ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum.CHEF_EQUIPE) ||
+                                       currentUser.hasRole(ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum.PROFESSEUR) ||
+                                       currentUser.hasRole(ma.inpt.cedoc.model.enums.utilisateur_enums.RoleEnum.DIRECTEUR_DE_THESE);
+                
+                if (!isOwner && !hasAdminAccess) {
+                    throw new AccessDeniedException("Vous n'avez pas l'autorisation de télécharger ce dossier");
+                }
+
+                // 3. Check if file exists
+                String dossierPath = candidature.getDossierCandidature();
+                if (dossierPath == null || dossierPath.isBlank()) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aucun dossier de candidature disponible");
+                }
+
+                // 4. Load file
+                Path filePath = Paths.get(dossierPath);
+                if (!Files.exists(filePath)) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Le fichier dossier n'existe plus sur le serveur");
+                }
+
+                Resource resource = new UrlResource(filePath.toUri());
+                if (!resource.exists() || !resource.isReadable()) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fichier non accessible");
+                }
+
+                // 5. Determine content type
+                String contentType = Files.probeContentType(filePath);
+                if (contentType == null) {
+                    contentType = "application/octet-stream"; // Default binary content type
+                }
+
+                // 6. Generate filename for download
+                String filename = String.format("dossier_candidature_%s_%s_%d.zip", 
+                    candidature.getCandidat().getUtilisateur().getPrenom(),
+                    candidature.getCandidat().getUtilisateur().getNom(),
+                    candidatureId);
+
+                return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(resource);
+
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, 
+                    "Erreur lors de la lecture du fichier", e);
+            }
         }
 
     

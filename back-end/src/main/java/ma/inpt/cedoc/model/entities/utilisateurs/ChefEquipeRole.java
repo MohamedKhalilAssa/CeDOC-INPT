@@ -5,14 +5,13 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ma.inpt.cedoc.model.entities.candidature.Sujet;
 
 @Entity
 @Data
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Table(name = "chef_equipe_roles")
 public class ChefEquipeRole {

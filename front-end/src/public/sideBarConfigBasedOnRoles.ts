@@ -131,6 +131,17 @@ export const directeurDeTheseSidebarConfig: NavigationGroup[] = [
 ];
 export const directionCedocSidebarConfig: NavigationGroup[] = [
   ...utilisateursSidebarConfig,
+  ...chefsEquipesSidebarConfig,
+  {
+    title: "Gestion Administrative",
+    items: [
+      {
+        href: appConfig.FRONTEND_PATHS.DASHBOARD.equipes.gestion.path,
+        label: "Gestion des Équipes",
+        icon: "fas fa-users-cog",
+      },
+    ],
+  },
   {
     title: "Applications",
     items: [

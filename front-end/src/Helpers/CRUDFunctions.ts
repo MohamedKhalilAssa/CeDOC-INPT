@@ -384,3 +384,37 @@ export const putFormData = async <T>(
     handleError(error as AxiosError);
   }
 };
+
+/**
+ * Download file as blob
+ * Use this when your backend returns file content as blob/binary data
+ */
+export const downloadFile = async (
+  url: string,
+  filename: string,
+  config?: AxiosRequestConfig
+): Promise<void> => {
+  try {
+    const res = await API.get(url, {
+      ...config,
+      responseType: "blob",
+    });
+
+    // Create blob URL and trigger download
+    const blob = new Blob([res.data]);
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = filename;
+
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    handleError(error as AxiosError);
+  }
+};

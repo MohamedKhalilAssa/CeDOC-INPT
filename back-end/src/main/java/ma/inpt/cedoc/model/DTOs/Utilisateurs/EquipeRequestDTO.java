@@ -1,11 +1,10 @@
 package ma.inpt.cedoc.model.DTOs.Utilisateurs;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -18,4 +17,15 @@ public class EquipeRequestDTO {
 
     @NotNull(message = "L'ID du chef d'équipe est obligatoire")
     private Long chefEquipeId;
+
+    /**
+     * Liste des IDs des professeurs membres de l'équipe
+     * (n'inclut pas le chef d'équipe qui est défini séparément)
+     */
+    private List<Long> membreIds;
+
+    /**
+     * Liste des IDs des doctorants rattachés à l'équipe
+     */
+    private List<Long> doctorantIds;
 }

@@ -18,7 +18,8 @@ public class EquipeMapperImpl implements EquipeMapper {
     public EquipeDeRecherche toEntity(EquipeRequestDTO dto) {
         EquipeDeRecherche equipe = new EquipeDeRecherche();
         equipe.setNomDeLequipe(dto.getNomDeLequipe());
-        // Note: chefEquipe will be set in the service layer
+        // Note: chefEquipe, membres, and doctorants will be set in the service layer
+        // based on the IDs provided in the DTO (chefEquipeId, membreIds, doctorantIds)
         return equipe;
     }
 
@@ -74,7 +75,8 @@ public class EquipeMapperImpl implements EquipeMapper {
         if (dto.getNomDeLequipe() != null) {
             equipe.setNomDeLequipe(dto.getNomDeLequipe());
         }
-        // Note: chefEquipe will be updated in the service layer if needed
+        // Note: chefEquipe, membres, and doctorants will be updated in the service layer if needed
+        // based on the IDs provided in the DTO (chefEquipeId, membreIds, doctorantIds)
         return equipe;
     }
 

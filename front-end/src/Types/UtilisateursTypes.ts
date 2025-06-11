@@ -61,6 +61,14 @@ export interface EquipeResponseDTO extends baseResponse {
   nombreDoctorants: number;
 }
 
+// Équipe de recherche request DTO
+export interface EquipeRequestDTO {
+  nomDeLequipe: string;
+  chefEquipeId?: number;
+  membreIds?: number[]; // Liste des IDs des professeurs membres de l'équipe
+  doctorantIds?: number[]; // Liste des IDs des doctorants rattachés à l'équipe
+}
+
 export interface CandidatureRequestDTO extends UtilisateurResponseDTO {
   // On conserve le champ statutCandidature (même si on forcera en SOUMISE)
   statutCandidature: CandidatureEnum;

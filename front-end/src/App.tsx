@@ -26,6 +26,7 @@ import ProposerSujet from "@/Pages/Dashboard/Sujets/ProposerSujet";
 import SujetsMembreEquipes from "@/Pages/Dashboard/Sujets/SujetsMembreEquipes";
 
 import CandidaturesPage from "@/Pages/Dashboard/Candidatures/CandidaturesPage";
+import LesEquipesRecherche from "@/Pages/Dashboard/Direction_Cedoc/Equipe/LesEquipesRecherche";
 import UserProfiles from "@/Pages/Dashboard/UserProfile/UserProfiles";
 import appConfig from "@/public/config";
 
@@ -132,6 +133,11 @@ function App() {
         <Route
           path={appConfig.FRONTEND_PATHS.DASHBOARD.formations.proposer.path}
           element={<DoctorantFormation />}
+        />
+        {/* Équipes de Recherche */}
+        <Route
+          path={appConfig.FRONTEND_PATHS.DASHBOARD.equipes.gestion.path}
+          element={<LesEquipesRecherche />}
         />
       </Route>
 

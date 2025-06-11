@@ -1,8 +1,8 @@
-import EquipeViewModal from "@/Pages/Equipe/EquipeViewModal";
 import type { Column } from "@/Components/Table/ServerSideTable";
 import ServerSideTable from "@/Components/Table/ServerSideTable";
 import { getData } from "@/Helpers/CRUDFunctions";
 import { useServerSideTable } from "@/Hooks/useServerSideTable";
+import EquipeViewModal from "@/Pages/Equipe/EquipeViewModal";
 import appConfig from "@/public/config";
 import { PaginatedResponse, TableConfig } from "@/Types/GlobalTypes";
 import { EquipeResponseDTO } from "@/Types/UtilisateursTypes";
@@ -67,10 +67,10 @@ const EquipeDeRecherchePage: React.FC = () => {
     }); // Handle view équipe details
   const handleViewEquipe = async (row: EquipeResponseDTO) => {
     try {
-      const url = `${appConfig.API_PATHS.EQUIPE.getById.path.replace(
+      const url = appConfig.API_PATHS.EQUIPE.getById.path.replace(
         ":id",
         row.id.toString()
-      )}`;
+      );
       const equipeDetails = await getData<EquipeResponseDTO>(url);
       if (equipeDetails) {
         setSelectedEquipe(equipeDetails);

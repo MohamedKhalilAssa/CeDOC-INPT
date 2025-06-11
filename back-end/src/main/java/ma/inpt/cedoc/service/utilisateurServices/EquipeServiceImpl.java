@@ -1,5 +1,6 @@
 package ma.inpt.cedoc.service.utilisateurServices;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,10 +19,8 @@ import ma.inpt.cedoc.model.DTOs.Utilisateurs.EquipeResponseDTO;
 import ma.inpt.cedoc.model.DTOs.Utilisateurs.simpleDTOs.EquipeSimpleDTO;
 import ma.inpt.cedoc.model.DTOs.mapper.Global.PaginatedMapper;
 import ma.inpt.cedoc.model.DTOs.mapper.utilisateursMapper.EquipeMapper;
-import ma.inpt.cedoc.model.entities.utilisateurs.ChefEquipeRole;
-import ma.inpt.cedoc.model.entities.utilisateurs.EquipeDeRecherche;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.ChefEquipeRoleRepository;
-import ma.inpt.cedoc.repositories.utilisateursRepositories.EquipeDeRechercheRepository;
+import ma.inpt.cedoc.model.entities.utilisateurs.*;
+import ma.inpt.cedoc.repositories.utilisateursRepositories.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +29,9 @@ public class EquipeServiceImpl implements EquipeService {
 
     private final EquipeDeRechercheRepository equipeRepository;
     private final ChefEquipeRoleRepository chefEquipeRoleRepository;
+    private final ProfesseurRepository professeurRepository;
+    private final DoctorantRepository doctorantRepository;
+    private final ChefEquipeService chefEquipeRoleService;
     private final EquipeMapper equipeMapper;
 
     /* CREATE --------------------------------------------- */
@@ -41,9 +43,48 @@ public class EquipeServiceImpl implements EquipeService {
         // Set chef equipe if provided
         if (dto.getChefEquipeId() != null) {
             ChefEquipeRole chefEquipe = chefEquipeRoleRepository.findById(dto.getChefEquipeId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Chef d'équipe introuvable avec l'identifiant : " + dto.getChefEquipeId()));
+                    .orElse(null);
+                    if(chefEquipe == null) {
+                        chefEquipe = ChefEquipeRole.builder()
+                                .professeur(professeurRepository.findById(dto.getChefEquipeId())
+                                        .orElseThrow(() -> new EntityNotFoundException(
+                                                "Professeur introuvable avec l'identifiant : " + dto.getChefEquipeId())))
+                                .build();
+                        chefEquipeRoleService.createChefEquipe(chefEquipe);
+                    }
             equipe.setChefEquipe(chefEquipe);
+        }
+
+        // Set membres (professeurs) if provided
+        if (dto.getMembreIds() != null && !dto.getMembreIds().isEmpty()) {
+            List<Professeur> membres = professeurRepository.findAllById(dto.getMembreIds());
+            if (membres.size() != dto.getMembreIds().size()) {
+                throw new EntityNotFoundException("Un ou plusieurs professeurs introuvables dans la liste des membres");
+            }
+            equipe.setMembres(membres);
+            
+            // Set the team reference for each member
+            for (Professeur membre : membres) {
+                membre.setEquipeDeRechercheAcceuillante(equipe);
+            }
+        } else {
+            equipe.setMembres(new ArrayList<>());
+        }
+
+        // Set doctorants if provided
+        if (dto.getDoctorantIds() != null && !dto.getDoctorantIds().isEmpty()) {
+            List<Doctorant> doctorants = doctorantRepository.findAllById(dto.getDoctorantIds());
+            if (doctorants.size() != dto.getDoctorantIds().size()) {
+                throw new EntityNotFoundException("Un ou plusieurs doctorants introuvables dans la liste des doctorants");
+            }
+            equipe.setDoctorants(doctorants);
+            
+            // Set the team reference for each doctorant
+            for (Doctorant doctorant : doctorants) {
+                doctorant.setEquipeDeRecherche(equipe);
+            }
+        } else {
+            equipe.setDoctorants(new ArrayList<>());
         }
 
         return equipeMapper.toResponseDTO(equipeRepository.save(equipe));
@@ -54,12 +95,47 @@ public class EquipeServiceImpl implements EquipeService {
         List<EquipeDeRecherche> equipes = dtos.stream()
                 .map(dto -> {
                     EquipeDeRecherche equipe = equipeMapper.toEntity(dto);
+                    
+                    // Set chef equipe if provided
                     if (dto.getChefEquipeId() != null) {
                         ChefEquipeRole chefEquipe = chefEquipeRoleRepository.findById(dto.getChefEquipeId())
                                 .orElseThrow(() -> new EntityNotFoundException(
                                         "Chef d'équipe introuvable avec l'identifiant : " + dto.getChefEquipeId()));
                         equipe.setChefEquipe(chefEquipe);
                     }
+
+                    // Set membres (professeurs) if provided
+                    if (dto.getMembreIds() != null && !dto.getMembreIds().isEmpty()) {
+                        List<Professeur> membres = professeurRepository.findAllById(dto.getMembreIds());
+                        if (membres.size() != dto.getMembreIds().size()) {
+                            throw new EntityNotFoundException("Un ou plusieurs professeurs introuvables dans la liste des membres");
+                        }
+                        equipe.setMembres(membres);
+                        
+                        // Set the team reference for each member
+                        for (Professeur membre : membres) {
+                            membre.setEquipeDeRechercheAcceuillante(equipe);
+                        }
+                    } else {
+                        equipe.setMembres(new ArrayList<>());
+                    }
+
+                    // Set doctorants if provided
+                    if (dto.getDoctorantIds() != null && !dto.getDoctorantIds().isEmpty()) {
+                        List<Doctorant> doctorants = doctorantRepository.findAllById(dto.getDoctorantIds());
+                        if (doctorants.size() != dto.getDoctorantIds().size()) {
+                            throw new EntityNotFoundException("Un ou plusieurs doctorants introuvables dans la liste des doctorants");
+                        }
+                        equipe.setDoctorants(doctorants);
+                        
+                        // Set the team reference for each doctorant
+                        for (Doctorant doctorant : doctorants) {
+                            doctorant.setEquipeDeRecherche(equipe);
+                        }
+                    } else {
+                        equipe.setDoctorants(new ArrayList<>());
+                    }
+                    
                     return equipe;
                 })
                 .collect(Collectors.toList());
@@ -97,6 +173,56 @@ public class EquipeServiceImpl implements EquipeService {
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Chef d'équipe introuvable avec l'identifiant : " + dto.getChefEquipeId()));
             equipe.setChefEquipe(chefEquipe);
+        }
+
+        // Update membres (professeurs) if provided
+        if (dto.getMembreIds() != null) {
+            // Clear existing member relationships first
+            if (equipe.getMembres() != null) {
+                for (Professeur existingMembre : equipe.getMembres()) {
+                    existingMembre.setEquipeDeRechercheAcceuillante(null);
+                }
+            }
+            
+            if (!dto.getMembreIds().isEmpty()) {
+                List<Professeur> membres = professeurRepository.findAllById(dto.getMembreIds());
+                if (membres.size() != dto.getMembreIds().size()) {
+                    throw new EntityNotFoundException("Un ou plusieurs professeurs introuvables dans la liste des membres");
+                }
+                equipe.setMembres(membres);
+                
+                // Set the team reference for each member
+                for (Professeur membre : membres) {
+                    membre.setEquipeDeRechercheAcceuillante(equipe);
+                }
+            } else {
+                equipe.setMembres(new ArrayList<>());
+            }
+        }
+
+        // Update doctorants if provided
+        if (dto.getDoctorantIds() != null) {
+            // Clear existing doctorant relationships first
+            if (equipe.getDoctorants() != null) {
+                for (Doctorant existingDoctorant : equipe.getDoctorants()) {
+                    existingDoctorant.setEquipeDeRecherche(null);
+                }
+            }
+            
+            if (!dto.getDoctorantIds().isEmpty()) {
+                List<Doctorant> doctorants = doctorantRepository.findAllById(dto.getDoctorantIds());
+                if (doctorants.size() != dto.getDoctorantIds().size()) {
+                    throw new EntityNotFoundException("Un ou plusieurs doctorants introuvables dans la liste des doctorants");
+                }
+                equipe.setDoctorants(doctorants);
+                
+                // Set the team reference for each doctorant
+                for (Doctorant doctorant : doctorants) {
+                    doctorant.setEquipeDeRecherche(equipe);
+                }
+            } else {
+                equipe.setDoctorants(new ArrayList<>());
+            }
         }
 
         return equipeMapper.toResponseDTO(equipeRepository.save(equipe));

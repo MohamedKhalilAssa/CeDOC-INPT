@@ -2,10 +2,7 @@ package ma.inpt.cedoc.web.Utilisateurs;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -112,11 +109,36 @@ public class EquipeController {
         return ResponseEntity.ok(equipeService.getAllEquipesPaginated(pageable));
     }
 
-    @GetMapping("/simple/paginated")
+    /**
+     * GET /api/equipes/admin/paginated
+     * Admin version of paginated search with full search and sort capabilities
+     */
+    @GetMapping("/admin/paginated")
     @PreAuthorize("hasAuthority('DIRECTION_CEDOC')")
-    public ResponseEntity<Page<EquipeSimpleDTO>> getAllSimplePaginated(
-            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
-        return ResponseEntity.ok(equipeService.getAllSimplePaginated(pageable));
+    public ResponseEntity<PaginatedResponseDTO<EquipeResponseDTO>> searchEquipesPaginatedAdmin(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sort,
+            @RequestParam(required = false) String search) {
+
+        // Validate sort direction
+        sort = sort.toLowerCase();
+        if (!(sort.equals("asc") || sort.equals("desc"))) {
+            sort = "asc"; // default to ascending if invalid
+        }
+
+        // Map DTO field names to entity field names for sorting
+        String entitySortBy = mapDtoFieldToEntityField(sortBy);
+
+        // Create Pageable object
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sort), entitySortBy));
+
+        // Get paginated results with search
+        PaginatedResponseDTO<EquipeResponseDTO> response = equipeService.findEquipesWithSearchPaginated(pageable,
+                search);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

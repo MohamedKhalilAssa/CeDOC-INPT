@@ -32,6 +32,7 @@ interface AppConfig {
     // Add more groups here
     CHEFS_EQUIPES: ApiPathsMap;
     PROFESSEUR: ApiPathsMap;
+    DOCTORANT: ApiPathsMap;
     EQUIPE: ApiPathsMap;
   };
 
@@ -46,6 +47,7 @@ interface AppConfig {
       sujets: FrontendPathsMap;
       formations: FrontendPathsMap;
       candidatures: FrontendPathsMap;
+      equipes: FrontendPathsMap;
     };
   };
 }
@@ -285,6 +287,23 @@ const appConfig: AppConfig = {
         method: "GET",
       },
     },
+    DOCTORANT: {
+      getAll: {
+        name: "Get All Doctorants",
+        path: "/doctorants",
+        method: "GET",
+      },
+      getById: {
+        name: "Get Doctorant by ID",
+        path: "/doctorants/:id",
+        method: "GET",
+      },
+      search: {
+        name: "Search Doctorants",
+        path: "/doctorants/search",
+        method: "GET",
+      },
+    },
     EQUIPE: {
       getAllPublic: {
         name: "Get All Public Équipes",
@@ -304,6 +323,42 @@ const appConfig: AppConfig = {
       getById: {
         name: "Get Équipe by ID",
         path: "/equipes/public/:id",
+        method: "GET",
+      },
+      // Admin endpoints for DIRECTION_CEDOC
+      getAll: {
+        name: "Get All Équipes (Admin)",
+        path: "/equipes",
+        method: "GET",
+      },
+      getAllPaginated: {
+        name: "Get All Équipes Paginated (Admin)",
+        path: "/equipes/admin/paginated",
+        method: "GET",
+      },
+      create: {
+        name: "Create Équipe",
+        path: "/equipes",
+        method: "POST",
+      },
+      update: {
+        name: "Update Équipe",
+        path: "/equipes/:id",
+        method: "PUT",
+      },
+      delete: {
+        name: "Delete Équipe",
+        path: "/equipes/:id",
+        method: "DELETE",
+      },
+      getByIdAdmin: {
+        name: "Get Équipe by ID (Admin)",
+        path: "/equipes/:id",
+        method: "GET",
+      },
+      search: {
+        name: "Search Équipes",
+        path: "/equipes/search",
         method: "GET",
       },
     },
@@ -361,6 +416,12 @@ const appConfig: AppConfig = {
       },
       candidatures: {
         accessible: { name: "Candidatures", path: "/dashboard/candidatures" },
+      },
+      equipes: {
+        gestion: {
+          name: "Gestion des Équipes",
+          path: "/dashboard/equipes/gestion",
+        },
       },
     },
   },
